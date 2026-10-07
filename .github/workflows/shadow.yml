@@ -113,8 +113,7 @@ jobs:
       - name: Enforce QuantConnect golden-master guard
         env:
           PYTHONPATH: ${{ github.workspace }}
-        run: python golden_master_guard.py
-
+        run: python parity_contract.py
       - name: Enforce QuantConnect order golden-master guard
         run: python qc_order_golden_master.py
 
