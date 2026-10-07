@@ -25,6 +25,7 @@ on:
       - 'lean_regime_analytics.py'
       - 'qc_*.py'
       - 'shadow_history/**'
+      - 'research/golden_evidence/**'
 concurrency:
   # One research Shadow for the whole repository. A newer research commit supersedes
   # any older in-flight Shadow instead of burning private-runner minutes in parallel.
