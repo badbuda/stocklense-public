@@ -18,6 +18,7 @@ on:
       - '.github/workflows/shadow-trigger.txt'
       - 'preflight.py'
       - 'json_artifacts.py'
+      - 'simulator_contract.py'
 concurrency:
   # One research Shadow for the whole repository. A newer research commit supersedes
   # any older in-flight Shadow instead of burning private-runner minutes in parallel.
