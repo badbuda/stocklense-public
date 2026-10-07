@@ -1,0 +1,27 @@
+{
+  "kind": "HISTORICAL_REPLAY_NOT_PROSPECTIVE",
+  "frozen_model": "StockLens 8.0",
+  "sessions": 251,
+  "first_date": "2025-10-06",
+  "last_date": "2026-10-05",
+  "state_transitions": 4,
+  "defense_sessions": 0,
+  "level_counts": {
+    "1": 12,
+    "2": 15,
+    "3": 224
+  },
+  "dataset_sha256": "38d374dbe55f373c04676a902c5d196dc410d3b1873855aa57cfaa2d97dc1092",
+  "source_audit": {
+    "source": "YFINANCE_QQQ_AUTO_ADJUSTED",
+    "raw_rows": 4720,
+    "completed_rows": 4719,
+    "feature_window_sessions": 253,
+    "feature_window_sha256": "7892e95c30749533656f576c1fe5e504c5827cc52ffb223c39b2b95e5d1dcdb8",
+    "raw_last_date": "2026-10-06",
+    "last_completed_date": "2026-10-05",
+    "dropped_incomplete_current_session": true,
+    "ny_time_at_validation": "2026-10-06T17:31:31.251730-04:00",
+    "safe_after_ny_time": "18:00"
+  }
+}
