@@ -21,6 +21,7 @@ on:
       - 'simulator_contract.py'
       - 'historical_replay/**'
       - 'governance/**'
+      - 'docs/**'
 concurrency:
   # One research Shadow for the whole repository. A newer research commit supersedes
   # any older in-flight Shadow instead of burning private-runner minutes in parallel.
