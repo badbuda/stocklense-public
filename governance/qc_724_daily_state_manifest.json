@@ -1,0 +1,27 @@
+{
+  "source": "Determined Red Orange Duck.json / charts.SL724",
+  "evidence_kind": "REAL_LEAN_DAILY_STATE_FINGERPRINT",
+  "sessions": 3774,
+  "first_time_utc": "2009-09-01T20:01:00Z",
+  "last_time_utc": "2024-08-29T20:01:00Z",
+  "leverage_sha256": "c153c169bb6764274ad5cc5021dfdad36e4e2ead70881ee7e4954a8a83e39ba3",
+  "full_state_sha256": "1c7751a0cd816500ef838ba7532c825cd4764730dda54cfbc5d55ea949c809d5",
+  "leverage_counts": {
+    "0.0": 274,
+    "1.25": 387,
+    "2.0": 76,
+    "3.0": 3037
+  },
+  "daily_transitions": 66,
+  "max_drawdown_pct": -49.69141,
+  "last_nav_multiple": 134.1824,
+  "scope": "Fingerprint of 3,774 real LEAN daily SL724 states. Does not prove Python feature/input parity.",
+  "python_daily_recomputation_proven": false,
+  "missing_for_full_1_to_1": [
+    "LEAN daily QQQ adjusted close/input series",
+    "LEAN daily SMA50",
+    "LEAN daily SMA200",
+    "LEAN daily VOL20",
+    "LEAN daily MOM12 or immutable equivalent daily feature state"
+  ]
+}
