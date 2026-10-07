@@ -30,6 +30,7 @@ on:
       - 'backtest_contract.py'
       - 'backtest_engine.py'
       - 'prove_or_break.py'
+      - 'publication_identity.py'
 concurrency:
   # One research Shadow for the whole repository. A newer research commit supersedes
   # any older in-flight Shadow instead of burning private-runner minutes in parallel.
