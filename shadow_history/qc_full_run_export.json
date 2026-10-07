@@ -1,0 +1,13 @@
+{
+  "status": "MISSING",
+  "execution_parity_ready": false,
+  "errors": [
+    "DAILY_MISSING",
+    "ORDERS_MISSING"
+  ],
+  "details": {},
+  "automatic_model_change": false,
+  "performance_metrics": {
+    "status": "BLOCKED_MISSING_FULL_EXPORT"
+  }
+}
