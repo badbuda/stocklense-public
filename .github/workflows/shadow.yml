@@ -1,0 +1,700 @@
+name: StockLens 8.0 Shadow
+
+on:
+  workflow_dispatch:
+  schedule:
+    # 23:20 UTC is after 18:00 New York in both EDT and EST; daily bars are eligible.
+    - cron: '20 23 * * 1-5'
+  push:
+    branches:
+      - 'research/**'
+    paths:
+      - '*.py'
+      - 'stocklens/**'
+      - 'tests/**'
+      - 'research/**'
+      - '.github/workflows/shadow.yml'
+      - '.github/workflows/shadow-trigger.txt'
+concurrency:
+  # One research Shadow for the whole repository. A newer research commit supersedes
+  # any older in-flight Shadow instead of burning private-runner minutes in parallel.
+  group: stocklens-shadow-research
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  shadow:
+    runs-on: ubuntu-latest
+    # Heavy research batches routinely exceed the old 15-minute cap.
+    timeout-minutes: 120
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest
+
+      - name: Guard branch base before validation
+        if: github.event_name == 'pull_request'
+        run: python branch_base_guard.py
+
+      - name: Python source preflight
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: python preflight.py
+      - name: Refresh generated simulator and prove-or-break prerequisites
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          python dashboard_workbench.py
+          python backtest_robustness_runner.py
+          python backtest_adversarial.py
+          python backtest_regimes.py
+          python backtest_return_concentration.py
+          python backtest_topday_ablation.py
+          python backtest_calendar_year_fragility.py
+          python backtest_path_fragility.py
+          python backtest_recovery.py
+          python backtest_exposure_attribution.py
+          python backtest_transition_attribution.py
+          python backtest_transition_fragility.py
+          python backtest_transition_neighborhood.py
+          python prove_or_break.py
+          python simulator_smoke.py
+
+      - name: Unit tests
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          python -m py_compile qc_daily_parity.py
+          python -m pytest -q
+
+      - name: Enforce frozen QuantConnect parity contract
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: python parity_contract.py
+
+      - name: Enforce QC daily state fingerprint
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: python qc_daily_state_guard.py
+
+      - name: Enforce QuantConnect golden-master guard
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: python golden_master_guard.py
+
+      - name: Enforce QuantConnect order golden-master guard
+        run: python qc_order_golden_master.py
+
+      - name: Inspect identical-input QC parity evidence
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          python qc_input_ingestion.py
+          python qc_portfolio_ingestion.py
+          python qc_portfolio_path_parity.py
+          python qc_full_run_export.py
+          python qc_same_input_parity.py
+          python qc_parity_dossier.py
+          python lean_same_start_parity_blocker.py
+          python lean_parity_evidence_ladder.py
+          python lean_feature_export_readiness.py
+          python ci_quota_efficiency.py
+
+      - name: Audit historical QuantConnect/Yahoo daily drift
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: python qc_daily_parity.py
+
+      - name: Build Yahoo long-history reconstruction
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          python yahoo_long_history.py
+          python yahoo_eod_scorecard.py
+          python tqqq_reality_check.py
+          python hybrid_return_concentration.py
+          python hybrid_rolling_distribution.py
+          python execution_realistic_rolling_distribution.py
+          python execution_realistic_rolling_stress_grid.py
+          python long_horizon_independence_stress.py
+          python decade_breaker_stress.py
+          python decade_claim_boundary.py
+          python robustness_evidence_gate.py
+          python leveraged_instrument_reality_check.py
+          python financed_1_25x_reality_check.py
+          python frozen8_parameter_start_sensitivity.py
+          python frozen8_sensitivity.py
+          python parameter_plateau_diagnostic.py
+          python stocklens8_falsification_report.py
+          python adversarial_validation.py
+          python tradable_blend_challenger.py
+          python tail_risk_challengers.py
+          python drawdown_forensics.py
+          python reaction_lag_challengers.py
+          python drawdown_loss_timing.py
+          python shock_detector_challenger.py
+          python slow_deterioration_challenger.py
+          python drawdown_contribution_forensics.py
+          python risk_overlay_multifactor.py
+          python risk_overlay_deep_dive.py
+          python orthogonal_tail_validation.py
+          python dynamic_overlay_tail_validation.py
+          python pulse_vol_failure_forensics.py
+          python pulse_vol_reentry_validation.py
+          python pulse_vol_component_attribution.py
+          python vol_brake_rebound_attribution.py
+          python pulse_vol_step_release_stress.py
+          python pulse_vol_lag_component_forensics.py
+          python acute_slow_layer_falsification.py
+          python vol_gate_existing_variants_validation.py
+          python state_aware_vol_brake_validation.py
+          python asymmetric_tail_layer_validation.py
+          python sparse_tail_confirmation_validation.py
+          python sparse_tail_redteam_megabatch.py
+          python volatility_drag_lmax_megabatch.py
+          python vol60_falsification_megabatch.py
+          python vol60_sparse_orthogonal_megabatch.py
+          python accel_only_redteam_megabatch.py
+          python accel_mechanism_broad_megabatch.py
+          python accel10_independent_redteam_megabatch.py
+          python accel10_tail_layer_megabatch.py
+          python accel10_tail_cap_ladder_megabatch.py
+          python two_of_three_cap20_independent_redteam.py
+          python two_of_three_timing_attribution_megabatch.py
+          python gap15_latency_redteam_megabatch.py
+          python gap15_regime_generalization_megabatch.py
+          python gap15_walkforward_attribution_megabatch.py
+          python gap15_final_falsification_megabatch.py
+          python next_frontier_multidirection_megabatch.py
+          python execution_path_frontier_megabatch.py
+          python accel_vcap_independent_redteam.py
+          python research_decision_gate.py
+
+      - name: Generate frozen shadow signal
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          # Yahoo can expose a just-completed daily bar with a short cache/provider lag.
+          # Retry the exact frozen signal generation; never synthesize or accept a stale bar.
+          # At the scheduled run this should normally pass first try. Manual/push runs can
+          # land near provider publication, so allow bounded backoff without accepting stale data.
+          for attempt in 1 2 3 4 5 6; do
+            python main.py
+            python - <<'PY' && exit 0 || true
+          import json
+          from market_calendar import latest_provider_eligible_contract
+          d=json.load(open("output/latest_signal.json"))
+          expected=latest_provider_eligible_contract()["session"]
+          actual=d.get("latest",{}).get("asof_date")
+          print("signal_asof=",actual,"provider_eligible=",expected)
+          raise SystemExit(0 if actual==expected else 1)
+          PY
+            echo "Provider daily bar still stale after attempt ${attempt}; retrying fail-closed."
+            # 2m backoff gives Yahoo up to ~10 minutes of bounded publication slack.
+            sleep 120
+          done
+          echo "::error::Provider daily bar remained stale after bounded retries; refusing stale signal."
+          exit 1
+
+      # Reconcile yesterday's persisted signal against today's realized market session
+      # BEFORE persisting today's new signal.
+      - name: Reconcile prospective paper portfolio
+        id: paper
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: python paper_portfolio.py
+
+      - name: Persist prospective signal
+        id: persist
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: python persist_signal.py
+
+      - name: Build one-year historical replay context
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: python historical_replay.py
+
+      - name: Build prospective performance analytics
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: python performance_analytics.py
+
+      - name: Build data provenance
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: python data_provenance.py
+      - name: Detect feature anomalies
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: python anomaly_detector.py
+      - name: Build integrity health report
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: python health_monitor.py
+
+      - name: Build recovery plan
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: python recovery_plan.py
+      - name: Build operational readiness
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: python operational_readiness.py
+      - name: Build observational market context
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: python market_context.py
+      - name: Build market context quality
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: python context_quality.py
+      - name: Build market context analytics
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: python context_analytics.py
+      - name: Build event journal
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: python event_journal.py
+      - name: Build prospective QQQ benchmark
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: python prospective_benchmark.py
+      - name: Build evidence snapshot
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: python evidence_snapshot.py
+      - name: Build forward return path
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: python forward_path.py
+      - name: Build execution quality analytics
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: python execution_quality.py
+      - name: Build forward interpretation quality
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: python forward_quality.py
+      - name: Build prospective level attribution
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: python level_attribution.py
+      - name: Build reliability SLO
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: python slo_monitor.py
+      - name: Build daily attention digest
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: python daily_digest.py
+      - name: Build regime analytics
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: python regime_analytics.py
+      - name: Build state-change digest
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: python change_digest.py
+      - name: Build leverage stress scenarios
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: python stress_scenarios.py
+      - name: Build exposure and drift monitor
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: python exposure_monitor.py
+      - name: Build drawdown budget
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: python drawdown_budget.py
+      - name: Rebuild deterministic SL9-007 prospective source
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: python prospective_source_build.py
+
+      - name: Refresh prospective research registry
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: python research_prospective_registry.py
+      - name: Build prospective evidence maturity
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          python evidence_maturity.py
+          python prospective_maturity.py
+      - name: Build prospective risk telemetry
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: python risk_telemetry.py
+      - name: Build experiment quality gates
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: python experiment_quality.py
+      - name: Build prospective execution plan
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: python execution_plan.py
+      - name: Build paper trade receipts
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: python trade_receipts.py
+      - name: Audit paper execution accounting
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: python execution_audit.py
+      - name: Attribute execution costs
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: python cost_attribution.py
+      - name: Build paper execution readiness
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: python execution_readiness.py
+      - name: Build broker-safe execution cockpit
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: python execution_cockpit.py
+      - name: Build fail-closed execution timing policy
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: python execution_policy.py
+      - name: Build execution observation artifact
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: python execution_observation.py
+      - name: Validate broker execution primitives
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          python -m py_compile broker_adapter.py broker_reconciliation.py order_state.py order_planner.py execution_scheduler.py
+      - name: Enforce paper-only automation watchdog
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+          STOCKLENS_BROKER_MODE: PAPER
+          STOCKLENS_LIVE_TRADING_ENABLED: "false"
+        run: python automation_guard.py
+      - name: Build interactive dashboard datasets
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          python dashboard_timeseries.py
+          python research_dataset.py
+          python research_dataset_validate.py
+          python research_provenance.py
+      - name: Build prospective dashboard
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: python dashboard.py
+
+      - name: Record immutable decision journal
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: python decision_journal.py
+
+      - name: Validate dashboard JavaScript bundle
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: python dashboard_bundle_validate.py
+
+      - name: Validate mobile dashboard bundle
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: python mobile_validate.py
+
+      - name: Refresh workbench evidence chain for current run
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          python workbench_evidence_manifest.py
+          rm -f docs/workbench_evidence_bundle.json
+          python workbench_selfcheck.py
+          python workbench_evidence_bundle.py
+
+      - name: Evaluate completed-session freshness in the same daily run
+        id: freshness
+        continue-on-error: true
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          python workbench_evidence_health.py
+          python - <<'PY'
+          import json
+          d=json.load(open("docs/workbench_evidence_health.json"))
+          m=d["market_session"]
+          print("signal_asof=",m["signal_asof"],"latest_completed=",m["latest_completed_xnys_session"],"lag=",m["sessions_behind_latest_completed"])
+          if d["market_session_freshness"]!="CURRENT":
+              raise SystemExit("STALE_COMPLETED_SESSION")
+          PY
+
+      - name: Build capital evidence readiness
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: python capital_readiness.py
+
+      - name: Build current incident state
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: python incident_state.py
+      - name: Record completed-session freshness block without hiding downstream validation
+        if: steps.freshness.outcome == 'failure'
+        run: echo "PUBLICATION_BLOCKED_STALE_COMPLETED_SESSION=1" >> "$GITHUB_ENV"
+      - name: Validate artifact dependency freshness
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: python dependency_integrity.py
+      - name: Build evidence artifact catalog
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: python artifact_catalog.py
+      - name: Build run provenance manifest
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: python run_manifest.py
+      - name: Validate critical JSON artifact integrity
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: python artifact_integrity.py
+      - name: Validate complete pipeline before publication
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: python pipeline_validate.py
+
+      - name: Enforce fail-closed publication gate
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          python publication_gate.py
+          if [ "${PUBLICATION_BLOCKED_STALE_COMPLETED_SESSION:-0}" = "1" ]; then
+            echo "::error::Publication blocked: latest completed XNYS session is not present in the live signal."
+            exit 1
+          fi
+
+      - name: Materialize final publication state in Control Center
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          python dashboard.py
+          python dashboard_bundle_validate.py
+          python mobile_validate.py
+          python user_journey_validate.py
+
+      - name: Revalidate final dashboard artifact integrity
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: python artifact_integrity.py
+
+      - name: Seal final publication manifest
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: python final_publication_manifest.py
+
+      - name: Publish audit artifact
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: stocklens-shadow-${{ github.run_number }}
+          path: |
+            output/latest_signal.json
+            output/latest_signal.md
+            output/research_provenance.json
+            shadow_history/artifact_catalog.json
+            shadow_history/run_manifest.json
+            shadow_history/artifact_integrity.json
+            shadow_history/publication_gate.json
+            shadow_history/final_publication_manifest.json
+            shadow_history/automation_guard.json
+            shadow_history/order_state.json
+            shadow_history/execution_cockpit.json
+            shadow_history/execution_policy.json
+            shadow_history/dashboard.md
+            docs/data.json
+            docs/timeseries.json
+            docs/research.json
+            docs/research.html
+            docs/research-engine.js
+            docs/index.html
+            docs/manifest.webmanifest
+            docs/sw.js
+            shadow_history/health.json
+            shadow_history/performance.json
+            shadow_history/decision_journal.csv
+            shadow_history/pipeline_validation.json
+            shadow_history/qc_daily_parity.json
+            historical_replay/daily_states.csv
+            historical_replay/summary.json
+            shadow_history/revision_audit.csv
+            paper_portfolio/latest.md
+            paper_portfolio/ledger.csv
+            paper_portfolio/trades.csv
+            research/yahoo_long_history.json
+            research/yahoo_end_of_day_scorecard.json
+            research/tqqq_reality_check.json
+            research/hybrid_return_concentration.json
+            research/hybrid_rolling_distribution.json
+            research/execution_realistic_rolling_distribution.json
+            research/execution_realistic_rolling_stress_grid.json
+            research/long_horizon_independence_stress.json
+            research/decade_breaker_stress.json
+            research/decade_claim_boundary.json
+            research/robustness_evidence_gate.json
+            research/leveraged_instrument_reality_check.json
+            research/financed_1_25x_reality_check.json
+            research/frozen8_parameter_start_sensitivity.json
+            research/parameter_plateau_diagnostic.json
+            research/lean_same_start_parity_blocker.json
+            research/lean_parity_evidence_ladder.json
+            shadow_history/qc_portfolio_path_parity.json
+            research/lean_feature_export_readiness.json
+            research/ci_quota_efficiency.json
+            research/frozen8_sensitivity.json
+            docs/stocklens8_falsification_report.json
+            research/adversarial_validation.json
+            research/tradable_blend_challenger.json
+            research/tail_risk_challengers.json
+            research/drawdown_forensics.json
+            research/reaction_lag_challengers.json
+            research/drawdown_loss_timing.json
+            research/shock_detector_challenger.json
+            research/slow_deterioration_challenger.json
+            research/drawdown_contribution_forensics.json
+            research/risk_overlay_multifactor.json
+            research/risk_overlay_deep_dive.json
+            research/orthogonal_tail_validation.json
+            research/dynamic_overlay_tail_validation.json
+            research/pulse_vol_failure_forensics.json
+            research/pulse_vol_reentry_validation.json
+            research/pulse_vol_component_attribution.json
+            research/vol_brake_rebound_attribution.json
+            research/pulse_vol_step_release_stress.json
+            research/pulse_vol_lag_component_forensics.json
+            research/acute_slow_layer_falsification.json
+            research/vol_gate_existing_variants_validation.json
+            research/state_aware_vol_brake_validation.json
+            research/asymmetric_tail_layer_validation.json
+            research/sparse_tail_confirmation_validation.json
+            research/sparse_tail_redteam_megabatch.json
+            research/sparse_tail_decision_batch.json
+            research/volatility_drag_lmax_megabatch.json
+            research/vol60_falsification_megabatch.json
+            research/vol60_sparse_orthogonal_megabatch.json
+            research/accel_only_redteam_megabatch.json
+            research/accel_mechanism_broad_megabatch.json
+            research/accel10_independent_redteam_megabatch.json
+            research/accel10_tail_layer_megabatch.json
+            research/accel10_tail_cap_ladder_megabatch.json
+            research/gap15_latency_redteam_megabatch.json
+            research/gap15_regime_generalization_megabatch.json
+            research/gap15_walkforward_attribution_megabatch.json
+            research/gap15_final_falsification_megabatch.json
+            research/next_frontier_multidirection_megabatch.json
+            research/execution_path_frontier_megabatch.json
+            research/accel_vcap_independent_redteam.json
+            research/research_decision_gate.json
+            docs/execution.html
+            docs/workbench.html
+            docs/legacy.html
+            docs/*.json
+          if-no-files-found: warn
+          retention-days: 30
+
+      - name: Refresh current human research report
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: python research_human_digest.py
+
+      - name: Add signal and paper status to workflow summary
+        run: |
+          cat output/latest_signal.md >> "$GITHUB_STEP_SUMMARY"
+          if [ "${{ steps.persist.outputs.input_drift_detected }}" = "true" ]; then
+            printf '\\n> **Audit note:** same-session source inputs drifted on rerun; the original prospective decision was preserved.\\n' >> "$GITHUB_STEP_SUMMARY"
+          fi
+          if [ -f paper_portfolio/latest.md ]; then
+            printf '\\n---\\n\\n' >> "$GITHUB_STEP_SUMMARY"
+            cat paper_portfolio/latest.md >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Enforce evidence retention budgets
+        run: python evidence_retention.py
+
+      - name: Commit validated evidence only
+        if: github.event_name != 'pull_request'
+        env:
+          ASOF_DATE: ${{ steps.persist.outputs.asof_date }}
+        run: |
+          git config user.name "stocklens-shadow-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add shadow_history/ paper_portfolio/ historical_replay/ docs/data.json docs/timeseries.json docs/research.json docs/backtest_*.json docs/prove_or_break.json research/results/ research/reports/ research/sweeps/ research/validation/ research/prospective/ research/queue.json research/yahoo_long_history.json research/yahoo_end_of_day_scorecard.json research/risk_overlay_multifactor.json research/risk_overlay_deep_dive.json
+          # Research preparation intentionally creates large reproducible local datasets.
+          # They are CI artifacts, not repository evidence, and must not block a safe rebase.
+          git clean -fd research/data/ || true
+          git restore --worktree -- . || true
+          if git diff --cached --quiet; then
+            echo "No prospective evidence changes to commit."
+          else
+            git commit -m "shadow: record prospective evidence ${ASOF_DATE}"
+            # If main advanced while this run was computing, never rebase generated evidence.
+            # Generated artifacts are reproducible and rebasing them creates meaningless conflicts.
+            # Instead, skip publication; the newer main-triggered run will regenerate fresh evidence.
+            git fetch origin "${GITHUB_REF_NAME}"
+            remote_sha=$(git rev-parse "origin/${GITHUB_REF_NAME}")
+            parent_sha=$(git rev-parse HEAD^)
+            if [ "$remote_sha" != "$parent_sha" ]; then
+              echo "::notice::Remote advanced during computation; skipping stale evidence publication safely."
+              exit 0
+            fi
+            if ! git push origin "HEAD:${GITHUB_REF_NAME}"; then
+              echo "::notice::Remote advanced during push; skipping stale evidence publication safely."
+              exit 0
+            fi
+          fi
+
+      - name: Open alert issue on state change
+        if: steps.persist.outputs.notify == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ASOF_DATE: ${{ steps.persist.outputs.asof_date }}
+          ACTION: ${{ steps.persist.outputs.action }}
+          LEVERAGE: ${{ steps.persist.outputs.target_leverage }}
+          DEFENSE: ${{ steps.persist.outputs.defense }}
+        run: |
+          gh issue create \
+            --title "StockLens ${ACTION} | ${ASOF_DATE} | ${LEVERAGE}x | Defense ${DEFENSE}" \
+            --body-file output/latest_signal.md
+
+  failure-alert:
+    needs: shadow
+    if: ${{ failure() }}
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - name: Open workflow failure issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          existing=$(gh issue list --repo "${GITHUB_REPOSITORY}" --state open --search '"StockLens WORKFLOW FAILURE" in:title' --json number --jq '.[0].number // empty')
+          if [ -n "$existing" ]; then
+            gh issue comment "$existing" --repo "${GITHUB_REPOSITORY}" --body "Another fail-closed run: ${RUN_URL}"
+          else
+            gh issue create --repo "${GITHUB_REPOSITORY}" --title "StockLens WORKFLOW FAILURE" --body "StockLens 8.0 Shadow failed closed. Review: ${RUN_URL}"
+          fi
