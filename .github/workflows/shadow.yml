@@ -28,6 +28,7 @@ on:
       - 'research/golden_evidence/**'
       - 'backtest_*.py'
       - 'backtest_contract.py'
+      - 'backtest_engine.py'
       - 'prove_or_break.py'
 concurrency:
   # One research Shadow for the whole repository. A newer research commit supersedes
