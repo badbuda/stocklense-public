@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "evidence_id": "qc-screenshot-68920881",
+  "strategy_family": "StockLens 8.x research lineage",
+  "source_type": "USER_PROVIDED_QUANTCONNECT_SCREENSHOT",
+  "runtime_statistics": {
+    "equity_usd": 68920881.10,
+    "fees_usd": -109264.53,
+    "holdings_usd": 67952073.09,
+    "net_profit_usd": 56284885.67,
+    "psr_percent": 21.596,
+    "return_percent": 68820.88,
+    "unrealized_usd": 11677324.40,
+    "volume_usd": 546354479.09
+  },
+  "interpretation": "The screenshot independently establishes a QuantConnect run ending with approximately $68.92M equity. It does not by itself establish the run dates, exact code SHA, exact StockLens version, contribution schedule, CAGR, MaxDD, or parameter contract.",
+  "verification_status": "PARTIAL_PRIMARY_EVIDENCE",
+  "immutable": true,
+  "do_not_infer": ["date_range","cagr","max_drawdown","exact_version","cashflow_schedule"]
+}
