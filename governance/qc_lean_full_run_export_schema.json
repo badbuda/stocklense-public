@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "kind": "STOCKLENS_QC_LEAN_FULL_RUN_EXPORT",
+  "run_contract": {
+    "expected_sessions": 3774,
+    "first_date": "2009-09-01",
+    "last_date": "2024-08-29"
+  },
+  "daily_required_columns": [
+    "date",
+    "close",
+    "sma50",
+    "sma200",
+    "vol20",
+    "mom12",
+    "level",
+    "defense",
+    "leverage",
+    "equity",
+    "cash",
+    "holdings_value"
+  ],
+  "orders_required_columns": [
+    "id",
+    "time",
+    "symbol",
+    "direction",
+    "status",
+    "tag"
+  ],
+  "golden_constraints": {
+    "transition_count": 67,
+    "transition_sha256": "5561588a3bcd8a416cc13320536d7d3ff51bdb6de418e4f2c31b85eaf2ac745b",
+    "order_count": 345,
+    "order_sha256": "18c4a56de1959027d30cdd10fe5d3c270caf819f8809e09fae366d7a99d55267",
+    "daily_leverage_sha256": "c153c169bb6764274ad5cc5021dfdad36e4e2ead70881ee7e4954a8a83e39ba3",
+    "daily_full_state_sha256": "1c7751a0cd816500ef838ba7532c825cd4764730dda54cfbc5d55ea949c809d5",
+    "leverage_counts": {
+      "0.0": 274,
+      "1.25": 387,
+      "2.0": 76,
+      "3.0": 3037
+    },
+    "lean_max_drawdown_pct": -49.69141,
+    "lean_last_nav_multiple": 134.1824
+  },
+  "purpose": "Immutable full-history Workbench execution-parity evidence. Export generation must not modify StockLens 8.0 semantics.",
+  "raw_export_requirement": "Raw daily rows must originate from the same frozen LEAN run evidenced by qc_724_daily_state_manifest.json; do not reconstruct or synthesize missing rows.",
+  "optional_performance_columns": [
+    "external_cashflow"
+  ],
+  "performance_claim_policy": {
+    "canonical_annual_return_requires_explicit_external_cashflow_semantics": true,
+    "equity_endpoint_inference_forbidden": true,
+    "money_weighted_method": "XIRR_WHEN_EXTERNAL_CASHFLOW_PRESENT"
+  }
+}
