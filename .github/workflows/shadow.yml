@@ -713,3 +713,5 @@ jobs:
           else
             gh issue create --repo "${GITHUB_REPOSITORY}" --title "StockLens WORKFLOW FAILURE" --body "StockLens 8.0 Shadow failed closed. Review: ${RUN_URL}"
           fi
+
+# migration bootstrap complete
