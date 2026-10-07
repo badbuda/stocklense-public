@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "kind": "STOCKLENS_QC_LEAN_DAILY_FEATURE_EXPORT",
+  "required_columns": ["date","close","sma50","sma200","vol20","mom12","level","defense","leverage"],
+  "expected_sessions": 3774,
+  "first_date": "2009-09-01",
+  "last_date": "2024-08-29",
+  "semantics": {
+    "close": "QQQ price/input observed by the frozen LEAN run for the decision session",
+    "sma50": "50-session SMA used by frozen model",
+    "sma200": "200-session SMA used by frozen model",
+    "vol20": "annualized 20-session realized volatility used by frozen model",
+    "mom12": "12-month momentum used by frozen model",
+    "level": "frozen state level 1/2/3 before defense override",
+    "defense": "boolean defense state",
+    "leverage": "effective target leverage after defense"
+  },
+  "purpose": "Identical-input 3,774-session Python-vs-LEAN parity proof. This schema does not itself prove parity."
+}
