@@ -1,0 +1,13 @@
+{
+  "kind":"QC_7_24_ORDER_GOLDEN_MASTER",
+  "source":"Determined Red Orange Duck.json",
+  "order_count":345,
+  "canonical_fields":["id","time","symbol","direction","status","tag"],
+  "canonical_sha256":"18c4a56de1959027d30cdd10fe5d3c270caf819f8809e09fae366d7a99d55267",
+  "status_counts":{"3":345},
+  "direction_counts":{"0":222,"1":123},
+  "tag_counts":{"SL724_ADD_OPEN2":222,"SL724_REDUCE_OPEN1":123},
+  "symbol_counts":{"TQQQ":251,"QQQ":87,"QLD":7},
+  "first_order":{"id":1,"time":"2009-09-01T13:32:00Z","symbol":"QLD","direction":0,"status":3,"tag":"SL724_ADD_OPEN2"},
+  "last_order":{"id":345,"time":"2024-08-01T13:32:00Z","symbol":"TQQQ","direction":0,"status":3,"tag":"SL724_ADD_OPEN2"}
+}
