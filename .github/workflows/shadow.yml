@@ -655,7 +655,13 @@ jobs:
         run: |
           git config user.name "stocklens-shadow-bot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add shadow_history/ paper_portfolio/ historical_replay/ docs/data.json docs/timeseries.json docs/research.json docs/backtest_*.json docs/prove_or_break.json research/results/ research/reports/ research/sweeps/ research/validation/ research/prospective/ research/queue.json research/yahoo_long_history.json research/yahoo_end_of_day_scorecard.json research/risk_overlay_multifactor.json research/risk_overlay_deep_dive.json
+          # Optional research folders do not necessarily exist on a clean checkout.
+          # Stage available evidence and tracked deletions, but never fail on absent folders.
+          for path in shadow_history/ paper_portfolio/ historical_replay/ docs/data.json docs/timeseries.json docs/research.json docs/backtest_*.json docs/prove_or_break.json research/results/ research/reports/ research/sweeps/ research/validation/ research/prospective/ research/queue.json research/yahoo_long_history.json research/yahoo_end_of_day_scorecard.json research/risk_overlay_multifactor.json research/risk_overlay_deep_dive.json; do
+            if [ -e "$path" ] || [ -n "$(git ls-files -- "$path")" ]; then
+              git add -A -- "$path"
+            fi
+          done
           # Research preparation intentionally creates large reproducible local datasets.
           # They are CI artifacts, not repository evidence, and must not block a safe rebase.
           git clean -fd research/data/ || true

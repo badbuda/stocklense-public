@@ -6,7 +6,7 @@
   "frozen_stocklens8_untouched": true,
   "files": {
     ".github/workflows/fast-guard.yml": "b085a5a172b7cbf7a7a39beab3b22e1c624b9839",
-    ".github/workflows/shadow.yml": "59b0362e9727fb7e82bb90b9ba54fd4a00b4aaa1",
+    ".github/workflows/shadow.yml": "8582ff3020bfc8d8257bebd95df22bede0dd29cf",
     "PUBLIC_MIRROR.md": "79593cbea87272e589883a2dfb03ea1750cf0384",
     "accel10_independent_redteam_megabatch.py": "46eb29aff6e4c0ec23e561ec91b577cc2ea60512",
     "accel10_tail_cap_ladder_megabatch.py": "dd68e894682ccf80face39cbbc0a21e890ba379c",
