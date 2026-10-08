@@ -1,1 +1,1 @@
-validate-frozen-backtest-shadow-decision-parity-2026-10-08-8f09995c
+public-ci-paper-forward-and-broker-harness-2026-10-08-41eca228
