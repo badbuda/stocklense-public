@@ -78,3 +78,28 @@ jobs:
               sys.exit("AWS_SHADOW_JOURNAL_SIGNAL_DATE_MISMATCH")
           print("AWS_SHADOW_JOURNAL=PASS;asof=" + session + ";broker_execution=false")
           PY
+
+      - name: Validate separate modeled paper record in AWS; never broker fills
+        if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.verify_session)
+        shell: bash
+        run: |
+          set -euo pipefail
+          session="$(TZ=America/New_York date +%F)"
+          key="$session#PAPER"
+          aws dynamodb get-item --table-name "$TABLE" --key "{\"session_date\":{\"S\":\"$key\"}}" --consistent-read --output json > /tmp/paper.json
+          SESSION="$session" python3 - <<'PY'
+          import json,hashlib,os,sys
+          item=json.load(open("/tmp/paper.json")).get("Item")
+          if not item: sys.exit("AWS_PAPER_MISSING_CURRENT_SESSION")
+          if item["broker_orders_authorized"]["BOOL"] is not False or item["broker_fills_observed"]["BOOL"] is not False:
+              sys.exit("AWS_PAPER_FALSE_BROKER_EVIDENCE")
+          body=item["paper_evidence_json"]["S"]
+          if hashlib.sha256(body.encode()).hexdigest()!=item["paper_sha256"]["S"]:
+              sys.exit("AWS_PAPER_EVIDENCE_TAMPERED")
+          paper=json.loads(body)
+          if paper["row"]["session_date"]!=os.environ["SESSION"] or paper["row"]["execution_source"]!="YFINANCE_1M_RAW":
+              sys.exit("AWS_PAPER_DATE_OR_SOURCE_MISMATCH")
+          if len(paper["trades"])!=int(paper["row"]["trade_count_session"]):
+              sys.exit("AWS_PAPER_TRADE_COUNT_MISMATCH")
+          print("AWS_PROSPECTIVE_PAPER=PASS_MODELED_ONLY;session="+os.environ["SESSION"])
+          PY
