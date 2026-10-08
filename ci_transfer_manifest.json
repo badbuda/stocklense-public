@@ -242,6 +242,7 @@
     "tests/test_paper_execution_contract.py": "f6072b6c2ac43e2f94d1156552988fd27f7590ff",
     "tests/test_paper_forward_audit.py": "91110461f6f9913c069c7945b84b4dd7ae395952",
     "tests/test_paper_session_continuity.py": "dbb280161a5773261a6afa4e4d9d601c06d80095",
+    "tests/test_real_tqqq_causality_adversarial.py": "b43c9d126a2b48d650dd0e28f3139159bf302510",
     "tests/test_research_selection_inventory.py": "1e88681c7e8ea3aaab110ddefc553aa539570427",
     "tests/test_tradable_tqqq_execution_comparison.py": "a4cc2e8720ca0cfacb6e9bc7914f56844ea5f23f",
     "tqqq_reality_check.py": "776f226d601406118ff47de8c9463b00bacefca7",
