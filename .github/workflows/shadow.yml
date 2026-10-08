@@ -506,6 +506,8 @@ jobs:
           PYTHONPATH: ${{ github.workspace }}
         run: |
           python dashboard.py
+          python backtest_paper_gap.py
+          python public_dashboard_feeds.py
           python dashboard_bundle_validate.py
           python mobile_validate.py
           python user_journey_validate.py
@@ -662,6 +664,12 @@ jobs:
               git add -A -- "$path"
             fi
           done
+          # Publish the dashboard's complete JSON feed set, not only its core data file.
+          for feed in docs/*.json; do
+            [ -f "$feed" ] || continue
+            git add -A -- "$feed"
+          done
+          python public_feed_staging_guard.py
           # Research preparation intentionally creates large reproducible local datasets.
           # They are CI artifacts, not repository evidence, and must not block a safe rebase.
           git clean -fd research/data/ || true
