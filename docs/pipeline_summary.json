@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "stages": {
+    "discovery_ideas": 0,
+    "blocked_data_ideas": 1,
+    "data_ready_ideas": 0,
+    "experiments_total": 7,
+    "prospective_candidates": 1
+  },
+  "prospective": [
+    {
+      "experiment_id": "SL9-007-UPSHIFT-CONFIRMATION",
+      "inception_date": "2026-09-26",
+      "sessions": 8,
+      "status": "ACTIVE_RESEARCH_ONLY"
+    }
+  ],
+  "next_gate": "QUALIFIED_DATA_AND_PREDECLARATION",
+  "new_experiment_authorized": false
+}

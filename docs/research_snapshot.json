@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "source_git_sha": "fe9cc5fceb3c3037ebac08a5debf887311198e4b",
+  "milestone": "M2_SHADOW_GREEN_537_TESTS_PROVE_OR_BREAK_PUBLISHED",
+  "experiments": [
+    {
+      "id": "SL9-001-VOLATILITY-GATE",
+      "name": "Volatility gate challenger",
+      "hypothesis": "A separately versioned volatility-aware challenger may improve benchmark-relative drawdown without sacrificing robust excess CAGR.",
+      "effective_status": "COMPLETED",
+      "queue_status": "COMPLETED",
+      "disposition": "PROMISING_NOT_PROVEN",
+      "robustness": "PROMISING_NOT_PROVEN",
+      "reason": "Research evidence is not authorization for promotion",
+      "prospective": null
+    },
+    {
+      "id": "SL9-002-TREND-BREADTH",
+      "name": "Trend breadth challenger",
+      "hypothesis": "A separately versioned breadth confirmation layer may reduce false risk-on transitions while preserving long-run excess return.",
+      "effective_status": "BLOCKED",
+      "queue_status": "BLOCKED",
+      "disposition": "BLOCKED",
+      "robustness": null,
+      "reason": "Survivorship-safe point-in-time breadth constituent history is not yet repository evidence.",
+      "prospective": null
+    },
+    {
+      "id": "SL9-003-STRESS-ONLY",
+      "name": "Stress-only volatility intervention",
+      "hypothesis": "Restricting volatility intervention to lagged high-volatility stress may retain the observed stress-regime drawdown benefit without paying the normal-regime performance penalty.",
+      "effective_status": "COMPLETED",
+      "queue_status": "COMPLETED",
+      "disposition": "PROMISING_NOT_PROVEN",
+      "robustness": "PROMISING_NOT_PROVEN",
+      "reason": "Research evidence is not authorization for promotion",
+      "prospective": null
+    },
+    {
+      "id": "SL9-004-STRESS-TREND",
+      "name": "Stress + trend confirmation",
+      "hypothesis": "Capping exposure only when lagged realized volatility is high and QQQ is below its lagged SMA200 may preserve crisis drawdown protection while avoiding unnecessary intervention in high-volatility uptrends.",
+      "effective_status": "COMPLETED",
+      "queue_status": "COMPLETED",
+      "disposition": "PROMISING_NOT_PROVEN",
+      "robustness": "PROMISING_NOT_PROVEN",
+      "reason": "Research evidence is not authorization for promotion",
+      "prospective": null
+    },
+    {
+      "id": "SL9-005-DRAWDOWN-BREAKER",
+      "name": "Lagged drawdown circuit breaker",
+      "hypothesis": "A separately versioned lagged drawdown-state circuit breaker may reduce severe path risk by capping exposure only after QQQ is at least 15% below its prior 252-session high, without using volatility thresholds or breadth data.",
+      "effective_status": "COMPLETED",
+      "queue_status": "COMPLETED",
+      "disposition": "NOT_VALIDATED",
+      "robustness": "NOT_VALIDATED",
+      "reason": "Research evidence is not authorization for promotion",
+      "prospective": null
+    },
+    {
+      "id": "SL9-006-MOMENTUM-ACCELERATION",
+      "name": "Momentum acceleration overlay",
+      "hypothesis": "A small additive exposure overlay during unusually strong persistent QQQ momentum may improve excess return without relying on prior risk-off mechanisms.",
+      "effective_status": "COMPLETED",
+      "queue_status": "COMPLETED",
+      "disposition": "REJECTED_PREDECLARED_RULE",
+      "robustness": "NOT_VALIDATED",
+      "reason": "Research evidence is not authorization for promotion",
+      "prospective": null
+    },
+    {
+      "id": "SL9-007-UPSHIFT-CONFIRMATION",
+      "name": "Asymmetric upshift confirmation",
+      "hypothesis": "One extra completed-session confirmation before frozen-8.0 exposure increases may reduce whipsaw drawdown with limited CAGR drag while reductions remain immediate.",
+      "effective_status": "COMPLETED",
+      "queue_status": "COMPLETED",
+      "disposition": "PREDECLARED_OBJECTIVE_MET_NOT_PROMOTED",
+      "robustness": "NOT_VALIDATED",
+      "reason": "Research evidence is not authorization for promotion",
+      "prospective": {
+        "inception_date": "2026-09-26",
+        "sessions": 8,
+        "status": "ACTIVE_RESEARCH_ONLY"
+      }
+    }
+  ],
+  "next_actions": [
+    "EPIC-01: keep atomic validated publication green and make generated-report freshness source-SHA aware",
+    "EPIC-02: obtain the same-run 3,774-row + 345-order raw LEAN export required for canonical CAGR and full input parity; never synthesize it",
+    "EPIC-03: accumulate strict post-inception SL9-007 prospective evidence with zero backfill and no automatic promotion",
+    "EPIC-04: deepen execution-reality evidence using costs, delay, receipts and paper fills without authorizing live trading",
+    "EPIC-05: finish Control Center decision UX for 8.0 vs challengers, historical evidence and Prove-or-Break risk"
+  ],
+  "automatic_promotion": false,
+  "warning": "Evidence and prospective data are not trading authorization."
+}

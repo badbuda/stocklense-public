@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "generated_at_utc": "2026-10-08T09:53:41.168774+00:00",
+  "freshness": {
+    "max_age_minutes": 180,
+    "semantics": "PUBLICATION_AGE_ONLY_NOT_MARKET_DATA_AGE"
+  },
+  "market_session": {
+    "signal_asof": "2026-10-07",
+    "replay_end": "2026-10-07",
+    "latest_completed_xnys_session": "2026-10-07",
+    "latest_completed_close_utc": "2026-10-07T20:00:00+00:00",
+    "provider_eligible_xnys_session": "2026-10-07",
+    "provider_phase": "PROVIDER_DAILY_BAR_ELIGIBLE",
+    "daily_bar_safe_after_ny_time": "18:00",
+    "status": "LATEST_COMPLETED_SESSION",
+    "signal_replay_aligned": true,
+    "replay_role": "FROZEN_HISTORICAL_CONTEXT_NOT_LIVE_FRESHNESS_CLOCK",
+    "valid_xnys_session": true,
+    "future_session": false,
+    "latest_completed_session_match": true,
+    "provider_eligible_session_match": true,
+    "sessions_behind_latest_completed": 0,
+    "calendar": "XNYS",
+    "calendar_source": "exchange_calendars",
+    "semantics": "LIVE_SIGNAL_VS_EXCHANGE_CALENDAR_COMPLETED_SESSION_FRESHNESS",
+    "wall_clock_market_freshness_claimed": false,
+    "provider_lag_detected": false,
+    "note": "Exchange completion and provider-safe daily-bar eligibility are both exposed. Before 18:00 New York the loader intentionally permits only the prior XNYS daily bar; after 18:00 the latest exchange-completed session is required."
+  },
+  "kind": "WORKBENCH_EVIDENCE_HEALTH",
+  "status": "HEALTHY",
+  "market_session_freshness": "CURRENT",
+  "self_check": "PASS",
+  "bundle_manifest_match": true,
+  "manifest_sha256": "92c823239b070390028b97d919c626dbc85cd62de0be009678c26a8425585093",
+  "replay_sessions": 252,
+  "transition_count": 67,
+  "evidence_classes": {
+    "historical_replay": "REPLAY_APPROXIMATION",
+    "lean_transitions": "VERIFIED_GOLDEN_MASTER",
+    "lean_daily_state": "VERIFIED_FINGERPRINT_RAW_ROWS_MISSING",
+    "prospective": "IMMATURE_FUTURE_ONLY"
+  },
+  "full_lean_execution_parity": false,
+  "automatic_model_change": false,
+  "automatic_promotion": false
+}

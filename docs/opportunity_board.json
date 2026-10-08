@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "cards": [
+    {
+      "experiment_id": "SL9-001-VOLATILITY-GATE",
+      "state": "RESEARCH_ONLY",
+      "reason": "Research evidence is not authorization for promotion Independent-clone audit unavailable in public CI.",
+      "near_clones": []
+    },
+    {
+      "experiment_id": "SL9-002-TREND-BREADTH",
+      "state": "BLOCKED_REVIEW",
+      "reason": "Survivorship-safe point-in-time breadth constituent history is not yet repository evidence. Independent-clone audit unavailable in public CI.",
+      "near_clones": []
+    },
+    {
+      "experiment_id": "SL9-003-STRESS-ONLY",
+      "state": "RESEARCH_ONLY",
+      "reason": "Research evidence is not authorization for promotion Independent-clone audit unavailable in public CI.",
+      "near_clones": []
+    },
+    {
+      "experiment_id": "SL9-004-STRESS-TREND",
+      "state": "RESEARCH_ONLY",
+      "reason": "Research evidence is not authorization for promotion Independent-clone audit unavailable in public CI.",
+      "near_clones": []
+    },
+    {
+      "experiment_id": "SL9-005-DRAWDOWN-BREAKER",
+      "state": "RESEARCH_ONLY",
+      "reason": "Research evidence is not authorization for promotion Independent-clone audit unavailable in public CI.",
+      "near_clones": []
+    },
+    {
+      "experiment_id": "SL9-006-MOMENTUM-ACCELERATION",
+      "state": "RESEARCH_ONLY",
+      "reason": "Research evidence is not authorization for promotion Independent-clone audit unavailable in public CI.",
+      "near_clones": []
+    },
+    {
+      "experiment_id": "SL9-007-UPSHIFT-CONFIRMATION",
+      "state": "RESEARCH_ONLY",
+      "reason": "Research evidence is not authorization for promotion Independent-clone audit unavailable in public CI.",
+      "near_clones": []
+    }
+  ],
+  "next_challenger_gate": {
+    "status": "NO_NEW_CHALLENGER_AUTHORIZED",
+    "requirements": [
+      "independent evidence",
+      "predeclaration",
+      "point-in-time data",
+      "out-of-sample validation"
+    ]
+  },
+  "automatic_promotion": false
+}

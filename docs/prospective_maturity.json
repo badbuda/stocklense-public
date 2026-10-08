@@ -1,0 +1,32 @@
+{
+  "schema_version": 5,
+  "producer_git_sha": "fe9cc5fceb3c3037ebac08a5debf887311198e4b",
+  "current_git_sha": "fe9cc5fceb3c3037ebac08a5debf887311198e4b",
+  "producer_current": true,
+  "registry_updated_at_utc": "2026-10-08T09:53:36.960640+00:00",
+  "status": "PASS",
+  "experiments": [
+    {
+      "experiment_id": "SL9-007-UPSHIFT-CONFIRMATION",
+      "status": "ACTIVE_RESEARCH_ONLY",
+      "inception_date": "2026-09-26",
+      "accepted_completed_xnys_sessions": 8,
+      "persisted_prospective_sessions": 8,
+      "definition_current": true,
+      "registered_definition_fingerprint": "b6c7a09db9bfb74ed323f36f8cfe1fbcc34d0962cea7fade1fdcfffbf7779fb7",
+      "current_definition_fingerprint": "b6c7a09db9bfb74ed323f36f8cfe1fbcc34d0962cea7fade1fdcfffbf7779fb7",
+      "evidence_fingerprint_current": false,
+      "registered_fingerprint": "ffd63bf6988f51442f2ff2232fbace4054b55e88d8afe968e4817759d274897d",
+      "queue_fingerprint": "995ffc17a889c63d3fcc68376a2b9a688f038c6866820e6baace660e67d02528",
+      "source_status": "AVAILABLE",
+      "returns_csv": "research/data/SL9-007-UPSHIFT-CONFIRMATION.csv",
+      "audit_schema_complete": true,
+      "persistence_consistent": true,
+      "evidence_state": "ACCUMULATING_FORWARD_EVIDENCE",
+      "zero_backfill_enforced": true,
+      "automatic_promotion": false,
+      "threshold_status": "NO_MATURITY_THRESHOLD_INVENTED"
+    }
+  ],
+  "semantics": "Forward evidence only. Definition lineage is immutable while evidence fingerprints may refresh. Missing ingestion audit fields fail closed; no pre-inception backfill and no maturity threshold is invented by this report."
+}

@@ -1,0 +1,41 @@
+{
+  "schema_version": 2,
+  "publication_identity": {
+    "schema_version": 2,
+    "git_sha": "fe9cc5fceb3c3037ebac08a5debf887311198e4b",
+    "signal_asof": null,
+    "replay_dataset_sha256": "db0889da31af43b1b75e005c1f4ab2cad421dfb55a6c55a77a223e0623950d95",
+    "replay_rows_sha256": "6e0c9771676cffc525974d0835380e0382f9fcb91fe5183fdc152d7221d3d94a",
+    "simulator_contract_sha256": "80745a3640c6fe667a3c500571fb15abee1d532a5b720fb6efc8b52f291dfc68",
+    "generation_id": "8365cf726f3e52b2ce5f9e13570c445496b39d416001d6a4a70ee3ecac65f48f"
+  },
+  "kind": "STOCKLENS_EXECUTION_OBSERVATION",
+  "status": "WAITING_FOR_MANUAL_OBSERVATIONS",
+  "observations": 0,
+  "problems": [],
+  "statistics": {
+    "mean_realized_slippage_bps": null,
+    "max_realized_slippage_bps": null,
+    "min_realized_slippage_bps": null,
+    "adverse_fill_count": 0,
+    "favorable_fill_count": 0,
+    "zero_slippage_fill_count": 0,
+    "total_actual_fees": 0,
+    "total_actual_notional": 0,
+    "actual_fee_bps_on_notional": null
+  },
+  "quality": {
+    "status": "PASS",
+    "allowed_sources": [
+      "BROKER_EXPORT",
+      "MANUAL",
+      "PAPER"
+    ],
+    "validated_rows": 0,
+    "problem_count": 0
+  },
+  "items": [],
+  "broker_automation": false,
+  "automatic_trading_authorized": false,
+  "note": "Manual execution-observation ledger only. Actual fills may be entered after a human independently chooses to execute; this artifact never creates or authorizes orders."
+}

@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "kind": "WORKBENCH_EVIDENCE_MANIFEST",
+  "model": "StockLens 8.0 FROZEN",
+  "automatic_model_change": false,
+  "automatic_promotion": false,
+  "artifacts": {
+    "historical_replay/daily_states.csv": "2d33b88b3bb84b29013d09cee5978b66a014c8b54ee56b830e6a517e6bf8c7c4",
+    "governance/qc_724_leverage_transitions.json": "e2d5851aed6688ae27cb6590a9adfac3ece449818d7ca923d7d011147b3a553e",
+    "governance/qc_724_order_golden_master.json": "153edd0a5c8ebeed408b5d3b7d6a79af508c6f3f5ee8ed1868a3a65fc0fe17fb",
+    "governance/qc_724_daily_state_manifest.json": "0b928664b58b26d23000d4e0d1c921c1a91ea5d12f999374a5d4c5d9ab8c1cd9",
+    "dashboard_workbench.py": "ca9e12e4cbe5fa6e553d31a4aaa117d7c88f812a91bc50abcbb70975dc1fd078",
+    "docs/workbench.html": "fadc3bfb7b6e10a3689a9d18bf244a2c29efc5389fca9527ef55602915516c69"
+  },
+  "evidence_classes": {
+    "historical_replay": "REPLAY_APPROXIMATION",
+    "lean_transitions": "VERIFIED_GOLDEN_MASTER",
+    "lean_daily_state": "VERIFIED_FINGERPRINT_RAW_ROWS_MISSING",
+    "prospective": "IMMATURE_FUTURE_ONLY"
+  },
+  "manifest_sha256": "92c823239b070390028b97d919c626dbc85cd62de0be009678c26a8425585093"
+}

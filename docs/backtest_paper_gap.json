@@ -1,0 +1,24 @@
+{
+  "schema_version": 2,
+  "publication_identity": {
+    "schema_version": 2,
+    "git_sha": "fe9cc5fceb3c3037ebac08a5debf887311198e4b",
+    "signal_asof": null,
+    "replay_dataset_sha256": "db0889da31af43b1b75e005c1f4ab2cad421dfb55a6c55a77a223e0623950d95",
+    "replay_rows_sha256": "6e0c9771676cffc525974d0835380e0382f9fcb91fe5183fdc152d7221d3d94a",
+    "simulator_contract_sha256": "80745a3640c6fe667a3c500571fb15abee1d532a5b720fb6efc8b52f291dfc68",
+    "generation_id": "8365cf726f3e52b2ce5f9e13570c445496b39d416001d6a4a70ee3ecac65f48f"
+  },
+  "status": "WAITING_FOR_PAIRED_EVIDENCE",
+  "paper_sessions": 0,
+  "paired_sessions": 0,
+  "mean_gap": null,
+  "max_abs_gap": null,
+  "observations": [],
+  "component_attribution": {
+    "status": "NOT_IDENTIFIED",
+    "reason": "Aggregate gap mixes ETF path/basis, intraday timing, cash/whole-share effects, fees/slippage and other implementation differences. Current evidence cannot causally allocate the residual."
+  },
+  "semantics": "Replay is a close-to-close exposure approximation. Paper uses intraday fills, TQQQ/QQQ holdings, whole shares, cash, fees, slippage and corporate actions. Gap measures model-to-paper divergence, not broker execution alpha.",
+  "execution_parity_claimed": false
+}

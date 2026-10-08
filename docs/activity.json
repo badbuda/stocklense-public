@@ -1,0 +1,198 @@
+{
+  "schema_version": 1,
+  "items": [
+    {
+      "short_sha": "fe9cc5f",
+      "date": "2026-10-08T12:37:34+03:00",
+      "title": "ci: verify complete source scope and persisted dashboard feeds",
+      "kind": "FIX",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "780da32",
+      "date": "2026-10-08T12:37:00+03:00",
+      "title": "fix: classify generated research reports separately from source handoff",
+      "kind": "FIX",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "bdab34d",
+      "date": "2026-10-08T12:34:44+03:00",
+      "title": "ci: validate complete dashboard feed publication once",
+      "kind": "FIX",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "afcd5e6",
+      "date": "2026-10-08T12:33:59+03:00",
+      "title": "fix: publish and verify every dashboard data feed from a validated run",
+      "kind": "FIX",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "d54464f",
+      "date": "2026-10-08T09:29:31Z",
+      "title": "shadow: record prospective evidence 2026-10-07",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "911cbe1",
+      "date": "2026-10-08T12:12:47+03:00",
+      "title": "ci: validate fully sealed public dashboard handoff once",
+      "kind": "FIX",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "587de42",
+      "date": "2026-10-08T12:12:02+03:00",
+      "title": "ci: stage optional evidence paths safely after full validation",
+      "kind": "FIX",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "37976ee",
+      "date": "2026-10-08T11:00:41+03:00",
+      "title": "ci: validate complete dashboard and research evidence handoff",
+      "kind": "FIX",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "7e48365",
+      "date": "2026-10-08T10:59:04+03:00",
+      "title": "fix: restore public dashboard bundle, provenance-scoped curves, and fail-closed reporting",
+      "kind": "FIX",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "5d21408",
+      "date": "2026-10-08T08:53:52+03:00",
+      "title": "ci: validate completed source and research inputs in one batch",
+      "kind": "FIX",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "7478a6b",
+      "date": "2026-10-08T08:53:19+03:00",
+      "title": "ci: complete paper execution contract and prospective source inputs before validation",
+      "kind": "FIX",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "f3b8aee",
+      "date": "2026-10-08T08:49:30+03:00",
+      "title": "ci: run one complete-source research validation after handoff guard",
+      "kind": "FIX",
+      "impact": "Repository change; CI validation is separate."
+    }
+  ],
+  "high_signal_items": [
+    {
+      "short_sha": "fe9cc5f",
+      "date": "2026-10-08T12:37:34+03:00",
+      "title": "ci: verify complete source scope and persisted dashboard feeds",
+      "kind": "FIX",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "780da32",
+      "date": "2026-10-08T12:37:00+03:00",
+      "title": "fix: classify generated research reports separately from source handoff",
+      "kind": "FIX",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "bdab34d",
+      "date": "2026-10-08T12:34:44+03:00",
+      "title": "ci: validate complete dashboard feed publication once",
+      "kind": "FIX",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "afcd5e6",
+      "date": "2026-10-08T12:33:59+03:00",
+      "title": "fix: publish and verify every dashboard data feed from a validated run",
+      "kind": "FIX",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "d54464f",
+      "date": "2026-10-08T09:29:31Z",
+      "title": "shadow: record prospective evidence 2026-10-07",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "911cbe1",
+      "date": "2026-10-08T12:12:47+03:00",
+      "title": "ci: validate fully sealed public dashboard handoff once",
+      "kind": "FIX",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "587de42",
+      "date": "2026-10-08T12:12:02+03:00",
+      "title": "ci: stage optional evidence paths safely after full validation",
+      "kind": "FIX",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "37976ee",
+      "date": "2026-10-08T11:00:41+03:00",
+      "title": "ci: validate complete dashboard and research evidence handoff",
+      "kind": "FIX",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "7e48365",
+      "date": "2026-10-08T10:59:04+03:00",
+      "title": "fix: restore public dashboard bundle, provenance-scoped curves, and fail-closed reporting",
+      "kind": "FIX",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "5d21408",
+      "date": "2026-10-08T08:53:52+03:00",
+      "title": "ci: validate completed source and research inputs in one batch",
+      "kind": "FIX",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "7478a6b",
+      "date": "2026-10-08T08:53:19+03:00",
+      "title": "ci: complete paper execution contract and prospective source inputs before validation",
+      "kind": "FIX",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "f3b8aee",
+      "date": "2026-10-08T08:49:30+03:00",
+      "title": "ci: run one complete-source research validation after handoff guard",
+      "kind": "FIX",
+      "impact": "Repository change; CI validation is separate."
+    }
+  ],
+  "recent_summary": [
+    {
+      "short_sha": "fe9cc5f",
+      "date": "2026-10-08T12:37:34+03:00",
+      "title": "ci: verify complete source scope and persisted dashboard feeds",
+      "kind": "FIX",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "780da32",
+      "date": "2026-10-08T12:37:00+03:00",
+      "title": "fix: classify generated research reports separately from source handoff",
+      "kind": "FIX",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "bdab34d",
+      "date": "2026-10-08T12:34:44+03:00",
+      "title": "ci: validate complete dashboard feed publication once",
+      "kind": "FIX",
+      "impact": "Repository change; CI validation is separate."
+    }
+  ]
+}

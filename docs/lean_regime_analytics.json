@@ -1,0 +1,513 @@
+{
+  "kind": "VERIFIED_TRANSITION_DERIVED_REGIME_ANALYTICS",
+  "source_transition_sha256": "5561588a3bcd8a416cc13320536d7d3ff51bdb6de418e4f2c31b85eaf2ac745b",
+  "transition_count": 67,
+  "note": "Durations are calendar-day intervals between verified transition dates; not reconstructed trading-session rows.",
+  "upshifts": 34,
+  "downshifts": 32,
+  "by_leverage": {
+    "3x": {
+      "regimes": 21,
+      "calendar_days": 4401,
+      "longest_calendar_days": 963
+    },
+    "2x": {
+      "regimes": 9,
+      "calendar_days": 109,
+      "longest_calendar_days": 29
+    },
+    "1.25x": {
+      "regimes": 27,
+      "calendar_days": 567,
+      "longest_calendar_days": 84
+    },
+    "0x": {
+      "regimes": 10,
+      "calendar_days": 399,
+      "longest_calendar_days": 311
+    }
+  },
+  "transition_matrix": {
+    "3x\u21922x": 4,
+    "2x\u21921.25x": 3,
+    "1.25x\u21922x": 5,
+    "2x\u21923x": 6,
+    "3x\u21921.25x": 15,
+    "1.25x\u21923x": 13,
+    "1.25x\u21920x": 9,
+    "0x\u21921.25x": 9,
+    "3x\u21920x": 1,
+    "0x\u21923x": 1
+  },
+  "regimes": [
+    {
+      "start": "2009-09-01",
+      "end_exclusive": "2010-05-21",
+      "leverage": 3,
+      "calendar_days": 262,
+      "next_leverage": 2
+    },
+    {
+      "start": "2010-05-21",
+      "end_exclusive": "2010-06-09",
+      "leverage": 2,
+      "calendar_days": 19,
+      "next_leverage": 1.25
+    },
+    {
+      "start": "2010-06-09",
+      "end_exclusive": "2010-06-14",
+      "leverage": 1.25,
+      "calendar_days": 5,
+      "next_leverage": 2
+    },
+    {
+      "start": "2010-06-14",
+      "end_exclusive": "2010-06-21",
+      "leverage": 2,
+      "calendar_days": 7,
+      "next_leverage": 3
+    },
+    {
+      "start": "2010-06-21",
+      "end_exclusive": "2010-06-30",
+      "leverage": 3,
+      "calendar_days": 9,
+      "next_leverage": 1.25
+    },
+    {
+      "start": "2010-06-30",
+      "end_exclusive": "2010-07-23",
+      "leverage": 1.25,
+      "calendar_days": 23,
+      "next_leverage": 3
+    },
+    {
+      "start": "2010-07-23",
+      "end_exclusive": "2010-08-13",
+      "leverage": 3,
+      "calendar_days": 21,
+      "next_leverage": 1.25
+    },
+    {
+      "start": "2010-08-13",
+      "end_exclusive": "2010-09-09",
+      "leverage": 1.25,
+      "calendar_days": 27,
+      "next_leverage": 3
+    },
+    {
+      "start": "2010-09-09",
+      "end_exclusive": "2011-06-20",
+      "leverage": 3,
+      "calendar_days": 284,
+      "next_leverage": 1.25
+    },
+    {
+      "start": "2011-06-20",
+      "end_exclusive": "2011-06-22",
+      "leverage": 1.25,
+      "calendar_days": 2,
+      "next_leverage": 3
+    },
+    {
+      "start": "2011-06-22",
+      "end_exclusive": "2011-08-05",
+      "leverage": 3,
+      "calendar_days": 44,
+      "next_leverage": 1.25
+    },
+    {
+      "start": "2011-08-05",
+      "end_exclusive": "2011-09-19",
+      "leverage": 1.25,
+      "calendar_days": 45,
+      "next_leverage": 3
+    },
+    {
+      "start": "2011-09-19",
+      "end_exclusive": "2011-09-22",
+      "leverage": 3,
+      "calendar_days": 3,
+      "next_leverage": 1.25
+    },
+    {
+      "start": "2011-09-22",
+      "end_exclusive": "2011-10-13",
+      "leverage": 1.25,
+      "calendar_days": 21,
+      "next_leverage": 2
+    },
+    {
+      "start": "2011-10-13",
+      "end_exclusive": "2011-10-21",
+      "leverage": 2,
+      "calendar_days": 8,
+      "next_leverage": 3
+    },
+    {
+      "start": "2011-10-21",
+      "end_exclusive": "2011-11-21",
+      "leverage": 3,
+      "calendar_days": 31,
+      "next_leverage": 1.25
+    },
+    {
+      "start": "2011-11-21",
+      "end_exclusive": "2011-12-02",
+      "leverage": 1.25,
+      "calendar_days": 11,
+      "next_leverage": 2
+    },
+    {
+      "start": "2011-12-02",
+      "end_exclusive": "2011-12-09",
+      "leverage": 2,
+      "calendar_days": 7,
+      "next_leverage": 3
+    },
+    {
+      "start": "2011-12-09",
+      "end_exclusive": "2011-12-15",
+      "leverage": 3,
+      "calendar_days": 6,
+      "next_leverage": 1.25
+    },
+    {
+      "start": "2011-12-15",
+      "end_exclusive": "2012-01-04",
+      "leverage": 1.25,
+      "calendar_days": 20,
+      "next_leverage": 3
+    },
+    {
+      "start": "2012-01-04",
+      "end_exclusive": "2012-11-08",
+      "leverage": 3,
+      "calendar_days": 309,
+      "next_leverage": 1.25
+    },
+    {
+      "start": "2012-11-08",
+      "end_exclusive": "2012-12-19",
+      "leverage": 1.25,
+      "calendar_days": 41,
+      "next_leverage": 3
+    },
+    {
+      "start": "2012-12-19",
+      "end_exclusive": "2012-12-28",
+      "leverage": 3,
+      "calendar_days": 9,
+      "next_leverage": 1.25
+    },
+    {
+      "start": "2012-12-28",
+      "end_exclusive": "2013-01-03",
+      "leverage": 1.25,
+      "calendar_days": 6,
+      "next_leverage": 3
+    },
+    {
+      "start": "2013-01-03",
+      "end_exclusive": "2015-08-24",
+      "leverage": 3,
+      "calendar_days": 963,
+      "next_leverage": 1.25
+    },
+    {
+      "start": "2015-08-24",
+      "end_exclusive": "2015-10-16",
+      "leverage": 1.25,
+      "calendar_days": 53,
+      "next_leverage": 3
+    },
+    {
+      "start": "2015-10-16",
+      "end_exclusive": "2016-01-08",
+      "leverage": 3,
+      "calendar_days": 84,
+      "next_leverage": 1.25
+    },
+    {
+      "start": "2016-01-08",
+      "end_exclusive": "2016-02-09",
+      "leverage": 1.25,
+      "calendar_days": 32,
+      "next_leverage": 0
+    },
+    {
+      "start": "2016-02-09",
+      "end_exclusive": "2016-03-10",
+      "leverage": 0,
+      "calendar_days": 30,
+      "next_leverage": 1.25
+    },
+    {
+      "start": "2016-03-10",
+      "end_exclusive": "2016-03-30",
+      "leverage": 1.25,
+      "calendar_days": 20,
+      "next_leverage": 3
+    },
+    {
+      "start": "2016-03-30",
+      "end_exclusive": "2016-04-26",
+      "leverage": 3,
+      "calendar_days": 27,
+      "next_leverage": 0
+    },
+    {
+      "start": "2016-04-26",
+      "end_exclusive": "2016-05-04",
+      "leverage": 0,
+      "calendar_days": 8,
+      "next_leverage": 1.25
+    },
+    {
+      "start": "2016-05-04",
+      "end_exclusive": "2016-05-25",
+      "leverage": 1.25,
+      "calendar_days": 21,
+      "next_leverage": 3
+    },
+    {
+      "start": "2016-05-25",
+      "end_exclusive": "2016-06-27",
+      "leverage": 3,
+      "calendar_days": 33,
+      "next_leverage": 1.25
+    },
+    {
+      "start": "2016-06-27",
+      "end_exclusive": "2016-07-07",
+      "leverage": 1.25,
+      "calendar_days": 10,
+      "next_leverage": 3
+    },
+    {
+      "start": "2016-07-07",
+      "end_exclusive": "2018-10-25",
+      "leverage": 3,
+      "calendar_days": 840,
+      "next_leverage": 1.25
+    },
+    {
+      "start": "2018-10-25",
+      "end_exclusive": "2018-11-08",
+      "leverage": 1.25,
+      "calendar_days": 14,
+      "next_leverage": 2
+    },
+    {
+      "start": "2018-11-08",
+      "end_exclusive": "2018-11-13",
+      "leverage": 2,
+      "calendar_days": 5,
+      "next_leverage": 1.25
+    },
+    {
+      "start": "2018-11-13",
+      "end_exclusive": "2018-12-20",
+      "leverage": 1.25,
+      "calendar_days": 37,
+      "next_leverage": 0
+    },
+    {
+      "start": "2018-12-20",
+      "end_exclusive": "2019-01-03",
+      "leverage": 0,
+      "calendar_days": 14,
+      "next_leverage": 1.25
+    },
+    {
+      "start": "2019-01-03",
+      "end_exclusive": "2019-01-04",
+      "leverage": 1.25,
+      "calendar_days": 1,
+      "next_leverage": 0
+    },
+    {
+      "start": "2019-01-04",
+      "end_exclusive": "2019-01-11",
+      "leverage": 0,
+      "calendar_days": 7,
+      "next_leverage": 1.25
+    },
+    {
+      "start": "2019-01-11",
+      "end_exclusive": "2019-01-14",
+      "leverage": 1.25,
+      "calendar_days": 3,
+      "next_leverage": 0
+    },
+    {
+      "start": "2019-01-14",
+      "end_exclusive": "2019-01-22",
+      "leverage": 0,
+      "calendar_days": 8,
+      "next_leverage": 1.25
+    },
+    {
+      "start": "2019-01-22",
+      "end_exclusive": "2019-01-23",
+      "leverage": 1.25,
+      "calendar_days": 1,
+      "next_leverage": 0
+    },
+    {
+      "start": "2019-01-23",
+      "end_exclusive": "2019-02-01",
+      "leverage": 0,
+      "calendar_days": 9,
+      "next_leverage": 1.25
+    },
+    {
+      "start": "2019-02-01",
+      "end_exclusive": "2019-02-04",
+      "leverage": 1.25,
+      "calendar_days": 3,
+      "next_leverage": 0
+    },
+    {
+      "start": "2019-02-04",
+      "end_exclusive": "2019-02-05",
+      "leverage": 0,
+      "calendar_days": 1,
+      "next_leverage": 1.25
+    },
+    {
+      "start": "2019-02-05",
+      "end_exclusive": "2019-02-26",
+      "leverage": 1.25,
+      "calendar_days": 21,
+      "next_leverage": 3
+    },
+    {
+      "start": "2019-02-26",
+      "end_exclusive": "2019-06-04",
+      "leverage": 3,
+      "calendar_days": 98,
+      "next_leverage": 1.25
+    },
+    {
+      "start": "2019-06-04",
+      "end_exclusive": "2019-06-06",
+      "leverage": 1.25,
+      "calendar_days": 2,
+      "next_leverage": 3
+    },
+    {
+      "start": "2019-06-06",
+      "end_exclusive": "2020-03-03",
+      "leverage": 3,
+      "calendar_days": 271,
+      "next_leverage": 2
+    },
+    {
+      "start": "2020-03-03",
+      "end_exclusive": "2020-03-10",
+      "leverage": 2,
+      "calendar_days": 7,
+      "next_leverage": 1.25
+    },
+    {
+      "start": "2020-03-10",
+      "end_exclusive": "2020-05-06",
+      "leverage": 1.25,
+      "calendar_days": 57,
+      "next_leverage": 2
+    },
+    {
+      "start": "2020-05-06",
+      "end_exclusive": "2020-05-20",
+      "leverage": 2,
+      "calendar_days": 14,
+      "next_leverage": 3
+    },
+    {
+      "start": "2020-05-20",
+      "end_exclusive": "2020-09-10",
+      "leverage": 3,
+      "calendar_days": 113,
+      "next_leverage": 2
+    },
+    {
+      "start": "2020-09-10",
+      "end_exclusive": "2020-10-09",
+      "leverage": 2,
+      "calendar_days": 29,
+      "next_leverage": 3
+    },
+    {
+      "start": "2020-10-09",
+      "end_exclusive": "2021-03-19",
+      "leverage": 3,
+      "calendar_days": 161,
+      "next_leverage": 2
+    },
+    {
+      "start": "2021-03-19",
+      "end_exclusive": "2021-04-01",
+      "leverage": 2,
+      "calendar_days": 13,
+      "next_leverage": 3
+    },
+    {
+      "start": "2021-04-01",
+      "end_exclusive": "2022-01-24",
+      "leverage": 3,
+      "calendar_days": 298,
+      "next_leverage": 1.25
+    },
+    {
+      "start": "2022-01-24",
+      "end_exclusive": "2022-04-18",
+      "leverage": 1.25,
+      "calendar_days": 84,
+      "next_leverage": 0
+    },
+    {
+      "start": "2022-04-18",
+      "end_exclusive": "2022-04-19",
+      "leverage": 0,
+      "calendar_days": 1,
+      "next_leverage": 1.25
+    },
+    {
+      "start": "2022-04-19",
+      "end_exclusive": "2022-04-25",
+      "leverage": 1.25,
+      "calendar_days": 6,
+      "next_leverage": 0
+    },
+    {
+      "start": "2022-04-25",
+      "end_exclusive": "2022-05-05",
+      "leverage": 0,
+      "calendar_days": 10,
+      "next_leverage": 1.25
+    },
+    {
+      "start": "2022-05-05",
+      "end_exclusive": "2022-05-06",
+      "leverage": 1.25,
+      "calendar_days": 1,
+      "next_leverage": 0
+    },
+    {
+      "start": "2022-05-06",
+      "end_exclusive": "2023-03-13",
+      "leverage": 0,
+      "calendar_days": 311,
+      "next_leverage": 3
+    },
+    {
+      "start": "2023-03-13",
+      "end_exclusive": "2024-08-29",
+      "leverage": 3,
+      "calendar_days": 535,
+      "next_leverage": null
+    }
+  ]
+}

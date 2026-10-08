@@ -127,7 +127,7 @@
     ],
     "policy": "GOVERNANCE_STATUS_AUTHORITATIVE_RESULT_STATUS_DESCRIPTIVE_NO_AUTOMATIC_PROMOTION"
   },
-  "artifact_integrity_status": "PENDING",
-  "publication_gate_status": "UNKNOWN",
-  "human_attention_required": true
+  "artifact_integrity_status": "PASS",
+  "publication_gate_status": "ALLOW",
+  "human_attention_required": false
 }

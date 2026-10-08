@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "status": "NO_NEW_DATA_READY",
+  "checks": [
+    {
+      "idea_id": "PIT-BREADTH",
+      "status": "BLOCKED",
+      "evidence": [
+        "No verified point-in-time constituent history"
+      ],
+      "required_next": "Qualify survivorship-safe historical data before research."
+    }
+  ],
+  "policy": "Research data must be independently qualified before new hypotheses can be tested.",
+  "ready_ideas": []
+}

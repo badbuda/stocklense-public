@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "overall_status": "REVIEW_REQUIRED",
+  "items": [
+    {
+      "area": "Market data",
+      "status": "CURRENT",
+      "summary": "Completed-session signal freshness",
+      "attention": false
+    },
+    {
+      "area": "Publication",
+      "status": "PASS",
+      "summary": "Current generation requires a validated publication gate",
+      "attention": false
+    },
+    {
+      "area": "Claim Ledger",
+      "status": "BLOCKED",
+      "summary": "Canonical claim ledger absent unless independently verified",
+      "attention": true,
+      "blockers": [
+        "CANONICAL_CLAIM_LEDGER_NOT_VERIFIED"
+      ],
+      "observational_gaps": [
+        "Full LEAN input parity is not proven."
+      ]
+    }
+  ],
+  "automatic_trading_authorized": false,
+  "generated_at_utc": "2026-10-08T09:53:42.173360+00:00"
+}

@@ -10,7 +10,7 @@
       "definition_fingerprint": "b6c7a09db9bfb74ed323f36f8cfe1fbcc34d0962cea7fade1fdcfffbf7779fb7"
     }
   ],
-  "updated_at_utc": "2026-10-08T09:29:24.922170+00:00",
+  "updated_at_utc": "2026-10-08T09:53:36.960640+00:00",
   "last_ingestion_audit": [
     {
       "experiment_id": "SL9-007-UPSHIFT-CONFIRMATION",
@@ -31,7 +31,7 @@
       "persisted_prospective_rows": 8
     }
   ],
-  "producer_git_sha": "911cbe1e983159de20ac850d48f024956f9750b8",
+  "producer_git_sha": "fe9cc5fceb3c3037ebac08a5debf887311198e4b",
   "ingestion_gate": "STRICTLY_AFTER_INCEPTION_AND_COMPLETED_XNYS",
   "candidate_count": 1,
   "audit_count": 1

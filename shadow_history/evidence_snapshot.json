@@ -23,13 +23,13 @@
     },
     {
       "path": "shadow_history/readiness.json",
-      "sha256": "c6e49fb0eeab5414724d4a301b09c866adebf43b2218aed68c2e84f13c1b0307",
-      "bytes": 617
+      "sha256": "b420d59f54b81b894c29ff57f31f79abf42d57f4b3b702f798aaa6e5e7d2b071",
+      "bytes": 613
     },
     {
       "path": "shadow_history/qc_daily_parity.json",
-      "sha256": "e84e124fbd7d47bac08a3c52e84748deae5cd93629742e2d3c7fd8748e268e7a",
-      "bytes": 34794
+      "sha256": "35f34d9322cadf99ba86c4a249fe4f9a76a4b073ce620972a75a9c2586104c4c",
+      "bytes": 34783
     },
     {
       "path": "shadow_history/qc_parity_dossier.json",
@@ -43,12 +43,22 @@
     },
     {
       "path": "shadow_history/anomalies.json",
-      "sha256": "5ca2b265895f13c521ae6c4e48b61c4382070bdcfd720dbfb662192fd80d37ee",
-      "bytes": 1319
+      "sha256": "80921dddfbf8a35e8d8ed2b16f4c6b1f5f850aaab84e151dbd9fe142687271e6",
+      "bytes": 1317
+    },
+    {
+      "path": "shadow_history/execution_audit.json",
+      "sha256": "c6370a081d1f457749f0b7a426b0cdfaf11abb42e41843042e04ae0b076ff8df",
+      "bytes": 939
+    },
+    {
+      "path": "shadow_history/forward_quality.json",
+      "sha256": "b1615a65a588ba6dc21452cc53c4fcd1aa28d84fe3c43bdf76353c10329114bb",
+      "bytes": 305
     },
     {
       "path": "shadow_history/market_context.json",
-      "sha256": "1d802f7e2b3e7f959343f314301da552447a9ce9ba518c4b5f20727d3ed58b61",
+      "sha256": "db31e79f9f1298c7d9edd7e9955104df7fb1a6e1794a3768123b9c9e473031c6",
       "bytes": 533
     },
     {
@@ -62,5 +72,5 @@
       "bytes": 217
     }
   ],
-  "count": 12
+  "count": 14
 }

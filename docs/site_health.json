@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "git_sha": "fe9cc5fceb3c3037ebac08a5debf887311198e4b",
+  "built_at_utc": "2026-10-08T09:53:42.173360+00:00",
+  "healthy": true,
+  "artifact_freshness": {
+    "status": "CURRENT"
+  },
+  "missing_feeds": [],
+  "warning": "Healthy means these feeds exist and freshness/publication gates pass; not LEAN execution parity."
+}

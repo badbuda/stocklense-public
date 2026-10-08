@@ -4,13 +4,13 @@
   "affects_frozen_signal": false,
   "asof_date": "2026-10-08",
   "vix": {
-    "value": 15.649999618530273,
+    "value": 15.670000076293945,
     "regime": "NORMAL",
     "source": "Yahoo Finance ^VIX",
     "status": "AVAILABLE"
   },
   "fear_greed": null,
-  "generated_at_utc": "2026-10-08T09:29:21.919314+00:00",
+  "generated_at_utc": "2026-10-08T09:53:34.237018+00:00",
   "notes": [
     "Context is observational only.",
     "Missing context never changes or blocks StockLens 8.0.",

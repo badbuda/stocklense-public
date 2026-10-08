@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "summary": "Research-only. Canonical publication claims require independent verification.",
+  "research": {
+    "milestone": "M2_SHADOW_GREEN_537_TESTS_PROVE_OR_BREAK_PUBLISHED",
+    "next_action": "EPIC-01: keep atomic validated publication green and make generated-report freshness source-SHA aware"
+  },
+  "simulator": {
+    "status": "PASS",
+    "sessions": 252
+  },
+  "blockers": [
+    {
+      "area": "Claim Ledger",
+      "status": "BLOCKED"
+    }
+  ],
+  "source_git_sha": "fe9cc5fceb3c3037ebac08a5debf887311198e4b"
+}

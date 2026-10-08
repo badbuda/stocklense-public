@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "sources": [
+    {
+      "source_id": "QQQ-DAILY",
+      "status": "EXISTING_BASELINE_DATA",
+      "purpose": "QQQ-only baseline evidence",
+      "allowed_for_new_hypothesis": false
+    },
+    {
+      "source_id": "PIT-BREADTH",
+      "status": "MISSING",
+      "purpose": "Survivorship-safe breadth",
+      "allowed_for_new_hypothesis": false,
+      "acquisition_requirement": "Point-in-time data"
+    }
+  ],
+  "qualified_new_hypothesis_sources": []
+}

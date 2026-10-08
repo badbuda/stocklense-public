@@ -1,20 +1,20 @@
 {
   "schema_version": 1,
   "status": "PASS",
-  "full_compounded_gross_return": 0.6279555953188771,
+  "full_compounded_gross_return": 0.6640088169665079,
   "cases": [
     {
       "removed_top_positive_sessions": 1,
-      "remaining_compounded_gross_return": 0.4774025990486541,
-      "delta_vs_full": -0.150552996270223,
+      "remaining_compounded_gross_return": 0.5101216262257133,
+      "delta_vs_full": -0.1538871907407946,
       "removed_dates": [
         "2026-08-04"
       ]
     },
     {
       "removed_top_positive_sessions": 5,
-      "remaining_compounded_gross_return": 0.026804498491461937,
-      "delta_vs_full": -0.6011510968274152,
+      "remaining_compounded_gross_return": 0.04954443659689001,
+      "delta_vs_full": -0.6144643803696179,
       "removed_dates": [
         "2026-08-04",
         "2026-06-11",
@@ -25,8 +25,8 @@
     },
     {
       "removed_top_positive_sessions": 10,
-      "remaining_compounded_gross_return": -0.269417959525038,
-      "delta_vs_full": -0.8973735548439151,
+      "remaining_compounded_gross_return": -0.253237421185849,
+      "delta_vs_full": -0.917246238152357,
       "removed_dates": [
         "2026-08-04",
         "2026-06-11",
@@ -42,8 +42,8 @@
     },
     {
       "removed_top_positive_sessions": 20,
-      "remaining_compounded_gross_return": -0.5741742357901328,
-      "delta_vs_full": -1.2021298311090098,
+      "remaining_compounded_gross_return": -0.5647426838454668,
+      "delta_vs_full": -1.2287515008119747,
       "removed_dates": [
         "2026-08-04",
         "2026-06-11",
