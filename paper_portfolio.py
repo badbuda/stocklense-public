@@ -8,6 +8,8 @@ from pathlib import Path
 from typing import Any
 from zoneinfo import ZoneInfo
 
+from paper_transaction import commit as commit_paper_transaction, recover as recover_paper_transaction
+
 from stocklens.paper import (
     PaperIntegrityError,
     fetch_execution_market,
@@ -112,6 +114,14 @@ def reconcile(
     current_path = Path(current_signal_path)
     prior_path = Path(prior_signal_path)
     STATE_DIR.mkdir(parents=True, exist_ok=True)
+    paths={"trades":TRADES_PATH,"ledger":LEDGER_PATH,"state":STATE_PATH,"latest":LATEST_MD_PATH}
+    recovered=recover_paper_transaction(paths)
+    if recovered:
+        return {"paper_updated":"true","paper_status":"RECOVERED_PREPARED_PAPER_SESSION",
+                "paper_session":recovered["session_date"],
+                "paper_equity":f'{recovered["equity"]:.2f}',
+                "paper_drawdown":f'{recovered["drawdown"]:.8f}',
+                "paper_trades":str(recovered["trades"])}
 
     if not prior_path.exists():
         return {"paper_updated": "false", "paper_status": "NO_PRIOR_PERSISTED_SIGNAL"}
@@ -181,12 +191,7 @@ def reconcile(
     trades = rebalance_if_required(state, prior, market, bootstrap=bootstrap)
     row = mark_session(state, prior, market, trades, corporate_summary, bootstrap=bootstrap)
 
-    for trade in trades:
-        _append_csv(TRADES_PATH, trade)
-    _append_csv(LEDGER_PATH, row)
-
-    STATE_PATH.write_text(json.dumps(state, indent=2), encoding="utf-8")
-    LATEST_MD_PATH.write_text(_render_latest(row, trades), encoding="utf-8")
+    commit_paper_transaction(paths,row,trades,state,_render_latest(row,trades))
 
     return {
         "paper_updated": "true",
