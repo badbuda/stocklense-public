@@ -142,7 +142,7 @@ def _rebalance(p: dict, prices: dict, target: dict, fee_bps: float,
 def run_execution(qqq: dict, tqqq: dict, decisions: dict, *,
                   monthly: float = 0.0, extra_signal_lag: int = 0,
                   fee_bps: float = 2.0, slippage_bps: float = 10.0,
-                  initial: float = INITIAL_CAPITAL) -> dict:
+                  initial: float = INITIAL_CAPITAL, include_daily_path: bool = False) -> dict:
     """Compare two independently executed, whole-share portfolios on identical dates."""
     if any(not math.isfinite(float(v)) or float(v) < 0 for v in
            (monthly, extra_signal_lag, fee_bps, slippage_bps)) or initial <= 0:
@@ -238,6 +238,7 @@ def run_execution(qqq: dict, tqqq: dict, decisions: dict, *,
                                stats("qqq")["ending_equity"],
         "events": events[-12:],
         "chart_rows": recent[::21] + ([recent[-1]] if recent[-1] != recent[::21][-1] else []),
+        **({"daily_nav_rows": recent} if include_daily_path else {}),
     }
 
 
@@ -252,7 +253,7 @@ def build(out: str = REPORT_PATH, public_out: str = PUBLIC_PATH) -> dict:
                          f"{tqqq[d]['open']:.12g},{tqqq[d]['close']:.12g}"
                          for d in sorted(tqqq) if d in qqq)
     digest = hashlib.sha256(evidence.encode()).hexdigest()
-    no_contrib = run_execution(qqq, tqqq, decisions)
+    no_contrib = run_execution(qqq, tqqq, decisions, include_daily_path=True)
     monthly = run_execution(qqq, tqqq, decisions, monthly=MONTHLY_CONTRIBUTION)
     cost_grid = [
         {"slippage_bps_per_side": b,

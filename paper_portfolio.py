@@ -47,6 +47,14 @@ def _existing_session(path: Path, session_date: str) -> bool:
         return any(r.get("session_date") == session_date for r in csv.DictReader(fh))
 
 
+def _completed_nyse_dates(after_date: str, through_date: str) -> list[str]:
+    """Enumerate all missed sessions from the exchange calendar, never weekends."""
+    import exchange_calendars as xcals
+    calendar = xcals.get_calendar("XNYS")
+    return [str(x.date()) for x in calendar.sessions_in_range(after_date, through_date)
+            if str(x.date()) > after_date]
+
+
 def _signal_precedes_session(signal_report: dict[str, Any], session_date: str) -> bool:
     """A paper fill counts only if its signal existed before that session opened."""
     raw = signal_report.get("generated_at_utc")
@@ -126,31 +134,31 @@ def reconcile(
         market = fetch_execution_market(prior_date, current_date)
     except PaperIntegrityError as exc:
         message = str(exc)
-        if bootstrap and message.startswith("MISSED_SHADOW_SESSION:"):
+        if message.startswith("MISSED_SHADOW_SESSION:"):
             fields = dict(part.split("=", 1) for part in message.split(":")[1:])
-            gap = {
-                "session_date": fields["expected_execution"],
-                "signal_date": prior_date,
-                "detected_completed_session": fields["current_completed"],
-                "status": "MISSED_NO_BACKFILL",
-            }
-            if not _existing_session(GAPS_PATH, gap["session_date"]):
-                _append_csv(GAPS_PATH, gap)
+            missed = _completed_nyse_dates(prior_date, fields["current_completed"])
+            if not missed or missed[0] != fields["expected_execution"]:
+                raise PaperIntegrityError("MISSED_SESSION_CALENDAR_MISMATCH")
+            for missed_session in missed:
+                gap = {
+                    "session_date": missed_session,
+                    "signal_date": prior_date,
+                    "detected_completed_session": fields["current_completed"],
+                    "status": "MISSED_NO_BACKFILL",
+                }
+                if not _existing_session(GAPS_PATH, gap["session_date"]):
+                    _append_csv(GAPS_PATH, gap)
             return {
                 "paper_updated": "false",
-                "paper_status": "MISSED_SESSION_RECORDED_WAITING_FOR_FRESH_PROSPECTIVE_SIGNAL",
-                "missed_session": gap["session_date"],
+                "paper_status": "MISSED_SESSION_RECORDED_NO_BACKFILL",
+                "missed_session": missed[0],
+                "missed_sessions_count": str(len(missed)),
             }
         raise
 
     if not _signal_precedes_session(prior, market.session_date):
-        if bootstrap:
-            return {
-                "paper_updated": "false",
-                "paper_status": "WAITING_FOR_FIRST_PROSPECTIVE_EXECUTION",
-                "late_signal_date": prior_date,
-                "candidate_session": market.session_date,
-            }
+        # Even during bootstrap a late signal is a MISSED execution, never
+        # an unqualified "waiting" status. Preserve the gap, do not backfill.
         gap = {
             "session_date": market.session_date,
             "signal_date": prior_date,

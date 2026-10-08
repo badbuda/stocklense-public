@@ -232,6 +232,23 @@ def build(out=OUT, research_out=RESEARCH_OUT):
             "holdout_never_reused_proven": False,
         },
     }
+    risk = _load("docs/observed_tqqq_risk_audit.json")
+    risk_valid = (
+        risk.get("status") == "PASS"
+        and risk.get("no_synthetic_leverage") is True
+        and risk.get("source_report_sha256") == report.get("price_fingerprint_sha256")
+        and risk.get("statistical_independence_proven") is False
+    )
+    result["engineering_diagnostics"]["observed_etf_path_risk"] = {
+        "status": "PASS" if risk_valid else "UNVERIFIED",
+        "matching_observed_source": risk_valid,
+        "rolling_windows_count": sum(
+            v.get("window_count", 0)
+            for v in (risk.get("rolling_windows") or {}).values()
+        ) if risk_valid else 0,
+        "statistical_independence_proven": False,
+        "live_broker_authorized": False,
+    }
     for dest in (out, research_out):
         target = Path(dest)
         target.parent.mkdir(parents=True, exist_ok=True)

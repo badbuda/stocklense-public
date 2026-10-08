@@ -10,6 +10,14 @@ from zoneinfo import ZoneInfo
 NY = ZoneInfo("America/New_York")
 
 
+def expected_exchange_sessions(previous_asof: str, current_asof: str) -> list[str]:
+    """Calendar-derived completed exchange dates, never weekend/holiday guesses."""
+    import exchange_calendars as xcals
+    cal = xcals.get_calendar("XNYS")
+    sessions = cal.sessions_in_range(previous_asof, current_asof)
+    return [str(s.date()) for s in sessions if str(s.date()) > previous_asof]
+
+
 def read_json(path):
     p = Path(path)
     return json.loads(p.read_text()) if p.is_file() else None
@@ -37,6 +45,19 @@ def evaluate(*, current, prior, ledger, gaps, snapshots, state=None):
         errors.append("DUPLICATE_OR_NONMONOTONE_PAPER_LEDGER")
     if set(paper_dates) & set(gap_dates):
         errors.append("PAPER_AND_MISSED_SESSION_CONFLICT")
+    if len(set(gap_dates)) != len(gap_dates) or gap_dates != sorted(gap_dates):
+        errors.append("DUPLICATE_OR_NONMONOTONE_EVIDENCE_GAPS")
+    if previous_asof and asof and asof > previous_asof:
+        try:
+            expected = expected_exchange_sessions(previous_asof, asof)
+        except (ValueError, TypeError, OverflowError):
+            errors.append("EXCHANGE_CALENDAR_RANGE_INVALID")
+            expected = []
+        observed = set(paper_dates) | set(gap_dates)
+        if any(session not in observed for session in expected):
+            errors.append("UNACCOUNTED_COMPLETED_EXCHANGE_SESSIONS")
+        if any(session not in expected for session in observed if session > previous_asof):
+            errors.append("EVIDENCE_SESSION_NOT_ON_EXCHANGE_CALENDAR")
     if paper_dates and (not state or state.get("last_mark_session") != paper_dates[-1]):
         errors.append("LATEST_PAPER_STATE_NOT_RECONCILED")
     for r in ledger:
