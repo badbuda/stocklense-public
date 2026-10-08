@@ -1,1 +1,1 @@
-stocklens-observed-etf-batch-20261008-c87111e-verify-once
+stocklens-single-real-etf-minute-journal-validation-2026-10-08-9eca2630
