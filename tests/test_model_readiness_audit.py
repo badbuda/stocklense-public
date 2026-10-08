@@ -85,3 +85,21 @@ def test_many_paper_sessions_cannot_override_absent_trade_fills():
     assert "LIVE_EXECUTION_TIME_PARITY" in result["blockers"]
     assert "BROKER_SANDBOX_DRY_RUN" in result["blockers"]
     assert result["automated_live_trading_authorized"] is False
+
+
+def test_decision_parity_required_even_when_backtest_is_valid():
+    data = fixture()
+    audit = evaluate(**data)
+    assert "SHARED_FROZEN_DECISION_PARITY" in audit["blockers"]
+    data["decision_parity"] = {
+        "status": "PASS",
+        "equal_frozen_target": True,
+        "signal_asof": "2026-10-07",
+        "research_asof": "2026-10-07",
+        "broker_orders_authorized": False,
+        "errors": [],
+    }
+    checked = evaluate(**data)
+    assert "SHARED_FROZEN_DECISION_PARITY" not in checked["blockers"]
+    assert checked["status"] == "BLOCKED_FOR_LIVE_TRADING"
+    assert checked["automated_live_trading_authorized"] is False

@@ -8,6 +8,12 @@ The active research protocol uses observed, adjusted QQQ and TQQQ prices, never 
 
 Historical CAGR, compounded equity and drawdown are descriptive. They do not establish tradability, statistical independence, account-specific return, tax treatment or future profitability. The 2009 QQQ-times-leverage reports are **archival only**. The actual ETF comparison is the primary report.
 
+## Same decision contract
+
+The live Shadow signal and observed TQQQ/QQQ backtest MUST come from `stocklens.core.replay_levels` with the complete QQQ warmup beginning before September 2009. The comparison must verify the latest completed QQQ date, adjusted close, frozen leverage level, defense status and QQQ/TQQQ target weights. The `frozen_decision_parity_gate.py` fails CI on any mismatch and records `shadow_history/frozen_decision_parity.json`. A PASS means **decision agreement only**; it cannot prove fill-price parity.
+
+The operational order-intent contract must use the prior completed signal, current confirmed account positions, capital constraints and sell-before-buy at next-session 09:31/09:32 ET. Replay daily OPEN is not a historical 09:31/09:32 price. Until exact minute-bar and paper/broker reconciliation evidence is available, the real-money gate stays blocked.
+
 ## Ordered evidence gates
 
 1. **Source integrity:** frozen QQQ decision rules, observed TQQQ/QQQ OHLC, matched sessions, no TQQQ backfill before inception, hash-stamped data and failures for missing/suspicious prices. Pass only with independent vendor crosscheck, immutable raw snapshots, split/dividend/timestamp verification and stale-bar detection.

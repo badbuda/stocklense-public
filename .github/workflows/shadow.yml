@@ -217,6 +217,11 @@ jobs:
           echo "::error::Provider daily bar remained stale after bounded retries; refusing stale signal."
           exit 1
 
+      - name: Verify frozen backtest/live decision parity
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: python frozen_decision_parity_gate.py
+
       # Reconcile yesterday's persisted signal against today's realized market session
       # BEFORE persisting today's new signal.
       - name: Reconcile prospective paper portfolio
@@ -539,6 +544,7 @@ jobs:
             shadow_history/run_manifest.json
             shadow_history/artifact_integrity.json
             shadow_history/publication_gate.json
+            shadow_history/frozen_decision_parity.json
             shadow_history/final_publication_manifest.json
             shadow_history/automation_guard.json
             shadow_history/order_state.json

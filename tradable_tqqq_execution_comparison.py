@@ -245,10 +245,9 @@ def build(out: str = REPORT_PATH, public_out: str = PUBLIC_PATH) -> dict:
     qqq = _download("QQQ")
     tqqq = _download("TQQQ")
     dates = sorted(qqq)
-    decisions = {
-        d.asof_date: float(d.target_leverage)
-        for d in replay_levels([qqq[d]["close"] for d in dates], dates)
-    }
+    frozen_decisions = replay_levels([qqq[d]["close"] for d in dates], dates)
+    decisions = {d.asof_date: float(d.target_leverage) for d in frozen_decisions}
+    latest_frozen = frozen_decisions[-1]
     evidence = "\n".join(f"{d},{qqq[d]['open']:.12g},{qqq[d]['close']:.12g},"
                          f"{tqqq[d]['open']:.12g},{tqqq[d]['close']:.12g}"
                          for d in sorted(tqqq) if d in qqq)
@@ -274,6 +273,17 @@ def build(out: str = REPORT_PATH, public_out: str = PUBLIC_PATH) -> dict:
         "status": "PASS",
         "kind": "OBSERVED_QQQ_TQQQ_DAILY_OPEN_EXECUTION_PROXY",
         "baseline": "StockLens 8.0 FROZEN",
+        "latest_frozen_decision": {
+            "asof_date": latest_frozen.asof_date,
+            "level": latest_frozen.level,
+            "defense_active": latest_frozen.defense_active,
+            "target_leverage": latest_frozen.target_leverage,
+            "qqq_weight": latest_frozen.qqq_weight,
+            "tqqq_weight": latest_frozen.tqqq_weight,
+            "invested_fraction": latest_frozen.invested_fraction,
+            "qqq_adjusted_close": qqq[latest_frozen.asof_date]["close"],
+            "decision_source": "stocklens.core.replay_levels",
+        },
         "price_source": "YFINANCE_AUTO_ADJUSTED_DAILY_OPEN_AND_CLOSE",
         "observed_instruments": ["QQQ", "TQQQ"],
         "price_fingerprint_sha256": digest,

@@ -27,7 +27,7 @@ def _load(path: str, default=None):
 
 
 def evaluate(*, report, capital, benchmark, paper_gap, workbench, observation,
-             policy, health, source_proof):
+             policy, health, source_proof, decision_parity=None):
     checks = []
     def add(key, category, passed, description, evidence, severity="REQUIRED"):
         checks.append({"id": key, "category": category,
@@ -74,6 +74,17 @@ def evaluate(*, report, capital, benchmark, paper_gap, workbench, observation,
         "Fee/slippage and extra decision-lag scenarios must be computed, not assumed.",
         {"slippage_cases": len(report.get("slippage_stress_no_contributions") or []),
          "decision_lag_cases": len(report.get("signal_lag_stress_no_contributions") or [])})
+
+    decision_parity = decision_parity or {}
+    add("SHARED_FROZEN_DECISION_PARITY", "Decision consistency",
+        decision_parity.get("status") == "PASS"
+        and decision_parity.get("equal_frozen_target") is True
+        and decision_parity.get("signal_asof") == decision_parity.get("research_asof")
+        and decision_parity.get("broker_orders_authorized") is False,
+        "Identical StockLens 8.0 target from the observed ETF backtest and the published shadow signal, for the same completed QQQ date.",
+        {"status": decision_parity.get("status", "MISSING"),
+         "date": decision_parity.get("signal_asof"),
+         "errors": decision_parity.get("errors", [])})
 
     add("LIVE_EXECUTION_TIME_PARITY", "Execution reality", False,
         "Daily adjusted OPEN is not an observed 09:31/09:32 execution price. Obtain verified minute-bar and fill evidence.",
@@ -196,6 +207,7 @@ def build(out=OUT, research_out=RESEARCH_OUT):
         observation=_load("docs/execution_observation.json"),
         health=_load("docs/workbench_evidence_health.json"),
         source_proof=_load("research/verified_price_source_audit.json"),
+        decision_parity=_load("shadow_history/frozen_decision_parity.json"),
     )
     for dest in (out, research_out):
         target = Path(dest)
