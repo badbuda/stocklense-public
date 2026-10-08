@@ -249,6 +249,33 @@ def build(out=OUT, research_out=RESEARCH_OUT):
         "statistical_independence_proven": False,
         "live_broker_authorized": False,
     }
+    intraday = _load("docs/observed_intraday_execution_gap.json")
+    result["engineering_diagnostics"]["observed_intraday_price_gap"] = {
+        "status": intraday.get("status", "MISSING"),
+        "observed_etf_minute_sessions": intraday.get("sessions", 0),
+        "source": intraday.get("price_source", "UNVERIFIED"),
+        "broker_fill_parity": False,
+        "execution_time_parity_proven": False,
+        "risk_gate_satisfied": False,
+    }
+    robustness = _load("docs/observed_etf_statistical_robustness.json")
+    robustness_valid = (
+        robustness.get("status") == "PASS"
+        and robustness.get("source_price_sha256") == report.get("price_fingerprint_sha256")
+        and robustness.get("synthetic_leverage_used") is False
+        and robustness.get("clean_out_of_sample_test") is False
+        and robustness.get("statistical_significance_proven") is False
+        and set((robustness.get("paired_moving_block_bootstrap") or {}).keys()) == {"21", "63", "126"}
+    )
+    result["engineering_diagnostics"]["historical_robustness_not_forward_proof"] = {
+        "status": "PASS" if robustness_valid else "UNVERIFIED",
+        "source_prices_match": robustness_valid,
+        "moving_block_sizes": [21, 63, 126] if robustness_valid else [],
+        "calendar_year_exclusion_count": len(robustness.get("leave_one_calendar_year_out") or []) if robustness_valid else 0,
+        "independent_out_of_sample_evidence": False,
+        "significance_proven": False,
+        "risk_gate_satisfied": False,
+    }
     for dest in (out, research_out):
         target = Path(dest)
         target.parent.mkdir(parents=True, exist_ok=True)
