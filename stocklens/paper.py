@@ -267,13 +267,22 @@ def rebalance_if_required(
     bootstrap: bool,
 ) -> list[dict[str, Any]]:
     target = signal_report["latest"]
-    if not bootstrap and signal_report.get("action", "NO_CHANGE") == "NO_CHANGE":
-        return []
     weights = {"QQQ": float(target["qqq_weight"]), "TQQQ": float(target["tqqq_weight"])}
+    if any(not math.isfinite(w) or w < 0 or w > 1 for w in weights.values()) or sum(weights.values()) > 1.000001:
+        raise PaperIntegrityError("INVALID_FROZEN_PAPER_TARGET_WEIGHTS")
     signal_date = target["asof_date"]
     trades: list[dict[str, Any]] = []
 
+    # NO_CHANGE compares successive signals, not the actual portfolio.
+    # Reconcile actual holdings even after a missed prior paper session.
     equity31 = _portfolio_value(state, market.prices_0931)
+    if not math.isfinite(equity31) or equity31 <= 0:
+        raise PaperIntegrityError("INVALID_PAPER_EQUITY_BEFORE_REBALANCE")
+    gap31 = max(abs(int(state["shares"][s]) * float(market.prices_0931[s]) / equity31 - weights[s])
+                for s in SYMBOLS)
+    # Avoid repeated whole-share churn when actual ETF weights are within 50bp.
+    if not bootstrap and signal_report.get("action") == "NO_CHANGE" and gap31 <= 0.005:
+        return []
     desired31 = {
         s: int(math.floor(weights[s] * equity31 / market.prices_0931[s])) for s in SYMBOLS
     }
@@ -315,16 +324,24 @@ def mark_session(
     cumulative_return = equity / float(state["initial_equity"]) - 1.0
     turnover = sum(float(t["gross_notional"]) for t in trades)
     latest = signal_report["latest"]
+    tracking_weights = {"QQQ": float(latest["qqq_weight"]), "TQQQ": float(latest["tqqq_weight"])}
+    equity32 = _portfolio_value(state, market.prices_0932)
+    gap32 = max(abs(int(state["shares"][s]) * float(market.prices_0932[s]) / equity32 - tracking_weights[s])
+                for s in SYMBOLS)
+    one_share_band = max(float(x) for x in market.prices_0932.values()) / equity32
+    if gap32 > max(0.01, one_share_band + 0.005):
+        raise PaperIntegrityError(f"PAPER_POST_REBALANCE_TARGET_MISMATCH:{market.session_date}:{gap32:.8f}")
     return {
         "session_date": market.session_date,
         "signal_date": latest["asof_date"],
         "signal_action": signal_report.get("action", "NO_CHANGE"),
-        "paper_action": "BOOTSTRAP_TO_TARGET" if bootstrap else signal_report.get("action", "NO_CHANGE"),
+        "paper_action": ("BOOTSTRAP_TO_TARGET" if bootstrap else "RECONCILE_ACTUAL_HOLDINGS" if trades and signal_report.get("action", "NO_CHANGE")=="NO_CHANGE" else signal_report.get("action", "NO_CHANGE")),
         "target_level": latest["level"],
         "target_defense": bool(latest["defense_active"]),
         "target_leverage": float(latest["target_leverage"]),
         "target_qqq_weight": float(latest["qqq_weight"]),
         "target_tqqq_weight": float(latest["tqqq_weight"]),
+        "target_tracking_gap_after": gap32,
         "qqq_shares": int(state["shares"]["QQQ"]),
         "tqqq_shares": int(state["shares"]["TQQQ"]),
         "cash": float(state["cash"]),

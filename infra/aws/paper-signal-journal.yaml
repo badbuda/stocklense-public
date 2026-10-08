@@ -83,8 +83,16 @@ Resources:
               gen = datetime.fromisoformat(obj["generated_at_utc"].replace("Z","+00:00"))
               if gen.tzinfo is None or gen > now or now-gen > timedelta(hours=18):
                   raise RuntimeError("STALE_SIGNAL_GENERATION")
-              if not str(obj.get("version","")).startswith("8.0") or d.get("level") not in (0,1.25,2,3):
-                  raise ValueError("FROZEN_MODEL_CONTRACT_FAILED")
+              level=d.get("level")
+              if not str(obj.get("version","")).startswith("8.0") or type(level) is not int or level not in (1,2,3):
+                  raise ValueError("FROZEN_MODEL_LEVEL_INVALID")
+              defense=d.get("defense_active")
+              if type(defense) is not bool:
+                  raise ValueError("FROZEN_MODEL_DEFENSE_INVALID")
+              leverage=d.get("target_leverage")
+              expected=0.0 if defense else {1:1.25,2:2.0,3:3.0}[level]
+              if type(leverage) not in (int,float) or not math.isfinite(leverage) or not math.isclose(leverage,expected,abs_tol=1e-9):
+                  raise ValueError("FROZEN_MODEL_LEVERAGE_MISMATCH")
               weights = [d.get("qqq_weight"),d.get("tqqq_weight")]
               if any(not isinstance(w,(float,int)) or isinstance(w,bool) or not math.isfinite(w) or w<0 or w>1 for w in weights):
                   raise ValueError("INVALID_WEIGHTS")
