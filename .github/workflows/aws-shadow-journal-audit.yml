@@ -1,0 +1,35 @@
+name: StockLens AWS Shadow Journal Read Audit
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '40 3 * * 2-6'
+permissions:
+  id-token: write
+  contents: read
+jobs:
+  audit:
+    if: vars.AWS_STOCKLENS_AUDIT_ROLE_ARN != '' && vars.AWS_STOCKLENS_JOURNAL_TABLE != ''
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: eu-central-1
+          role-to-assume: ${{ vars.AWS_STOCKLENS_AUDIT_ROLE_ARN }}
+      - name: Verify journal, no trades
+        env:
+          TABLE: ${{ vars.AWS_STOCKLENS_JOURNAL_TABLE }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          session="$(TZ=America/New_York date +%F)"
+          aws dynamodb get-item --table-name "$TABLE" --key "{\"session_date\":{\"S\":\"$session\"}}" --consistent-read > /tmp/aws-journal.json
+          SESSION="$session" python3 - <<'PY'
+          import json,os,sys
+          x=json.load(open("/tmp/aws-journal.json")).get("Item")
+          if not x: sys.exit("AWS_JOURNAL_MISSING_EXPECTED_SESSION:"+os.environ["SESSION"])
+          obj=json.loads(x["signal_json"]["S"])
+          if x["broker_orders_authorized"]["BOOL"] is not False or obj.get("mode")!="SHADOW_ONLY_NO_BROKER_ACTIONS": sys.exit("AWS_JOURNAL_UNSAFE_BROKER_FLAG")
+          if obj["latest"]["asof_date"]!=os.environ["SESSION"]: sys.exit("AWS_JOURNAL_SIGNAL_DATE_MISMATCH")
+          print("AWS_SHADOW_SIGNAL_JOURNAL=PASS;asof="+os.environ["SESSION"]+";broker_execution=false")
+          PY
