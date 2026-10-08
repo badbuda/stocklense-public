@@ -1,0 +1,80 @@
+name: StockLens AWS Shadow Journal Read Audit
+
+on:
+  workflow_dispatch:
+    inputs:
+      verify_session:
+        description: Verify today's completed NYSE session (off = credentials preflight only)
+        type: boolean
+        required: false
+        default: false
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/aws-shadow-journal-audit.yml'
+  schedule:
+    - cron: '40 3 * * 2-6'
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      ROLE_ARN: ${{ vars.AWS_STOCKLENS_AUDIT_ROLE_ARN }}
+      TABLE: ${{ vars.AWS_STOCKLENS_JOURNAL_TABLE }}
+    steps:
+      - name: Require complete nonsecret AWS repository variables
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$ROLE_ARN" || { echo "::error::Missing AWS_STOCKLENS_AUDIT_ROLE_ARN"; exit 1; }
+          test -n "$TABLE" || { echo "::error::Missing AWS_STOCKLENS_JOURNAL_TABLE"; exit 1; }
+          echo "AWS_STOCKLENS_CONFIG=SET"
+      - name: Assume temporary read-only AWS role
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: eu-central-1
+          role-to-assume: ${{ vars.AWS_STOCKLENS_AUDIT_ROLE_ARN }}
+          role-session-name: stocklens-paper-audit
+      - name: Prove AWS identity and table access
+        shell: bash
+        run: |
+          set -euo pipefail
+          aws sts get-caller-identity --query 'Arn' --output text
+          status="$(aws dynamodb describe-table --table-name "$TABLE" --query 'Table.TableStatus' --output text)"
+          test "$status" = "ACTIVE" || { echo "::error::DynamoDB table not ACTIVE: $status"; exit 1; }
+          echo "AWS_STOCKLENS_OIDC_PREFLIGHT=PASS_READ_ONLY_TABLE_ACTIVE"
+          echo "AWS_STOCKLENS_LIVE_TRADING_AUTHORIZED=false"
+      - name: Verify the scheduled completed-session signal, never broker fills
+        if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.verify_session)
+        shell: bash
+        run: |
+          set -euo pipefail
+          session="$(TZ=America/New_York date +%F)"
+          aws dynamodb get-item \
+            --table-name "$TABLE" \
+            --key "{\"session_date\":{\"S\":\"$session\"}}" \
+            --consistent-read \
+            --output json > /tmp/aws-journal.json
+          SESSION="$session" python3 - <<'PY'
+          import json
+          import os
+          import sys
+          item = json.load(open("/tmp/aws-journal.json")).get("Item")
+          session = os.environ["SESSION"]
+          if not item:
+              sys.exit("AWS_SHADOW_JOURNAL_MISSING_COMPLETED_SESSION:" + session)
+          if item.get("broker_orders_authorized", {}).get("BOOL") is not False:
+              sys.exit("AWS_SHADOW_JOURNAL_UNSAFE_BROKER_FLAG")
+          signal = json.loads(item["signal_json"]["S"])
+          if signal.get("mode") != "SHADOW_ONLY_NO_BROKER_ACTIONS":
+              sys.exit("AWS_SHADOW_JOURNAL_UNEXPECTED_MODE")
+          if signal.get("latest", {}).get("asof_date") != session:
+              sys.exit("AWS_SHADOW_JOURNAL_SIGNAL_DATE_MISMATCH")
+          print("AWS_SHADOW_JOURNAL=PASS;asof=" + session + ";broker_execution=false")
+          PY

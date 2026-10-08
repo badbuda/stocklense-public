@@ -1,0 +1,156 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: StockLens shadow-only signal archive; broker trading is always disabled.
+Resources:
+  Signals:
+    Type: AWS::DynamoDB::Table
+    DeletionPolicy: Retain
+    Properties:
+      AttributeDefinitions: [{AttributeName: session_date, AttributeType: S}]
+      KeySchema: [{AttributeName: session_date, KeyType: HASH}]
+      BillingMode: PROVISIONED
+      ProvisionedThroughput: {ReadCapacityUnits: 1, WriteCapacityUnits: 5}
+      SSESpecification: {SSEEnabled: true}
+  LambdaLogs:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Join ['', ['/aws/lambda/', !Ref 'AWS::StackName', '-shadow']]
+      RetentionInDays: 7
+  LambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - {Effect: Allow, Principal: {Service: lambda.amazonaws.com}, Action: 'sts:AssumeRole'}
+      Policies:
+        - PolicyName: ArchiveSignalOnly
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - {Effect: Allow, Action: 'dynamodb:PutItem', Resource: !GetAtt Signals.Arn}
+              - Effect: Allow
+                Action: ['logs:CreateLogStream', 'logs:PutLogEvents']
+                Resource: !GetAtt LambdaLogs.Arn
+  ShadowLambda:
+    Type: AWS::Lambda::Function
+    DependsOn: [LambdaLogs]
+    Properties:
+      FunctionName: !Join ['', [!Ref 'AWS::StackName', '-shadow']]
+      Runtime: python3.12
+      Handler: index.handler
+      Role: !GetAtt LambdaRole.Arn
+      Timeout: 25
+      MemorySize: 128
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref Signals
+      Code:
+        ZipFile: |
+          import boto3, hashlib, json, math, os, urllib.request
+          from botocore.exceptions import ClientError
+          from datetime import datetime, timezone, time, timedelta
+          from zoneinfo import ZoneInfo
+          def validate(obj, now):
+              ny = now.astimezone(ZoneInfo("America/New_York"))
+              if ny.weekday() >= 5 or ny.time() < time(18,0):
+                  raise RuntimeError("NOT_COMPLETED_US_MARKET_SESSION")
+              if obj.get("mode") != "SHADOW_ONLY_NO_BROKER_ACTIONS":
+                  raise ValueError("NOT_PAPER_SHADOW")
+              if obj.get("signal_source") != "QQQ_ADJUSTED_DAILY_CLOSE":
+                  raise ValueError("WRONG_SIGNAL_SOURCE")
+              if obj.get("execution_plan", {}).get("broker_actions_enabled") is not False:
+                  raise ValueError("BROKER_MUST_REMAIN_DISABLED")
+              d = obj.get("latest", {})
+              if d.get("asof_date") != ny.date().isoformat():
+                  raise RuntimeError("STALE_COMPLETED_SESSION")
+              gen = datetime.fromisoformat(obj["generated_at_utc"].replace("Z","+00:00"))
+              if gen.tzinfo is None or gen > now or now-gen > timedelta(hours=18):
+                  raise RuntimeError("STALE_SIGNAL_GENERATION")
+              if not str(obj.get("version","")).startswith("8.0") or d.get("level") not in (0,1.25,2,3):
+                  raise ValueError("FROZEN_MODEL_CONTRACT_FAILED")
+              weights = [d.get("qqq_weight"),d.get("tqqq_weight")]
+              if any(not isinstance(w,(float,int)) or isinstance(w,bool) or not math.isfinite(w) or w<0 or w>1 for w in weights):
+                  raise ValueError("INVALID_WEIGHTS")
+              if sum(weights)>1.000001:
+                  raise ValueError("OVERINVESTED")
+              return d["asof_date"]
+          def handler(event, context):
+              now = datetime.now(timezone.utc)
+              url = "https://raw.githubusercontent.com/badbuda/stocklense-public/main/shadow_history/latest.json"
+              req = urllib.request.Request(url,headers={"User-Agent":"StockLens-AWS-Paper/1"})
+              with urllib.request.urlopen(req,timeout=15) as response:
+                  body=response.read(100001)
+              if len(body)>100000: raise ValueError("SIGNAL_TOO_LARGE")
+              data=json.loads(body)
+              day=validate(data,now)
+              item={"session_date":{"S":day},
+                    "recorded_at_utc":{"S":now.isoformat()},
+                    "signal_sha256":{"S":hashlib.sha256(body).hexdigest()},
+                    "signal_json":{"S":body.decode("utf-8")},
+                    "broker_orders_authorized":{"BOOL":False}}
+              try:
+                  boto3.client("dynamodb").put_item(TableName=os.environ["TABLE_NAME"],
+                                                    Item=item,
+                                                    ConditionExpression="attribute_not_exists(session_date)")
+                  status="ARCHIVED"
+              except ClientError as exc:
+                  if exc.response.get("Error",{}).get("Code")!="ConditionalCheckFailedException": raise
+                  status="DUPLICATE_IMMUTABLE"
+              print(json.dumps({"status":status,"session":day,"broker_actions":False}))
+              return {"status":status,"session":day}
+  NightlyRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: After 23:20 UTC GitHub nightly run, Tuesday-Saturday UTC.
+      ScheduleExpression: 'cron(10 3 ? * TUE-SAT *)'
+      State: ENABLED
+      Targets:
+        - {Id: ShadowArchive, Arn: !GetAtt ShadowLambda.Arn}
+  RuleInvokePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: 'lambda:InvokeFunction'
+      FunctionName: !Ref ShadowLambda
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt NightlyRule.Arn
+  ErrorAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmDescription: Fail-closed journal errors require review, including US market holidays.
+      Namespace: AWS/Lambda
+      MetricName: Errors
+      Dimensions: [{Name: FunctionName, Value: !Ref ShadowLambda}]
+      Statistic: Sum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 0
+      ComparisonOperator: GreaterThanThreshold
+      TreatMissingData: notBreaching
+  GitHubOIDC:
+    Type: AWS::IAM::OIDCProvider
+    Properties:
+      Url: 'https://token.actions.githubusercontent.com'
+      ClientIdList: ['sts.amazonaws.com']
+  GitHubAuditRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal: {Federated: !Ref GitHubOIDC}
+            Action: 'sts:AssumeRoleWithWebIdentity'
+            Condition:
+              StringEquals:
+                'token.actions.githubusercontent.com:aud': 'sts.amazonaws.com'
+                'token.actions.githubusercontent.com:sub': 'repo:badbuda@39247450/stocklense-public@1408609116:ref:refs/heads/main'
+      Policies:
+        - PolicyName: ReadOneShadowTableOnly
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - {Effect: Allow, Action: ['dynamodb:GetItem','dynamodb:DescribeTable'], Resource: !GetAtt Signals.Arn}
+Outputs:
+  TableName: {Value: !Ref Signals}
+  LambdaName: {Value: !Ref ShadowLambda}
+  GitHubAuditRoleArn: {Value: !GetAtt GitHubAuditRole.Arn}
