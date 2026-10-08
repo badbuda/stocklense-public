@@ -1,1 +1,1 @@
-observed-tqqq-only-policy-final-2026-10-08-1cbf7fd
+validate-frozen-backtest-shadow-decision-parity-2026-10-08-8f09995c
