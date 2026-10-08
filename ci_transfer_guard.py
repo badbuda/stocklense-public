@@ -9,8 +9,15 @@ from pathlib import Path
 
 MANIFEST = Path("ci_transfer_manifest.json")
 # Generated output and the one-shot trigger are not source-code inputs.
-DYNAMIC_PREFIXES = ("shadow_history/", "historical_replay/", "research/prospective/", "research/data/")
-EXCLUDED = {"ci_transfer_manifest.json", ".github/workflows/shadow-trigger.txt"}
+DYNAMIC_PREFIXES = ("shadow_history/", "historical_replay/", "research/prospective/", "research/data/", "research/reports/")
+EXCLUDED = {
+    "ci_transfer_manifest.json",
+    ".github/workflows/shadow-trigger.txt",
+    "research/risk_overlay_deep_dive.json",
+    "research/risk_overlay_multifactor.json",
+    "research/yahoo_long_history.json",
+    "research/yahoo_end_of_day_scorecard.json",
+}
 STATIC_DOCS = {
     "docs/index.html", "docs/legacy.html", "docs/workbench.html",
     "docs/execution.html", "docs/research.html", "docs/research-engine.js",
