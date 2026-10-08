@@ -244,6 +244,11 @@ jobs:
           PYTHONPATH: ${{ github.workspace }}
         run: python paper_forward_audit.py
 
+      - name: Independently audit prospective paper accounting
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: python paper_portfolio_integrity.py
+
       - name: Persist prospective signal
         id: persist
         env:
