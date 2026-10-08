@@ -24,3 +24,7 @@ def test_two_isolated_scheduled_lambdas_and_no_secrets():
     assert "AWS_PROSPECTIVE_PAPER=PASS_MODELED_ONLY" in W
     assert "AWS_STOCKLENS_AUDIT_ROLE_ARN" in W
     assert "AWS_ACCESS_KEY_ID" not in W
+
+
+def test_cloudformation_inline_python_is_small_and_portable():
+    assert len(SRC) < 4096
