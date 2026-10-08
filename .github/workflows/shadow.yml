@@ -147,6 +147,7 @@ jobs:
           python leveraged_instrument_reality_check.py
           python tradable_tqqq_execution_comparison.py
           python tradable_tqqq_execution_validate.py
+          python observed_etf_market_calendar_audit.py
           python observed_tqqq_risk_audit.py
           python observed_etf_statistical_robustness.py
           python observed_tqqq_only_gate.py
@@ -591,7 +592,9 @@ jobs:
             research/tradable_tqqq_execution_comparison.json
             research/data/observed_etf_qqq_tqqq_adjusted.csv
             docs/tradable_tqqq_execution_comparison.json
-            research/observed_tqqq_risk_audit.json
+            docs/observed_etf_calendar_integrity.json
+            research/observed_etf_calendar_integrity.json
+            research/observed_etf_calendar_integrity.json research/observed_tqqq_risk_audit.json
             research/observed_etf_statistical_robustness.json
             docs/observed_etf_statistical_robustness.json
             docs/observed_tqqq_risk_audit.json

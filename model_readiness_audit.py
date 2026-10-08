@@ -68,6 +68,22 @@ def evaluate(*, report, capital, benchmark, paper_gap, workbench, observation,
          "contribution_matched": (monthly.get("stocklens") or {}).get("paid_capital") ==
                                   (monthly.get("qqq_buy_hold") or {}).get("paid_capital")})
 
+    integrity = _load("docs/observed_etf_calendar_integrity.json")
+    add("OBSERVED_ETF_XNYS_DAILY_COVERAGE", "Backtest data",
+        integrity.get("status") == "PASS"
+        and integrity.get("expected_exchange_sessions") == period.get("sessions")
+        and integrity.get("observed_sessions") == period.get("sessions")
+        and not integrity.get("missing_sessions")
+        and not integrity.get("unexpected_sessions")
+        and integrity.get("source_sha256") == (report.get("observed_price_snapshot") or {}).get("sha256")
+        and integrity.get("synthetic_price_substitution") is False,
+        "Every observed QQQ/TQQQ backtest session must align with the XNYS exchange calendar and same-run price snapshot.",
+        {"status": integrity.get("status", "MISSING"),
+         "expected": integrity.get("expected_exchange_sessions"),
+         "observed": integrity.get("observed_sessions"),
+         "missing": integrity.get("missing_sessions"),
+         "suspicious_large_moves": len(integrity.get("large_daily_move_review_flags") or [])})
+
     add("BACKTEST_STRESS_COMPUTED", "Backtest model",
         len(report.get("slippage_stress_no_contributions") or []) >= 5
         and len(report.get("signal_lag_stress_no_contributions") or []) >= 3,
