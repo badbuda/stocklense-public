@@ -141,6 +141,7 @@ jobs:
           python leveraged_instrument_reality_check.py
           python tradable_tqqq_execution_comparison.py
           python tradable_tqqq_execution_validate.py
+          python observed_tqqq_only_gate.py
           python financed_1_25x_reality_check.py
           python frozen8_parameter_start_sensitivity.py
           python frozen8_sensitivity.py

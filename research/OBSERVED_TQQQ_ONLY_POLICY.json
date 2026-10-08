@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "effective_date": "2026-10-08",
+  "policy_id": "OBSERVED_TQQQ_ONLY_FOR_NEW_RESEARCH",
+  "active": true,
+  "benchmark": "QQQ_OBSERVED_PRICES_MATCHED_DATES",
+  "leveraged_instrument": "TQQQ_OBSERVED_ADJUSTED_OHLC",
+  "accepted_research_source": "YFINANCE_OBSERVED_QQQ_TQQQ_DAILY_OPEN_CLOSE",
+  "primary_comparison_artifact": "research/tradable_tqqq_execution_comparison.json",
+  "primary_public_artifact": "docs/tradable_tqqq_execution_comparison.json",
+  "earliest_eligible_date": "2010-02-09",
+  "never_fallback_to_synthetic": true,
+  "forbidden_as_new_decision_evidence": [
+    "3x_QQQ_DAILY_RETURN_PROXY",
+    "QQQ_RETURN_TIMES_TARGET_LEVERAGE",
+    "SYNTHETIC_PRE_TQQQ_INCEPTION",
+    "SYNTHETIC_MISSING_TQQQ_BAR",
+    "QQQ_ONLY_ASSUMED_TQQQ_TRACKING"
+  ],
+  "historical_artifacts": "ARCHIVE_ONLY_NOT_CURRENT_PERFORMANCE_CLAIMS",
+  "frozen_stocklens8": "PRESERVE_UNMODIFIED_SIGNAL_AND_QC_REFERENCE",
+  "execution_assumption": "NEXT_SESSION_ADJUSTED_DAILY_OPEN_APPROXIMATION_NOT_INTRADAY_FILL",
+  "incremental_signal_lag_sessions": [
+    0,
+    1,
+    2
+  ],
+  "transaction_assumptions": {
+    "fee_bps_each_side": 2,
+    "slippage_bps_each_side": 10,
+    "cash_constrained": true,
+    "whole_shares": true
+  },
+  "research_rules": [
+    "No proposed challenger can claim excess return from synthetic leveraged returns",
+    "No assumed TQQQ price exists before its real inception",
+    "No substitution or interpolation for missing observed TQQQ session",
+    "No automatic promotion; synthetic legacy diagnostics are archival only",
+    "Real TQQQ daily OHLC are still a proxy, not confirmed 09:31 or 09:32 broker fills",
+    "New experiments must prospectively predeclare separate observed-ETF implementation and cannot re-label the sealed SL9-007 experiment"
+  ],
+  "live_broker_orders_authorized": false,
+  "automatic_promotion_authorized": false
+}
