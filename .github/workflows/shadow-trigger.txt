@@ -1,1 +1,1 @@
-public-ci-dashboard-bundle-complete-2026-10-08-7e48365d
+public-ci-validated-batch-2026-10-08-587de42-stage-path-fix
