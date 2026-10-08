@@ -209,6 +209,29 @@ def build(out=OUT, research_out=RESEARCH_OUT):
         source_proof=_load("research/verified_price_source_audit.json"),
         decision_parity=_load("shadow_history/frozen_decision_parity.json"),
     )
+    # These diagnostics show engineering progress; they NEVER satisfy the
+    # separate independent-broker or prospective-performance evidence gates.
+    local_broker = _load("docs/broker_failure_harness.json")
+    forward = _load("docs/paper_forward_audit.json")
+    selection = _load("docs/selection_bias_inventory.json")
+    result["engineering_diagnostics"] = {
+        "local_failure_simulator": {
+            "status": local_broker.get("status", "MISSING"),
+            "broker_connected": False,
+            "broker_sandbox_qualified": False,
+        },
+        "prospective_paper_capture": {
+            "status": forward.get("status", "MISSING"),
+            "paper_sessions": forward.get("paper_sessions", 0),
+            "missed_sessions": forward.get("explicit_missed_sessions", 0),
+            "error_count": len(forward.get("errors", [])),
+        },
+        "selection_bias_inventory": {
+            "status": selection.get("status", "MISSING"),
+            "recorded_research_results": selection.get("recorded_research_results", 0),
+            "holdout_never_reused_proven": False,
+        },
+    }
     for dest in (out, research_out):
         target = Path(dest)
         target.parent.mkdir(parents=True, exist_ok=True)

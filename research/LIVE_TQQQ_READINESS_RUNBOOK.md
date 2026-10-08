@@ -35,3 +35,31 @@ The operational order-intent contract must use the prior completed signal, curre
 | Tiny, explicitly approved live pilot | Broker-confirmed fills, position and cash reconciliation | Cannot guarantee profits or remove leveraged ETF tail risk |
 
 Any claim of live readiness must be derived from verified evidence, not from backtest annual returns or green CI. `docs/backtest_live_readiness.json` is the machine-readable checklist; its BLOCKED status is intentional until evidence exists. The system remains shadow/paper only.
+
+## Seven-day execution sprint: 8–15 October 2026
+
+**Definition of done by 15 October:** tested and observable shadow/paper platform, automatic
+daily completeness checks, verified code/CI and a machine-readable ledger of unresolved
+live blockers. It is **not** an unconditional real-money launch date. If any required
+evidence is still absent, the correct outcome is a fully tested *non-trading* system.
+
+| Priority | Owner/system deliverable | Verifiable exit gate |
+|---|---|---|
+| P0 | Preserved frozen-8 decision contract; actual QQQ/TQQQ price mode | Source SHA and matching decision-parity checks green |
+| P0 | New prospective paper collector, preserving session timestamps | Daily forward-capture audit; never backfill, never hide a lost day |
+| P0 | Local order failure simulator | Idempotency, reject, partial fill, stale orders, cash, reconcile, kill-switch tests |
+| P0 | Evidence inventory | Every research comparison labels sample period and historical-selection limitations |
+| P1 | Historical execution audit | Minute data at actual 09:31/09:32 ET and corporate-action/provider reconciliation, or explicit BLOCKED |
+| P1 | External sandbox | Real vendor-specific sandbox, order/reconnect/duplicate/partial-fill behavior; local simulator alone does not count |
+| P1 | Reproducibility | Same-run original LEAN cashflow, fills, equity and source identity; otherwise BLOCKED |
+| P1 | Risk acceptance | Written, user-approved maximum order, cash exposure, allowable loss, emergency halt and manual signoff |
+| P2 | Forward evidence | Independently timestamped frozen-8 paper returns against matching QQQ; 63 and 252 sessions are later review milestones |
+
+**Known limits**: ~5 US market sessions can occur in a week. No honest process can
+turn that into 63 prospective sessions. Unknown spread, fill quality, model-selection
+bias and full LEAN parity must stay visible. Observed TQQQ means real market
+price inputs, not actual historical order fills or a guaranteed investable return.
+
+**No broker orders permitted** until the external sandbox, independent evidence,
+human risk acceptance and user-specific authorization are completed.
+A CI green state means code integrity only.

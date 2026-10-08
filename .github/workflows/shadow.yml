@@ -86,6 +86,12 @@ jobs:
           python -m py_compile qc_daily_parity.py
           python -m pytest -q
 
+      - name: Simulate broker failure modes locally (never live)
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          python broker_failure_harness.py
+
       - name: Enforce frozen QuantConnect parity contract
         env:
           PYTHONPATH: ${{ github.workspace }}
@@ -229,6 +235,11 @@ jobs:
         env:
           PYTHONPATH: ${{ github.workspace }}
         run: python paper_portfolio.py
+
+      - name: Enforce honest paper capture after reconciliation
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: python paper_forward_audit.py
 
       - name: Persist prospective signal
         id: persist
@@ -515,6 +526,7 @@ jobs:
         run: |
           python dashboard.py
           python backtest_paper_gap.py
+          python research_selection_inventory.py
           python model_readiness_audit.py
           python public_dashboard_feeds.py
           python dashboard_bundle_validate.py
@@ -576,6 +588,10 @@ jobs:
             research/tradable_tqqq_execution_comparison.json
             docs/tradable_tqqq_execution_comparison.json
             docs/backtest_live_readiness.json
+            docs/paper_forward_audit.json
+            docs/broker_failure_harness.json
+            docs/selection_bias_inventory.json
+            research/selection_bias_inventory.json
             research/backtest_live_readiness.json
             research/hybrid_return_concentration.json
             research/hybrid_rolling_distribution.json
