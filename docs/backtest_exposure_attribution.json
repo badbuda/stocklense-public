@@ -2,26 +2,26 @@
   "schema_version": 1,
   "publication_identity": {
     "schema_version": 2,
-    "git_sha": "24eceb553c734bac5b78238312a6269503f419f2",
+    "git_sha": "08d395309348bb75be544f107ba6fc1fb883ac5d",
     "signal_asof": null,
     "replay_dataset_sha256": "db0889da31af43b1b75e005c1f4ab2cad421dfb55a6c55a77a223e0623950d95",
-    "replay_rows_sha256": "4bb9aaabbabc97d9741c3ed1c385bf2bc8b3d3d27634ba182951a95f4333c896",
+    "replay_rows_sha256": "948a2d02ae5d67f9ffea9bbd0244b6134c4414bc2825617c3098c2ac6dec617e",
     "simulator_contract_sha256": "80745a3640c6fe667a3c500571fb15abee1d532a5b720fb6efc8b52f291dfc68",
-    "generation_id": "2b928d08b529e914ea521f0ab08e3e8a2f28dd6f4fd7d2a39645117f2ca111de"
+    "generation_id": "b555a7c3a74f2253363860a39d285cac9facdd050808d39308278c5d7c416b15"
   },
   "status": "PASS",
   "exposure_buckets": {
     "1.25": {
       "sessions": 12,
-      "qqq_return_sum": 0.04342588974479489,
-      "gross_strategy_return_sum": 0.05428236218099361,
-      "positive_gross_sum": 0.12663827242030606,
+      "qqq_return_sum": 0.0434259961703084,
+      "gross_strategy_return_sum": 0.0542824952128855,
+      "positive_gross_sum": 0.12663840545219796,
       "negative_gross_sum": -0.07235591023931245,
       "positive_sessions": 8,
       "negative_sessions": 4,
       "session_share": 0.04780876494023904,
-      "positive_gross_share": 0.03379692183541895,
-      "negative_gross_magnitude_share": 0.023501181974954977
+      "positive_gross_share": 0.0337969780985721,
+      "negative_gross_magnitude_share": 0.023501197783587814
     },
     "2.0": {
       "sessions": 15,
@@ -32,20 +32,20 @@
       "positive_sessions": 8,
       "negative_sessions": 7,
       "session_share": 0.05976095617529881,
-      "positive_gross_share": 0.05233203596780089,
-      "negative_gross_magnitude_share": 0.05898833814014868
+      "positive_gross_share": 0.05233206811296499,
+      "negative_gross_magnitude_share": 0.05898837782006692
     },
     "3.0": {
       "sessions": 224,
-      "qqq_return_sum": 0.19981925100096987,
-      "gross_strategy_return_sum": 0.5994577530029096,
-      "positive_gross_sum": 3.4243074136254474,
-      "negative_gross_sum": -2.824849660622537,
+      "qqq_return_sum": 0.19981912979376382,
+      "gross_strategy_return_sum": 0.5994573893812915,
+      "positive_gross_sum": 3.424304978963187,
+      "negative_gross_sum": -2.824847589581896,
       "positive_sessions": 121,
       "negative_sessions": 103,
       "session_share": 0.8924302788844621,
-      "positive_gross_share": 0.9138710421967802,
-      "negative_gross_magnitude_share": 0.9175104798848963
+      "positive_gross_share": 0.913870953788463,
+      "negative_gross_magnitude_share": 0.9175104243963452
     }
   },
   "semantics": "Gross frozen-replay attribution by prior-session target exposure. Return sums are diagnostics, not compounded standalone sleeve returns or causal alpha.",

@@ -12,31 +12,31 @@
         {
           "offset": -3,
           "date": "2026-03-17",
-          "qqq_return": 0.004880223770939329,
+          "qqq_return": 0.004880325778041428,
           "applied_exposure": 3.0
         },
         {
           "offset": -2,
           "date": "2026-03-18",
-          "qqq_return": -0.013939789958076654,
+          "qqq_return": -0.013939788543025022,
           "applied_exposure": 3.0
         },
         {
           "offset": -1,
           "date": "2026-03-19",
-          "qqq_return": -0.00316015663966962,
+          "qqq_return": -0.0031603622078371085,
           "applied_exposure": 3.0
         },
         {
           "offset": 0,
           "date": "2026-03-20",
-          "qqq_return": -0.01848165384048972,
+          "qqq_return": -0.01848165574914795,
           "applied_exposure": 3.0
         },
         {
           "offset": 1,
           "date": "2026-03-23",
-          "qqq_return": 0.011478937044348214,
+          "qqq_return": 0.011479043469861727,
           "applied_exposure": 1.25
         },
         {

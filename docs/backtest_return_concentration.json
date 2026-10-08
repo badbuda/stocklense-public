@@ -3,10 +3,10 @@
   "status": "PASS",
   "sessions": 251,
   "positive_sessions": 137,
-  "top1_positive_gross_return_share": 0.02719585484101479,
-  "top5_positive_gross_return_share": 0.12886370472675432,
-  "top10_positive_gross_return_share": 0.22287806276004557,
-  "top20_positive_gross_return_share": 0.37092228337123895,
+  "top1_positive_gross_return_share": 0.027195871546178283,
+  "top5_positive_gross_return_share": 0.12886378388180453,
+  "top10_positive_gross_return_share": 0.22287819966379427,
+  "top20_positive_gross_return_share": 0.3709225137804462,
   "top10_session_dates": [
     "2026-08-04",
     "2026-06-11",
@@ -19,7 +19,7 @@
     "2025-11-10",
     "2025-10-13"
   ],
-  "median_daily_gross_return": 0.00369976657041593,
+  "median_daily_gross_return": 0.0037000616185798307,
   "semantics": "Concentration of summed positive daily gross replay returns. This is diagnostic, not additive compounded performance and not a promotion rule.",
   "automatic_promotion": false
 }

@@ -4,15 +4,15 @@
   "status": "BLOCKED_FOR_LIVE_TRADING",
   "model": "StockLens 8.0 FROZEN",
   "evidence_class": "OBSERVED_ETF_DAILY_OPEN_PROXY_NOT_BROKER_LIVE",
-  "generated_at_utc": "2026-10-08T14:54:27.486898+00:00",
+  "generated_at_utc": "2026-10-08T15:17:51.494012+00:00",
   "backtest_window": {
     "start": "2010-02-11",
     "end": "2026-10-07",
     "sessions": 4189
   },
-  "historical_observed_etf_cagr": 0.40277798389407815,
-  "historical_qqq_cagr": 0.19819719780189882,
-  "historical_max_drawdown": -0.49075662407300513,
+  "historical_observed_etf_cagr": 0.4027782389548482,
+  "historical_qqq_cagr": 0.19819719601502372,
+  "historical_max_drawdown": -0.49075667022940617,
   "statistical_significance_not_proven": true,
   "observed_daily_open_not_true_fills": true,
   "prospective_challenger_sessions": 8,
@@ -32,7 +32,7 @@
           "sessions": 4189
         },
         "source": "YFINANCE_AUTO_ADJUSTED_DAILY_OPEN_AND_CLOSE",
-        "data_sha256": "70fe6108edb89bb8b5bfddcf6b5c077973bdb2fa1adf1207736abdd3dc8b8e63"
+        "data_sha256": "cc55efdb478dca2c0c578099a6f0308240abd6d13e9252d9a8a72e39edcd8207"
       },
       "severity": "REQUIRED"
     },
@@ -42,8 +42,8 @@
       "status": "PASS",
       "description": "Both strategies require identical market dates and external cashflows.",
       "evidence": {
-        "stocklens": 28031901.603061,
-        "qqq": 2030716.749406,
+        "stocklens": 28031986.476737,
+        "qqq": 2030716.698977,
         "contribution_matched": true
       },
       "severity": "REQUIRED"
@@ -196,7 +196,7 @@
       "status": "BLOCKED",
       "description": "Human-approved loss budget, position sizing, concentration, volatility gap limits, kill switch and response playbook must be validated.",
       "evidence": {
-        "historical_max_drawdown": -0.49075662407300513,
+        "historical_max_drawdown": -0.49075667022940617,
         "stress_loss_guarantee": false,
         "policy": "NOT_YET_APPROVED"
       },
