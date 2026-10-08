@@ -139,7 +139,7 @@
     "market_calendar.py": "44b1f20f2a1362848c40c160b27c42414e22142b",
     "market_context.py": "67cfc1a72245530816767bb25080128d648b8c0b",
     "mobile_validate.py": "15e9c8f3dd63f9e1efcc0b8b37f8f15a7c5fb25f",
-    "model_readiness_audit.py": "8ad3b115c5795487214044aa5376d365e29315d9",
+    "model_readiness_audit.py": "988fc3f8478780d2241587bc4dbed3ddcf8c12d0",
     "next_frontier_multidirection_megabatch.py": "c3428ba8a9c77384c5f058274b7b734f226f6599",
     "observed_etf_statistical_robustness.py": "0e0fa1896191e54c273e0f4996e92236dde06040",
     "observed_intraday_execution_gap.py": "42b250cf7f9cff35936325c9fdf22c65f4b12645",
