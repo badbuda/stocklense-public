@@ -1,14 +1,14 @@
 {
   "schema_version": 1,
   "kind": "STOCKLENS_WORKBENCH_CANONICAL_EVIDENCE_BUNDLE",
-  "generated_at_utc": "2026-10-08T14:08:37.379456+00:00",
+  "generated_at_utc": "2026-10-08T14:54:25.871751+00:00",
   "model": "StockLens 8.0 FROZEN",
   "self_check": {
     "status": "PASS",
     "errors": [],
     "replay_sessions": 252,
     "transition_count": 67,
-    "manifest_sha256": "ac410762327507428a2b219f39f9cdc573e79b34608a2998ec4971f77c7245f7",
+    "manifest_sha256": "2fac112077094b84811cf21d87fd6e9af3460aa63b3e1d42224c5235fd242bbf",
     "automatic_model_change": false
   },
   "evidence_manifest": {
@@ -18,7 +18,7 @@
     "automatic_model_change": false,
     "automatic_promotion": false,
     "artifacts": {
-      "historical_replay/daily_states.csv": "5e2b0fe244b7b7f7d4deb3e4ed32971b24f88056cba7a643ad61d6d1f7105e0a",
+      "historical_replay/daily_states.csv": "3456379a02049bde082f4c08104922b8d834fdb160eb8c43adb3580b1461c9fb",
       "governance/qc_724_leverage_transitions.json": "e2d5851aed6688ae27cb6590a9adfac3ece449818d7ca923d7d011147b3a553e",
       "governance/qc_724_order_golden_master.json": "153edd0a5c8ebeed408b5d3b7d6a79af508c6f3f5ee8ed1868a3a65fc0fe17fb",
       "governance/qc_724_daily_state_manifest.json": "0b928664b58b26d23000d4e0d1c921c1a91ea5d12f999374a5d4c5d9ab8c1cd9",
@@ -31,7 +31,7 @@
       "lean_daily_state": "VERIFIED_FINGERPRINT_RAW_ROWS_MISSING",
       "prospective": "IMMATURE_FUTURE_ONLY"
     },
-    "manifest_sha256": "ac410762327507428a2b219f39f9cdc573e79b34608a2998ec4971f77c7245f7"
+    "manifest_sha256": "2fac112077094b84811cf21d87fd6e9af3460aa63b3e1d42224c5235fd242bbf"
   },
   "live": {
     "asof_date": "2026-10-07",

@@ -32,7 +32,7 @@ Paper portfolio has not executed its first forward session yet.
 
 ## Data-integrity audit
 
-- Nonmaterial same-session input revisions observed: **3**
+- Nonmaterial same-session input revisions observed: **4**
 - Latest input-drift audit: **2026-10-07** (ORIGINAL_PRESERVED_NONMATERIAL_INPUT_DRIFT)
 
 ## Governance

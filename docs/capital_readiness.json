@@ -2,12 +2,12 @@
   "schema_version": 2,
   "publication_identity": {
     "schema_version": 2,
-    "git_sha": "2e536fd0c602214b9f8219e33f5cbfa8f74ca55f",
+    "git_sha": "24eceb553c734bac5b78238312a6269503f419f2",
     "signal_asof": null,
     "replay_dataset_sha256": "db0889da31af43b1b75e005c1f4ab2cad421dfb55a6c55a77a223e0623950d95",
-    "replay_rows_sha256": "46d64a0a484c2259eadc4b1fd9e28fae36bf11d1d015e0111f83e6c6655b548b",
+    "replay_rows_sha256": "4bb9aaabbabc97d9741c3ed1c385bf2bc8b3d3d27634ba182951a95f4333c896",
     "simulator_contract_sha256": "80745a3640c6fe667a3c500571fb15abee1d532a5b720fb6efc8b52f291dfc68",
-    "generation_id": "e7836a1f7e58e929dd95aaaca08ff3deafc7b05cb058810bdbc862e30f90098e"
+    "generation_id": "2b928d08b529e914ea521f0ab08e3e8a2f28dd6f4fd7d2a39645117f2ca111de"
   },
   "stage": "LIMITED_EXECUTION_OBSERVATION_ELIGIBLE",
   "prospective_completed_sessions": 8,
@@ -21,8 +21,8 @@
     "source_status": "AVAILABLE",
     "returns_csv": "research/data/SL9-007-UPSHIFT-CONFIRMATION.csv",
     "producer_current": true,
-    "producer_git_sha": "2e536fd0c602214b9f8219e33f5cbfa8f74ca55f",
-    "registry_updated_at_utc": "2026-10-08T14:08:32.783103+00:00",
+    "producer_git_sha": "24eceb553c734bac5b78238312a6269503f419f2",
+    "registry_updated_at_utc": "2026-10-08T14:54:22.456958+00:00",
     "maturity_status": "PASS",
     "experiment_id": "SL9-007-UPSHIFT-CONFIRMATION",
     "accepted_completed_xnys_rows": 8,

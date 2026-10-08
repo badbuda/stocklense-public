@@ -2,6 +2,27 @@
   "schema_version": 1,
   "items": [
     {
+      "short_sha": "24eceb5",
+      "date": "2026-10-08T17:38:17+03:00",
+      "title": "ci: validate complete real-TQQQ risk and prospective paper continuity batch",
+      "kind": "FIX",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "4695be2",
+      "date": "2026-10-08T17:37:43+03:00",
+      "title": "fix: audit every prospective NYSE paper session and add observed TQQQ path-risk falsification",
+      "kind": "FIX",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "f394a59",
+      "date": "2026-10-08T14:08:41Z",
+      "title": "shadow: record prospective evidence 2026-10-07",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
       "short_sha": "2e536fd",
       "date": "2026-10-08T16:48:45+03:00",
       "title": "ci: validate batched paper capture and broker failure safeguards",
@@ -60,27 +81,6 @@
     {
       "short_sha": "ce39641",
       "date": "2026-10-08T12:25:12Z",
-      "title": "shadow: record prospective evidence 2026-10-07",
-      "kind": "PROJECT",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "6e0a692",
-      "date": "2026-10-08T15:10:00+03:00",
-      "title": "ci: run one observed-ETF execution comparison validation after complete source handoff",
-      "kind": "FIX",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "ccc3ae0",
-      "date": "2026-10-08T15:09:06+03:00",
-      "title": "research: compare frozen StockLens to QQQ with observed TQQQ daily-open whole-share execution proxy",
-      "kind": "PROJECT",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "3112555",
-      "date": "2026-10-08T09:53:44Z",
       "title": "shadow: record prospective evidence 2026-10-07",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
@@ -88,6 +88,27 @@
   ],
   "high_signal_items": [
     {
+      "short_sha": "24eceb5",
+      "date": "2026-10-08T17:38:17+03:00",
+      "title": "ci: validate complete real-TQQQ risk and prospective paper continuity batch",
+      "kind": "FIX",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "4695be2",
+      "date": "2026-10-08T17:37:43+03:00",
+      "title": "fix: audit every prospective NYSE paper session and add observed TQQQ path-risk falsification",
+      "kind": "FIX",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "f394a59",
+      "date": "2026-10-08T14:08:41Z",
+      "title": "shadow: record prospective evidence 2026-10-07",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
       "short_sha": "2e536fd",
       "date": "2026-10-08T16:48:45+03:00",
       "title": "ci: validate batched paper capture and broker failure safeguards",
@@ -149,47 +170,26 @@
       "title": "shadow: record prospective evidence 2026-10-07",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "6e0a692",
-      "date": "2026-10-08T15:10:00+03:00",
-      "title": "ci: run one observed-ETF execution comparison validation after complete source handoff",
-      "kind": "FIX",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "ccc3ae0",
-      "date": "2026-10-08T15:09:06+03:00",
-      "title": "research: compare frozen StockLens to QQQ with observed TQQQ daily-open whole-share execution proxy",
-      "kind": "PROJECT",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "3112555",
-      "date": "2026-10-08T09:53:44Z",
-      "title": "shadow: record prospective evidence 2026-10-07",
-      "kind": "PROJECT",
-      "impact": "Repository change; CI validation is separate."
     }
   ],
   "recent_summary": [
     {
-      "short_sha": "2e536fd",
-      "date": "2026-10-08T16:48:45+03:00",
-      "title": "ci: validate batched paper capture and broker failure safeguards",
+      "short_sha": "24eceb5",
+      "date": "2026-10-08T17:38:17+03:00",
+      "title": "ci: validate complete real-TQQQ risk and prospective paper continuity batch",
       "kind": "FIX",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "41eca22",
-      "date": "2026-10-08T16:48:08+03:00",
-      "title": "test: fail-closed paper capture, local broker failure harness, and model-selection inventory",
-      "kind": "PROJECT",
+      "short_sha": "4695be2",
+      "date": "2026-10-08T17:37:43+03:00",
+      "title": "fix: audit every prospective NYSE paper session and add observed TQQQ path-risk falsification",
+      "kind": "FIX",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "d5587d1",
-      "date": "2026-10-08T13:09:39Z",
+      "short_sha": "f394a59",
+      "date": "2026-10-08T14:08:41Z",
       "title": "shadow: record prospective evidence 2026-10-07",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."

@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at_utc": "2026-10-08T14:08:38.178281+00:00",
+  "generated_at_utc": "2026-10-08T14:54:26.460354+00:00",
   "freshness": {
     "max_age_minutes": 180,
     "semantics": "PUBLICATION_AGE_ONLY_NOT_MARKET_DATA_AGE"
@@ -33,7 +33,7 @@
   "market_session_freshness": "CURRENT",
   "self_check": "PASS",
   "bundle_manifest_match": true,
-  "manifest_sha256": "ac410762327507428a2b219f39f9cdc573e79b34608a2998ec4971f77c7245f7",
+  "manifest_sha256": "2fac112077094b84811cf21d87fd6e9af3460aa63b3e1d42224c5235fd242bbf",
   "replay_sessions": 252,
   "transition_count": 67,
   "evidence_classes": {
