@@ -11,12 +11,12 @@
     "qqq_weight": 0.0,
     "tqqq_weight": 0.985,
     "cash_weight": 0.015000000000000013,
-    "generated_at_utc": "2026-10-08T09:53:30.921245+00:00",
+    "generated_at_utc": "2026-10-08T12:24:58.959107+00:00",
     "source": null,
     "features": {
       "close": 757.72998046875,
       "sma50": 720.9028576660156,
-      "sma200": 669.5385388183594,
+      "sma200": 669.5385348510742,
       "vol20": 0.15432005621727532,
       "mom12": 0.2527196087811727
     }
@@ -67,13 +67,13 @@
     "affects_frozen_signal": false,
     "asof_date": "2026-10-08",
     "vix": {
-      "value": 15.670000076293945,
+      "value": 15.729999542236328,
       "regime": "NORMAL",
       "source": "Yahoo Finance ^VIX",
       "status": "AVAILABLE"
     },
     "fear_greed": null,
-    "generated_at_utc": "2026-10-08T09:53:34.237018+00:00",
+    "generated_at_utc": "2026-10-08T12:25:02.678820+00:00",
     "notes": [
       "Context is observational only.",
       "Missing context never changes or blocks StockLens 8.0.",
@@ -94,9 +94,9 @@
       "vol_to_28": -0.1256799437827247,
       "vol_to_42": 0.26567994378272464,
       "vol_to_38": -0.22567994378272468,
-      "close_vs_retention_floor_pct": 0.1431512516159219,
-      "close_vs_reentry_threshold_pct": 0.120514593168082,
-      "sma50_vs_sma200_pct": 0.07671600045354676,
+      "close_vs_retention_floor_pct": 0.1431512583895529,
+      "close_vs_reentry_threshold_pct": 0.12051459980758161,
+      "sma50_vs_sma200_pct": 0.07671600683352198,
       "mom12": 0.2527196087811727
     },
     "flags": [],
@@ -301,8 +301,8 @@
   },
   "transition_explanation": {
     "primary": "VOL20 needs +16.57 pp to reach the 32% L3\u2192L2 volatility threshold.",
-    "trend_retention_floor": 662.8431534301758,
-    "trend_reentry_threshold": 676.233924206543,
+    "trend_retention_floor": 662.8431495025635,
+    "trend_reentry_threshold": 676.233920199585,
     "close": 757.72998046875,
     "observational_only": true
   },
@@ -347,15 +347,15 @@
       "sma50": {
         "relative_change": 0.0023063971550491423,
         "absolute_limit": 0.05,
-        "rolling_median_change": 0.00041334489867177795,
-        "rolling_mad": 0.00026191143329927285,
+        "rolling_median_change": 0.0004133457545933383,
+        "rolling_mad": 0.0002619131470370861,
         "effective_limit": 0.05
       },
       "sma200": {
-        "relative_change": 0.0011324219857494757,
+        "relative_change": 0.00113242152943324,
         "absolute_limit": 0.02,
-        "rolling_median_change": 0.000844884243861766,
-        "rolling_mad": 8.58820521212418e-05,
+        "rolling_median_change": 0.0008448842434633859,
+        "rolling_mad": 8.588205354567225e-05,
         "effective_limit": 0.02
       },
       "vol20": {
@@ -368,8 +368,8 @@
       "mom12": {
         "relative_change": 0.04757190195031172,
         "absolute_limit": 0.75,
-        "rolling_median_change": 0.042428594629619745,
-        "rolling_mad": 0.0209537027789333,
+        "rolling_median_change": 0.04242807031945,
+        "rolling_mad": 0.02095185648943016,
         "effective_limit": 0.75
       }
     },
@@ -390,7 +390,7 @@
     "completed_rows": 4721,
     "last_completed_date": "2026-10-07",
     "feature_window_sessions": 253,
-    "feature_window_sha256": "177ce875a160eb908587b016bcc662b3c3f709173ace7d01cae9066d57274f34",
+    "feature_window_sha256": "c76e6743f789cfc86387a843718721840dbf30e0d1b15c4e25f40c32e44c873c",
     "dropped_incomplete_current_session": false
   },
   "forward_path": {
@@ -541,7 +541,7 @@
   },
   "automation_guard": {
     "status": "SAFE_PAPER_AUTOMATION",
-    "generated_at_utc": "2026-10-08T09:53:40.086013+00:00",
+    "generated_at_utc": "2026-10-08T12:25:08.378473+00:00",
     "broker_mode": "PAPER",
     "live_trading_enabled": false,
     "checks": {
@@ -610,7 +610,7 @@
   },
   "execution_policy": {
     "schema_version": 1,
-    "generated_at_utc": "2026-10-08T09:53:39.930945+00:00",
+    "generated_at_utc": "2026-10-08T12:25:08.219182+00:00",
     "status": "NO_ACTION_REQUIRED",
     "next_action": "WAIT_FOR_NEXT_SIGNAL",
     "window_statuses": {},
@@ -625,12 +625,12 @@
     "schema_version": 2,
     "publication_identity": {
       "schema_version": 2,
-      "git_sha": "fe9cc5fceb3c3037ebac08a5debf887311198e4b",
+      "git_sha": "6e0a6926af6a822a238fa6d9c09d06053db0e4af",
       "signal_asof": null,
       "replay_dataset_sha256": "db0889da31af43b1b75e005c1f4ab2cad421dfb55a6c55a77a223e0623950d95",
-      "replay_rows_sha256": "6e0c9771676cffc525974d0835380e0382f9fcb91fe5183fdc152d7221d3d94a",
+      "replay_rows_sha256": "8e5c3a3e0ddeb716d32e24afbec634f3671fc886cb1d92d23a6a89997f51e5ba",
       "simulator_contract_sha256": "80745a3640c6fe667a3c500571fb15abee1d532a5b720fb6efc8b52f291dfc68",
-      "generation_id": "8365cf726f3e52b2ce5f9e13570c445496b39d416001d6a4a70ee3ecac65f48f"
+      "generation_id": "f48e9d8add26af6814591a2e894ee05c3f82b3d383f0f157c3729a3d079b54d5"
     },
     "stage": "LIMITED_EXECUTION_OBSERVATION_ELIGIBLE",
     "prospective_completed_sessions": 8,
@@ -644,8 +644,8 @@
       "source_status": "AVAILABLE",
       "returns_csv": "research/data/SL9-007-UPSHIFT-CONFIRMATION.csv",
       "producer_current": true,
-      "producer_git_sha": "fe9cc5fceb3c3037ebac08a5debf887311198e4b",
-      "registry_updated_at_utc": "2026-10-08T09:53:36.960640+00:00",
+      "producer_git_sha": "6e0a6926af6a822a238fa6d9c09d06053db0e4af",
+      "registry_updated_at_utc": "2026-10-08T12:25:05.441494+00:00",
       "maturity_status": "PASS",
       "experiment_id": "SL9-007-UPSHIFT-CONFIRMATION",
       "accepted_completed_xnys_rows": 8,
@@ -694,10 +694,10 @@
   },
   "prospective_maturity": {
     "schema_version": 5,
-    "producer_git_sha": "fe9cc5fceb3c3037ebac08a5debf887311198e4b",
-    "current_git_sha": "fe9cc5fceb3c3037ebac08a5debf887311198e4b",
+    "producer_git_sha": "6e0a6926af6a822a238fa6d9c09d06053db0e4af",
+    "current_git_sha": "6e0a6926af6a822a238fa6d9c09d06053db0e4af",
     "producer_current": true,
-    "registry_updated_at_utc": "2026-10-08T09:53:36.960640+00:00",
+    "registry_updated_at_utc": "2026-10-08T12:25:05.441494+00:00",
     "status": "PASS",
     "experiments": [
       {
@@ -729,7 +729,7 @@
     "severity": "NONE",
     "reasons": [],
     "asof_date": "2026-10-07",
-    "generated_at_utc": "2026-10-08T09:53:41.786880+00:00",
+    "generated_at_utc": "2026-10-08T12:25:10.048865+00:00",
     "auto_recovery": "Incident clears only when current evidence returns healthy; historical failures remain in CI history."
   },
   "publication_gate": {
@@ -747,8 +747,8 @@
       "provenance_generation_canonical": true,
       "manifest_generation_canonical": true
     },
-    "source_git_sha": "fe9cc5fceb3c3037ebac08a5debf887311198e4b",
-    "publication_generation": "8365cf726f3e52b2ce5f9e13570c445496b39d416001d6a4a70ee3ecac65f48f",
+    "source_git_sha": "6e0a6926af6a822a238fa6d9c09d06053db0e4af",
+    "publication_generation": "f48e9d8add26af6814591a2e894ee05c3f82b3d383f0f157c3729a3d079b54d5",
     "rule": "Evidence publication is allowed only from a complete internally consistent run. Remote branch freshness is enforced by workflow before push.",
     "authoritative": true
   },
@@ -763,7 +763,7 @@
     "schema_version": 2,
     "kind": "RESEARCH_PROVENANCE",
     "dataset_path": "docs/research.json",
-    "dataset_sha256": "a11fe59ace0facc12da59295c4430a5d4cb53d90caff62a66399c852e42a6b09",
+    "dataset_sha256": "fb5da46de8e1937ca21e4913948cfbb250fcc2c207ea29d93a7dab5aabc82628",
     "rows": 252,
     "first_date": "2025-10-07",
     "last_date": "2026-10-07",
@@ -780,10 +780,10 @@
         "status": "INSUFFICIENT"
       }
     },
-    "git_sha": "fe9cc5fceb3c3037ebac08a5debf887311198e4b",
-    "github_run_id": "37757960266",
-    "github_run_number": "163",
-    "publication_generation": "8365cf726f3e52b2ce5f9e13570c445496b39d416001d6a4a70ee3ecac65f48f",
+    "git_sha": "6e0a6926af6a822a238fa6d9c09d06053db0e4af",
+    "github_run_id": "37774964138",
+    "github_run_number": "164",
+    "publication_generation": "f48e9d8add26af6814591a2e894ee05c3f82b3d383f0f157c3729a3d079b54d5",
     "promotion_allowed": false,
     "automatic_model_change": false
   },
@@ -867,12 +867,14 @@
       "status": "GREEN",
       "problems": [],
       "warnings": [],
-      "info": [],
+      "info": [
+        "NONMATERIAL_INPUT_REVISIONS:1"
+      ],
       "signal_rows": 1,
       "paper_sessions": 0,
       "asof_date": "2026-10-07"
     },
-    "nonmaterial_input_revisions": 0,
+    "nonmaterial_input_revisions": 1,
     "qc_reference": "LOCKED",
     "yahoo_replay": "DATA_SOURCE_DRIFT_DIAGNOSTIC",
     "parity": {
@@ -912,27 +914,27 @@
       "2": 15,
       "3": 225
     },
-    "dataset_sha256": "2d33b88b3bb84b29013d09cee5978b66a014c8b54ee56b830e6a517e6bf8c7c4",
+    "dataset_sha256": "c1aa910cdac618abe22c1814f4519a12b4adc6a2c8c13ccf850257086e799310",
     "source_audit": {
       "source": "YFINANCE_QQQ_AUTO_ADJUSTED",
       "raw_rows": 4721,
       "completed_rows": 4721,
       "feature_window_sessions": 253,
-      "feature_window_sha256": "036f2ef0dd03b921580aa6d809c816c7cf5caa14021a71d7402f585cf4cc768c",
+      "feature_window_sha256": "33c9a02eea1c49a2a54d280071ebdff7512cca7d25b0715b54509337f099b758",
       "raw_last_date": "2026-10-07",
       "last_completed_date": "2026-10-07",
       "dropped_incomplete_current_session": false,
-      "ny_time_at_validation": "2026-10-08T05:53:32.946278-04:00",
+      "ny_time_at_validation": "2026-10-08T08:25:01.238967-04:00",
       "safe_after_ny_time": "18:00"
     }
   },
   "why": {
-    "close_vs_sma200_pct": 0.13171973909976264,
-    "sma50_vs_sma200_pct": 0.07671600045354676,
+    "close_vs_sma200_pct": 0.13171974580565737,
+    "sma50_vs_sma200_pct": 0.07671600683352198,
     "vol_to_level3_drop": 0.1656799437827247,
     "mom12": 0.2527196087811727,
-    "trend_retention_floor": 662.8431534301758,
-    "trend_reentry_threshold": 676.233924206543
+    "trend_retention_floor": 662.8431495025635,
+    "trend_reentry_threshold": 676.233920199585
   },
   "signal_history": [
     {
@@ -949,9 +951,9 @@
       "level": 3,
       "defense": false,
       "leverage": 3.0,
-      "close": 741.15234375,
-      "vol20": 0.16011666062527966,
-      "mom12": 0.4354530557684029
+      "close": 741.1524047851562,
+      "vol20": 0.16011660064150587,
+      "mom12": 0.43545351335606797
     },
     {
       "date": "2026-06-02",
@@ -959,8 +961,8 @@
       "defense": false,
       "leverage": 3.0,
       "close": 744.5650024414062,
-      "vol20": 0.15811204666059286,
-      "mom12": 0.4443406350624126
+      "vol20": 0.15811203957048514,
+      "mom12": 0.4443408060705407
     },
     {
       "date": "2026-06-03",
@@ -968,8 +970,8 @@
       "defense": false,
       "leverage": 3.0,
       "close": 742.6192626953125,
-      "vol20": 0.15766534006278718,
-      "mom12": 0.4292775631453265
+      "vol20": 0.15766533294282958,
+      "mom12": 0.429277227348261
     },
     {
       "date": "2026-06-04",
@@ -977,7 +979,7 @@
       "defense": false,
       "leverage": 3.0,
       "close": 739.0269165039062,
-      "vol20": 0.14843391549702104,
+      "vol20": 0.14843390791722064,
       "mom12": 0.4113312200266501
     },
     {
@@ -985,27 +987,27 @@
       "level": 3,
       "defense": false,
       "leverage": 3.0,
-      "close": 703.5528564453125,
-      "vol20": 0.23463830840832334,
-      "mom12": 0.3398505161912897
+      "close": 703.5529174804688,
+      "vol20": 0.23463807563771735,
+      "mom12": 0.33985063242702784
     },
     {
       "date": "2026-06-08",
       "level": 3,
       "defense": false,
       "leverage": 3.0,
-      "close": 714.5394287109375,
-      "vol20": 0.2261261131270256,
-      "mom12": 0.37109342198016937
+      "close": 714.5393676757812,
+      "vol20": 0.2261257178121481,
+      "mom12": 0.37109346544162003
     },
     {
       "date": "2026-06-09",
       "level": 3,
       "defense": false,
       "leverage": 3.0,
-      "close": 706.3170166015625,
-      "vol20": 0.22979888780250368,
-      "mom12": 0.3421953212730624
+      "close": 706.3169555664062,
+      "vol20": 0.22979851138153987,
+      "mom12": 0.3421955166345856
     },
     {
       "date": "2026-06-10",
@@ -1013,26 +1015,26 @@
       "defense": false,
       "leverage": 3.0,
       "close": 692.2072143554688,
-      "vol20": 0.23868874707428953,
-      "mom12": 0.31344951462191273
+      "vol20": 0.23868833048784036,
+      "mom12": 0.31344981885104906
     },
     {
       "date": "2026-06-11",
       "level": 3,
       "defense": false,
       "leverage": 3.0,
-      "close": 715.587158203125,
-      "vol20": 0.26607177071808125,
-      "mom12": 0.3488912891309379
+      "close": 715.5870971679688,
+      "vol20": 0.26607125032836965,
+      "mom12": 0.3488908636934609
     },
     {
       "date": "2026-06-12",
       "level": 3,
       "defense": false,
       "leverage": 3.0,
-      "close": 719.7981567382812,
-      "vol20": 0.26569206678177465,
-      "mom12": 0.3614165681954298
+      "close": 719.798095703125,
+      "vol20": 0.265691545496954,
+      "mom12": 0.3614162955909941
     },
     {
       "date": "2026-06-15",
@@ -1040,8 +1042,8 @@
       "defense": false,
       "leverage": 3.0,
       "close": 742.40966796875,
-      "vol20": 0.28094303965948086,
-      "mom12": 0.40089443837431094
+      "vol20": 0.28094274707628114,
+      "mom12": 0.4008945997162656
     },
     {
       "date": "2026-06-16",
@@ -1049,17 +1051,17 @@
       "defense": false,
       "leverage": 3.0,
       "close": 728.2998657226562,
-      "vol20": 0.29039980076186656,
-      "mom12": 0.39174284972153983
+      "vol20": 0.29039949051851094,
+      "mom12": 0.39174268739565554
     },
     {
       "date": "2026-06-17",
       "level": 3,
       "defense": false,
       "leverage": 3.0,
-      "close": 720.9656372070312,
-      "vol20": 0.29215265369574794,
-      "mom12": 0.35882624423416587
+      "close": 720.965576171875,
+      "vol20": 0.2921523897910302,
+      "mom12": 0.3588262855116928
     },
     {
       "date": "2026-06-18",
@@ -1067,8 +1069,8 @@
       "defense": false,
       "leverage": 3.0,
       "close": 739.0369262695312,
-      "vol20": 0.2993831434038046,
-      "mom12": 0.40660192257427474
+      "vol20": 0.29938292000452427,
+      "mom12": 0.40660175917268204
     },
     {
       "date": "2026-06-22",
@@ -1076,8 +1078,8 @@
       "defense": false,
       "leverage": 3.0,
       "close": 737.1818237304688,
-      "vol20": 0.29982363719386024,
-      "mom12": 0.40330978369858395
+      "vol20": 0.29982341348368435,
+      "mom12": 0.4033099467455037
     },
     {
       "date": "2026-06-23",
@@ -1085,7 +1087,7 @@
       "defense": false,
       "leverage": 2.0,
       "close": 712.9071655273438,
-      "vol20": 0.32393798850389893,
+      "vol20": 0.323937781043174,
       "mom12": 0.3626643529909439
     },
     {
@@ -1094,8 +1096,8 @@
       "defense": false,
       "leverage": 2.0,
       "close": 709.8803100585938,
-      "vol20": 0.31727335463278933,
-      "mom12": 0.3430686460856973
+      "vol20": 0.31727307531603055,
+      "mom12": 0.34306880117841354
     },
     {
       "date": "2026-06-25",
@@ -1103,8 +1105,8 @@
       "defense": false,
       "leverage": 2.0,
       "close": 715.63427734375,
-      "vol20": 0.3189577540702933,
-      "mom12": 0.3335620207260841
+      "vol20": 0.318957477970495,
+      "mom12": 0.33356217240157626
     },
     {
       "date": "2026-06-26",
@@ -1112,8 +1114,8 @@
       "defense": false,
       "leverage": 2.0,
       "close": 705.7846069335938,
-      "vol20": 0.32029833486599096,
-      "mom12": 0.31185405348191275
+      "vol20": 0.3202981268636523,
+      "mom12": 0.31185390465589125
     },
     {
       "date": "2026-06-29",
@@ -1121,7 +1123,7 @@
       "defense": false,
       "leverage": 2.0,
       "close": 723.3262939453125,
-      "vol20": 0.3336139923247663,
+      "vol20": 0.3336137747828182,
       "mom12": 0.3320042863395294
     },
     {
@@ -1130,8 +1132,8 @@
       "defense": false,
       "leverage": 2.0,
       "close": 735.6334838867188,
-      "vol20": 0.3388017027206031,
-      "mom12": 0.3500458075736905
+      "vol20": 0.33880146866566696,
+      "mom12": 0.3500459587959177
     },
     {
       "date": "2026-07-01",
@@ -1139,8 +1141,8 @@
       "defense": false,
       "leverage": 2.0,
       "close": 724.4151000976562,
-      "vol20": 0.34241228436429094,
-      "mom12": 0.3209021492340842
+      "vol20": 0.3424120678100897,
+      "mom12": 0.32090229623969413
     },
     {
       "date": "2026-07-02",
@@ -1148,7 +1150,7 @@
       "defense": false,
       "leverage": 2.0,
       "close": 711.8582153320312,
-      "vol20": 0.34720066380906556,
+      "vol20": 0.347200450078168,
       "mom12": 0.30904037141771634
     },
     {
@@ -1157,7 +1159,7 @@
       "defense": false,
       "leverage": 2.0,
       "close": 722.067626953125,
-      "vol20": 0.3516832672765794,
+      "vol20": 0.3516830564799534,
       "mom12": 0.3186299189797077
     },
     {
@@ -1166,8 +1168,8 @@
       "defense": false,
       "leverage": 2.0,
       "close": 708.6915283203125,
-      "vol20": 0.31276321420664166,
-      "mom12": 0.2815913221960118
+      "vol20": 0.3127631475730605,
+      "mom12": 0.2815916051084406
     },
     {
       "date": "2026-07-08",
@@ -1175,8 +1177,8 @@
       "defense": false,
       "leverage": 2.0,
       "close": 710.699462890625,
-      "vol20": 0.30784800306667365,
-      "mom12": 0.2949773903604864
+      "vol20": 0.3078480512660852,
+      "mom12": 0.29497753437905616
     },
     {
       "date": "2026-07-09",
@@ -1184,8 +1186,8 @@
       "defense": false,
       "leverage": 2.0,
       "close": 722.5271606445312,
-      "vol20": 0.3102101106748576,
-      "mom12": 0.315790146438929
+      "vol20": 0.3102101527651336,
+      "mom12": 0.31579000018784487
     },
     {
       "date": "2026-07-10",
@@ -1193,7 +1195,7 @@
       "defense": false,
       "leverage": 2.0,
       "close": 724.7548217773438,
-      "vol20": 0.2998430454332479,
+      "vol20": 0.2998431686006818,
       "mom12": 0.3105693000489931
     },
     {
@@ -1202,7 +1204,7 @@
       "defense": false,
       "leverage": 2.0,
       "close": 710.9990844726562,
-      "vol20": 0.28489038328968913,
+      "vol20": 0.28489065260296637,
       "mom12": 0.28754681570321794
     },
     {
@@ -1211,7 +1213,7 @@
       "defense": false,
       "leverage": 2.0,
       "close": 718.9408569335938,
-      "vol20": 0.2869898142929649,
+      "vol20": 0.2869900803912755,
       "mom12": 0.30486497025340964
     },
     {
@@ -1220,8 +1222,8 @@
       "defense": false,
       "leverage": 3.0,
       "close": 716.9928588867188,
-      "vol20": 0.26208112463787353,
-      "mom12": 0.29662655772859203
+      "vol20": 0.26208127766880696,
+      "mom12": 0.2966267008468706
     },
     {
       "date": "2026-07-16",
@@ -1229,8 +1231,8 @@
       "defense": false,
       "leverage": 3.0,
       "close": 705.2051391601562,
-      "vol20": 0.25997289097665216,
-      "mom12": 0.2741412454075436
+      "vol20": 0.259973045229118,
+      "mom12": 0.27414138591513515
     },
     {
       "date": "2026-07-17",
@@ -1238,8 +1240,8 @@
       "defense": false,
       "leverage": 3.0,
       "close": 694.606201171875,
-      "vol20": 0.2627271276307491,
-      "mom12": 0.2537078833888411
+      "vol20": 0.26272724501904576,
+      "mom12": 0.253708021501716
     },
     {
       "date": "2026-07-20",
@@ -1248,7 +1250,7 @@
       "leverage": 3.0,
       "close": 695.33544921875,
       "vol20": 0.24335676006977025,
-      "mom12": 0.2449489546249004
+      "mom12": 0.24494909067185588
     },
     {
       "date": "2026-07-21",
@@ -1257,7 +1259,7 @@
       "leverage": 3.0,
       "close": 708.2319946289062,
       "vol20": 0.25503850592060917,
-      "mom12": 0.2692594826057655
+      "mom12": 0.26925934376873895
     },
     {
       "date": "2026-07-22",
@@ -1275,7 +1277,7 @@
       "leverage": 3.0,
       "close": 691.23974609375,
       "vol20": 0.23682875257830935,
-      "mom12": 0.23882887595360192
+      "mom12": 0.2388287404427889
     },
     {
       "date": "2026-07-24",
@@ -1284,7 +1286,7 @@
       "leverage": 3.0,
       "close": 683.5177612304688,
       "vol20": 0.23664188437332903,
-      "mom12": 0.21942722144723126
+      "mom12": 0.21942748701301462
     },
     {
       "date": "2026-07-27",
@@ -1302,7 +1304,7 @@
       "leverage": 3.0,
       "close": 674.786865234375,
       "vol20": 0.21191432828753426,
-      "mom12": 0.1984096804922455
+      "mom12": 0.19840981039671823
     },
     {
       "date": "2026-07-29",
@@ -1311,7 +1313,7 @@
       "leverage": 3.0,
       "close": 661.0411376953125,
       "vol20": 0.20564624533702283,
-      "mom12": 0.17034020971143193
+      "mom12": 0.17033995677829616
     },
     {
       "date": "2026-07-30",
@@ -1365,7 +1367,7 @@
       "leverage": 3.0,
       "close": 713.9061279296875,
       "vol20": 0.25895501493581324,
-      "mom12": 0.2816890635896119
+      "mom12": 0.2816889231452657
     },
     {
       "date": "2026-08-07",
@@ -1383,7 +1385,7 @@
       "leverage": 3.0,
       "close": 720.11962890625,
       "vol20": 0.25298905790264137,
-      "mom12": 0.27247166623616215
+      "mom12": 0.27247194071049785
     },
     {
       "date": "2026-08-11",
@@ -1392,7 +1394,7 @@
       "leverage": 3.0,
       "close": 717.7021484375,
       "vol20": 0.25029979331052055,
-      "mom12": 0.2564794458118802
+      "mom12": 0.2564793115519104
     },
     {
       "date": "2026-08-12",
@@ -1410,7 +1412,7 @@
       "leverage": 3.0,
       "close": 731.3079833984375,
       "vol20": 0.24588647039633374,
-      "mom12": 0.26815925626866566
+      "mom12": 0.26815952471496773
     },
     {
       "date": "2026-08-14",
@@ -1419,7 +1421,7 @@
       "leverage": 3.0,
       "close": 730.3090209960938,
       "vol20": 0.23804380730447072,
-      "mom12": 0.2657940707300759
+      "mom12": 0.2657942046359274
     },
     {
       "date": "2026-08-17",
@@ -1428,7 +1430,7 @@
       "leverage": 3.0,
       "close": 729.1102294921875,
       "vol20": 0.23846985703123988,
-      "mom12": 0.2646969674672812
+      "mom12": 0.26469683357369367
     },
     {
       "date": "2026-08-18",
@@ -1437,7 +1439,7 @@
       "leverage": 3.0,
       "close": 716.7631225585938,
       "vol20": 0.24001833685289684,
-      "mom12": 0.2487712146381933
+      "mom12": 0.24877134742967377
     },
     {
       "date": "2026-08-19",
@@ -1455,7 +1457,7 @@
       "leverage": 3.0,
       "close": 710.18994140625,
       "vol20": 0.22977258849897142,
-      "mom12": 0.2548375254887565
+      "mom12": 0.25483766081455106
     },
     {
       "date": "2026-08-21",
@@ -1464,7 +1466,7 @@
       "leverage": 3.0,
       "close": 712.6973876953125,
       "vol20": 0.2249357211796222,
-      "mom12": 0.2667894020825241
+      "mom12": 0.26678926465184616
     },
     {
       "date": "2026-08-24",
@@ -1482,7 +1484,7 @@
       "leverage": 3.0,
       "close": 709.9801635742188,
       "vol20": 0.22466218250058675,
-      "mom12": 0.24856706336649736
+      "mom12": 0.24856719738280275
     },
     {
       "date": "2026-08-26",
@@ -1491,7 +1493,7 @@
       "leverage": 3.0,
       "close": 710.6295166015625,
       "vol20": 0.2078215737627054,
-      "mom12": 0.25332469289763715
+      "mom12": 0.25332455798147957
     },
     {
       "date": "2026-08-27",
@@ -1509,7 +1511,7 @@
       "leverage": 3.0,
       "close": 715.6842651367188,
       "vol20": 0.18366816255538912,
-      "mom12": 0.25526263024299967
+      "mom12": 0.2552623614872933
     },
     {
       "date": "2026-08-31",
@@ -1527,7 +1529,7 @@
       "leverage": 3.0,
       "close": 706.9033813476562,
       "vol20": 0.13164514262700203,
-      "mom12": 0.24657785632485774
+      "mom12": 0.246577990495922
     },
     {
       "date": "2026-09-02",
@@ -1536,7 +1538,7 @@
       "leverage": 3.0,
       "close": 708.501708984375,
       "vol20": 0.1286746577958502,
-      "mom12": 0.25995533749885213
+      "mom12": 0.2599549272280852
     },
     {
       "date": "2026-09-03",
@@ -1545,7 +1547,7 @@
       "leverage": 3.0,
       "close": 716.9229125976562,
       "vol20": 0.13531246873404654,
-      "mom12": 0.26497859477659125
+      "mom12": 0.26497873100698155
     },
     {
       "date": "2026-09-04",
@@ -1554,7 +1556,7 @@
       "leverage": 3.0,
       "close": 718.2116088867188,
       "vol20": 0.12856087968438337,
-      "mom12": 0.25588486292738066
+      "mom12": 0.2558847288895947
     },
     {
       "date": "2026-09-08",
@@ -1563,7 +1565,7 @@
       "leverage": 3.0,
       "close": 717.6122436523438,
       "vol20": 0.1281796638661059,
-      "mom12": 0.25302885992136326
+      "mom12": 0.2530287263810711
     },
     {
       "date": "2026-09-09",
@@ -1590,7 +1592,7 @@
       "leverage": 3.0,
       "close": 714.1358642578125,
       "vol20": 0.12676478718291762,
-      "mom12": 0.23699502998816957
+      "mom12": 0.23699489921005257
     },
     {
       "date": "2026-09-14",
@@ -1599,7 +1601,7 @@
       "leverage": 3.0,
       "close": 708.4417724609375,
       "vol20": 0.12905822003122974,
-      "mom12": 0.22003059560095206
+      "mom12": 0.22003085207736484
     },
     {
       "date": "2026-09-15",
@@ -1617,7 +1619,7 @@
       "leverage": 3.0,
       "close": 703.9863891601562,
       "vol20": 0.11734593430033317,
-      "mom12": 0.19678543717104025
+      "mom12": 0.1967855613501195
     },
     {
       "date": "2026-09-17",
@@ -1626,7 +1628,7 @@
       "leverage": 3.0,
       "close": 716.1737060546875,
       "vol20": 0.13376193709566056,
-      "mom12": 0.21853384306220325
+      "mom12": 0.21853371651957954
     },
     {
       "date": "2026-09-18",
@@ -1653,7 +1655,7 @@
       "leverage": 3.0,
       "close": 747.4600219726562,
       "vol20": 0.1607751439815987,
-      "mom12": 0.25442995704997995
+      "mom12": 0.25443008554460733
     },
     {
       "date": "2026-09-23",
@@ -1680,7 +1682,7 @@
       "leverage": 3.0,
       "close": 744.5,
       "vol20": 0.1598887933237618,
-      "mom12": 0.25481985690930853
+      "mom12": 0.25481972782362483
     },
     {
       "date": "2026-09-28",
@@ -1716,7 +1718,7 @@
       "leverage": 3.0,
       "close": 742.030029296875,
       "vol20": 0.15443399927403453,
-      "mom12": 0.24176175156614188
+      "mom12": 0.241761624732316
     },
     {
       "date": "2026-10-02",
@@ -1734,7 +1736,7 @@
       "leverage": 3.0,
       "close": 756.2000122070312,
       "vol20": 0.15488359029082677,
-      "mom12": 0.2542767068484104
+      "mom12": 0.2542768338268946
     },
     {
       "date": "2026-10-06",

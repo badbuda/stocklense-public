@@ -3,6 +3,6 @@
   "severity": "NONE",
   "reasons": [],
   "asof_date": "2026-10-07",
-  "generated_at_utc": "2026-10-08T09:53:41.786880+00:00",
+  "generated_at_utc": "2026-10-08T12:25:10.048865+00:00",
   "auto_recovery": "Incident clears only when current evidence returns healthy; historical failures remain in CI history."
 }

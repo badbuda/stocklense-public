@@ -1,0 +1,4185 @@
+{
+  "schema_version": 1,
+  "status": "PASS",
+  "kind": "OBSERVED_QQQ_TQQQ_DAILY_OPEN_EXECUTION_PROXY",
+  "baseline": "StockLens 8.0 FROZEN",
+  "price_source": "YFINANCE_AUTO_ADJUSTED_DAILY_OPEN_AND_CLOSE",
+  "observed_instruments": [
+    "QQQ",
+    "TQQQ"
+  ],
+  "price_fingerprint_sha256": "87c97897f9ce6883109cbaeddbda48ba50e622d54db4aa2afd5ddfd335a1ed2a",
+  "first_valid_real_TQQQ_date": "2010-02-11",
+  "period": {
+    "start": "2010-02-11",
+    "end": "2026-10-07",
+    "sessions": 4189
+  },
+  "signal_policy": "Only the most recent completed QQQ close available BEFORE the execution session.",
+  "execution_policy": "Next-session adjusted daily OPEN proxy for all buys and sells; sell first, then buy. Rebalance on level change or contribution, whole shares and available cash only. No same-session close lookahead.",
+  "instrument_weights": "Frozen 8.0 target: level 1.25 = 86.1875% QQQ + 12.3125% TQQQ + 1.5% cash; level 2 = 49.25% each + 1.5% cash; level 3 = 98.5% TQQQ + 1.5% cash; level 0 = cash.",
+  "commissions_bps_each_side": 2,
+  "slippage_bps_each_side": 10,
+  "no_contributions": {
+    "start": "2010-02-11",
+    "end": "2026-10-07",
+    "sessions": 4189,
+    "additional_signal_lag_sessions": 0,
+    "monthly_contribution": 0.0,
+    "fee_bps_per_side": 2.0,
+    "slippage_bps_per_side": 10.0,
+    "stocklens": {
+      "ending_equity": 28031902.971331,
+      "paid_capital": 100000.0,
+      "profit_loss": 27931902.971331,
+      "cagr_without_contributions": 0.4027779880059832,
+      "max_drawdown": -0.49075705240570167,
+      "total_modeled_commissions": 43614.078633712896,
+      "total_modeled_slippage": 218070.89122624433,
+      "trades": 147,
+      "turnover_notional": 218070891.226256,
+      "ending_cash": 336372.72164400853,
+      "ending_shares": {
+        "QQQ": 0,
+        "TQQQ": 331207
+      }
+    },
+    "qqq_buy_hold": {
+      "ending_equity": 2030716.678806,
+      "paid_capital": 100000.0,
+      "profit_loss": 1930716.678806,
+      "cagr_without_contributions": 0.19819719530029478,
+      "max_drawdown": -0.351187115601704,
+      "total_modeled_commissions": 19.995934583095273,
+      "total_modeled_slippage": 99.87979312234785,
+      "trades": 1,
+      "turnover_notional": 99879.79312235402,
+      "ending_cash": 0.331149940539035,
+      "ending_shares": {
+        "QQQ": 2680,
+        "TQQQ": 0
+      }
+    },
+    "ending_equity_ratio": 13.803945800953835,
+    "ending_equity_delta": 26001186.292525,
+    "events": [
+      {
+        "date": "2022-04-18",
+        "signal_date": "2022-04-14",
+        "target_leverage": 0.0,
+        "monthly_deposit": 0.0
+      },
+      {
+        "date": "2022-04-19",
+        "signal_date": "2022-04-18",
+        "target_leverage": 1.25,
+        "monthly_deposit": 0.0
+      },
+      {
+        "date": "2022-04-25",
+        "signal_date": "2022-04-22",
+        "target_leverage": 0.0,
+        "monthly_deposit": 0.0
+      },
+      {
+        "date": "2022-05-05",
+        "signal_date": "2022-05-04",
+        "target_leverage": 1.25,
+        "monthly_deposit": 0.0
+      },
+      {
+        "date": "2022-05-06",
+        "signal_date": "2022-05-05",
+        "target_leverage": 0.0,
+        "monthly_deposit": 0.0
+      },
+      {
+        "date": "2023-03-13",
+        "signal_date": "2023-03-10",
+        "target_leverage": 3.0,
+        "monthly_deposit": 0.0
+      },
+      {
+        "date": "2025-03-11",
+        "signal_date": "2025-03-10",
+        "target_leverage": 1.25,
+        "monthly_deposit": 0.0
+      },
+      {
+        "date": "2025-05-13",
+        "signal_date": "2025-05-12",
+        "target_leverage": 3.0,
+        "monthly_deposit": 0.0
+      },
+      {
+        "date": "2026-03-23",
+        "signal_date": "2026-03-20",
+        "target_leverage": 1.25,
+        "monthly_deposit": 0.0
+      },
+      {
+        "date": "2026-04-09",
+        "signal_date": "2026-04-08",
+        "target_leverage": 3.0,
+        "monthly_deposit": 0.0
+      },
+      {
+        "date": "2026-06-24",
+        "signal_date": "2026-06-23",
+        "target_leverage": 2.0,
+        "monthly_deposit": 0.0
+      },
+      {
+        "date": "2026-07-16",
+        "signal_date": "2026-07-15",
+        "target_leverage": 3.0,
+        "monthly_deposit": 0.0
+      }
+    ],
+    "chart_rows": [
+      {
+        "date": "2010-02-11",
+        "effective_prior_signal_date": "2010-02-10",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": true,
+        "stocklens_nav": 106097.645283,
+        "qqq_nav": 101365.669437
+      },
+      {
+        "date": "2010-03-15",
+        "effective_prior_signal_date": "2010-03-12",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 133433.308113,
+        "qqq_nav": 109652.196232
+      },
+      {
+        "date": "2010-04-14",
+        "effective_prior_signal_date": "2010-04-13",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 156936.238973,
+        "qqq_nav": 115973.358341
+      },
+      {
+        "date": "2010-05-13",
+        "effective_prior_signal_date": "2010-05-12",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 135602.434098,
+        "qqq_nav": 111186.634861
+      },
+      {
+        "date": "2010-06-14",
+        "effective_prior_signal_date": "2010-06-11",
+        "leverage": 2.0,
+        "contribution": 0.0,
+        "rebalance": true,
+        "stocklens_nav": 114018.546605,
+        "qqq_nav": 105702.829624
+      },
+      {
+        "date": "2010-07-14",
+        "effective_prior_signal_date": "2010-07-13",
+        "leverage": 1.25,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 99684.42622,
+        "qqq_nav": 106274.756657
+      },
+      {
+        "date": "2010-08-12",
+        "effective_prior_signal_date": "2010-08-11",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 91471.738065,
+        "qqq_nav": 105061.792484
+      },
+      {
+        "date": "2010-09-13",
+        "effective_prior_signal_date": "2010-09-10",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 96593.852876,
+        "qqq_nav": 110216.813541
+      },
+      {
+        "date": "2010-10-12",
+        "effective_prior_signal_date": "2010-10-11",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 115187.327864,
+        "qqq_nav": 117161.878391
+      },
+      {
+        "date": "2010-11-10",
+        "effective_prior_signal_date": "2010-11-09",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 140793.587315,
+        "qqq_nav": 125602.410313
+      },
+      {
+        "date": "2010-12-10",
+        "effective_prior_signal_date": "2010-12-09",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 145950.30801,
+        "qqq_nav": 127402.667271
+      },
+      {
+        "date": "2011-01-11",
+        "effective_prior_signal_date": "2011-01-10",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 160074.67917,
+        "qqq_nav": 131567.614475
+      },
+      {
+        "date": "2011-02-10",
+        "effective_prior_signal_date": "2011-02-09",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 175554.568638,
+        "qqq_nav": 135925.078312
+      },
+      {
+        "date": "2011-03-14",
+        "effective_prior_signal_date": "2011-03-11",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 158797.939618,
+        "qqq_nav": 131872.179447
+      },
+      {
+        "date": "2011-04-12",
+        "effective_prior_signal_date": "2011-04-11",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 159328.218162,
+        "qqq_nav": 132245.92609
+      },
+      {
+        "date": "2011-05-12",
+        "effective_prior_signal_date": "2011-05-11",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 182547.750235,
+        "qqq_nav": 138674.106632
+      },
+      {
+        "date": "2011-06-13",
+        "effective_prior_signal_date": "2011-06-10",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 143337.623395,
+        "qqq_nav": 128187.322575
+      },
+      {
+        "date": "2011-07-13",
+        "effective_prior_signal_date": "2011-07-12",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 160710.429462,
+        "qqq_nav": 135810.780826
+      },
+      {
+        "date": "2011-08-11",
+        "effective_prior_signal_date": "2011-08-10",
+        "leverage": 1.25,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 129866.462807,
+        "qqq_nav": 124853.802677
+      },
+      {
+        "date": "2011-09-12",
+        "effective_prior_signal_date": "2011-09-09",
+        "leverage": 1.25,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 131696.016872,
+        "qqq_nav": 126640.789677
+      },
+      {
+        "date": "2011-10-11",
+        "effective_prior_signal_date": "2011-10-10",
+        "leverage": 1.25,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 130161.166661,
+        "qqq_nav": 132670.544315
+      },
+      {
+        "date": "2011-11-09",
+        "effective_prior_signal_date": "2011-11-08",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 126801.665039,
+        "qqq_nav": 133824.785343
+      },
+      {
+        "date": "2011-12-09",
+        "effective_prior_signal_date": "2011-12-08",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": true,
+        "stocklens_nav": 118867.66048,
+        "qqq_nav": 134319.484897
+      },
+      {
+        "date": "2012-01-11",
+        "effective_prior_signal_date": "2012-01-10",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 120557.645226,
+        "qqq_nav": 137529.240452
+      },
+      {
+        "date": "2012-02-10",
+        "effective_prior_signal_date": "2012-02-09",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 148519.676252,
+        "qqq_nav": 147720.987736
+      },
+      {
+        "date": "2012-03-13",
+        "effective_prior_signal_date": "2012-03-12",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 176140.346265,
+        "qqq_nav": 156683.06583
+      },
+      {
+        "date": "2012-04-12",
+        "effective_prior_signal_date": "2012-04-11",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 183747.713242,
+        "qqq_nav": 159199.287144
+      },
+      {
+        "date": "2012-05-11",
+        "effective_prior_signal_date": "2012-05-10",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 158798.000719,
+        "qqq_nav": 152022.171818
+      },
+      {
+        "date": "2012-06-12",
+        "effective_prior_signal_date": "2012-06-11",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 145569.975873,
+        "qqq_nav": 148184.88422
+      },
+      {
+        "date": "2012-07-12",
+        "effective_prior_signal_date": "2012-07-11",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 144358.825052,
+        "qqq_nav": 148216.791416
+      },
+      {
+        "date": "2012-08-10",
+        "effective_prior_signal_date": "2012-08-09",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 175658.953635,
+        "qqq_nav": 158734.235416
+      },
+      {
+        "date": "2012-09-11",
+        "effective_prior_signal_date": "2012-09-10",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 187489.761843,
+        "qqq_nav": 162461.560245
+      },
+      {
+        "date": "2012-10-10",
+        "effective_prior_signal_date": "2012-10-09",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 175845.188007,
+        "qqq_nav": 159329.768253
+      },
+      {
+        "date": "2012-11-12",
+        "effective_prior_signal_date": "2012-11-09",
+        "leverage": 1.25,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 152115.245701,
+        "qqq_nav": 150996.622806
+      },
+      {
+        "date": "2012-12-12",
+        "effective_prior_signal_date": "2012-12-11",
+        "leverage": 1.25,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 159149.329632,
+        "qqq_nav": 156734.571262
+      },
+      {
+        "date": "2013-01-14",
+        "effective_prior_signal_date": "2013-01-11",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 151566.189233,
+        "qqq_nav": 160312.961765
+      },
+      {
+        "date": "2013-02-13",
+        "effective_prior_signal_date": "2013-02-12",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 157817.547513,
+        "qqq_nav": 162731.089664
+      },
+      {
+        "date": "2013-03-15",
+        "effective_prior_signal_date": "2013-03-14",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 161824.787147,
+        "qqq_nav": 164403.492924
+      },
+      {
+        "date": "2013-04-16",
+        "effective_prior_signal_date": "2013-04-15",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 167889.124797,
+        "qqq_nav": 166707.129093
+      },
+      {
+        "date": "2013-05-15",
+        "effective_prior_signal_date": "2013-05-14",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 198771.8266,
+        "qqq_nav": 176785.928379
+      },
+      {
+        "date": "2013-06-14",
+        "effective_prior_signal_date": "2013-06-13",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 186856.725731,
+        "qqq_nav": 173450.32291
+      },
+      {
+        "date": "2013-07-16",
+        "effective_prior_signal_date": "2013-07-15",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 212129.25982,
+        "qqq_nav": 181437.508884
+      },
+      {
+        "date": "2013-08-14",
+        "effective_prior_signal_date": "2013-08-13",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 223509.82038,
+        "qqq_nav": 184904.055515
+      },
+      {
+        "date": "2013-09-13",
+        "effective_prior_signal_date": "2013-09-12",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 233394.554276,
+        "qqq_nav": 187913.207737
+      },
+      {
+        "date": "2013-10-14",
+        "effective_prior_signal_date": "2013-10-11",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 249423.545036,
+        "qqq_nav": 192654.549595
+      },
+      {
+        "date": "2013-11-12",
+        "effective_prior_signal_date": "2013-11-11",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 274909.669671,
+        "qqq_nav": 199294.436069
+      },
+      {
+        "date": "2013-12-12",
+        "effective_prior_signal_date": "2013-12-11",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 298926.521445,
+        "qqq_nav": 205137.572971
+      },
+      {
+        "date": "2014-01-14",
+        "effective_prior_signal_date": "2014-01-13",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 329087.83955,
+        "qqq_nav": 212304.884067
+      },
+      {
+        "date": "2014-02-13",
+        "effective_prior_signal_date": "2014-02-12",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 349551.315485,
+        "qqq_nav": 217100.798374
+      },
+      {
+        "date": "2014-03-17",
+        "effective_prior_signal_date": "2014-03-14",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 349765.260511,
+        "qqq_nav": 217564.183689
+      },
+      {
+        "date": "2014-04-15",
+        "effective_prior_signal_date": "2014-04-14",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 299327.116506,
+        "qqq_nav": 207335.376621
+      },
+      {
+        "date": "2014-05-15",
+        "effective_prior_signal_date": "2014-05-14",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 320164.891504,
+        "qqq_nav": 212430.386387
+      },
+      {
+        "date": "2014-06-16",
+        "effective_prior_signal_date": "2014-06-13",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 379953.100193,
+        "qqq_nav": 225253.214756
+      },
+      {
+        "date": "2014-07-16",
+        "effective_prior_signal_date": "2014-07-15",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 426561.373659,
+        "qqq_nav": 234389.284702
+      },
+      {
+        "date": "2014-08-14",
+        "effective_prior_signal_date": "2014-08-13",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 438211.242636,
+        "qqq_nav": 236931.49387
+      },
+      {
+        "date": "2014-09-15",
+        "effective_prior_signal_date": "2014-09-12",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 458518.102692,
+        "qqq_nav": 240817.915073
+      },
+      {
+        "date": "2014-10-14",
+        "effective_prior_signal_date": "2014-10-13",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 384772.293264,
+        "qqq_nav": 227792.500034
+      },
+      {
+        "date": "2014-11-12",
+        "effective_prior_signal_date": "2014-11-11",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 510033.190334,
+        "qqq_nav": 251044.513889
+      },
+      {
+        "date": "2014-12-12",
+        "effective_prior_signal_date": "2014-12-11",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 511476.02218,
+        "qqq_nav": 251559.057041
+      },
+      {
+        "date": "2015-01-14",
+        "effective_prior_signal_date": "2015-01-13",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 487831.342586,
+        "qqq_nav": 248291.007725
+      },
+      {
+        "date": "2015-02-13",
+        "effective_prior_signal_date": "2015-02-12",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 573134.437159,
+        "qqq_nav": 262923.825718
+      },
+      {
+        "date": "2015-03-17",
+        "effective_prior_signal_date": "2015-03-16",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 570355.117582,
+        "qqq_nav": 262825.415378
+      },
+      {
+        "date": "2015-04-16",
+        "effective_prior_signal_date": "2015-04-15",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 583988.755474,
+        "qqq_nav": 265451.190525
+      },
+      {
+        "date": "2015-05-15",
+        "effective_prior_signal_date": "2015-05-14",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 610822.40507,
+        "qqq_nav": 270109.906956
+      },
+      {
+        "date": "2015-06-16",
+        "effective_prior_signal_date": "2015-06-15",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 595000.269727,
+        "qqq_nav": 268187.296482
+      },
+      {
+        "date": "2015-07-16",
+        "effective_prior_signal_date": "2015-07-15",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 645994.851261,
+        "qqq_nav": 276561.907993
+      },
+      {
+        "date": "2015-08-14",
+        "effective_prior_signal_date": "2015-08-13",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 620123.519236,
+        "qqq_nav": 273028.888889
+      },
+      {
+        "date": "2015-09-15",
+        "effective_prior_signal_date": "2015-09-14",
+        "leverage": 1.25,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 463957.53179,
+        "qqq_nav": 263097.009922
+      },
+      {
+        "date": "2015-10-14",
+        "effective_prior_signal_date": "2015-10-13",
+        "leverage": 1.25,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 461731.933299,
+        "qqq_nav": 262350.150486
+      },
+      {
+        "date": "2015-11-12",
+        "effective_prior_signal_date": "2015-11-11",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 524336.688063,
+        "qqq_nav": 277482.421909
+      },
+      {
+        "date": "2015-12-14",
+        "effective_prior_signal_date": "2015-12-11",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 513653.312193,
+        "qqq_nav": 276466.953159
+      },
+      {
+        "date": "2016-01-14",
+        "effective_prior_signal_date": "2016-01-13",
+        "leverage": 1.25,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 426289.595599,
+        "qqq_nav": 258530.794712
+      },
+      {
+        "date": "2016-02-16",
+        "effective_prior_signal_date": "2016-02-12",
+        "leverage": 0.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 382285.819468,
+        "qqq_nav": 248991.473423
+      },
+      {
+        "date": "2016-03-16",
+        "effective_prior_signal_date": "2016-03-15",
+        "leverage": 1.25,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 392067.207114,
+        "qqq_nav": 267250.26157
+      },
+      {
+        "date": "2016-04-15",
+        "effective_prior_signal_date": "2016-04-14",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 412511.301624,
+        "qqq_nav": 275667.300144
+      },
+      {
+        "date": "2016-05-16",
+        "effective_prior_signal_date": "2016-05-13",
+        "leverage": 1.25,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 402997.629752,
+        "qqq_nav": 266149.509312
+      },
+      {
+        "date": "2016-06-15",
+        "effective_prior_signal_date": "2016-06-14",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 398179.205987,
+        "qqq_nav": 268391.907383
+      },
+      {
+        "date": "2016-07-15",
+        "effective_prior_signal_date": "2016-07-14",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 407791.164394,
+        "qqq_nav": 279299.363438
+      },
+      {
+        "date": "2016-08-15",
+        "effective_prior_signal_date": "2016-08-12",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 473922.215328,
+        "qqq_nav": 294038.790928
+      },
+      {
+        "date": "2016-09-14",
+        "effective_prior_signal_date": "2016-09-13",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 449277.018445,
+        "qqq_nav": 289392.117649
+      },
+      {
+        "date": "2016-10-13",
+        "effective_prior_signal_date": "2016-10-12",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 464325.553064,
+        "qqq_nav": 293022.42252
+      },
+      {
+        "date": "2016-11-11",
+        "effective_prior_signal_date": "2016-11-10",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 447186.118758,
+        "qqq_nav": 290017.012058
+      },
+      {
+        "date": "2016-12-13",
+        "effective_prior_signal_date": "2016-12-12",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 500285.155641,
+        "qqq_nav": 301687.889439
+      },
+      {
+        "date": "2017-01-13",
+        "effective_prior_signal_date": "2017-01-12",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 536879.096841,
+        "qqq_nav": 309362.055698
+      },
+      {
+        "date": "2017-02-14",
+        "effective_prior_signal_date": "2017-02-13",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 607453.759847,
+        "qqq_nav": 322850.692478
+      },
+      {
+        "date": "2017-03-16",
+        "effective_prior_signal_date": "2017-03-15",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 656071.815004,
+        "qqq_nav": 331592.016941
+      },
+      {
+        "date": "2017-04-17",
+        "effective_prior_signal_date": "2017-04-13",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 648827.730054,
+        "qqq_nav": 330947.636753
+      },
+      {
+        "date": "2017-05-16",
+        "effective_prior_signal_date": "2017-05-15",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 773845.386782,
+        "qqq_nav": 351436.718479
+      },
+      {
+        "date": "2017-06-15",
+        "effective_prior_signal_date": "2017-06-14",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 759132.908908,
+        "qqq_nav": 350203.532444
+      },
+      {
+        "date": "2017-07-17",
+        "effective_prior_signal_date": "2017-07-14",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 808871.378336,
+        "qqq_nav": 358880.899387
+      },
+      {
+        "date": "2017-08-15",
+        "effective_prior_signal_date": "2017-08-14",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 836204.894112,
+        "qqq_nav": 363524.812351
+      },
+      {
+        "date": "2017-09-14",
+        "effective_prior_signal_date": "2017-09-13",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 857638.686992,
+        "qqq_nav": 367386.26804
+      },
+      {
+        "date": "2017-10-13",
+        "effective_prior_signal_date": "2017-10-12",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 908721.203307,
+        "qqq_nav": 375222.618137
+      },
+      {
+        "date": "2017-11-13",
+        "effective_prior_signal_date": "2017-11-10",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 1006704.166421,
+        "qqq_nav": 389210.503879
+      },
+      {
+        "date": "2017-12-13",
+        "effective_prior_signal_date": "2017-12-12",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 1042028.755019,
+        "qqq_nav": 394573.080173
+      },
+      {
+        "date": "2018-01-16",
+        "effective_prior_signal_date": "2018-01-12",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 1211183.890392,
+        "qqq_nav": 415752.465549
+      },
+      {
+        "date": "2018-02-14",
+        "effective_prior_signal_date": "2018-02-13",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 1155097.352264,
+        "qqq_nav": 412355.887791
+      },
+      {
+        "date": "2018-03-16",
+        "effective_prior_signal_date": "2018-03-15",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 1327613.415283,
+        "qqq_nav": 433495.85178
+      },
+      {
+        "date": "2018-04-17",
+        "effective_prior_signal_date": "2018-04-16",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 1186090.842966,
+        "qqq_nav": 421707.712131
+      },
+      {
+        "date": "2018-05-16",
+        "effective_prior_signal_date": "2018-05-15",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 1235679.293493,
+        "qqq_nav": 429019.643284
+      },
+      {
+        "date": "2018-06-15",
+        "effective_prior_signal_date": "2018-06-14",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 1410510.384076,
+        "qqq_nav": 449330.654026
+      },
+      {
+        "date": "2018-07-17",
+        "effective_prior_signal_date": "2018-07-16",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 1483997.22371,
+        "qqq_nav": 458663.135715
+      },
+      {
+        "date": "2018-08-15",
+        "effective_prior_signal_date": "2018-08-14",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 1445909.711982,
+        "qqq_nav": 456017.159153
+      },
+      {
+        "date": "2018-09-14",
+        "effective_prior_signal_date": "2018-09-13",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 1550987.236407,
+        "qqq_nav": 468128.112522
+      },
+      {
+        "date": "2018-10-15",
+        "effective_prior_signal_date": "2018-10-12",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 1255918.518102,
+        "qqq_nav": 438944.713474
+      },
+      {
+        "date": "2018-11-13",
+        "effective_prior_signal_date": "2018-11-12",
+        "leverage": 1.25,
+        "contribution": 0.0,
+        "rebalance": true,
+        "stocklens_nav": 1093800.057252,
+        "qqq_nav": 424313.940159
+      },
+      {
+        "date": "2018-12-14",
+        "effective_prior_signal_date": "2018-12-13",
+        "leverage": 1.25,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 1046829.009555,
+        "qqq_nav": 410575.464207
+      },
+      {
+        "date": "2019-01-16",
+        "effective_prior_signal_date": "2019-01-15",
+        "leverage": 0.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 976219.40074,
+        "qqq_nav": 414996.384617
+      },
+      {
+        "date": "2019-02-15",
+        "effective_prior_signal_date": "2019-02-14",
+        "leverage": 1.25,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 976803.31755,
+        "qqq_nav": 439510.271335
+      },
+      {
+        "date": "2019-03-19",
+        "effective_prior_signal_date": "2019-03-18",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 1085891.460626,
+        "qqq_nav": 458517.595554
+      },
+      {
+        "date": "2019-04-17",
+        "effective_prior_signal_date": "2019-04-16",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 1226794.391811,
+        "qqq_nav": 479260.442234
+      },
+      {
+        "date": "2019-05-17",
+        "effective_prior_signal_date": "2019-05-16",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 1133112.847232,
+        "qqq_nav": 468735.463596
+      },
+      {
+        "date": "2019-06-18",
+        "effective_prior_signal_date": "2019-06-17",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 1124213.352206,
+        "qqq_nav": 477365.271335
+      },
+      {
+        "date": "2019-07-18",
+        "effective_prior_signal_date": "2019-07-17",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 1235896.894806,
+        "qqq_nav": 493845.455662
+      },
+      {
+        "date": "2019-08-16",
+        "effective_prior_signal_date": "2019-08-15",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 1083353.400479,
+        "qqq_nav": 476033.899876
+      },
+      {
+        "date": "2019-09-17",
+        "effective_prior_signal_date": "2019-09-16",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 1197034.849334,
+        "qqq_nav": 494307.389255
+      },
+      {
+        "date": "2019-10-16",
+        "effective_prior_signal_date": "2019-10-15",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 1200666.637788,
+        "qqq_nav": 496435.776096
+      },
+      {
+        "date": "2019-11-14",
+        "effective_prior_signal_date": "2019-11-13",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 1353028.702991,
+        "qqq_nav": 518011.951633
+      },
+      {
+        "date": "2019-12-16",
+        "effective_prior_signal_date": "2019-12-13",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 1504301.246231,
+        "qqq_nav": 538173.905369
+      },
+      {
+        "date": "2020-01-16",
+        "effective_prior_signal_date": "2020-01-15",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 1800591.618312,
+        "qqq_nav": 572870.737034
+      },
+      {
+        "date": "2020-02-18",
+        "effective_prior_signal_date": "2020-02-14",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 2096887.527988,
+        "qqq_nav": 604957.455784
+      },
+      {
+        "date": "2020-03-18",
+        "effective_prior_signal_date": "2020-03-17",
+        "leverage": 1.25,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 1156720.986489,
+        "qqq_nav": 455142.077976
+      },
+      {
+        "date": "2020-04-17",
+        "effective_prior_signal_date": "2020-04-16",
+        "leverage": 1.25,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 1455328.982784,
+        "qqq_nav": 556038.295627
+      },
+      {
+        "date": "2020-05-18",
+        "effective_prior_signal_date": "2020-05-15",
+        "leverage": 2.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 1591702.465859,
+        "qqq_nav": 587392.651707
+      },
+      {
+        "date": "2020-06-17",
+        "effective_prior_signal_date": "2020-06-16",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 1903459.460539,
+        "qqq_nav": 629207.251926
+      },
+      {
+        "date": "2020-07-17",
+        "effective_prior_signal_date": "2020-07-16",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 2276511.395127,
+        "qqq_nav": 671179.701267
+      },
+      {
+        "date": "2020-08-17",
+        "effective_prior_signal_date": "2020-08-14",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 2677577.460726,
+        "qqq_nav": 712316.817966
+      },
+      {
+        "date": "2020-09-16",
+        "effective_prior_signal_date": "2020-09-15",
+        "leverage": 2.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 2644665.433364,
+        "qqq_nav": 710479.634128
+      },
+      {
+        "date": "2020-10-15",
+        "effective_prior_signal_date": "2020-10-14",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 2984377.008934,
+        "qqq_nav": 750555.563084
+      },
+      {
+        "date": "2020-11-13",
+        "effective_prior_signal_date": "2020-11-12",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 2939999.039795,
+        "qqq_nav": 752703.210789
+      },
+      {
+        "date": "2020-12-15",
+        "effective_prior_signal_date": "2020-12-14",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 3434164.332779,
+        "qqq_nav": 795030.493503
+      },
+      {
+        "date": "2021-01-15",
+        "effective_prior_signal_date": "2021-01-14",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 3584292.283997,
+        "qqq_nav": 808316.400486
+      },
+      {
+        "date": "2021-02-17",
+        "effective_prior_signal_date": "2021-02-16",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 4343330.92321,
+        "qqq_nav": 865520.267673
+      },
+      {
+        "date": "2021-03-18",
+        "effective_prior_signal_date": "2021-03-17",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 3452554.769474,
+        "qqq_nav": 808783.077732
+      },
+      {
+        "date": "2021-04-19",
+        "effective_prior_signal_date": "2021-04-16",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 4231541.987888,
+        "qqq_nav": 879459.571873
+      },
+      {
+        "date": "2021-05-18",
+        "effective_prior_signal_date": "2021-05-17",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 3601570.261646,
+        "qqq_nav": 836223.71616
+      },
+      {
+        "date": "2021-06-17",
+        "effective_prior_signal_date": "2021-06-16",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 4397971.714178,
+        "qqq_nav": 896224.375339
+      },
+      {
+        "date": "2021-07-19",
+        "effective_prior_signal_date": "2021-07-16",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 4760427.265638,
+        "qqq_nav": 921505.343357
+      },
+      {
+        "date": "2021-08-17",
+        "effective_prior_signal_date": "2021-08-16",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 5192836.784162,
+        "qqq_nav": 950241.571384
+      },
+      {
+        "date": "2021-09-16",
+        "effective_prior_signal_date": "2021-09-15",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 5718646.521894,
+        "qqq_nav": 982927.053562
+      },
+      {
+        "date": "2021-10-15",
+        "effective_prior_signal_date": "2021-10-14",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 5267404.52374,
+        "qqq_nav": 959644.471775
+      },
+      {
+        "date": "2021-11-15",
+        "effective_prior_signal_date": "2021-11-12",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 6408579.407983,
+        "qqq_nav": 1026414.241062
+      },
+      {
+        "date": "2021-12-15",
+        "effective_prior_signal_date": "2021-12-14",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 6423570.777082,
+        "qqq_nav": 1032761.002537
+      },
+      {
+        "date": "2022-01-14",
+        "effective_prior_signal_date": "2022-01-13",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 5576047.528791,
+        "qqq_nav": 989700.989109
+      },
+      {
+        "date": "2022-02-15",
+        "effective_prior_signal_date": "2022-02-14",
+        "leverage": 1.25,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 4321882.158838,
+        "qqq_nav": 927507.781101
+      },
+      {
+        "date": "2022-03-17",
+        "effective_prior_signal_date": "2022-03-16",
+        "leverage": 1.25,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 4130455.483516,
+        "qqq_nav": 897062.366062
+      },
+      {
+        "date": "2022-04-18",
+        "effective_prior_signal_date": "2022-04-14",
+        "leverage": 0.0,
+        "contribution": 0.0,
+        "rebalance": true,
+        "stocklens_nav": 4021619.232082,
+        "qqq_nav": 883177.450291
+      },
+      {
+        "date": "2022-05-17",
+        "effective_prior_signal_date": "2022-05-16",
+        "leverage": 0.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 3588395.594664,
+        "qqq_nav": 798377.385593
+      },
+      {
+        "date": "2022-06-16",
+        "effective_prior_signal_date": "2022-06-15",
+        "leverage": 0.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 3588395.594664,
+        "qqq_nav": 707684.15073
+      },
+      {
+        "date": "2022-07-19",
+        "effective_prior_signal_date": "2022-07-18",
+        "leverage": 0.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 3588395.594664,
+        "qqq_nav": 779350.596043
+      },
+      {
+        "date": "2022-08-17",
+        "effective_prior_signal_date": "2022-08-16",
+        "leverage": 0.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 3588395.594664,
+        "qqq_nav": 858226.166111
+      },
+      {
+        "date": "2022-09-16",
+        "effective_prior_signal_date": "2022-09-15",
+        "leverage": 0.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 3588395.594664,
+        "qqq_nav": 755889.06406
+      },
+      {
+        "date": "2022-10-17",
+        "effective_prior_signal_date": "2022-10-14",
+        "leverage": 0.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 3588395.594664,
+        "qqq_nav": 704979.205662
+      },
+      {
+        "date": "2022-11-15",
+        "effective_prior_signal_date": "2022-11-14",
+        "leverage": 0.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 3588395.594664,
+        "qqq_nav": 757430.587498
+      },
+      {
+        "date": "2022-12-15",
+        "effective_prior_signal_date": "2022-12-14",
+        "leverage": 0.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 3588395.594664,
+        "qqq_nav": 724714.026218
+      },
+      {
+        "date": "2023-01-18",
+        "effective_prior_signal_date": "2023-01-17",
+        "leverage": 0.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 3588395.594664,
+        "qqq_nav": 729046.371189
+      },
+      {
+        "date": "2023-02-16",
+        "effective_prior_signal_date": "2023-02-15",
+        "leverage": 0.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 3588395.594664,
+        "qqq_nav": 795738.197361
+      },
+      {
+        "date": "2023-03-20",
+        "effective_prior_signal_date": "2023-03-17",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 4336996.907941,
+        "qqq_nav": 803986.018406
+      },
+      {
+        "date": "2023-04-19",
+        "effective_prior_signal_date": "2023-04-18",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 4818761.466037,
+        "qqq_nav": 837462.545505
+      },
+      {
+        "date": "2023-05-18",
+        "effective_prior_signal_date": "2023-05-17",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 5600308.360109,
+        "qqq_nav": 886231.871677
+      },
+      {
+        "date": "2023-06-20",
+        "effective_prior_signal_date": "2023-06-16",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 7100876.343573,
+        "qqq_nav": 965412.016941
+      },
+      {
+        "date": "2023-07-20",
+        "effective_prior_signal_date": "2023-07-19",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 7553517.793359,
+        "qqq_nav": 991356.196628
+      },
+      {
+        "date": "2023-08-18",
+        "effective_prior_signal_date": "2023-08-17",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 6391427.917226,
+        "qqq_nav": 942335.865818
+      },
+      {
+        "date": "2023-09-19",
+        "effective_prior_signal_date": "2023-09-18",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 6948951.139708,
+        "qqq_nav": 974635.558201
+      },
+      {
+        "date": "2023-10-18",
+        "effective_prior_signal_date": "2023-10-17",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 6462723.380864,
+        "qqq_nav": 957507.619968
+      },
+      {
+        "date": "2023-11-16",
+        "effective_prior_signal_date": "2023-11-15",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 7590440.134839,
+        "qqq_nav": 1017007.496677
+      },
+      {
+        "date": "2023-12-18",
+        "effective_prior_signal_date": "2023-12-15",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 8838799.037726,
+        "qqq_nav": 1074829.347263
+      },
+      {
+        "date": "2024-01-19",
+        "effective_prior_signal_date": "2024-01-18",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 9627227.101523,
+        "qqq_nav": 1112642.881199
+      },
+      {
+        "date": "2024-02-20",
+        "effective_prior_signal_date": "2024-02-16",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 9897662.066786,
+        "qqq_nav": 1128863.146091
+      },
+      {
+        "date": "2024-03-20",
+        "effective_prior_signal_date": "2024-03-19",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 10923673.237544,
+        "qqq_nav": 1173869.856296
+      },
+      {
+        "date": "2024-04-19",
+        "effective_prior_signal_date": "2024-04-18",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 8770004.564936,
+        "qqq_nav": 1096840.957371
+      },
+      {
+        "date": "2024-05-20",
+        "effective_prior_signal_date": "2024-05-17",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 11371323.040305,
+        "qqq_nav": 1203337.670017
+      },
+      {
+        "date": "2024-06-20",
+        "effective_prior_signal_date": "2024-06-18",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 13283542.060321,
+        "qqq_nav": 1273594.5145
+      },
+      {
+        "date": "2024-07-22",
+        "effective_prior_signal_date": "2024-07-19",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 13169623.649615,
+        "qqq_nav": 1277870.917087
+      },
+      {
+        "date": "2024-08-20",
+        "effective_prior_signal_date": "2024-08-19",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 12585804.196356,
+        "qqq_nav": 1272413.181492
+      },
+      {
+        "date": "2024-09-19",
+        "effective_prior_signal_date": "2024-09-18",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 12536268.042079,
+        "qqq_nav": 1280626.406589
+      },
+      {
+        "date": "2024-10-18",
+        "effective_prior_signal_date": "2024-10-17",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 13297069.458205,
+        "qqq_nav": 1311902.451511
+      },
+      {
+        "date": "2024-11-18",
+        "effective_prior_signal_date": "2024-11-15",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 13497625.498999,
+        "qqq_nav": 1326627.320896
+      },
+      {
+        "date": "2024-12-18",
+        "effective_prior_signal_date": "2024-12-17",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 14619331.607199,
+        "qqq_nav": 1370271.539646
+      },
+      {
+        "date": "2025-01-22",
+        "effective_prior_signal_date": "2025-01-21",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 15684555.282958,
+        "qqq_nav": 1412448.988377
+      },
+      {
+        "date": "2025-02-21",
+        "effective_prior_signal_date": "2025-02-20",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 14956228.165084,
+        "qqq_nav": 1398018.797947
+      },
+      {
+        "date": "2025-03-24",
+        "effective_prior_signal_date": "2025-03-21",
+        "leverage": 1.25,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 11122591.214542,
+        "qqq_nav": 1305837.528416
+      },
+      {
+        "date": "2025-04-23",
+        "effective_prior_signal_date": "2025-04-22",
+        "leverage": 1.25,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 10026410.281193,
+        "qqq_nav": 1209761.311375
+      },
+      {
+        "date": "2025-05-22",
+        "effective_prior_signal_date": "2025-05-21",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 11749585.213749,
+        "qqq_nav": 1367954.347263
+      },
+      {
+        "date": "2025-06-24",
+        "effective_prior_signal_date": "2025-06-23",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 13416060.271789,
+        "qqq_nav": 1438178.395115
+      },
+      {
+        "date": "2025-07-24",
+        "effective_prior_signal_date": "2025-07-23",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 15211218.117119,
+        "qqq_nav": 1505400.528904
+      },
+      {
+        "date": "2025-08-22",
+        "effective_prior_signal_date": "2025-08-21",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 15545105.53902,
+        "qqq_nav": 1523944.774509
+      },
+      {
+        "date": "2025-09-23",
+        "effective_prior_signal_date": "2025-09-22",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 17628497.205021,
+        "qqq_nav": 1595679.103123
+      },
+      {
+        "date": "2025-10-22",
+        "effective_prior_signal_date": "2025-10-21",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 17984530.548893,
+        "qqq_nav": 1615124.806248
+      },
+      {
+        "date": "2025-11-20",
+        "effective_prior_signal_date": "2025-11-19",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 15989518.110584,
+        "qqq_nav": 1562255.492283
+      },
+      {
+        "date": "2025-12-22",
+        "effective_prior_signal_date": "2025-12-19",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 18649534.694996,
+        "qqq_nav": 1653850.675388
+      },
+      {
+        "date": "2026-01-23",
+        "effective_prior_signal_date": "2026-01-22",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 18722907.069011,
+        "qqq_nav": 1663225.441013
+      },
+      {
+        "date": "2026-02-24",
+        "effective_prior_signal_date": "2026-02-23",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 17151723.565849,
+        "qqq_nav": 1623562.618748
+      },
+      {
+        "date": "2026-03-25",
+        "effective_prior_signal_date": "2026-03-24",
+        "leverage": 1.25,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 15435593.301262,
+        "qqq_nav": 1571990.611912
+      },
+      {
+        "date": "2026-04-24",
+        "effective_prior_signal_date": "2026-04-23",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 20740503.927962,
+        "qqq_nav": 1775395.64365
+      },
+      {
+        "date": "2026-05-26",
+        "effective_prior_signal_date": "2026-05-22",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 27104690.959838,
+        "qqq_nav": 1952967.235447
+      },
+      {
+        "date": "2026-06-25",
+        "effective_prior_signal_date": "2026-06-24",
+        "leverage": 2.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 24825023.149593,
+        "qqq_nav": 1917900.194431
+      },
+      {
+        "date": "2026-07-27",
+        "effective_prior_signal_date": "2026-07-24",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 21294370.462496,
+        "qqq_nav": 1826179.059177
+      },
+      {
+        "date": "2026-08-25",
+        "effective_prior_signal_date": "2026-08-24",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 23565369.167651,
+        "qqq_nav": 1902747.169529
+      },
+      {
+        "date": "2026-09-24",
+        "effective_prior_signal_date": "2026-09-23",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 26362619.388102,
+        "qqq_nav": 1986148.26572
+      },
+      {
+        "date": "2026-10-07",
+        "effective_prior_signal_date": "2026-10-06",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 28031902.971331,
+        "qqq_nav": 2030716.678806
+      }
+    ]
+  },
+  "initial_100k_monthly_3500": {
+    "start": "2010-02-11",
+    "end": "2026-10-07",
+    "sessions": 4189,
+    "additional_signal_lag_sessions": 0,
+    "monthly_contribution": 3500.0,
+    "fee_bps_per_side": 2.0,
+    "slippage_bps_per_side": 10.0,
+    "stocklens": {
+      "ending_equity": 71731146.815513,
+      "paid_capital": 800000.0,
+      "profit_loss": 70931146.815513,
+      "cagr_without_contributions": null,
+      "max_drawdown": -0.4843258755858101,
+      "total_modeled_commissions": 110327.31871862558,
+      "total_modeled_slippage": 551637.4712752614,
+      "trades": 356,
+      "turnover_notional": 551637471.2752908,
+      "ending_cash": 1015717.3727943207,
+      "ending_shares": {
+        "QQQ": 0,
+        "TQQQ": 845676
+      }
+    },
+    "qqq_buy_hold": {
+      "ending_equity": 6583693.821054,
+      "paid_capital": 800000.0,
+      "profit_loss": 5783693.821054,
+      "cagr_without_contributions": null,
+      "max_drawdown": -0.3416870217001373,
+      "total_modeled_commissions": 159.8608776761244,
+      "total_modeled_slippage": 798.5058824980375,
+      "trades": 201,
+      "turnover_notional": 798505.8824981244,
+      "ending_cash": 535.7507417015881,
+      "ending_shares": {
+        "QQQ": 8688,
+        "TQQQ": 0
+      }
+    },
+    "ending_equity_ratio": 10.895273803001576,
+    "ending_equity_delta": 65147452.994459,
+    "events": [
+      {
+        "date": "2026-03-02",
+        "signal_date": "2026-02-27",
+        "target_leverage": 3.0,
+        "monthly_deposit": 3500.0
+      },
+      {
+        "date": "2026-03-23",
+        "signal_date": "2026-03-20",
+        "target_leverage": 1.25,
+        "monthly_deposit": 0.0
+      },
+      {
+        "date": "2026-04-01",
+        "signal_date": "2026-03-31",
+        "target_leverage": 1.25,
+        "monthly_deposit": 3500.0
+      },
+      {
+        "date": "2026-04-09",
+        "signal_date": "2026-04-08",
+        "target_leverage": 3.0,
+        "monthly_deposit": 0.0
+      },
+      {
+        "date": "2026-05-01",
+        "signal_date": "2026-04-30",
+        "target_leverage": 3.0,
+        "monthly_deposit": 3500.0
+      },
+      {
+        "date": "2026-06-01",
+        "signal_date": "2026-05-29",
+        "target_leverage": 3.0,
+        "monthly_deposit": 3500.0
+      },
+      {
+        "date": "2026-06-24",
+        "signal_date": "2026-06-23",
+        "target_leverage": 2.0,
+        "monthly_deposit": 0.0
+      },
+      {
+        "date": "2026-07-01",
+        "signal_date": "2026-06-30",
+        "target_leverage": 2.0,
+        "monthly_deposit": 3500.0
+      },
+      {
+        "date": "2026-07-16",
+        "signal_date": "2026-07-15",
+        "target_leverage": 3.0,
+        "monthly_deposit": 0.0
+      },
+      {
+        "date": "2026-08-03",
+        "signal_date": "2026-07-31",
+        "target_leverage": 3.0,
+        "monthly_deposit": 3500.0
+      },
+      {
+        "date": "2026-09-01",
+        "signal_date": "2026-08-31",
+        "target_leverage": 3.0,
+        "monthly_deposit": 3500.0
+      },
+      {
+        "date": "2026-10-01",
+        "signal_date": "2026-09-30",
+        "target_leverage": 3.0,
+        "monthly_deposit": 3500.0
+      }
+    ],
+    "chart_rows": [
+      {
+        "date": "2010-02-11",
+        "effective_prior_signal_date": "2010-02-10",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": true,
+        "stocklens_nav": 106097.645283,
+        "qqq_nav": 101365.669437
+      },
+      {
+        "date": "2010-03-15",
+        "effective_prior_signal_date": "2010-03-12",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 137419.913553,
+        "qqq_nav": 113323.787239
+      },
+      {
+        "date": "2010-04-14",
+        "effective_prior_signal_date": "2010-04-13",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 165349.874199,
+        "qqq_nav": 123463.527675
+      },
+      {
+        "date": "2010-05-13",
+        "effective_prior_signal_date": "2010-05-12",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 146120.116854,
+        "qqq_nav": 121751.275081
+      },
+      {
+        "date": "2010-06-14",
+        "effective_prior_signal_date": "2010-06-11",
+        "leverage": 2.0,
+        "contribution": 0.0,
+        "rebalance": true,
+        "stocklens_nav": 126278.32833,
+        "qqq_nav": 119248.158559
+      },
+      {
+        "date": "2010-07-14",
+        "effective_prior_signal_date": "2010-07-13",
+        "leverage": 1.25,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 114191.60007,
+        "qqq_nav": 123611.617247
+      },
+      {
+        "date": "2010-08-12",
+        "effective_prior_signal_date": "2010-08-11",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 107996.974975,
+        "qqq_nav": 125595.650308
+      },
+      {
+        "date": "2010-09-13",
+        "effective_prior_signal_date": "2010-09-10",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 117952.479941,
+        "qqq_nav": 135501.971324
+      },
+      {
+        "date": "2010-10-12",
+        "effective_prior_signal_date": "2010-10-11",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 144261.712976,
+        "qqq_nav": 147578.505282
+      },
+      {
+        "date": "2010-11-10",
+        "effective_prior_signal_date": "2010-11-09",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 179935.334525,
+        "qqq_nav": 161794.373091
+      },
+      {
+        "date": "2010-12-10",
+        "effective_prior_signal_date": "2010-12-09",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 190304.776003,
+        "qqq_nav": 167717.079564
+      },
+      {
+        "date": "2011-01-11",
+        "effective_prior_signal_date": "2011-01-10",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 212321.0756,
+        "qqq_nav": 176770.634308
+      },
+      {
+        "date": "2011-02-10",
+        "effective_prior_signal_date": "2011-02-09",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 236492.506226,
+        "qqq_nav": 186219.044033
+      },
+      {
+        "date": "2011-03-14",
+        "effective_prior_signal_date": "2011-03-11",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 217280.582339,
+        "qqq_nav": 184058.932536
+      },
+      {
+        "date": "2011-04-12",
+        "effective_prior_signal_date": "2011-04-11",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 221257.067773,
+        "qqq_nav": 187994.777743
+      },
+      {
+        "date": "2011-05-12",
+        "effective_prior_signal_date": "2011-05-11",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 256706.01897,
+        "qqq_nav": 200623.150916
+      },
+      {
+        "date": "2011-06-13",
+        "effective_prior_signal_date": "2011-06-10",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 204887.472461,
+        "qqq_nav": 188735.268115
+      },
+      {
+        "date": "2011-07-13",
+        "effective_prior_signal_date": "2011-07-12",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 233423.212869,
+        "qqq_nav": 203494.665022
+      },
+      {
+        "date": "2011-08-11",
+        "effective_prior_signal_date": "2011-08-10",
+        "leverage": 1.25,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 191495.680519,
+        "qqq_nav": 190241.343131
+      },
+      {
+        "date": "2011-09-12",
+        "effective_prior_signal_date": "2011-09-09",
+        "leverage": 1.25,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 197552.088758,
+        "qqq_nav": 196374.999723
+      },
+      {
+        "date": "2011-10-11",
+        "effective_prior_signal_date": "2011-10-10",
+        "leverage": 1.25,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 199383.997952,
+        "qqq_nav": 209510.172223
+      },
+      {
+        "date": "2011-11-09",
+        "effective_prior_signal_date": "2011-11-08",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 197855.880722,
+        "qqq_nav": 214846.508257
+      },
+      {
+        "date": "2011-12-09",
+        "effective_prior_signal_date": "2011-12-08",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": true,
+        "stocklens_nav": 189004.822298,
+        "qqq_nav": 219176.328696
+      },
+      {
+        "date": "2012-01-11",
+        "effective_prior_signal_date": "2012-01-10",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 195424.339906,
+        "qqq_nav": 227985.681962
+      },
+      {
+        "date": "2012-02-10",
+        "effective_prior_signal_date": "2012-02-09",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 244444.640703,
+        "qqq_nav": 248465.122176
+      },
+      {
+        "date": "2012-03-13",
+        "effective_prior_signal_date": "2012-03-12",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 293418.927272,
+        "qqq_nav": 267119.275305
+      },
+      {
+        "date": "2012-04-12",
+        "effective_prior_signal_date": "2012-04-11",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 309469.240446,
+        "qqq_nav": 274889.816536
+      },
+      {
+        "date": "2012-05-11",
+        "effective_prior_signal_date": "2012-05-10",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 270851.042687,
+        "qqq_nav": 265863.519207
+      },
+      {
+        "date": "2012-06-12",
+        "effective_prior_signal_date": "2012-06-11",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 252295.601627,
+        "qqq_nav": 262742.859011
+      },
+      {
+        "date": "2012-07-12",
+        "effective_prior_signal_date": "2012-07-11",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 253464.0593,
+        "qqq_nav": 266195.225133
+      },
+      {
+        "date": "2012-08-10",
+        "effective_prior_signal_date": "2012-08-09",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 311816.999594,
+        "qqq_nav": 288664.335361
+      },
+      {
+        "date": "2012-09-11",
+        "effective_prior_signal_date": "2012-09-10",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 336238.977328,
+        "qqq_nav": 298958.024073
+      },
+      {
+        "date": "2012-10-10",
+        "effective_prior_signal_date": "2012-10-09",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 318717.958878,
+        "qqq_nav": 296591.310449
+      },
+      {
+        "date": "2012-11-12",
+        "effective_prior_signal_date": "2012-11-09",
+        "leverage": 1.25,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 279229.283859,
+        "qqq_nav": 284472.326237
+      },
+      {
+        "date": "2012-12-12",
+        "effective_prior_signal_date": "2012-12-11",
+        "leverage": 1.25,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 295641.526822,
+        "qqq_nav": 298753.033938
+      },
+      {
+        "date": "2013-01-14",
+        "effective_prior_signal_date": "2013-01-11",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 284924.946742,
+        "qqq_nav": 309081.239815
+      },
+      {
+        "date": "2013-02-13",
+        "effective_prior_signal_date": "2013-02-12",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 300246.974635,
+        "qqq_nav": 317271.811251
+      },
+      {
+        "date": "2013-03-15",
+        "effective_prior_signal_date": "2013-03-14",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 311637.432833,
+        "qqq_nav": 324121.405906
+      },
+      {
+        "date": "2013-04-16",
+        "effective_prior_signal_date": "2013-04-15",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 326840.073082,
+        "qqq_nav": 332181.230265
+      },
+      {
+        "date": "2013-05-15",
+        "effective_prior_signal_date": "2013-05-14",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 390686.653979,
+        "qqq_nav": 355903.728654
+      },
+      {
+        "date": "2013-06-14",
+        "effective_prior_signal_date": "2013-06-13",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 370716.92926,
+        "qqq_nav": 352638.274557
+      },
+      {
+        "date": "2013-07-16",
+        "effective_prior_signal_date": "2013-07-15",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 424692.278531,
+        "qqq_nav": 372546.322064
+      },
+      {
+        "date": "2013-08-14",
+        "effective_prior_signal_date": "2013-08-13",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 450936.071901,
+        "qqq_nav": 383182.716889
+      },
+      {
+        "date": "2013-09-13",
+        "effective_prior_signal_date": "2013-09-12",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 474535.270303,
+        "qqq_nav": 393005.475287
+      },
+      {
+        "date": "2013-10-14",
+        "effective_prior_signal_date": "2013-10-11",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 510520.541129,
+        "qqq_nav": 406457.154593
+      },
+      {
+        "date": "2013-11-12",
+        "effective_prior_signal_date": "2013-11-11",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 565789.683606,
+        "qqq_nav": 423939.235663
+      },
+      {
+        "date": "2013-12-12",
+        "effective_prior_signal_date": "2013-12-11",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 618234.841668,
+        "qqq_nav": 439826.477792
+      },
+      {
+        "date": "2014-01-14",
+        "effective_prior_signal_date": "2014-01-13",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 683558.137782,
+        "qqq_nav": 458693.205597
+      },
+      {
+        "date": "2014-02-13",
+        "effective_prior_signal_date": "2014-02-12",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 729679.321804,
+        "qqq_nav": 472693.486937
+      },
+      {
+        "date": "2014-03-17",
+        "effective_prior_signal_date": "2014-03-14",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 733614.768923,
+        "qqq_nav": 477196.634316
+      },
+      {
+        "date": "2014-04-15",
+        "effective_prior_signal_date": "2014-04-14",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 631887.660178,
+        "qqq_nav": 458138.525963
+      },
+      {
+        "date": "2014-05-15",
+        "effective_prior_signal_date": "2014-05-14",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 678865.386593,
+        "qqq_nav": 472875.261675
+      },
+      {
+        "date": "2014-06-16",
+        "effective_prior_signal_date": "2014-06-13",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 808050.773844,
+        "qqq_nav": 504948.871783
+      },
+      {
+        "date": "2014-07-16",
+        "effective_prior_signal_date": "2014-07-15",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 909859.966075,
+        "qqq_nav": 528984.095193
+      },
+      {
+        "date": "2014-08-14",
+        "effective_prior_signal_date": "2014-08-13",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 938181.027765,
+        "qqq_nav": 538293.968099
+      },
+      {
+        "date": "2014-09-15",
+        "effective_prior_signal_date": "2014-09-12",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 984680.897325,
+        "qqq_nav": 550564.897867
+      },
+      {
+        "date": "2014-10-14",
+        "effective_prior_signal_date": "2014-10-13",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 830939.046365,
+        "qqq_nav": 524089.698419
+      },
+      {
+        "date": "2014-11-12",
+        "effective_prior_signal_date": "2014-11-11",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 1101537.450798,
+        "qqq_nav": 581104.343855
+      },
+      {
+        "date": "2014-12-12",
+        "effective_prior_signal_date": "2014-12-11",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 1107993.696996,
+        "qqq_nav": 585690.720973
+      },
+      {
+        "date": "2015-01-14",
+        "effective_prior_signal_date": "2015-01-13",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 1060557.600542,
+        "qqq_nav": 581483.453883
+      },
+      {
+        "date": "2015-02-13",
+        "effective_prior_signal_date": "2015-02-12",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 1248049.379806,
+        "qqq_nav": 619440.793517
+      },
+      {
+        "date": "2015-03-17",
+        "effective_prior_signal_date": "2015-03-16",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 1245560.942347,
+        "qqq_nav": 622648.869818
+      },
+      {
+        "date": "2015-04-16",
+        "effective_prior_signal_date": "2015-04-15",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 1278755.251894,
+        "qqq_nav": 632434.415701
+      },
+      {
+        "date": "2015-05-15",
+        "effective_prior_signal_date": "2015-05-14",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 1340465.564169,
+        "qqq_nav": 647078.711673
+      },
+      {
+        "date": "2015-06-16",
+        "effective_prior_signal_date": "2015-06-15",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 1309519.136098,
+        "qqq_nav": 645911.362893
+      },
+      {
+        "date": "2015-07-16",
+        "effective_prior_signal_date": "2015-07-15",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 1424335.356299,
+        "qqq_nav": 669697.923211
+      },
+      {
+        "date": "2015-08-14",
+        "effective_prior_signal_date": "2015-08-13",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 1371333.599774,
+        "qqq_nav": 664593.561158
+      },
+      {
+        "date": "2015-09-15",
+        "effective_prior_signal_date": "2015-09-14",
+        "leverage": 1.25,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 1035618.319457,
+        "qqq_nav": 644078.692165
+      },
+      {
+        "date": "2015-10-14",
+        "effective_prior_signal_date": "2015-10-13",
+        "leverage": 1.25,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 1034509.332528,
+        "qqq_nav": 645882.803736
+      },
+      {
+        "date": "2015-11-12",
+        "effective_prior_signal_date": "2015-11-11",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 1177849.365567,
+        "qqq_nav": 686577.664157
+      },
+      {
+        "date": "2015-12-14",
+        "effective_prior_signal_date": "2015-12-11",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 1157199.05292,
+        "qqq_nav": 687474.033345
+      },
+      {
+        "date": "2016-01-14",
+        "effective_prior_signal_date": "2016-01-13",
+        "leverage": 1.25,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 963960.105221,
+        "qqq_nav": 646200.875877
+      },
+      {
+        "date": "2016-02-16",
+        "effective_prior_signal_date": "2016-02-12",
+        "leverage": 0.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 866907.476507,
+        "qqq_nav": 625738.817483
+      },
+      {
+        "date": "2016-03-16",
+        "effective_prior_signal_date": "2016-03-15",
+        "leverage": 1.25,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 892680.954596,
+        "qqq_nav": 675256.912975
+      },
+      {
+        "date": "2016-04-15",
+        "effective_prior_signal_date": "2016-04-14",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 942832.892277,
+        "qqq_nav": 700086.591995
+      },
+      {
+        "date": "2016-05-16",
+        "effective_prior_signal_date": "2016-05-13",
+        "leverage": 1.25,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 924719.133417,
+        "qqq_nav": 679438.533647
+      },
+      {
+        "date": "2016-06-15",
+        "effective_prior_signal_date": "2016-06-14",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 917093.129923,
+        "qqq_nav": 688586.264043
+      },
+      {
+        "date": "2016-07-15",
+        "effective_prior_signal_date": "2016-07-14",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 943216.072489,
+        "qqq_nav": 720203.552616
+      },
+      {
+        "date": "2016-08-15",
+        "effective_prior_signal_date": "2016-08-12",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 1099625.045498,
+        "qqq_nav": 761776.339279
+      },
+      {
+        "date": "2016-09-14",
+        "effective_prior_signal_date": "2016-09-13",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 1046099.840181,
+        "qqq_nav": 753215.073244
+      },
+      {
+        "date": "2016-10-13",
+        "effective_prior_signal_date": "2016-10-12",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 1084371.710027,
+        "qqq_nav": 766113.743327
+      },
+      {
+        "date": "2016-11-11",
+        "effective_prior_signal_date": "2016-11-10",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 1047885.441717,
+        "qqq_nav": 761711.289393
+      },
+      {
+        "date": "2016-12-13",
+        "effective_prior_signal_date": "2016-12-12",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 1175465.687234,
+        "qqq_nav": 795945.904179
+      },
+      {
+        "date": "2017-01-13",
+        "effective_prior_signal_date": "2017-01-12",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 1264832.73789,
+        "qqq_nav": 819799.67957
+      },
+      {
+        "date": "2017-02-14",
+        "effective_prior_signal_date": "2017-02-13",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 1433875.833666,
+        "qqq_nav": 859121.902503
+      },
+      {
+        "date": "2017-03-16",
+        "effective_prior_signal_date": "2017-03-15",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 1551464.791653,
+        "qqq_nav": 885908.261258
+      },
+      {
+        "date": "2017-04-17",
+        "effective_prior_signal_date": "2017-04-13",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 1537892.134071,
+        "qqq_nav": 887655.964957
+      },
+      {
+        "date": "2017-05-16",
+        "effective_prior_signal_date": "2017-05-15",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 1835450.29674,
+        "qqq_nav": 946186.00363
+      },
+      {
+        "date": "2017-06-15",
+        "effective_prior_signal_date": "2017-06-14",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 1804291.44736,
+        "qqq_nav": 946302.087534
+      },
+      {
+        "date": "2017-07-17",
+        "effective_prior_signal_date": "2017-07-14",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 1925324.801466,
+        "qqq_nav": 973342.626835
+      },
+      {
+        "date": "2017-08-15",
+        "effective_prior_signal_date": "2017-08-14",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 1993370.845107,
+        "qqq_nav": 989440.007913
+      },
+      {
+        "date": "2017-09-14",
+        "effective_prior_signal_date": "2017-09-13",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 2047453.864479,
+        "qqq_nav": 1003425.826289
+      },
+      {
+        "date": "2017-10-13",
+        "effective_prior_signal_date": "2017-10-12",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 2171925.436412,
+        "qqq_nav": 1028387.895146
+      },
+      {
+        "date": "2017-11-13",
+        "effective_prior_signal_date": "2017-11-10",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 2407494.677956,
+        "qqq_nav": 1070245.088398
+      },
+      {
+        "date": "2017-12-13",
+        "effective_prior_signal_date": "2017-12-12",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 2494716.5401,
+        "qqq_nav": 1088526.526713
+      },
+      {
+        "date": "2018-01-16",
+        "effective_prior_signal_date": "2018-01-12",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 2899421.566839,
+        "qqq_nav": 1150616.672173
+      },
+      {
+        "date": "2018-02-14",
+        "effective_prior_signal_date": "2018-02-13",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 2770450.027304,
+        "qqq_nav": 1144599.541663
+      },
+      {
+        "date": "2018-03-16",
+        "effective_prior_signal_date": "2018-03-15",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 3182790.282039,
+        "qqq_nav": 1206851.946439
+      },
+      {
+        "date": "2018-04-17",
+        "effective_prior_signal_date": "2018-04-16",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 2851862.99556,
+        "qqq_nav": 1177685.054262
+      },
+      {
+        "date": "2018-05-16",
+        "effective_prior_signal_date": "2018-05-15",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 2973966.238428,
+        "qqq_nav": 1201784.031443
+      },
+      {
+        "date": "2018-06-15",
+        "effective_prior_signal_date": "2018-06-14",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 3393987.630271,
+        "qqq_nav": 1262294.07542
+      },
+      {
+        "date": "2018-07-17",
+        "effective_prior_signal_date": "2018-07-16",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 3573298.160854,
+        "qqq_nav": 1292218.000255
+      },
+      {
+        "date": "2018-08-15",
+        "effective_prior_signal_date": "2018-08-14",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 3485890.359777,
+        "qqq_nav": 1288306.86836
+      },
+      {
+        "date": "2018-09-14",
+        "effective_prior_signal_date": "2018-09-13",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 3740046.524329,
+        "qqq_nav": 1325976.387319
+      },
+      {
+        "date": "2018-10-15",
+        "effective_prior_signal_date": "2018-10-12",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 3040260.487818,
+        "qqq_nav": 1246546.533429
+      },
+      {
+        "date": "2018-11-13",
+        "effective_prior_signal_date": "2018-11-12",
+        "leverage": 1.25,
+        "contribution": 0.0,
+        "rebalance": true,
+        "stocklens_nav": 2654511.239319,
+        "qqq_nav": 1208422.091107
+      },
+      {
+        "date": "2018-12-14",
+        "effective_prior_signal_date": "2018-12-13",
+        "leverage": 1.25,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 2546269.433403,
+        "qqq_nav": 1172553.772217
+      },
+      {
+        "date": "2019-01-16",
+        "effective_prior_signal_date": "2019-01-15",
+        "leverage": 0.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 2379253.101021,
+        "qqq_nav": 1188944.69597
+      },
+      {
+        "date": "2019-02-15",
+        "effective_prior_signal_date": "2019-02-14",
+        "leverage": 1.25,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 2384218.115736,
+        "qqq_nav": 1262763.46802
+      },
+      {
+        "date": "2019-03-19",
+        "effective_prior_signal_date": "2019-03-18",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 2653798.425717,
+        "qqq_nav": 1320961.641109
+      },
+      {
+        "date": "2019-04-17",
+        "effective_prior_signal_date": "2019-04-16",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 3000818.32729,
+        "qqq_nav": 1384322.225444
+      },
+      {
+        "date": "2019-05-17",
+        "effective_prior_signal_date": "2019-05-16",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 2776295.662279,
+        "qqq_nav": 1357276.853751
+      },
+      {
+        "date": "2019-06-18",
+        "effective_prior_signal_date": "2019-06-17",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 2761640.863401,
+        "qqq_nav": 1386019.933538
+      },
+      {
+        "date": "2019-07-18",
+        "effective_prior_signal_date": "2019-07-17",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 3039160.64654,
+        "qqq_nav": 1437401.86631
+      },
+      {
+        "date": "2019-08-16",
+        "effective_prior_signal_date": "2019-08-15",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 2668914.04103,
+        "qqq_nav": 1388949.821172
+      },
+      {
+        "date": "2019-09-17",
+        "effective_prior_signal_date": "2019-09-16",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 2951771.121288,
+        "qqq_nav": 1445881.323351
+      },
+      {
+        "date": "2019-10-16",
+        "effective_prior_signal_date": "2019-10-15",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 2964265.958798,
+        "qqq_nav": 1455667.248754
+      },
+      {
+        "date": "2019-11-14",
+        "effective_prior_signal_date": "2019-11-13",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 3342338.163748,
+        "qqq_nav": 1522486.877529
+      },
+      {
+        "date": "2019-12-16",
+        "effective_prior_signal_date": "2019-12-13",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 3717517.366103,
+        "qqq_nav": 1585306.548449
+      },
+      {
+        "date": "2020-01-16",
+        "effective_prior_signal_date": "2020-01-15",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 4448420.314398,
+        "qqq_nav": 1691131.460538
+      },
+      {
+        "date": "2020-02-18",
+        "effective_prior_signal_date": "2020-02-14",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 5178877.193368,
+        "qqq_nav": 1789567.568697
+      },
+      {
+        "date": "2020-03-18",
+        "effective_prior_signal_date": "2020-03-17",
+        "leverage": 1.25,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 2866072.421441,
+        "qqq_nav": 1349375.175227
+      },
+      {
+        "date": "2020-04-17",
+        "effective_prior_signal_date": "2020-04-16",
+        "leverage": 1.25,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 3648011.721854,
+        "qqq_nav": 1652571.257763
+      },
+      {
+        "date": "2020-05-18",
+        "effective_prior_signal_date": "2020-05-15",
+        "leverage": 2.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 3992209.654294,
+        "qqq_nav": 1749452.274714
+      },
+      {
+        "date": "2020-06-17",
+        "effective_prior_signal_date": "2020-06-16",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 4777190.059234,
+        "qqq_nav": 1877643.308805
+      },
+      {
+        "date": "2020-07-17",
+        "effective_prior_signal_date": "2020-07-16",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 5714396.514735,
+        "qqq_nav": 2006553.498269
+      },
+      {
+        "date": "2020-08-17",
+        "effective_prior_signal_date": "2020-08-14",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 6720122.258585,
+        "qqq_nav": 2133122.888362
+      },
+      {
+        "date": "2020-09-16",
+        "effective_prior_signal_date": "2020-09-15",
+        "leverage": 2.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 6644609.49449,
+        "qqq_nav": 2130850.919565
+      },
+      {
+        "date": "2020-10-15",
+        "effective_prior_signal_date": "2020-10-14",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 7501838.254461,
+        "qqq_nav": 2254633.889369
+      },
+      {
+        "date": "2020-11-13",
+        "effective_prior_signal_date": "2020-11-12",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 7395607.110507,
+        "qqq_nav": 2264820.204421
+      },
+      {
+        "date": "2020-12-15",
+        "effective_prior_signal_date": "2020-12-14",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 8641636.562562,
+        "qqq_nav": 2395722.740897
+      },
+      {
+        "date": "2021-01-15",
+        "effective_prior_signal_date": "2021-01-14",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 9022215.850782,
+        "qqq_nav": 2439211.864477
+      },
+      {
+        "date": "2021-02-17",
+        "effective_prior_signal_date": "2021-02-16",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 10927248.176991,
+        "qqq_nav": 2615490.907788
+      },
+      {
+        "date": "2021-03-18",
+        "effective_prior_signal_date": "2021-03-17",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 8698793.918576,
+        "qqq_nav": 2447470.45247
+      },
+      {
+        "date": "2021-04-19",
+        "effective_prior_signal_date": "2021-04-16",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 10665645.919101,
+        "qqq_nav": 2664998.802057
+      },
+      {
+        "date": "2021-05-18",
+        "effective_prior_signal_date": "2021-05-17",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 9085405.316055,
+        "qqq_nav": 2537315.819946
+      },
+      {
+        "date": "2021-06-17",
+        "effective_prior_signal_date": "2021-06-16",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 11091929.584966,
+        "qqq_nav": 2722957.79104
+      },
+      {
+        "date": "2021-07-19",
+        "effective_prior_signal_date": "2021-07-16",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 12007463.63921,
+        "qqq_nav": 2803264.57828
+      },
+      {
+        "date": "2021-08-17",
+        "effective_prior_signal_date": "2021-08-16",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 13097097.194578,
+        "qqq_nav": 2894164.585148
+      },
+      {
+        "date": "2021-09-16",
+        "effective_prior_signal_date": "2021-09-15",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 14420194.811573,
+        "qqq_nav": 2997181.142876
+      },
+      {
+        "date": "2021-10-15",
+        "effective_prior_signal_date": "2021-10-14",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 13296489.846738,
+        "qqq_nav": 2929801.126021
+      },
+      {
+        "date": "2021-11-15",
+        "effective_prior_signal_date": "2021-11-12",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 16166050.022219,
+        "qqq_nav": 3137214.499546
+      },
+      {
+        "date": "2021-12-15",
+        "effective_prior_signal_date": "2021-12-14",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 16207395.439127,
+        "qqq_nav": 3160097.462416
+      },
+      {
+        "date": "2022-01-14",
+        "effective_prior_signal_date": "2022-01-13",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 14087531.205039,
+        "qqq_nav": 3031675.959867
+      },
+      {
+        "date": "2022-02-15",
+        "effective_prior_signal_date": "2022-02-14",
+        "leverage": 1.25,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 10960570.428084,
+        "qqq_nav": 2844589.541488
+      },
+      {
+        "date": "2022-03-17",
+        "effective_prior_signal_date": "2022-03-16",
+        "leverage": 1.25,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 10485428.57527,
+        "qqq_nav": 2754703.052355
+      },
+      {
+        "date": "2022-04-18",
+        "effective_prior_signal_date": "2022-04-14",
+        "leverage": 0.0,
+        "contribution": 0.0,
+        "rebalance": true,
+        "stocklens_nav": 10222929.227136,
+        "qqq_nav": 2715330.184028
+      },
+      {
+        "date": "2022-05-17",
+        "effective_prior_signal_date": "2022-05-16",
+        "leverage": 0.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 9124944.566625,
+        "qqq_nav": 2458051.123033
+      },
+      {
+        "date": "2022-06-16",
+        "effective_prior_signal_date": "2022-06-15",
+        "leverage": 0.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 9128444.566625,
+        "qqq_nav": 2181908.759307
+      },
+      {
+        "date": "2022-07-19",
+        "effective_prior_signal_date": "2022-07-18",
+        "leverage": 0.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 9131944.566625,
+        "qqq_nav": 2406585.628506
+      },
+      {
+        "date": "2022-08-17",
+        "effective_prior_signal_date": "2022-08-16",
+        "leverage": 0.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 9135444.566625,
+        "qqq_nav": 2653797.866582
+      },
+      {
+        "date": "2022-09-16",
+        "effective_prior_signal_date": "2022-09-15",
+        "leverage": 0.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 9138944.566625,
+        "qqq_nav": 2340764.01175
+      },
+      {
+        "date": "2022-10-17",
+        "effective_prior_signal_date": "2022-10-14",
+        "leverage": 0.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 9142444.566625,
+        "qqq_nav": 2186613.871597
+      },
+      {
+        "date": "2022-11-15",
+        "effective_prior_signal_date": "2022-11-14",
+        "leverage": 0.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 9145944.566625,
+        "qqq_nav": 2352887.323108
+      },
+      {
+        "date": "2022-12-15",
+        "effective_prior_signal_date": "2022-12-14",
+        "leverage": 0.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 9149444.566625,
+        "qqq_nav": 2254557.436166
+      },
+      {
+        "date": "2023-01-18",
+        "effective_prior_signal_date": "2023-01-17",
+        "leverage": 0.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 9152944.566625,
+        "qqq_nav": 2271647.947205
+      },
+      {
+        "date": "2023-02-16",
+        "effective_prior_signal_date": "2023-02-15",
+        "leverage": 0.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 9156444.566625,
+        "qqq_nav": 2483038.06225
+      },
+      {
+        "date": "2023-03-20",
+        "effective_prior_signal_date": "2023-03-17",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 11070870.224588,
+        "qqq_nav": 2512423.234636
+      },
+      {
+        "date": "2023-04-19",
+        "effective_prior_signal_date": "2023-04-18",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 12304529.652576,
+        "qqq_nav": 2620519.684191
+      },
+      {
+        "date": "2023-05-18",
+        "effective_prior_signal_date": "2023-05-17",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 14294001.738883,
+        "qqq_nav": 2776783.551164
+      },
+      {
+        "date": "2023-06-20",
+        "effective_prior_signal_date": "2023-06-16",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 18103743.76901,
+        "qqq_nav": 3028560.290388
+      },
+      {
+        "date": "2023-07-20",
+        "effective_prior_signal_date": "2023-07-19",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 19252558.401528,
+        "qqq_nav": 3113500.823639
+      },
+      {
+        "date": "2023-08-18",
+        "effective_prior_signal_date": "2023-08-17",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 16321112.789221,
+        "qqq_nav": 2962820.444563
+      },
+      {
+        "date": "2023-09-19",
+        "effective_prior_signal_date": "2023-09-18",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 17731868.025631,
+        "qqq_nav": 3067779.291327
+      },
+      {
+        "date": "2023-10-18",
+        "effective_prior_signal_date": "2023-10-17",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 16507572.89284,
+        "qqq_nav": 3017414.282501
+      },
+      {
+        "date": "2023-11-16",
+        "effective_prior_signal_date": "2023-11-15",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 19377961.166374,
+        "qqq_nav": 3208737.909697
+      },
+      {
+        "date": "2023-12-18",
+        "effective_prior_signal_date": "2023-12-15",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 22542024.15227,
+        "qqq_nav": 3394831.348776
+      },
+      {
+        "date": "2024-01-19",
+        "effective_prior_signal_date": "2024-01-18",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 24537416.521571,
+        "qqq_nav": 3517886.156686
+      },
+      {
+        "date": "2024-02-20",
+        "effective_prior_signal_date": "2024-02-16",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 25223118.896357,
+        "qqq_nav": 3572730.915319
+      },
+      {
+        "date": "2024-03-20",
+        "effective_prior_signal_date": "2024-03-19",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 27816034.599667,
+        "qqq_nav": 3718687.982936
+      },
+      {
+        "date": "2024-04-19",
+        "effective_prior_signal_date": "2024-04-18",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 22392678.713776,
+        "qqq_nav": 3477952.441677
+      },
+      {
+        "date": "2024-05-20",
+        "effective_prior_signal_date": "2024-05-17",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 28966850.882729,
+        "qqq_nav": 3819380.272783
+      },
+      {
+        "date": "2024-06-20",
+        "effective_prior_signal_date": "2024-06-18",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 33789785.46798,
+        "qqq_nav": 4046075.20716
+      },
+      {
+        "date": "2024-07-22",
+        "effective_prior_signal_date": "2024-07-19",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 33506050.601452,
+        "qqq_nav": 4063172.554765
+      },
+      {
+        "date": "2024-08-20",
+        "effective_prior_signal_date": "2024-08-19",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 32042249.966831,
+        "qqq_nav": 4049374.709817
+      },
+      {
+        "date": "2024-09-19",
+        "effective_prior_signal_date": "2024-09-18",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 31921564.214966,
+        "qqq_nav": 4079085.788986
+      },
+      {
+        "date": "2024-10-18",
+        "effective_prior_signal_date": "2024-10-17",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 33841120.950712,
+        "qqq_nav": 4182245.185274
+      },
+      {
+        "date": "2024-11-18",
+        "effective_prior_signal_date": "2024-11-15",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 34350954.652184,
+        "qqq_nav": 4232780.03726
+      },
+      {
+        "date": "2024-12-18",
+        "effective_prior_signal_date": "2024-12-17",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 37178481.031932,
+        "qqq_nav": 4375551.709462
+      },
+      {
+        "date": "2025-01-22",
+        "effective_prior_signal_date": "2025-01-21",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 39860298.689869,
+        "qqq_nav": 4513835.69703
+      },
+      {
+        "date": "2025-02-21",
+        "effective_prior_signal_date": "2025-02-20",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 38033657.882428,
+        "qqq_nav": 4471306.948835
+      },
+      {
+        "date": "2025-03-24",
+        "effective_prior_signal_date": "2025-03-21",
+        "leverage": 1.25,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 28409187.921044,
+        "qqq_nav": 4179854.894028
+      },
+      {
+        "date": "2025-04-23",
+        "effective_prior_signal_date": "2025-04-22",
+        "leverage": 1.25,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 25602193.494027,
+        "qqq_nav": 3875746.84131
+      },
+      {
+        "date": "2025-05-22",
+        "effective_prior_signal_date": "2025-05-21",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 30027075.221315,
+        "qqq_nav": 4386234.212818
+      },
+      {
+        "date": "2025-06-24",
+        "effective_prior_signal_date": "2025-06-23",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 34279958.176825,
+        "qqq_nav": 4615053.200266
+      },
+      {
+        "date": "2025-07-24",
+        "effective_prior_signal_date": "2025-07-23",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 38853650.412356,
+        "qqq_nav": 4834353.227766
+      },
+      {
+        "date": "2025-08-22",
+        "effective_prior_signal_date": "2025-08-21",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 39705363.691599,
+        "qqq_nav": 4897476.778521
+      },
+      {
+        "date": "2025-09-23",
+        "effective_prior_signal_date": "2025-09-22",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 45006496.890164,
+        "qqq_nav": 5131710.393419
+      },
+      {
+        "date": "2025-10-22",
+        "effective_prior_signal_date": "2025-10-21",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 45912178.138374,
+        "qqq_nav": 5197786.795738
+      },
+      {
+        "date": "2025-11-20",
+        "effective_prior_signal_date": "2025-11-19",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 40881006.835123,
+        "qqq_nav": 5030858.273051
+      },
+      {
+        "date": "2025-12-22",
+        "effective_prior_signal_date": "2025-12-19",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 47618812.018,
+        "qqq_nav": 5329336.508137
+      },
+      {
+        "date": "2026-01-23",
+        "effective_prior_signal_date": "2026-01-22",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 47808331.989742,
+        "qqq_nav": 5363053.598866
+      },
+      {
+        "date": "2026-02-24",
+        "effective_prior_signal_date": "2026-02-23",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 43827086.291465,
+        "qqq_nav": 5238601.396737
+      },
+      {
+        "date": "2026-03-25",
+        "effective_prior_signal_date": "2026-03-24",
+        "leverage": 1.25,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 39471682.985422,
+        "qqq_nav": 5075638.820806
+      },
+      {
+        "date": "2026-04-24",
+        "effective_prior_signal_date": "2026-04-23",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 53055172.807615,
+        "qqq_nav": 5736368.186979
+      },
+      {
+        "date": "2026-05-26",
+        "effective_prior_signal_date": "2026-05-22",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 69259196.688776,
+        "qqq_nav": 6313897.639054
+      },
+      {
+        "date": "2026-06-25",
+        "effective_prior_signal_date": "2026-06-24",
+        "leverage": 2.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 63489482.674192,
+        "qqq_nav": 6203928.088012
+      },
+      {
+        "date": "2026-07-27",
+        "effective_prior_signal_date": "2026-07-24",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 54489846.296138,
+        "qqq_nav": 5910546.014011
+      },
+      {
+        "date": "2026-08-25",
+        "effective_prior_signal_date": "2026-08-24",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 60307153.633516,
+        "qqq_nav": 6161964.70392
+      },
+      {
+        "date": "2026-09-24",
+        "effective_prior_signal_date": "2026-09-23",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 67465118.852514,
+        "qqq_nav": 6435721.543411
+      },
+      {
+        "date": "2026-10-07",
+        "effective_prior_signal_date": "2026-10-06",
+        "leverage": 3.0,
+        "contribution": 0.0,
+        "rebalance": false,
+        "stocklens_nav": 71731146.815513,
+        "qqq_nav": 6583693.821054
+      }
+    ]
+  },
+  "slippage_stress_no_contributions": [
+    {
+      "slippage_bps_per_side": 0.0,
+      "stocklens": {
+        "ending_equity": 30699114.827851,
+        "paid_capital": 100000.0,
+        "profit_loss": 30599114.827851,
+        "cagr_without_contributions": 0.410455640192277,
+        "max_drawdown": -0.4849307398502142,
+        "total_modeled_commissions": 47224.01181035956,
+        "total_modeled_slippage": 0.0,
+        "trades": 147,
+        "turnover_notional": 236120059.05179775,
+        "ending_cash": 394640.4924705755,
+        "ending_shares": {
+          "QQQ": 0,
+          "TQQQ": 362407
+        }
+      },
+      "qqq_buy_hold": {
+        "ending_equity": 2032257.48647,
+        "paid_capital": 100000.0,
+        "profit_loss": 1932257.48647,
+        "cagr_without_contributions": 0.19825177202461775,
+        "max_drawdown": -0.3511786509805218,
+        "total_modeled_commissions": 19.99086605628011,
+        "total_modeled_slippage": 0.0,
+        "trades": 1,
+        "turnover_notional": 99954.33028140056,
+        "ending_cash": 25.678852543162066,
+        "ending_shares": {
+          "QQQ": 2682,
+          "TQQQ": 0
+        }
+      },
+      "ending_equity_ratio": 15.105917942108258
+    },
+    {
+      "slippage_bps_per_side": 5.0,
+      "stocklens": {
+        "ending_equity": 29335469.343361,
+        "paid_capital": 100000.0,
+        "profit_loss": 29235469.343361,
+        "cagr_without_contributions": 0.4066123194983833,
+        "max_drawdown": -0.48695111186064155,
+        "total_modeled_commissions": 45382.33256474934,
+        "total_modeled_slippage": 113455.93726313455,
+        "trades": 147,
+        "turnover_notional": 226911874.52628753,
+        "ending_cash": 364566.8117826618,
+        "ending_shares": {
+          "QQQ": 0,
+          "TQQQ": 346459
+        }
+      },
+      "qqq_buy_hold": {
+        "ending_equity": 2031487.064,
+        "paid_capital": 100000.0,
+        "profit_loss": 1931487.064,
+        "cagr_without_contributions": 0.19822448786585278,
+        "max_drawdown": -0.3511828878878438,
+        "total_modeled_commissions": 19.993404046545642,
+        "total_modeled_slippage": 49.95853085092603,
+        "trades": 1,
+        "turnover_notional": 99917.06170187729,
+        "ending_cash": 12.986363225238165,
+        "ending_shares": {
+          "QQQ": 2681,
+          "TQQQ": 0
+        }
+      },
+      "ending_equity_ratio": 14.4403918997148
+    },
+    {
+      "slippage_bps_per_side": 10.0,
+      "stocklens": {
+        "ending_equity": 28031902.971331,
+        "paid_capital": 100000.0,
+        "profit_loss": 27931902.971331,
+        "cagr_without_contributions": 0.4027779880059832,
+        "max_drawdown": -0.49075705240570167,
+        "total_modeled_commissions": 43614.078633712896,
+        "total_modeled_slippage": 218070.89122624433,
+        "trades": 147,
+        "turnover_notional": 218070891.226256,
+        "ending_cash": 336372.72164400853,
+        "ending_shares": {
+          "QQQ": 0,
+          "TQQQ": 331207
+        }
+      },
+      "qqq_buy_hold": {
+        "ending_equity": 2030716.678806,
+        "paid_capital": 100000.0,
+        "profit_loss": 1930716.678806,
+        "cagr_without_contributions": 0.19819719530029478,
+        "max_drawdown": -0.351187115601704,
+        "total_modeled_commissions": 19.995934583095273,
+        "total_modeled_slippage": 99.87979312234785,
+        "trades": 1,
+        "turnover_notional": 99879.79312235402,
+        "ending_cash": 0.331149940539035,
+        "ending_shares": {
+          "QQQ": 2680,
+          "TQQQ": 0
+        }
+      },
+      "ending_equity_ratio": 13.803945800953835
+    },
+    {
+      "slippage_bps_per_side": 25.0,
+      "stocklens": {
+        "ending_equity": 24448965.563409,
+        "paid_capital": 100000.0,
+        "profit_loss": 24348965.563409,
+        "cagr_without_contributions": 0.3913047492555206,
+        "max_drawdown": -0.502026538877556,
+        "total_modeled_commissions": 38710.25898847377,
+        "total_modeled_slippage": 483882.5158319383,
+        "trades": 147,
+        "turnover_notional": 193553006.33277833,
+        "ending_cash": 261963.38896269165,
+        "ending_shares": {
+          "QQQ": 0,
+          "TQQQ": 289249
+        }
+      },
+      "qqq_buy_hold": {
+        "ending_equity": 2026965.025367,
+        "paid_capital": 100000.0,
+        "profit_loss": 1926965.025367,
+        "cagr_without_contributions": 0.19806414559033203,
+        "max_drawdown": -0.35117472847007936,
+        "total_modeled_commissions": 19.988536770059905,
+        "total_modeled_slippage": 249.23362556183832,
+        "trades": 1,
+        "turnover_notional": 99693.45022473768,
+        "ending_cash": 37.327612930414034,
+        "ending_shares": {
+          "QQQ": 2675,
+          "TQQQ": 0
+        }
+      },
+      "ending_equity_ratio": 12.061858619875446
+    },
+    {
+      "slippage_bps_per_side": 50.0,
+      "stocklens": {
+        "ending_equity": 19442514.661159,
+        "paid_capital": 100000.0,
+        "profit_loss": 19342514.661159,
+        "cagr_without_contributions": 0.3722919253701664,
+        "max_drawdown": -0.5203728909052445,
+        "total_modeled_commissions": 31730.928054775126,
+        "total_modeled_slippage": 793295.4899110175,
+        "trades": 147,
+        "turnover_notional": 158659097.98220554,
+        "ending_cash": 166515.24801939912,
+        "ending_shares": {
+          "QQQ": 0,
+          "TQQQ": 230519
+        }
+      },
+      "qqq_buy_hold": {
+        "ending_equity": 2022394.136492,
+        "paid_capital": 100000.0,
+        "profit_loss": 1922394.136492,
+        "cagr_without_contributions": 0.1979017291202667,
+        "max_drawdown": -0.3511829246716903,
+        "total_modeled_commissions": 19.993437588267213,
+        "total_modeled_slippage": 497.3491937379787,
+        "trades": 1,
+        "turnover_notional": 99469.83874759809,
+        "ending_cash": 12.818621075653937,
+        "ending_shares": {
+          "QQQ": 2669,
+          "TQQQ": 0
+        }
+      },
+      "ending_equity_ratio": 9.613613049177227
+    }
+  ],
+  "signal_lag_stress_no_contributions": [
+    {
+      "additional_signal_lag_sessions": 0,
+      "stocklens": {
+        "ending_equity": 28031902.971331,
+        "paid_capital": 100000.0,
+        "profit_loss": 27931902.971331,
+        "cagr_without_contributions": 0.4027779880059832,
+        "max_drawdown": -0.49075705240570167,
+        "total_modeled_commissions": 43614.078633712896,
+        "total_modeled_slippage": 218070.89122624433,
+        "trades": 147,
+        "turnover_notional": 218070891.226256,
+        "ending_cash": 336372.72164400853,
+        "ending_shares": {
+          "QQQ": 0,
+          "TQQQ": 331207
+        }
+      },
+      "qqq_buy_hold": {
+        "ending_equity": 2030716.678806,
+        "paid_capital": 100000.0,
+        "profit_loss": 1930716.678806,
+        "cagr_without_contributions": 0.19819719530029478,
+        "max_drawdown": -0.351187115601704,
+        "total_modeled_commissions": 19.995934583095273,
+        "total_modeled_slippage": 99.87979312234785,
+        "trades": 1,
+        "turnover_notional": 99879.79312235402,
+        "ending_cash": 0.331149940539035,
+        "ending_shares": {
+          "QQQ": 2680,
+          "TQQQ": 0
+        }
+      },
+      "ending_equity_ratio": 13.803945800953835
+    },
+    {
+      "additional_signal_lag_sessions": 1,
+      "stocklens": {
+        "ending_equity": 21397007.804611,
+        "paid_capital": 100000.0,
+        "profit_loss": 21297007.804611,
+        "cagr_without_contributions": 0.38020866763008976,
+        "max_drawdown": -0.5011838250434998,
+        "total_modeled_commissions": 34087.467437706204,
+        "total_modeled_slippage": 170437.67583668986,
+        "trades": 147,
+        "turnover_notional": 170437675.83670378,
+        "ending_cash": 234123.02949517593,
+        "ending_shares": {
+          "QQQ": 0,
+          "TQQQ": 253084
+        }
+      },
+      "qqq_buy_hold": {
+        "ending_equity": 2030716.678806,
+        "paid_capital": 100000.0,
+        "profit_loss": 1930716.678806,
+        "cagr_without_contributions": 0.19819719530029478,
+        "max_drawdown": -0.351187115601704,
+        "total_modeled_commissions": 19.995934583095273,
+        "total_modeled_slippage": 99.87979312234785,
+        "trades": 1,
+        "turnover_notional": 99879.79312235402,
+        "ending_cash": 0.331149940539035,
+        "ending_shares": {
+          "QQQ": 2680,
+          "TQQQ": 0
+        }
+      },
+      "ending_equity_ratio": 10.536678025017157
+    },
+    {
+      "additional_signal_lag_sessions": 2,
+      "stocklens": {
+        "ending_equity": 22944388.64376,
+        "paid_capital": 100000.0,
+        "profit_loss": 22844388.64376,
+        "cagr_without_contributions": 0.38600808945516496,
+        "max_drawdown": -0.5356292189865807,
+        "total_modeled_commissions": 37303.863022779304,
+        "total_modeled_slippage": 186519.70248741028,
+        "trades": 147,
+        "turnover_notional": 186519702.48742083,
+        "ending_cash": 263549.9587849695,
+        "ending_shares": {
+          "QQQ": 0,
+          "TQQQ": 271237
+        }
+      },
+      "qqq_buy_hold": {
+        "ending_equity": 2030716.678806,
+        "paid_capital": 100000.0,
+        "profit_loss": 1930716.678806,
+        "cagr_without_contributions": 0.19819719530029478,
+        "max_drawdown": -0.351187115601704,
+        "total_modeled_commissions": 19.995934583095273,
+        "total_modeled_slippage": 99.87979312234785,
+        "trades": 1,
+        "turnover_notional": 99879.79312235402,
+        "ending_cash": 0.331149940539035,
+        "ending_shares": {
+          "QQQ": 2680,
+          "TQQQ": 0
+        }
+      },
+      "ending_equity_ratio": 11.298665581084707
+    }
+  ],
+  "evidence_class": "TRADEABLE_ETF_HISTORICAL_PRICE_EXECUTION_PROXY",
+  "full_lean_execution_parity": false,
+  "broker_fills_observed": false,
+  "intraday_0931_0932_fills_observed": false,
+  "automatic_trading_authorized": false,
+  "automatic_model_promotion": false,
+  "limitations": [
+    "Daily OPEN is not the frozen 09:31 reductions / 09:32 additions timestamp. No historical minute-bar fill data is claimed.",
+    "Adjusted OHLC approximates distributions and splits; trades use adjustment-normalized prices, not historical raw brokerage executions.",
+    "Yahoo prices are not original LEAN same-input parity.",
+    "Share-level execution is whole-share and cash-constrained; estimated commission and slippage are assumptions, not observed fills.",
+    "Starts at real TQQQ inception in 2010, not 2009. QQQ benchmark is matched on identical dates, starting equity and contributions.",
+    "Frozen model decisions may have been selected using past sample results; historical outperformance is not out-of-sample proof."
+  ]
+}
