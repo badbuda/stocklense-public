@@ -39,9 +39,9 @@ def run(path="docs/workbench.json", initial=100000.0, monthly=3500.0, cost_bps=D
  except ValueError as exc: raise RuntimeError("SIMULATOR_REPLAY_INVALID:"+str(exc)) from exc
  request=stocklens_8_request(initial,monthly,cost_bps,rows[0]["date"],rows[-1]["date"])
  generic_run=run_backtest(rows,request,adapter)
- nav=qnav=paid=float(initial); peak=nav; maxdd=0.0; changes=0; total_costs=0.0
+ nav=qnav=paid=float(initial); peak=nav; maxdd=0.0; legacy_nav_maxdd=0.0; twr_index=twr_peak=1.0; changes=0; total_costs=0.0
  last_month=rows[0]["date"][:7]
- capital_ledger=[{"date":rows[0]["date"],"nav_before_contribution":0.0,"contribution":float(initial),"nav_after_contribution":nav,"gross_market_pl":0.0,"nav_before_cost":nav,"estimated_cost":0.0,"net_nav":nav,"paid_capital":paid,"drawdown":0.0}]
+ capital_ledger=[{"date":rows[0]["date"],"nav_before_contribution":0.0,"contribution":float(initial),"nav_after_contribution":nav,"gross_market_pl":0.0,"nav_before_cost":nav,"estimated_cost":0.0,"net_nav":nav,"paid_capital":paid,"drawdown":0.0,"twr_index":1.0,"legacy_nav_drawdown":0.0}]
  cost_ledger=[]
  for i in range(1,len(rows)):
   r,p=rows[i],rows[i-1]; month=r["date"][:7]; contribution=0.0
@@ -54,8 +54,12 @@ def run(path="docs/workbench.json", initial=100000.0, monthly=3500.0, cost_bps=D
   if r.get("event"):
    turnover=abs(r["leverage"]-p["leverage"]); cost=nav*turnover*cost_bps/10000; nav-=cost; total_costs+=cost; changes+=1
    cost_ledger.append({"date":r["date"],"event":r["event"],"turnover":turnover,"estimated_cost":cost,"cumulative_cost":total_costs,"nav_after_cost":nav})
-  peak=max(peak,nav); dd=nav/peak-1; maxdd=min(maxdd,dd)
-  capital_ledger.append({"date":r["date"],"nav_before_contribution":nav_before_market-contribution,"contribution":contribution,"nav_after_contribution":nav_before_market,"gross_market_pl":gross_market_pl,"nav_before_cost":nav+cost,"estimated_cost":cost,"net_nav":nav,"paid_capital":paid,"drawdown":dd})
+  twr_index*=nav/nav_before_market
+  twr_peak=max(twr_peak,twr_index)
+  dd=twr_index/twr_peak-1
+  maxdd=min(maxdd,dd)
+  peak=max(peak,nav); legacy_nav_maxdd=min(legacy_nav_maxdd,nav/peak-1)
+  capital_ledger.append({"date":r["date"],"nav_before_contribution":nav_before_market-contribution,"contribution":contribution,"nav_after_contribution":nav_before_market,"gross_market_pl":gross_market_pl,"nav_before_cost":nav+cost,"estimated_cost":cost,"net_nav":nav,"paid_capital":paid,"drawdown":dd,"twr_index":twr_index,"legacy_nav_drawdown":nav/peak-1})
  vals=[nav,qnav,paid,maxdd,total_costs]
  if not all(math.isfinite(x) for x in vals): raise RuntimeError("SIMULATOR_NON_FINITE_OUTPUT")
  if nav<=0 or paid<=0: raise RuntimeError("SIMULATOR_INVALID_CAPITAL_PATH")
@@ -86,7 +90,7 @@ def run(path="docs/workbench.json", initial=100000.0, monthly=3500.0, cost_bps=D
  contract_payload=simulator_contract()
  contract_sha256=hashlib.sha256(json.dumps(contract_payload,sort_keys=True,separators=(",",":")).encode()).hexdigest()
  replay_fingerprint=hashlib.sha256(json.dumps(rows,sort_keys=True,separators=(",",":")).encode()).hexdigest()
- result={"publication_identity":publication_identity(path),"backtest_request":request.__dict__,"strategy_contract":{"strategy_id":adapter.strategy_id,"evidence_class":adapter.evidence_class},"generic_engine":{"status":"PASS","result_kind":generic_run["kind"],"request_sha256":generic_run["request_sha256"],"rows_sha256":generic_run["rows_sha256"],"ledger_sha256":generic_run["ledger_sha256"],"frozen_accounting_parity":generic_parity,"analytics":generic_run.get("analytics",{})},"status":"PASS","sessions":len(rows),"start":rows[0]["date"],"end":rows[-1]["date"],"replay_dataset_sha256":d.get("replay",{}).get("dataset_sha256"),"replay_rows_sha256":replay_fingerprint,"contract_sha256":contract_sha256,"replay_evidence":d.get("replay",{}).get("evidence"),"provenance":{"status":"PASS","dataset_sha256":d.get("replay",{}).get("dataset_sha256"),"replay_rows_sha256":replay_fingerprint,"contract_sha256":contract_sha256,"generation_id":publication_identity(path).get("generation_id"),"evidence_class":EVIDENCE_CLASS,"full_lean_execution_parity":False},"end_equity":nav,"qqq_end_equity":qnav,"paid":paid,"replay_profit_loss":nav-paid,"ending_to_paid_multiple":nav/paid,"max_drawdown":maxdd,"exposure_changes":changes,"total_estimated_transaction_cost":total_costs,"cost_sensitivity":sensitivity,"cost_ledger":cost_ledger,"accounting_invariants":{"status":"PASS",**invariants},"contract":contract_payload,"evidence":EVIDENCE_CLASS+"_NOT_LEAN_EXECUTION_PARITY","full_lean_execution_parity":EXECUTION_PARITY,"automatic_model_change":AUTOMATIC_MODEL_CHANGE}
+ result={"publication_identity":publication_identity(path),"backtest_request":request.__dict__,"strategy_contract":{"strategy_id":adapter.strategy_id,"evidence_class":adapter.evidence_class},"generic_engine":{"status":"PASS","result_kind":generic_run["kind"],"request_sha256":generic_run["request_sha256"],"rows_sha256":generic_run["rows_sha256"],"ledger_sha256":generic_run["ledger_sha256"],"frozen_accounting_parity":generic_parity,"analytics":generic_run.get("analytics",{})},"status":"PASS","sessions":len(rows),"start":rows[0]["date"],"end":rows[-1]["date"],"replay_dataset_sha256":d.get("replay",{}).get("dataset_sha256"),"replay_rows_sha256":replay_fingerprint,"contract_sha256":contract_sha256,"replay_evidence":d.get("replay",{}).get("evidence"),"provenance":{"status":"PASS","dataset_sha256":d.get("replay",{}).get("dataset_sha256"),"replay_rows_sha256":replay_fingerprint,"contract_sha256":contract_sha256,"generation_id":publication_identity(path).get("generation_id"),"evidence_class":EVIDENCE_CLASS,"full_lean_execution_parity":False},"end_equity":nav,"qqq_end_equity":qnav,"paid":paid,"replay_profit_loss":nav-paid,"ending_to_paid_multiple":nav/paid,"max_drawdown":maxdd,"legacy_cashflow_distorted_nav_drawdown":legacy_nav_maxdd,"time_weighted_return":twr_index-1.0,"exposure_changes":changes,"total_estimated_transaction_cost":total_costs,"cost_sensitivity":sensitivity,"cost_ledger":cost_ledger,"accounting_invariants":{"status":"PASS",**invariants},"contract":contract_payload,"evidence":EVIDENCE_CLASS+"_NOT_LEAN_EXECUTION_PARITY","full_lean_execution_parity":EXECUTION_PARITY,"automatic_model_change":AUTOMATIC_MODEL_CHANGE}
  if out:
   p=Path(out); p.parent.mkdir(parents=True,exist_ok=True); p.write_text(json.dumps(result,indent=2)+chr(10))
  return result

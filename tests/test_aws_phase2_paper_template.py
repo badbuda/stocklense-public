@@ -17,6 +17,8 @@ def test_real_qqq_tqqq_only_no_broker_orders():
     assert '"broker_orders_authorized":{"BOOL":False}' in SRC
     assert 'day+"#PAPER"' in SRC
     assert "attribute_not_exists(session_date)" in SRC
+    assert "ReturnValuesOnConditionCheckFailure" in SRC
+    assert "DIVERGENT_PAPER_DUPLICATE" in SRC
 
 def test_two_isolated_scheduled_lambdas_and_no_secrets():
     assert T.count("Type: AWS::Lambda::Function")==2
@@ -28,3 +30,11 @@ def test_two_isolated_scheduled_lambdas_and_no_secrets():
 
 def test_cloudformation_inline_python_is_small_and_portable():
     assert len(SRC) < 4096
+
+
+def test_aws_email_alarm_and_duplicate_guards():
+    assert 'EmailAlertsConfigured' in T
+    assert 'AWS::SNS::Subscription' in T
+    assert T.count('ReturnValuesOnConditionCheckFailure')==2
+    assert T.count('DIVERGENT_')>=2
+    assert T.count('RetentionInDays: 30')==2
