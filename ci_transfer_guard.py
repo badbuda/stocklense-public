@@ -17,6 +17,7 @@ EXCLUDED = {
     "research/risk_overlay_multifactor.json",
     "research/yahoo_long_history.json",
     "research/yahoo_end_of_day_scorecard.json",
+    "research/backtest_live_readiness.json",
     "research/tradable_tqqq_execution_comparison.json",
 }
 STATIC_DOCS = {

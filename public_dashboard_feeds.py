@@ -112,7 +112,7 @@ def build():
         "source_git_sha": os.getenv("GITHUB_SHA")})
     expected = ["data.json", "workbench.json", "research_snapshot.json", "activity.json",
        "daily_brief.json", "project_status.json", "execution_observation.json", "capital_readiness.json",
-       "simulator_smoke.json", "research_curves.json", "pipeline_summary.json", "opportunity_board.json"]
+       "simulator_smoke.json", "research_curves.json", "backtest_live_readiness.json", "pipeline_summary.json", "opportunity_board.json"]
     missing = [f for f in expected if not (Path("docs") / f).is_file()]
     save("site_health.json", {"schema_version": 1, "git_sha": os.getenv("GITHUB_SHA"),
         "built_at_utc": now, "healthy": bool(not missing and pub_ok and freshness == "CURRENT"),

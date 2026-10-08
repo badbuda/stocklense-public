@@ -510,6 +510,7 @@ jobs:
         run: |
           python dashboard.py
           python backtest_paper_gap.py
+          python model_readiness_audit.py
           python public_dashboard_feeds.py
           python dashboard_bundle_validate.py
           python mobile_validate.py
@@ -568,6 +569,8 @@ jobs:
             research/tqqq_reality_check.json
             research/tradable_tqqq_execution_comparison.json
             docs/tradable_tqqq_execution_comparison.json
+            docs/backtest_live_readiness.json
+            research/backtest_live_readiness.json
             research/hybrid_return_concentration.json
             research/hybrid_rolling_distribution.json
             research/execution_realistic_rolling_distribution.json
@@ -664,7 +667,7 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           # Optional research folders do not necessarily exist on a clean checkout.
           # Stage available evidence and tracked deletions, but never fail on absent folders.
-          for path in shadow_history/ paper_portfolio/ historical_replay/ docs/data.json docs/timeseries.json docs/research.json docs/backtest_*.json docs/prove_or_break.json research/results/ research/reports/ research/sweeps/ research/validation/ research/prospective/ research/queue.json research/tradable_tqqq_execution_comparison.json research/yahoo_long_history.json research/yahoo_end_of_day_scorecard.json research/risk_overlay_multifactor.json research/risk_overlay_deep_dive.json; do
+          for path in shadow_history/ paper_portfolio/ historical_replay/ docs/data.json docs/timeseries.json docs/research.json docs/backtest_*.json docs/prove_or_break.json research/results/ research/reports/ research/sweeps/ research/validation/ research/prospective/ research/queue.json research/tradable_tqqq_execution_comparison.json research/backtest_live_readiness.json research/yahoo_long_history.json research/yahoo_end_of_day_scorecard.json research/risk_overlay_multifactor.json research/risk_overlay_deep_dive.json; do
             if [ -e "$path" ] || [ -n "$(git ls-files -- "$path")" ]; then
               git add -A -- "$path"
             fi

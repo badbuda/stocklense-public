@@ -25,6 +25,7 @@ nav{display:flex;gap:5px;overflow:auto}nav button{border:0;background:transparen
 </section>
 <section id="performance" class="page"><div class="section-title"><h2>ביצועים</h2><span>היסטורי ו־prospective נשארים מופרדים</span></div><div class="grid"><div class="metric">Historical CAGR<b id="histCagr">UNVERIFIED</b></div><div class="metric">Max Drawdown<b id="histMaxDd">UNVERIFIED</b></div><div class="metric">Orders<b id="histOrders">UNVERIFIED</b></div><div class="metric">Prospective sessions<b id="prosSessions">—</b></div></div><div class="card" style="margin-top:14px"><h3>Prospective</h3><div id="prospective" class="empty"></div></div><div class="card" style="margin-top:14px"><h3>מה המספרים האלה אומרים?</h3><p class="sub">Historical metrics מוצגים רק כאשר קיימת ראיה קנונית מאומתת ומתאימה ל־generation הנוכחי. בהיעדר ראיה הם נשארים UNVERIFIED. ביצועי prospective מוצגים בנפרד ורק מסשנים אמיתיים שנאספו אחרי תחילת המעקב.</p><a href="./legacy.html">כלי הניתוח הישנים / Advanced view</a></div><div class="section-title"><h2>תשואת StockLens מול QQQ באמצעות ETF אמיתי</h2><span>קירוב ביצוע בשער הפתיחה היומי</span></div><div class="card"><p id="tradableTqqqStatus" class="sub">ממתין לנתונים...</p><div class="grid"><div class="metric">StockLens<b id="tradableStocklens">לא אומת</b></div><div class="metric">QQQ<b id="tradableQQQ">לא אומת</b></div><div class="metric">MaxDD<b id="tradableDrawdown">—</b></div><div class="metric">יחס שווי<b id="tradableRatio">—</b></div></div><p class="small">מחירי ETF נצפים, מודל ביצוע בשער Open היומי — לא מילויי 09:31/09:32 אמיתיים. אין להציג תשואה תיאורטית כהוכחת מסחר.</p></div>
 </section>
+<div class="section-title"><h2>מוכנות למסחר חי</h2><span>CI ירוק אינו אישור להשקעה</span></div><div class="card"><div class="grid"><div class="metric">סטטוס<b id="liveReadinessStatus" class="bad">חסום</b></div><div class="metric">בדיקות עברו<b id="liveReadinessPassed">—</b></div><div class="metric">חסמים פתוחים<b id="liveReadinessBlockers">—</b></div><div class="metric">ימי paper מאומתים<b id="liveReadinessPaper">—</b></div></div><p class="sub">מחקר על QQQ/TQQQ אמיתיים הוא שלב ראשון בלבד. נדרשים נתוני ביצוע, ראיות קדימה ואישור אנושי; אין מסחר אוטומטי.</p><div id="liveReadinessDetails" class="small">חסום עד להשלמת ביקורת.</div></div>
 <section id="research" class="page"><div class="card" style="margin-bottom:14px"><b>מדיניות מחקר מעודכנת:</b> רק מחירי TQQQ אמיתיים מאושרים להשוואות תשואה חדשות. תוצאות מינוף סינתטיות קודמות הן ארכיון בלבד, לא ביצועי מסחר.</div><div class="section-title"><h2>Research Opportunity Board</h2><span>מה מותר לחקור הלאה ולמה</span></div><div class="card list" id="opportunityBoard"></div>
 <div class="section-title"><h2>Research Pipeline</h2><span>כל המחקר במקום אחד</span></div><div class="card list" id="researchPipeline"></div>
 <div class="section-title"><h2>Hypothesis Discovery</h2><span>רעיונות לפני שהם הופכים לניסוי</span></div><div class="card list" id="hypothesisBacklog"></div>
@@ -86,5 +87,16 @@ getJSON('tradable_tqqq_execution_comparison.json').then(r=>{
   $('tradableRatio').textContent=r.no_contributions.ending_equity_ratio.toFixed(2)+'x';
   $('tradableTqqqStatus').textContent=r.period.start+' עד '+r.period.end+' · עלויות: 2bps עמלה + 10bps החלקה לכל צד. מחקר בלבד.';
 }).catch(()=>{$('tradableTqqqStatus').textContent='UNVERIFIED — אין דוח ביצוע ETF תקף';});
+getJSON('backtest_live_readiness.json').then(r=>{
+ if(r.status!=='BLOCKED_FOR_LIVE_TRADING'||r.automated_live_trading_authorized!==false)throw Error('INVALID_LIVE_PERMISSION');
+ $('liveReadinessStatus').textContent='חסום למסחר אמיתי';
+ $('liveReadinessPassed').textContent=r.passed_count;
+ $('liveReadinessBlockers').textContent=r.blocked_count;
+ $('liveReadinessPaper').textContent=r.prospective_frozen_paper_sessions;
+ $('liveReadinessDetails').textContent=(r.checks||[]).filter(c=>c.status==='BLOCKED').map(c=>c.description).join(' · ');
+}).catch(()=>{
+ $('liveReadinessStatus').textContent='UNVERIFIED — חסום';
+ $('liveReadinessDetails').textContent='דוח מוכנות חסר. לא ניתן לאשר מסחר חי.';
+});
 updateFeedBadge();
 </script></body></html>
