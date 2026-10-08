@@ -16,6 +16,7 @@ import tempfile
 from pathlib import Path
 
 PARTS = ("trades", "ledger", "state", "latest")
+OPTIONAL_PARTS = ("snapshot",)
 
 class PaperTransactionError(RuntimeError):
     pass
@@ -71,13 +72,16 @@ def _read_prepared(path):
     envelope = json.loads(path.read_text(encoding="utf-8"))
     head = {k:v for k,v in envelope.items() if k!="manifest_sha256"}
     if (envelope.get("manifest_sha256")!=digest(canonical(head))
-        or envelope.get("schema_version")!=1 or set(envelope.get("pieces",{}))!=set(PARTS)):
+        or envelope.get("schema_version")!=1 or
+        set(envelope.get("pieces",{})) not in (set(PARTS),set(PARTS+OPTIONAL_PARTS))):
         raise PaperTransactionError("CORRUPT_PAPER_PREPARE_RECORD")
     return envelope
 
 def _finish(path, paths):
     pending = _read_prepared(path)
-    for kind in PARTS:
+    for kind in pending["pieces"]:
+        if kind not in paths:
+            raise PaperTransactionError("MISSING_PREPARED_DESTINATION:"+kind)
         info = pending["pieces"][kind]
         target = paths[kind]
         content = info["after"].encode("utf-8") if info["after"] is not None else None
@@ -118,6 +122,11 @@ def commit(paths,row,trades,state,latest_markdown):
         "state":json.dumps(state,indent=2,ensure_ascii=False).encode(),
         "latest":latest_markdown.encode(),
     }
+    if "snapshot" in paths:
+        payloads["snapshot"] = canonical({
+            "schema_version": 1, "session_date": day,
+            "broker_fills_observed": False, "row": row, "trades": trades,
+        })
     pieces={}
     for kind,blob in payloads.items():
         pieces[kind]={"before_sha256":digest(read(paths[kind])),

@@ -1,12 +1,10 @@
-"""Behavioral tests of the pure AWS paper-evidence gate; no AWS or Yahoo calls."""
-import csv
-import io
+"""Pure behavioral AWS paper-evidence gate tests: no AWS, broker or Yahoo calls."""
 from datetime import datetime,timezone
 from pathlib import Path
 
 SRC=Path("infra/aws/paper-evidence-handler.py").read_text()
-CODE=SRC.replace("import boto3,csv,hashlib,io,json,os,urllib.request",
-                 "import csv,hashlib,io,json,os,urllib.request")
+CODE=SRC.replace("import boto3,hashlib,json,os,urllib.request",
+                 "import hashlib,json,os,urllib.request")
 CODE=CODE.replace("from botocore.exceptions import ClientError","")
 ns={}
 exec(compile(CODE,"paper-evidence-handler.py","exec"),ns)
@@ -15,13 +13,6 @@ check=ns["evidence"]
 DAY="2026-10-08"
 SIGNAL="2026-10-07"
 NOW=datetime(2026,10,9,3,21,tzinfo=timezone.utc)
-
-def csv_table(rows):
-    f=io.StringIO()
-    w=csv.DictWriter(f,fieldnames=list(rows[0]))
-    w.writeheader()
-    w.writerows(rows)
-    return f.getvalue()
 
 def inputs():
     report={"status":"PASS_MODELLED_PAPER_ACCOUNTING_NOT_BROKER_FILLS",
@@ -32,11 +23,13 @@ def inputs():
          "trade_count_session":"1"}
     trade={"execution_session":DAY,"signal_date":SIGNAL,
            "symbol":"TQQQ","side":"BUY","time_et":"09:32"}
+    snap={"schema_version":1,"session_date":DAY,"broker_fills_observed":False,
+          "row":row,"trades":[trade]}
     prior={"generated_at_utc":"2026-10-08T09:29:00+00:00",
            "mode":"SHADOW_ONLY_NO_BROKER_ACTIONS",
            "latest":{"asof_date":SIGNAL,"qqq_weight":0.0,"tqqq_weight":.985}}
     current={"mode":"SHADOW_ONLY_NO_BROKER_ACTIONS","latest":{"asof_date":DAY}}
-    return [report,csv_table([row]),csv_table([trade]),prior,current]
+    return [report,snap,prior,current]
 
 def rejects(values,part):
     try: check(NOW,*values)
@@ -60,26 +53,33 @@ def test_audit_must_be_real_pass():
     rejects(values,"AUDIT_NOT_PASS")
 
 def test_no_synthetic_tqqq_source():
-    values=inputs();values[1]=values[1].replace("YFINANCE_1M_RAW","QQQ_TIMES_3")
+    values=inputs();values[1]["row"]["execution_source"]="QQQ_TIMES_3"
     rejects(values,"SYNTHETIC_SOURCE")
 
 def test_prior_signal_must_precede_open():
-    values=inputs();values[3]["generated_at_utc"]="2026-10-08T14:00:00+00:00"
+    values=inputs();values[2]["generated_at_utc"]="2026-10-08T14:00:00+00:00"
     rejects(values,"LATE_SIGNAL")
 
 def test_no_missing_trade_receipts():
-    values=inputs()
-    lines=values[1].splitlines()
-    cols=lines[0].split(",")
-    fields=lines[1].split(",")
-    fields[cols.index("trade_count_session")]="2"
-    values[1]=",".join(cols)+"\n"+",".join(fields)+"\n"
+    values=inputs();values[1]["row"]["trade_count_session"]="2"
     rejects(values,"TRADE_COUNT_BAD")
 
 def test_no_stale_current_signal():
-    values=inputs();values[4]["latest"]["asof_date"]="2026-10-07"
+    values=inputs();values[3]["latest"]["asof_date"]="2026-10-07"
     rejects(values,"NO_LATEST_SIGNAL")
 
 def test_no_target_mismatch():
-    values=inputs();values[3]["latest"]["tqqq_weight"]=0.5
+    values=inputs();values[2]["latest"]["tqqq_weight"]=0.5
     rejects(values,"WRONG_TARGET")
+
+def test_no_future_session_receipt():
+    values=inputs();values[1]["session_date"]="2026-10-09"
+    rejects(values,"INVALID_SESSION_RECEIPT")
+
+def test_no_broker_fill_claim():
+    values=inputs();values[1]["broker_fills_observed"]=True
+    rejects(values,"INVALID_SESSION_RECEIPT")
+
+def test_receipt_trade_window_is_tied_to_session():
+    values=inputs();values[1]["trades"][0]["execution_session"]="2026-10-07"
+    rejects(values,"BAD_TRADE_WINDOW")
