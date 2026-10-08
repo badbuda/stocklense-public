@@ -13,7 +13,7 @@
     "provenance_generation_canonical": true,
     "manifest_generation_canonical": true
   },
-  "source_git_sha": "6e0a6926af6a822a238fa6d9c09d06053db0e4af",
-  "publication_generation": "f48e9d8add26af6814591a2e894ee05c3f82b3d383f0f157c3729a3d079b54d5",
+  "source_git_sha": "ac6744ce6ba06836d1fd3ff8bb2d1857220b0aac",
+  "publication_generation": "7f9fee0751055ea869e5d85003db17458ed653910133b3a459eb796dad583457",
   "rule": "Evidence publication is allowed only from a complete internally consistent run. Remote branch freshness is enforced by workflow before push."
 }

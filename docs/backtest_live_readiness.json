@@ -1,0 +1,236 @@
+{
+  "schema_version": 1,
+  "kind": "STOCKLENS_LIVE_READINESS",
+  "status": "BLOCKED_FOR_LIVE_TRADING",
+  "model": "StockLens 8.0 FROZEN",
+  "evidence_class": "OBSERVED_ETF_DAILY_OPEN_PROXY_NOT_BROKER_LIVE",
+  "generated_at_utc": "2026-10-08T13:09:36.400262+00:00",
+  "backtest_window": {
+    "start": "2010-02-11",
+    "end": "2026-10-07",
+    "sessions": 4189
+  },
+  "historical_observed_etf_cagr": 0.40277822974881294,
+  "historical_qqq_cagr": 0.19819719672978797,
+  "historical_max_drawdown": -0.4907563074432082,
+  "statistical_significance_not_proven": true,
+  "observed_daily_open_not_true_fills": true,
+  "prospective_challenger_sessions": 8,
+  "prospective_frozen_paper_sessions": 0,
+  "paired_forward_paper_sessions": 0,
+  "review_floors_are_not_proof": true,
+  "checks": [
+    {
+      "id": "OBSERVED_ETF_HISTORY",
+      "category": "Backtest data",
+      "status": "PASS",
+      "description": "Observed QQQ/TQQQ daily prices only, matched inception and sessions.",
+      "evidence": {
+        "period": {
+          "start": "2010-02-11",
+          "end": "2026-10-07",
+          "sessions": 4189
+        },
+        "source": "YFINANCE_AUTO_ADJUSTED_DAILY_OPEN_AND_CLOSE",
+        "data_sha256": "6477267001edf476d91400f307c7ebebbce8d0d9f3250b3d16a7c132119720ba"
+      },
+      "severity": "REQUIRED"
+    },
+    {
+      "id": "MATCHED_QQQ_BENCHMARK",
+      "category": "Backtest data",
+      "status": "PASS",
+      "description": "Both strategies require identical market dates and external cashflows.",
+      "evidence": {
+        "stocklens": 28031983.413345,
+        "qqq": 2030716.719149,
+        "contribution_matched": true
+      },
+      "severity": "REQUIRED"
+    },
+    {
+      "id": "BACKTEST_STRESS_COMPUTED",
+      "category": "Backtest model",
+      "status": "PASS",
+      "description": "Fee/slippage and extra decision-lag scenarios must be computed, not assumed.",
+      "evidence": {
+        "slippage_cases": 5,
+        "decision_lag_cases": 3
+      },
+      "severity": "REQUIRED"
+    },
+    {
+      "id": "SHARED_FROZEN_DECISION_PARITY",
+      "category": "Decision consistency",
+      "status": "PASS",
+      "description": "Identical StockLens 8.0 target from the observed ETF backtest and the published shadow signal, for the same completed QQQ date.",
+      "evidence": {
+        "status": "PASS",
+        "date": "2026-10-07",
+        "errors": []
+      },
+      "severity": "REQUIRED"
+    },
+    {
+      "id": "LIVE_EXECUTION_TIME_PARITY",
+      "category": "Execution reality",
+      "status": "BLOCKED",
+      "description": "Daily adjusted OPEN is not an observed 09:31/09:32 execution price. Obtain verified minute-bar and fill evidence.",
+      "evidence": {
+        "observed_0931_0932_fills": false,
+        "execution_proxy": "Next-session adjusted daily OPEN proxy for all buys and sells; sell first, then buy. Rebalance on level change or contribution, whole shares and available cash only. No same-session close lookahead."
+      },
+      "severity": "REQUIRED"
+    },
+    {
+      "id": "RAW_LEAN_SAME_RUN_EXPORT",
+      "category": "Reproducibility",
+      "status": "BLOCKED",
+      "description": "Require exact code/data identity and full original LEAN daily equity, orders, cashflow and fill exports.",
+      "evidence": {
+        "status": "MISSING",
+        "errors": [
+          "DAILY_MISSING",
+          "ORDERS_MISSING"
+        ]
+      },
+      "severity": "REQUIRED"
+    },
+    {
+      "id": "POINT_IN_TIME_AND_PROVIDER_AUDIT",
+      "category": "Reproducibility",
+      "status": "BLOCKED",
+      "description": "Independent adjusted-price vendor crosscheck, durable raw snapshots, corporate-action and availability-time audit.",
+      "evidence": {
+        "observed_source": "YFINANCE_AUTO_ADJUSTED_DAILY_OPEN_AND_CLOSE",
+        "independent_vendor": "NOT_VERIFIED",
+        "price_adjustment_audit": "NOT_VERIFIED"
+      },
+      "severity": "REQUIRED"
+    },
+    {
+      "id": "RESEARCH_SELECTION_AUDIT",
+      "category": "Statistical validity",
+      "status": "BLOCKED",
+      "description": "Audit all parameter searches, failed variants, selection count, multiple testing, and previously used holdouts.",
+      "evidence": {
+        "status": "NOT_INDEPENDENTLY_AUDITED",
+        "frozen_baseline": "StockLens 8.0 FROZEN"
+      },
+      "severity": "REQUIRED"
+    },
+    {
+      "id": "PRE_REGISTERED_INDEPENDENT_FORWARD",
+      "category": "Statistical validity",
+      "status": "BLOCKED",
+      "description": "Prospective frozen StockLens 8.0, tracked AFTER registration, must be independently reviewed before live deployment.",
+      "evidence": {
+        "sl9_challenger_sessions_not_baseline_proof": 8,
+        "prospective_baseline_verified_sessions": 0,
+        "requested_review_checkpoints": [
+          63,
+          252
+        ]
+      },
+      "severity": "REQUIRED"
+    },
+    {
+      "id": "PAPER_EXECUTION_SESSIONS",
+      "category": "Forward paper",
+      "status": "BLOCKED",
+      "description": "Record at least 63 completed paper execution sessions to begin a formal review, not to establish guaranteed profitability.",
+      "evidence": {
+        "paper_sessions": 0,
+        "review_floor": 63
+      },
+      "severity": "REQUIRED"
+    },
+    {
+      "id": "PAPER_REPLAY_PAIRED_ATTRIBUTION",
+      "category": "Forward paper",
+      "status": "BLOCKED",
+      "description": "Observed paper equity and modeled replay must be compared for identical sessions, costs, lag and residual causes.",
+      "evidence": {
+        "paired_sessions": 0,
+        "gap_status": "WAITING_FOR_PAIRED_EVIDENCE",
+        "component_attribution": "NOT_IDENTIFIED"
+      },
+      "severity": "REQUIRED"
+    },
+    {
+      "id": "PROSPECTIVE_QQQ_BENCHMARK",
+      "category": "Forward paper",
+      "status": "BLOCKED",
+      "description": "Real time-matched forward paper P&L versus QQQ net of modeled costs; never substitute challenger returns.",
+      "evidence": {
+        "benchmark_sessions": 0,
+        "benchmark_status": "WAITING_FOR_PROSPECTIVE_DATA"
+      },
+      "severity": "REQUIRED"
+    },
+    {
+      "id": "BROKER_SANDBOX_DRY_RUN",
+      "category": "Broker operations",
+      "status": "BLOCKED",
+      "description": "Test idempotent order submission, rejects, partial fills, reconnect, reconciliation and emergency kill-switch in sandbox.",
+      "evidence": {
+        "status": "NOT_VERIFIED",
+        "orders_sent": false
+      },
+      "severity": "REQUIRED"
+    },
+    {
+      "id": "DECISION_MONITORING_AND_STALE_DATA",
+      "category": "Operations",
+      "status": "PASS",
+      "description": "Same-day exchange-calendar and source freshness, signal/replay alignment and fail-closed monitoring.",
+      "evidence": {
+        "health": "HEALTHY",
+        "market_freshness": "CURRENT"
+      },
+      "severity": "REQUIRED"
+    },
+    {
+      "id": "RISK_LIMITS_AND_GAP_CONTROLS",
+      "category": "Risk governance",
+      "status": "BLOCKED",
+      "description": "Human-approved loss budget, position sizing, concentration, volatility gap limits, kill switch and response playbook must be validated.",
+      "evidence": {
+        "historical_max_drawdown": -0.4907563074432082,
+        "stress_loss_guarantee": false,
+        "policy": "NOT_YET_APPROVED"
+      },
+      "severity": "REQUIRED"
+    },
+    {
+      "id": "HUMAN_CAPITAL_AND_COMPLIANCE_APPROVAL",
+      "category": "Risk governance",
+      "status": "BLOCKED",
+      "description": "Independent human acceptance of risk, broker/account jurisdiction constraints and explicit capital authorization required.",
+      "evidence": {
+        "automated_live_authorization": false,
+        "capital_scaled_ready": false
+      },
+      "severity": "REQUIRED"
+    }
+  ],
+  "passed_count": 5,
+  "blocked_count": 11,
+  "blockers": [
+    "LIVE_EXECUTION_TIME_PARITY",
+    "RAW_LEAN_SAME_RUN_EXPORT",
+    "POINT_IN_TIME_AND_PROVIDER_AUDIT",
+    "RESEARCH_SELECTION_AUDIT",
+    "PRE_REGISTERED_INDEPENDENT_FORWARD",
+    "PAPER_EXECUTION_SESSIONS",
+    "PAPER_REPLAY_PAIRED_ATTRIBUTION",
+    "PROSPECTIVE_QQQ_BENCHMARK",
+    "BROKER_SANDBOX_DRY_RUN",
+    "RISK_LIMITS_AND_GAP_CONTROLS",
+    "HUMAN_CAPITAL_AND_COMPLIANCE_APPROVAL"
+  ],
+  "automated_live_trading_authorized": false,
+  "automatic_model_promotion": false,
+  "capital_scaling_authorized": false,
+  "claim": "Backtest integrity can be high while live trading remains unproven. No historical, paper or sample checkpoint alone implies a future-return guarantee."
+}

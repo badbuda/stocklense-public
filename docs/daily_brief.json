@@ -3,7 +3,7 @@
   "summary": "Research-only. Canonical publication claims require independent verification.",
   "research": {
     "milestone": "M2_SHADOW_GREEN_537_TESTS_PROVE_OR_BREAK_PUBLISHED",
-    "next_action": "EPIC-01: keep atomic validated publication green and make generated-report freshness source-SHA aware"
+    "next_action": "EPIC-01: use actual observed QQQ and TQQQ prices only for new performance comparisons; fail closed if TQQQ data absent"
   },
   "simulator": {
     "status": "PASS",
@@ -15,5 +15,5 @@
       "status": "BLOCKED"
     }
   ],
-  "source_git_sha": "6e0a6926af6a822a238fa6d9c09d06053db0e4af"
+  "source_git_sha": "ac6744ce6ba06836d1fd3ff8bb2d1857220b0aac"
 }

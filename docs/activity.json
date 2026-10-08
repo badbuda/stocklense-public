@@ -2,6 +2,48 @@
   "schema_version": 1,
   "items": [
     {
+      "short_sha": "ac6744c",
+      "date": "2026-10-08T15:50:09+03:00",
+      "title": "ci: validate decision parity once after atomic handoff",
+      "kind": "FIX",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "8f09995",
+      "date": "2026-10-08T15:49:43+03:00",
+      "title": "ci: enforce identical frozen 8.0 backtest and shadow trading decisions on observed ETF data",
+      "kind": "FIX",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "26154d1",
+      "date": "2026-10-08T15:38:31+03:00",
+      "title": "audit: block live StockLens until observed ETF, forward paper, raw LEAN and broker evidence is complete",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "ee4a54b",
+      "date": "2026-10-08T15:28:31+03:00",
+      "title": "ci: validate observed TQQQ only policy after complete atomic source handoff",
+      "kind": "FIX",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "1cbf7fd",
+      "date": "2026-10-08T15:27:46+03:00",
+      "title": "policy: require observed TQQQ prices for all new StockLens performance research",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "ce39641",
+      "date": "2026-10-08T12:25:12Z",
+      "title": "shadow: record prospective evidence 2026-10-07",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
       "short_sha": "6e0a692",
       "date": "2026-10-08T15:10:00+03:00",
       "title": "ci: run one observed-ETF execution comparison validation after complete source handoff",
@@ -40,54 +82,54 @@
       "short_sha": "bdab34d",
       "date": "2026-10-08T12:34:44+03:00",
       "title": "ci: validate complete dashboard feed publication once",
-      "kind": "FIX",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "afcd5e6",
-      "date": "2026-10-08T12:33:59+03:00",
-      "title": "fix: publish and verify every dashboard data feed from a validated run",
-      "kind": "FIX",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "d54464f",
-      "date": "2026-10-08T09:29:31Z",
-      "title": "shadow: record prospective evidence 2026-10-07",
-      "kind": "PROJECT",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "911cbe1",
-      "date": "2026-10-08T12:12:47+03:00",
-      "title": "ci: validate fully sealed public dashboard handoff once",
-      "kind": "FIX",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "587de42",
-      "date": "2026-10-08T12:12:02+03:00",
-      "title": "ci: stage optional evidence paths safely after full validation",
-      "kind": "FIX",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "37976ee",
-      "date": "2026-10-08T11:00:41+03:00",
-      "title": "ci: validate complete dashboard and research evidence handoff",
-      "kind": "FIX",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "7e48365",
-      "date": "2026-10-08T10:59:04+03:00",
-      "title": "fix: restore public dashboard bundle, provenance-scoped curves, and fail-closed reporting",
       "kind": "FIX",
       "impact": "Repository change; CI validation is separate."
     }
   ],
   "high_signal_items": [
     {
+      "short_sha": "ac6744c",
+      "date": "2026-10-08T15:50:09+03:00",
+      "title": "ci: validate decision parity once after atomic handoff",
+      "kind": "FIX",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "8f09995",
+      "date": "2026-10-08T15:49:43+03:00",
+      "title": "ci: enforce identical frozen 8.0 backtest and shadow trading decisions on observed ETF data",
+      "kind": "FIX",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "26154d1",
+      "date": "2026-10-08T15:38:31+03:00",
+      "title": "audit: block live StockLens until observed ETF, forward paper, raw LEAN and broker evidence is complete",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "ee4a54b",
+      "date": "2026-10-08T15:28:31+03:00",
+      "title": "ci: validate observed TQQQ only policy after complete atomic source handoff",
+      "kind": "FIX",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "1cbf7fd",
+      "date": "2026-10-08T15:27:46+03:00",
+      "title": "policy: require observed TQQQ prices for all new StockLens performance research",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "ce39641",
+      "date": "2026-10-08T12:25:12Z",
+      "title": "shadow: record prospective evidence 2026-10-07",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
       "short_sha": "6e0a692",
       "date": "2026-10-08T15:10:00+03:00",
       "title": "ci: run one observed-ETF execution comparison validation after complete source handoff",
@@ -128,69 +170,27 @@
       "title": "ci: validate complete dashboard feed publication once",
       "kind": "FIX",
       "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "afcd5e6",
-      "date": "2026-10-08T12:33:59+03:00",
-      "title": "fix: publish and verify every dashboard data feed from a validated run",
-      "kind": "FIX",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "d54464f",
-      "date": "2026-10-08T09:29:31Z",
-      "title": "shadow: record prospective evidence 2026-10-07",
-      "kind": "PROJECT",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "911cbe1",
-      "date": "2026-10-08T12:12:47+03:00",
-      "title": "ci: validate fully sealed public dashboard handoff once",
-      "kind": "FIX",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "587de42",
-      "date": "2026-10-08T12:12:02+03:00",
-      "title": "ci: stage optional evidence paths safely after full validation",
-      "kind": "FIX",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "37976ee",
-      "date": "2026-10-08T11:00:41+03:00",
-      "title": "ci: validate complete dashboard and research evidence handoff",
-      "kind": "FIX",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "7e48365",
-      "date": "2026-10-08T10:59:04+03:00",
-      "title": "fix: restore public dashboard bundle, provenance-scoped curves, and fail-closed reporting",
-      "kind": "FIX",
-      "impact": "Repository change; CI validation is separate."
     }
   ],
   "recent_summary": [
     {
-      "short_sha": "6e0a692",
-      "date": "2026-10-08T15:10:00+03:00",
-      "title": "ci: run one observed-ETF execution comparison validation after complete source handoff",
+      "short_sha": "ac6744c",
+      "date": "2026-10-08T15:50:09+03:00",
+      "title": "ci: validate decision parity once after atomic handoff",
       "kind": "FIX",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "ccc3ae0",
-      "date": "2026-10-08T15:09:06+03:00",
-      "title": "research: compare frozen StockLens to QQQ with observed TQQQ daily-open whole-share execution proxy",
-      "kind": "PROJECT",
+      "short_sha": "8f09995",
+      "date": "2026-10-08T15:49:43+03:00",
+      "title": "ci: enforce identical frozen 8.0 backtest and shadow trading decisions on observed ETF data",
+      "kind": "FIX",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "3112555",
-      "date": "2026-10-08T09:53:44Z",
-      "title": "shadow: record prospective evidence 2026-10-07",
+      "short_sha": "26154d1",
+      "date": "2026-10-08T15:38:31+03:00",
+      "title": "audit: block live StockLens until observed ETF, forward paper, raw LEAN and broker evidence is complete",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     }

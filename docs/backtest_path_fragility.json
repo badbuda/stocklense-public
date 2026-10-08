@@ -2,17 +2,17 @@
   "schema_version": 2,
   "publication_identity": {
     "schema_version": 2,
-    "git_sha": "6e0a6926af6a822a238fa6d9c09d06053db0e4af",
+    "git_sha": "ac6744ce6ba06836d1fd3ff8bb2d1857220b0aac",
     "signal_asof": null,
     "replay_dataset_sha256": "db0889da31af43b1b75e005c1f4ab2cad421dfb55a6c55a77a223e0623950d95",
-    "replay_rows_sha256": "8e5c3a3e0ddeb716d32e24afbec634f3671fc886cb1d92d23a6a89997f51e5ba",
+    "replay_rows_sha256": "45e58af5f416a1e26ac216814726f1f66824221e681177cf221a7295951fa825",
     "simulator_contract_sha256": "80745a3640c6fe667a3c500571fb15abee1d532a5b720fb6efc8b52f291dfc68",
-    "generation_id": "f48e9d8add26af6814591a2e894ee05c3f82b3d383f0f157c3729a3d079b54d5"
+    "generation_id": "7f9fee0751055ea869e5d85003db17458ed653910133b3a459eb796dad583457"
   },
   "status": "PASS",
   "full_path": {
-    "compounded_gross_return": 0.6640086148836002,
-    "max_drawdown": -0.32608002269767355,
+    "compounded_gross_return": 0.6640093943155292,
+    "max_drawdown": -0.3260799960774513,
     "max_drawdown_peak_date": "2026-06-02",
     "max_drawdown_trough_date": "2026-07-29"
   },
@@ -41,40 +41,40 @@
       "sessions": 63,
       "window_count": 189,
       "worst_return_window": {
-        "compounded_gross_return": -0.2416719022309881,
-        "max_drawdown": -0.2717981023303432,
+        "compounded_gross_return": -0.24167172286715788,
+        "max_drawdown": -0.27179836939419677,
         "max_drawdown_peak_date": "2026-01-28",
         "max_drawdown_trough_date": "2026-03-30",
         "start": "2025-12-29",
         "end": "2026-03-30"
       },
       "worst_drawdown_window": {
-        "compounded_gross_return": -0.02281744734037372,
-        "max_drawdown": -0.3260800226976738,
+        "compounded_gross_return": 0.04579648293053773,
+        "max_drawdown": -0.32607999607745153,
         "max_drawdown_peak_date": "2026-06-02",
         "max_drawdown_trough_date": "2026-07-29",
-        "start": "2026-04-29",
-        "end": "2026-07-29"
+        "start": "2026-05-01",
+        "end": "2026-07-31"
       }
     },
     {
       "sessions": 126,
       "window_count": 126,
       "worst_return_window": {
-        "compounded_gross_return": -0.10318371185441189,
-        "max_drawdown": -0.29150115447636293,
+        "compounded_gross_return": -0.10318357636829445,
+        "max_drawdown": -0.29150138904544454,
         "max_drawdown_peak_date": "2025-10-29",
         "max_drawdown_trough_date": "2026-03-30",
         "start": "2025-10-09",
         "end": "2026-04-10"
       },
       "worst_drawdown_window": {
-        "compounded_gross_return": 0.01168946218364586,
-        "max_drawdown": -0.3260800226976738,
+        "compounded_gross_return": 0.5786267670608236,
+        "max_drawdown": -0.32607999607745175,
         "max_drawdown_peak_date": "2026-06-02",
         "max_drawdown_trough_date": "2026-07-29",
-        "start": "2026-01-28",
-        "end": "2026-07-29"
+        "start": "2026-02-13",
+        "end": "2026-08-14"
       }
     }
   ],

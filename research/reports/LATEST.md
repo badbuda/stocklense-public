@@ -1,6 +1,6 @@
 # StockLens Research — Latest Human Report
 
-Generated: 2026-10-08T12:25:12.343959+00:00
+Generated: 2026-10-08T13:09:38.642614+00:00
 
 ## שורה תחתונה
 StockLens 8.0 נשאר קפוא ולא שונה. אין קידום אוטומטי של אף challenger.
@@ -25,11 +25,11 @@ StockLens 8.0 נשאר קפוא ולא שונה. אין קידום אוטומט�
 - **SL9-006-MOMENTUM-ACCELERATION** — REJECTED_PREDECLARED_RULE: Predeclared sealed-evidence rejection: EXCESS_CAGR_RULE_FAILED; excess_cagr=-6.439293542825908e-15; drawdown_delta=0.0.
 
 ## מה המערכת עושה עכשיו
-- EPIC-01: keep atomic validated publication green and make generated-report freshness source-SHA aware
-- EPIC-02: obtain the same-run 3,774-row + 345-order raw LEAN export required for canonical CAGR and full input parity; never synthesize it
-- EPIC-03: accumulate strict post-inception SL9-007 prospective evidence with zero backfill and no automatic promotion
-- EPIC-04: deepen execution-reality evidence using costs, delay, receipts and paper fills without authorizing live trading
-- EPIC-05: finish Control Center decision UX for 8.0 vs challengers, historical evidence and Prove-or-Break risk
+- EPIC-01: use actual observed QQQ and TQQQ prices only for new performance comparisons; fail closed if TQQQ data absent
+- EPIC-02: quantify real-TQQQ drag, downside windows, fees, slippage and next-session daily open execution limitations
+- EPIC-03: compare real-ETF strategy against QQQ for identical dates and monthly contribution schedule
+- EPIC-04: predeclare distinct new prospective research only after strict observed-ETF validation; do not re-label synthetic SL9-007
+- EPIC-05: preserve the frozen 8.0 baseline and canonical LEAN evidence audit as archive; never promote synthetic historical estimates
 
 ## Governance
 Research only. StockLens 8.0 immutable. No automatic promotion. Holdout results are not used to retune closed hypotheses.

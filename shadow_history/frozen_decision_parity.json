@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "status": "PASS",
+  "signal_asof": "2026-10-07",
+  "research_asof": "2026-10-07",
+  "equal_frozen_target": true,
+  "decision_engine": "stocklens.core.replay_levels",
+  "observed_etf_prices_required": true,
+  "broker_orders_authorized": false,
+  "intraday_execution_parity_proven": false,
+  "limitations": "Only decision equality is checked; actual fills, daily OPEN and 09:31/09:32 differ.",
+  "errors": []
+}
