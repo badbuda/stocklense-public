@@ -1,0 +1,128 @@
+{
+  "schema_version": 2,
+  "vision": "Preserve StockLens 8.0 forever as the immutable golden baseline while discovering separately versioned challengers that seek robust excess performance without overwriting prior evidence.",
+  "frozen_production_model": "StockLens 8.0",
+  "current_milestone": "M2_SHADOW_GREEN_537_TESTS_PROVE_OR_BREAK_PUBLISHED",
+  "next_work": [
+    "EPIC-01: keep atomic validated publication green and make generated-report freshness source-SHA aware",
+    "EPIC-02: obtain the same-run 3,774-row + 345-order raw LEAN export required for canonical CAGR and full input parity; never synthesize it",
+    "EPIC-03: accumulate strict post-inception SL9-007 prospective evidence with zero backfill and no automatic promotion",
+    "EPIC-04: deepen execution-reality evidence using costs, delay, receipts and paper fills without authorizing live trading",
+    "EPIC-05: finish Control Center decision UX for 8.0 vs challengers, historical evidence and Prove-or-Break risk"
+  ],
+  "guardrails": [
+    "NO_AUTOMATIC_PROMOTION",
+    "NO_FROZEN_8_MUTATION",
+    "NO_HOLDOUT_TUNING",
+    "NO_FALSE_QC_PARITY",
+    "STOCKLENS_8_IMMUTABLE_GOLDEN_BASELINE",
+    "CHALLENGERS_ALWAYS_PARALLEL",
+    "NEVER_DELETE_VERIFIED_8_EVIDENCE",
+    "CLAIMS_REQUIRE_CANONICAL_EVIDENCE",
+    "POST_HOC_GENERATION_BINDING_FORBIDDEN",
+    "CI_REPAIR_LOOP_ONLY_NO_PUSH_SPAM"
+  ],
+  "benchmark_policy": [
+    "QQQ",
+    "Nasdaq-100 where comparable"
+  ],
+  "completed_capabilities": [
+    "governed experiment queue",
+    "development-validation-holdout isolation",
+    "human-readable reports",
+    "research result index",
+    "20-cell volatility parameter sweep",
+    "development-only parameter selection",
+    "walk-forward temporal consistency",
+    "moving-block bootstrap",
+    "cost sensitivity",
+    "nightly autonomous research",
+    "explicit-exposure LOW/BASE/HIGH cost sensitivity",
+    "nested training-only walk-forward",
+    "family-wise moving-block max-statistic bootstrap",
+    "numerical NEUTRAL semantics",
+    "dedicated autonomous research workflow",
+    "volatility warmup baseline-preservation regression"
+  ],
+  "last_completed": {
+    "commit": "6251fa61c7b64abcd7be2ce151fca97286f63180",
+    "capabilities": [
+      "current-generation claim ledger with critical-vs-observational evidence classes",
+      "hard-coded historical performance claims suppressed from current publication",
+      "claim state propagated through project status, daily brief, site health and Control Center",
+      "single-path publisher dependency audit aligned to current workflow",
+      "self-audit regressions for source corruption and generation identity coupling",
+      "shadow and MCP workflows cancel superseded runs",
+      "post-hoc generation binding forbidden"
+    ]
+  },
+  "active_experiments": [
+    {
+      "id": "SL9-007-UPSHIFT-CONFIRMATION",
+      "status": "EVIDENCE_CURRENT",
+      "fingerprint": "995ffc17a889c63d3fcc68376a2b9a688f038c6866820e6baace660e67d02528"
+    }
+  ],
+  "failed_hypotheses": [
+    {
+      "id": "SL9-001-VOLATILITY-GATE",
+      "status": "REJECTED",
+      "reason": "Global volatility-gate thesis remains rejected; do not retune against validation/holdout."
+    },
+    {
+      "id": "SL9-003-STRESS-ONLY",
+      "status": "INVALID_DUPLICATE",
+      "reason": "Canonical implementation/evidence duplicates SL9-001; not independent confirmation."
+    },
+    {
+      "id": "SL9-004-STRESS-TREND",
+      "status": "NOT_VALIDATED",
+      "reason": "Development neutral; validation excess CAGR 0.00966613144319628; holdout neutral; walk-forward positive 1/14; bootstrap probability_positive 0.641."
+    },
+    {
+      "id": "SL9-005-DRAWDOWN-BREAKER",
+      "status": "REJECTED",
+      "reason": "Development/validation neutral; holdout excess CAGR -0.07660720177740421; walk-forward positive 0/14; bootstrap probability_positive 0.0."
+    },
+    {
+      "id": "SL9-006-MOMENTUM-ACCELERATION",
+      "status": "REJECTED_PREDECLARED_RULE",
+      "reason": "Predeclared sealed-evidence rejection: EXCESS_CAGR_RULE_FAILED; excess_cagr=-6.439293542825908e-15; drawdown_delta=0.0.",
+      "fingerprint": "9469dd044db2e64876f934d12bc02566a29639e004afff14aaa5d9c0025acacc"
+    }
+  ],
+  "blocked_experiments": [
+    {
+      "id": "SL9-002-TREND-BREADTH",
+      "reason": "survivorship-safe point-in-time constituent history unavailable"
+    }
+  ],
+  "next_actions": [
+    "continue adversarial source/test contract audit before consolidated CI",
+    "run one consolidated executable checkpoint when runner allocation is available",
+    "repair only evidence-backed failures and re-read every patch",
+    "advance canonical completed-session data without prospective backfill",
+    "materialize reproducible long-horizon benchmark/performance provenance before displaying historical headline metrics"
+  ],
+  "protocol_corrections": [
+    {
+      "id": "FAMILY_BOOTSTRAP_HOLDOUT_SEAL",
+      "status": "FIXED_VERIFIED",
+      "detail": "Canonical family inference uses DEVELOPMENT_ONLY_MOVING_BLOCK_FAMILY_MAX_MEAN_EXCESS with selection_period=development; validation/holdout excluded from family selection inference."
+    }
+  ],
+  "delivery_management": {
+    "north_star": "Strategy -> Data -> Run -> Results -> Compare -> Explain -> Validate -> Prospective Evidence",
+    "constitution": "research/AUTONOMOUS_DELIVERY_CONSTITUTION.md",
+    "sprint_operating_system": "research/SPRINT_OPERATING_SYSTEM.md",
+    "product_board": "research/PRODUCT_DELIVERY_BOARD.md",
+    "scorecard": "research/SPRINT_SCORECARD.json",
+    "active_epic_count": 5,
+    "ci_policy": "REPAIR_AND_VERIFY_LOOP; no push-trigger CI spam; stop after green confirmation",
+    "latest_manual_checkpoint": "SHADOW-36836722679-GREEN-PUBLICATION-CHAIN",
+    "generic_backtester_state": "VERIFIED: Shadow publication chain passed all validation stages; 537 tests reached in preceding failing run after fixture drift, time-stable fixture repair applied; Prove-or-Break 12/12 retrospective checks PASS, prospective implementation WAITING.",
+    "latest_builder_run_utc": "2026-09-29T14:03:34.435021Z",
+    "validation_blocker": "NONE_FOR_VALIDATED_PUBLICATION_CHAIN. Canonical historical CAGR remains blocked only on missing same-run raw LEAN full export; prospective performance remains waiting for valid forward executions.",
+    "latest_validated_evidence_commit": "f8424d4af5"
+  }
+}

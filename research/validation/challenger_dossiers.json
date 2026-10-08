@@ -1,0 +1,2019 @@
+{
+  "schema_version": 1,
+  "baseline": "StockLens 8.0 FROZEN",
+  "automatic_promotion": false,
+  "dossiers": [
+    {
+      "experiment_id": "SL9-001-VOLATILITY-GATE",
+      "hypothesis": "A separately versioned volatility-aware challenger may improve benchmark-relative drawdown without sacrificing robust excess CAGR.",
+      "baseline": "StockLens 8.0 FROZEN",
+      "queue_status": "COMPLETED",
+      "fingerprint": "ee48a96f12c78d0ced187ac910f8a8f5cfc5f999577a8896aa984f4e8b202ab9",
+      "robustness": "PROMISING_NOT_PROVEN",
+      "missing_evidence": [],
+      "disposition": "PROMISING_NOT_PROVEN",
+      "automatic_promotion": false,
+      "predeclared_failure_rule": null,
+      "predeclared_rule_evaluation": null,
+      "predeclared_objective": null,
+      "predeclared_objective_evaluation": null,
+      "evidence": {
+        "period_result": {
+          "schema_version": 2,
+          "experiment_id": "SL9-001-VOLATILITY-GATE",
+          "name": "Volatility gate challenger",
+          "hypothesis": "A separately versioned volatility-aware challenger may improve benchmark-relative drawdown without sacrificing robust excess CAGR.",
+          "baseline": "StockLens 8.0 FROZEN",
+          "periods": {
+            "development": {
+              "status": "PASS",
+              "excess_cagr": 0.0018486332119671545,
+              "max_drawdown": -0.4511879667439519,
+              "benchmark_max_drawdown": -0.45704640651222816,
+              "drawdown_delta": 0.005858439768276269,
+              "sharpe": 1.064299619702223,
+              "turnover": null,
+              "numerical_excess_tolerance": 1e-10,
+              "sessions": 2097
+            },
+            "validation": {
+              "status": "PASS",
+              "excess_cagr": 0.054638804403344565,
+              "max_drawdown": -0.45729092457910414,
+              "benchmark_max_drawdown": -0.5048900959284593,
+              "drawdown_delta": 0.04759917134935521,
+              "sharpe": 1.1936388799297724,
+              "turnover": null,
+              "numerical_excess_tolerance": 1e-10,
+              "sessions": 1008
+            },
+            "holdout": {
+              "status": "NEUTRAL",
+              "excess_cagr": -6.439293542825908e-15,
+              "max_drawdown": -0.43804102663691347,
+              "benchmark_max_drawdown": -0.43804102663691347,
+              "drawdown_delta": 0.0,
+              "sharpe": 0.9444508679467993,
+              "turnover": null,
+              "numerical_excess_tolerance": 1e-10,
+              "sessions": 668
+            }
+          },
+          "robustness": {
+            "status": "PROMISING_NOT_PROVEN",
+            "all_periods_positive_excess": false,
+            "no_material_negative_period": true,
+            "has_positive_period": true,
+            "minimum_excess_cagr": -6.439293542825908e-15,
+            "automatic_promotion": false
+          },
+          "intervention": {
+            "eligible_sessions": 4292,
+            "changed_sessions": 53,
+            "changed_fraction": 0.012348555452003728
+          },
+          "status": "PROMISING_NOT_PROVEN",
+          "automatic_promotion": false,
+          "fingerprint": "ee48a96f12c78d0ced187ac910f8a8f5cfc5f999577a8896aa984f4e8b202ab9"
+        },
+        "fixed_validation": {
+          "schema_version": 1,
+          "walk_forward": {
+            "folds": [
+              {
+                "test_start": "2012-09-02",
+                "test_end": "2013-09-02",
+                "strategy_cagr": 0.1820858175003104,
+                "baseline_cagr": 0.18208581750031838,
+                "excess_cagr": -7.993605777301127e-15,
+                "strategy_max_drawdown": -0.27991428303724886,
+                "baseline_max_drawdown": -0.2799142830372484
+              },
+              {
+                "test_start": "2013-09-02",
+                "test_end": "2014-09-02",
+                "strategy_cagr": 1.3145041468474599,
+                "baseline_cagr": 1.3145041468474883,
+                "excess_cagr": -2.842170943040401e-14,
+                "strategy_max_drawdown": -0.21559057398804826,
+                "baseline_max_drawdown": -0.21559057398804837
+              },
+              {
+                "test_start": "2014-09-02",
+                "test_end": "2015-09-02",
+                "strategy_cagr": 0.023958195946707894,
+                "baseline_cagr": 0.023958195946713,
+                "excess_cagr": -5.10702591327572e-15,
+                "strategy_max_drawdown": -0.32160716539114476,
+                "baseline_max_drawdown": -0.32160716539114553
+              },
+              {
+                "test_start": "2015-09-02",
+                "test_end": "2016-09-02",
+                "strategy_cagr": 0.1256786733053472,
+                "baseline_cagr": 0.12567867330535276,
+                "excess_cagr": -5.551115123125783e-15,
+                "strategy_max_drawdown": -0.3628090609127197,
+                "baseline_max_drawdown": -0.3628090609127186
+              },
+              {
+                "test_start": "2016-09-02",
+                "test_end": "2017-09-02",
+                "strategy_cagr": 0.9392239289784585,
+                "baseline_cagr": 0.9392239289784794,
+                "excess_cagr": -2.0872192862952943e-14,
+                "strategy_max_drawdown": -0.14523759442194717,
+                "baseline_max_drawdown": -0.14523759442194728
+              },
+              {
+                "test_start": "2017-09-02",
+                "test_end": "2018-09-02",
+                "strategy_cagr": 0.9763355365076802,
+                "baseline_cagr": 0.9763355365076924,
+                "excess_cagr": -1.2212453270876722e-14,
+                "strategy_max_drawdown": -0.29613259298183015,
+                "baseline_max_drawdown": -0.29613259298183103
+              },
+              {
+                "test_start": "2018-09-02",
+                "test_end": "2019-09-02",
+                "strategy_cagr": -0.3193708157572793,
+                "baseline_cagr": -0.3473858657186162,
+                "excess_cagr": 0.028015049961336858,
+                "strategy_max_drawdown": -0.44388963021980643,
+                "baseline_max_drawdown": -0.4666015176574764
+              },
+              {
+                "test_start": "2019-09-02",
+                "test_end": "2020-09-02",
+                "strategy_cagr": 2.5131023805463943,
+                "baseline_cagr": 2.251267618888845,
+                "excess_cagr": 0.2618347616575494,
+                "strategy_max_drawdown": -0.4572915590171154,
+                "baseline_max_drawdown": -0.5048904962586126
+              },
+              {
+                "test_start": "2020-09-02",
+                "test_end": "2021-09-02",
+                "strategy_cagr": 0.7870909741245662,
+                "baseline_cagr": 0.7629059253067654,
+                "excess_cagr": 0.024185048817800814,
+                "strategy_max_drawdown": -0.32310830759541354,
+                "baseline_max_drawdown": -0.331383206402462
+              },
+              {
+                "test_start": "2021-09-02",
+                "test_end": "2022-09-02",
+                "strategy_cagr": -0.35516936787610076,
+                "baseline_cagr": -0.3551693678760982,
+                "excess_cagr": -2.55351295663786e-15,
+                "strategy_max_drawdown": -0.45522485884624386,
+                "baseline_max_drawdown": -0.45522485884624353
+              },
+              {
+                "test_start": "2022-09-02",
+                "test_end": "2023-09-02",
+                "strategy_cagr": 1.1742914025950357,
+                "baseline_cagr": 1.1742914025950455,
+                "excess_cagr": -9.769962616701378e-15,
+                "strategy_max_drawdown": -0.20520391645934377,
+                "baseline_max_drawdown": -0.2052039164593441
+              },
+              {
+                "test_start": "2023-09-02",
+                "test_end": "2024-09-02",
+                "strategy_cagr": 0.8830559348664215,
+                "baseline_cagr": 0.8830559348664422,
+                "excess_cagr": -2.0650148258027912e-14,
+                "strategy_max_drawdown": -0.36727353054442025,
+                "baseline_max_drawdown": -0.36727353054442036
+              },
+              {
+                "test_start": "2024-09-02",
+                "test_end": "2025-09-02",
+                "strategy_cagr": 0.4257102484120563,
+                "baseline_cagr": 0.42571024841206984,
+                "excess_cagr": -1.354472090042691e-14,
+                "strategy_max_drawdown": -0.43875117837807476,
+                "baseline_max_drawdown": -0.4387511783780741
+              },
+              {
+                "test_start": "2025-09-02",
+                "test_end": "2026-09-02",
+                "strategy_cagr": 0.6228631955519797,
+                "baseline_cagr": 0.6199605617854411,
+                "excess_cagr": 0.0029026337665385427,
+                "strategy_max_drawdown": -0.324872471026851,
+                "baseline_max_drawdown": -0.3260799960774502
+              }
+            ],
+            "positive_excess_fraction": 0.2857142857142857,
+            "fold_count": 14
+          },
+          "bootstrap": {
+            "status": "OK",
+            "method": "moving_block_bootstrap",
+            "iterations": 1000,
+            "block_sessions": 20,
+            "annualized_mean_excess_ci95": [
+              -0.0017894553592358523,
+              0.019459306633647023
+            ],
+            "probability_positive": 0.904
+          },
+          "note": "Walk-forward here measures temporal consistency of a frozen challenger; it does not retune parameters inside folds."
+        },
+        "costs": {
+          "schema_version": 2,
+          "method": "EXPLICIT_EXPOSURE_CHANGE_COST_MODEL",
+          "research_only": true,
+          "qc_parity": false,
+          "scenarios": [
+            {
+              "scenario": "LOW",
+              "fee_bps": 2,
+              "slippage_bps": 5,
+              "total_bps_per_turnover": 7,
+              "turnover_exposure_units": 115.0,
+              "cagr": 0.4915926753275519,
+              "max_drawdown": -0.4582837177968221,
+              "ending_multiple": 906.9154920328542,
+              "sharpe": 1.0824974800743161
+            },
+            {
+              "scenario": "BASE",
+              "fee_bps": 2,
+              "slippage_bps": 10,
+              "total_bps_per_turnover": 12,
+              "turnover_exposure_units": 115.0,
+              "cagr": 0.48656077905785367,
+              "max_drawdown": -0.46045987532289034,
+              "ending_multiple": 856.1926832301924,
+              "sharpe": 1.0753491634663237
+            },
+            {
+              "scenario": "HIGH",
+              "fee_bps": 5,
+              "slippage_bps": 20,
+              "total_bps_per_turnover": 25,
+              "turnover_exposure_units": 115.0,
+              "cagr": 0.473538050389011,
+              "max_drawdown": -0.469858924977535,
+              "ending_multiple": 737.0345350705186,
+              "sharpe": 1.0567065156475552
+            }
+          ],
+          "limitations": [
+            "Daily exposure-change approximation; does not reproduce intraday 09:31/09:32 fills or TQQQ path dependence."
+          ]
+        },
+        "execution": {
+          "schema_version": 1,
+          "model": "EXPLICIT_TARGET_EXPOSURE_ON_UNDERLYING_DAILY_APPROXIMATION",
+          "timing": "target shifted one full session before execution return",
+          "fee_bps": 2,
+          "slippage_bps": 10,
+          "invested_buffer": 0.985,
+          "turnover_exposure_units": 113.275,
+          "total_cost_fraction": 0.13593,
+          "metrics": {
+            "status": "OK",
+            "sessions": 4292,
+            "ending_multiple": 602.3758462205526,
+            "cagr": 0.45618591907466355,
+            "max_drawdown": -0.5006037851829068,
+            "sharpe": 1.0376326973037362
+          },
+          "limitations": [
+            "Explicit exposure model still does not reproduce TQQQ path dependence or intraday 09:31/09:32 fills.",
+            "Must not be labelled QuantConnect parity or production execution evidence."
+          ]
+        },
+        "regimes": {
+          "schema_version": 1,
+          "classification_timing": "all regime features lagged one session",
+          "regimes": {
+            "HIGH_VOL": {
+              "sessions": 2661,
+              "strategy_cagr": 0.4467656939963627,
+              "baseline_cagr": 0.4301818769036665,
+              "excess_cagr": 0.016583817092696185,
+              "strategy_max_drawdown": -0.5335975342484445,
+              "baseline_max_drawdown": -0.5820230847401524
+            },
+            "HIGH_VOL_NEGATIVE_TREND": {
+              "sessions": 509,
+              "strategy_cagr": 0.5092656299170026,
+              "baseline_cagr": 0.49153552095015707,
+              "excess_cagr": 0.01773010896684557,
+              "strategy_max_drawdown": -0.2802836577675736,
+              "baseline_max_drawdown": -0.2802836577675739
+            },
+            "NEGATIVE_TREND": {
+              "sessions": 333,
+              "strategy_cagr": 0.6168805485770776,
+              "baseline_cagr": 0.6168805485770805,
+              "excess_cagr": -2.886579864025407e-15,
+              "strategy_max_drawdown": -0.23278732261892454,
+              "baseline_max_drawdown": -0.23278732261892543
+            },
+            "NORMAL": {
+              "sessions": 789,
+              "strategy_cagr": 0.6271455695931349,
+              "baseline_cagr": 0.6271455695931485,
+              "excess_cagr": -1.354472090042691e-14,
+              "strategy_max_drawdown": -0.31675391258231167,
+              "baseline_max_drawdown": -0.31675391258231167
+            }
+          },
+          "research_only": true,
+          "automatic_promotion": false
+        }
+      }
+    },
+    {
+      "experiment_id": "SL9-002-TREND-BREADTH",
+      "hypothesis": "A separately versioned breadth confirmation layer may reduce false risk-on transitions while preserving long-run excess return.",
+      "baseline": "StockLens 8.0 FROZEN",
+      "queue_status": "BLOCKED",
+      "fingerprint": null,
+      "robustness": null,
+      "missing_evidence": [
+        "period_result",
+        "fixed_validation",
+        "costs",
+        "execution",
+        "regimes"
+      ],
+      "disposition": "BLOCKED",
+      "automatic_promotion": false,
+      "predeclared_failure_rule": null,
+      "predeclared_rule_evaluation": null,
+      "predeclared_objective": null,
+      "predeclared_objective_evaluation": null,
+      "evidence": {
+        "period_result": null,
+        "fixed_validation": null,
+        "costs": null,
+        "execution": null,
+        "regimes": null
+      }
+    },
+    {
+      "experiment_id": "SL9-003-STRESS-ONLY",
+      "hypothesis": "Restricting volatility intervention to lagged high-volatility stress may retain the observed stress-regime drawdown benefit without paying the normal-regime performance penalty.",
+      "baseline": "StockLens 8.0 FROZEN",
+      "queue_status": "COMPLETED",
+      "fingerprint": "5d80c68bf2461fce46b080ba7fafc4d3a0fbdeb0505000baa1c2c90c9688e248",
+      "robustness": "PROMISING_NOT_PROVEN",
+      "missing_evidence": [],
+      "disposition": "PROMISING_NOT_PROVEN",
+      "automatic_promotion": false,
+      "predeclared_failure_rule": null,
+      "predeclared_rule_evaluation": null,
+      "predeclared_objective": null,
+      "predeclared_objective_evaluation": null,
+      "evidence": {
+        "period_result": {
+          "schema_version": 1,
+          "experiment_id": "SL9-003-STRESS-ONLY",
+          "name": "Stress-only volatility intervention",
+          "hypothesis": "Restricting volatility intervention to lagged high-volatility stress may retain the observed stress-regime drawdown benefit without paying the normal-regime performance penalty.",
+          "baseline": "StockLens 8.0 FROZEN",
+          "periods": {
+            "development": {
+              "status": "PASS",
+              "excess_cagr": 0.0018486638894794627,
+              "max_drawdown": -0.4511862622000582,
+              "benchmark_max_drawdown": -0.4570448174260233,
+              "drawdown_delta": 0.005858555225965123,
+              "sharpe": 1.064299206258957,
+              "turnover": null,
+              "numerical_excess_tolerance": 1e-10,
+              "sessions": 2097
+            },
+            "validation": {
+              "status": "PASS",
+              "excess_cagr": 0.054638771631590366,
+              "max_drawdown": -0.45729151398338197,
+              "benchmark_max_drawdown": -0.5048906969766226,
+              "drawdown_delta": 0.04759918299324062,
+              "sharpe": 1.1936393909982939,
+              "turnover": null,
+              "numerical_excess_tolerance": 1e-10,
+              "sessions": 1008
+            },
+            "holdout": {
+              "status": "NEUTRAL",
+              "excess_cagr": -6.661338147750939e-15,
+              "max_drawdown": -0.4380414203368437,
+              "benchmark_max_drawdown": -0.43804142033684423,
+              "drawdown_delta": 5.551115123125783e-16,
+              "sharpe": 0.944449280653893,
+              "turnover": null,
+              "numerical_excess_tolerance": 1e-10,
+              "sessions": 668
+            }
+          },
+          "robustness": {
+            "status": "PROMISING_NOT_PROVEN",
+            "all_periods_positive_excess": false,
+            "no_material_negative_period": true,
+            "has_positive_period": true,
+            "minimum_excess_cagr": -6.661338147750939e-15,
+            "automatic_promotion": false
+          },
+          "status": "PROMISING_NOT_PROVEN",
+          "automatic_promotion": false,
+          "fingerprint": "5d80c68bf2461fce46b080ba7fafc4d3a0fbdeb0505000baa1c2c90c9688e248"
+        },
+        "fixed_validation": {
+          "schema_version": 1,
+          "walk_forward": {
+            "folds": [
+              {
+                "test_start": "2012-09-02",
+                "test_end": "2013-09-02",
+                "strategy_cagr": 0.1820858175003104,
+                "baseline_cagr": 0.18208581750031838,
+                "excess_cagr": -7.993605777301127e-15,
+                "strategy_max_drawdown": -0.27991428303724886,
+                "baseline_max_drawdown": -0.2799142830372484
+              },
+              {
+                "test_start": "2013-09-02",
+                "test_end": "2014-09-02",
+                "strategy_cagr": 1.3145041468474599,
+                "baseline_cagr": 1.3145041468474883,
+                "excess_cagr": -2.842170943040401e-14,
+                "strategy_max_drawdown": -0.21559057398804826,
+                "baseline_max_drawdown": -0.21559057398804837
+              },
+              {
+                "test_start": "2014-09-02",
+                "test_end": "2015-09-02",
+                "strategy_cagr": 0.023958195946707894,
+                "baseline_cagr": 0.023958195946713,
+                "excess_cagr": -5.10702591327572e-15,
+                "strategy_max_drawdown": -0.32160716539114476,
+                "baseline_max_drawdown": -0.32160716539114553
+              },
+              {
+                "test_start": "2015-09-02",
+                "test_end": "2016-09-02",
+                "strategy_cagr": 0.1256786733053472,
+                "baseline_cagr": 0.12567867330535276,
+                "excess_cagr": -5.551115123125783e-15,
+                "strategy_max_drawdown": -0.3628090609127197,
+                "baseline_max_drawdown": -0.3628090609127186
+              },
+              {
+                "test_start": "2016-09-02",
+                "test_end": "2017-09-02",
+                "strategy_cagr": 0.9392239289784585,
+                "baseline_cagr": 0.9392239289784794,
+                "excess_cagr": -2.0872192862952943e-14,
+                "strategy_max_drawdown": -0.14523759442194717,
+                "baseline_max_drawdown": -0.14523759442194728
+              },
+              {
+                "test_start": "2017-09-02",
+                "test_end": "2018-09-02",
+                "strategy_cagr": 0.9763355365076802,
+                "baseline_cagr": 0.9763355365076924,
+                "excess_cagr": -1.2212453270876722e-14,
+                "strategy_max_drawdown": -0.29613259298183015,
+                "baseline_max_drawdown": -0.29613259298183103
+              },
+              {
+                "test_start": "2018-09-02",
+                "test_end": "2019-09-02",
+                "strategy_cagr": -0.3193708157572793,
+                "baseline_cagr": -0.3473858657186162,
+                "excess_cagr": 0.028015049961336858,
+                "strategy_max_drawdown": -0.44388963021980643,
+                "baseline_max_drawdown": -0.4666015176574764
+              },
+              {
+                "test_start": "2019-09-02",
+                "test_end": "2020-09-02",
+                "strategy_cagr": 2.5131023805463943,
+                "baseline_cagr": 2.251267618888845,
+                "excess_cagr": 0.2618347616575494,
+                "strategy_max_drawdown": -0.4572915590171154,
+                "baseline_max_drawdown": -0.5048904962586126
+              },
+              {
+                "test_start": "2020-09-02",
+                "test_end": "2021-09-02",
+                "strategy_cagr": 0.7870909741245662,
+                "baseline_cagr": 0.7629059253067654,
+                "excess_cagr": 0.024185048817800814,
+                "strategy_max_drawdown": -0.32310830759541354,
+                "baseline_max_drawdown": -0.331383206402462
+              },
+              {
+                "test_start": "2021-09-02",
+                "test_end": "2022-09-02",
+                "strategy_cagr": -0.35516936787610076,
+                "baseline_cagr": -0.3551693678760982,
+                "excess_cagr": -2.55351295663786e-15,
+                "strategy_max_drawdown": -0.45522485884624386,
+                "baseline_max_drawdown": -0.45522485884624353
+              },
+              {
+                "test_start": "2022-09-02",
+                "test_end": "2023-09-02",
+                "strategy_cagr": 1.1742914025950357,
+                "baseline_cagr": 1.1742914025950455,
+                "excess_cagr": -9.769962616701378e-15,
+                "strategy_max_drawdown": -0.20520391645934377,
+                "baseline_max_drawdown": -0.2052039164593441
+              },
+              {
+                "test_start": "2023-09-02",
+                "test_end": "2024-09-02",
+                "strategy_cagr": 0.8830559348664215,
+                "baseline_cagr": 0.8830559348664422,
+                "excess_cagr": -2.0650148258027912e-14,
+                "strategy_max_drawdown": -0.36727353054442025,
+                "baseline_max_drawdown": -0.36727353054442036
+              },
+              {
+                "test_start": "2024-09-02",
+                "test_end": "2025-09-02",
+                "strategy_cagr": 0.4257102484120563,
+                "baseline_cagr": 0.42571024841206984,
+                "excess_cagr": -1.354472090042691e-14,
+                "strategy_max_drawdown": -0.43875117837807476,
+                "baseline_max_drawdown": -0.4387511783780741
+              },
+              {
+                "test_start": "2025-09-02",
+                "test_end": "2026-09-02",
+                "strategy_cagr": 0.6228631955519797,
+                "baseline_cagr": 0.6199605617854411,
+                "excess_cagr": 0.0029026337665385427,
+                "strategy_max_drawdown": -0.324872471026851,
+                "baseline_max_drawdown": -0.3260799960774502
+              }
+            ],
+            "positive_excess_fraction": 0.2857142857142857,
+            "fold_count": 14
+          },
+          "bootstrap": {
+            "status": "OK",
+            "method": "moving_block_bootstrap",
+            "iterations": 1000,
+            "block_sessions": 20,
+            "annualized_mean_excess_ci95": [
+              -0.0017894553592358523,
+              0.019459306633647023
+            ],
+            "probability_positive": 0.904
+          },
+          "note": "Walk-forward here measures temporal consistency of a frozen challenger; it does not retune parameters inside folds."
+        },
+        "costs": {
+          "schema_version": 2,
+          "method": "EXPLICIT_EXPOSURE_CHANGE_COST_MODEL",
+          "research_only": true,
+          "qc_parity": false,
+          "scenarios": [
+            {
+              "scenario": "LOW",
+              "fee_bps": 2,
+              "slippage_bps": 5,
+              "total_bps_per_turnover": 7,
+              "turnover_exposure_units": 115.0,
+              "cagr": 0.4915926753275519,
+              "max_drawdown": -0.4582837177968221,
+              "ending_multiple": 906.9154920328542,
+              "sharpe": 1.0824974800743161
+            },
+            {
+              "scenario": "BASE",
+              "fee_bps": 2,
+              "slippage_bps": 10,
+              "total_bps_per_turnover": 12,
+              "turnover_exposure_units": 115.0,
+              "cagr": 0.48656077905785367,
+              "max_drawdown": -0.46045987532289034,
+              "ending_multiple": 856.1926832301924,
+              "sharpe": 1.0753491634663237
+            },
+            {
+              "scenario": "HIGH",
+              "fee_bps": 5,
+              "slippage_bps": 20,
+              "total_bps_per_turnover": 25,
+              "turnover_exposure_units": 115.0,
+              "cagr": 0.473538050389011,
+              "max_drawdown": -0.469858924977535,
+              "ending_multiple": 737.0345350705186,
+              "sharpe": 1.0567065156475552
+            }
+          ],
+          "limitations": [
+            "Daily exposure-change approximation; does not reproduce intraday 09:31/09:32 fills or TQQQ path dependence."
+          ]
+        },
+        "execution": {
+          "schema_version": 1,
+          "model": "EXPLICIT_TARGET_EXPOSURE_ON_UNDERLYING_DAILY_APPROXIMATION",
+          "timing": "target shifted one full session before execution return",
+          "fee_bps": 2,
+          "slippage_bps": 10,
+          "invested_buffer": 0.985,
+          "turnover_exposure_units": 113.275,
+          "total_cost_fraction": 0.13593,
+          "metrics": {
+            "status": "OK",
+            "sessions": 4292,
+            "ending_multiple": 602.3758462205526,
+            "cagr": 0.45618591907466355,
+            "max_drawdown": -0.5006037851829068,
+            "sharpe": 1.0376326973037362
+          },
+          "limitations": [
+            "Explicit exposure model still does not reproduce TQQQ path dependence or intraday 09:31/09:32 fills.",
+            "Must not be labelled QuantConnect parity or production execution evidence."
+          ]
+        },
+        "regimes": {
+          "schema_version": 1,
+          "classification_timing": "all regime features lagged one session",
+          "regimes": {
+            "HIGH_VOL": {
+              "sessions": 2661,
+              "strategy_cagr": 0.4467656939963627,
+              "baseline_cagr": 0.4301818769036665,
+              "excess_cagr": 0.016583817092696185,
+              "strategy_max_drawdown": -0.5335975342484445,
+              "baseline_max_drawdown": -0.5820230847401524
+            },
+            "HIGH_VOL_NEGATIVE_TREND": {
+              "sessions": 509,
+              "strategy_cagr": 0.5092656299170026,
+              "baseline_cagr": 0.49153552095015707,
+              "excess_cagr": 0.01773010896684557,
+              "strategy_max_drawdown": -0.2802836577675736,
+              "baseline_max_drawdown": -0.2802836577675739
+            },
+            "NEGATIVE_TREND": {
+              "sessions": 333,
+              "strategy_cagr": 0.6168805485770776,
+              "baseline_cagr": 0.6168805485770805,
+              "excess_cagr": -2.886579864025407e-15,
+              "strategy_max_drawdown": -0.23278732261892454,
+              "baseline_max_drawdown": -0.23278732261892543
+            },
+            "NORMAL": {
+              "sessions": 789,
+              "strategy_cagr": 0.6271455695931349,
+              "baseline_cagr": 0.6271455695931485,
+              "excess_cagr": -1.354472090042691e-14,
+              "strategy_max_drawdown": -0.31675391258231167,
+              "baseline_max_drawdown": -0.31675391258231167
+            }
+          },
+          "research_only": true,
+          "automatic_promotion": false
+        }
+      }
+    },
+    {
+      "experiment_id": "SL9-004-STRESS-TREND",
+      "hypothesis": "Capping exposure only when lagged realized volatility is high and QQQ is below its lagged SMA200 may preserve crisis drawdown protection while avoiding unnecessary intervention in high-volatility uptrends.",
+      "baseline": "StockLens 8.0 FROZEN",
+      "queue_status": "COMPLETED",
+      "fingerprint": "97bca6d44438e23cb7926a8cbc09abff01d7b4d53e925ccc99c54db721b0ea9a",
+      "robustness": "PROMISING_NOT_PROVEN",
+      "missing_evidence": [],
+      "disposition": "PROMISING_NOT_PROVEN",
+      "automatic_promotion": false,
+      "predeclared_failure_rule": null,
+      "predeclared_rule_evaluation": null,
+      "predeclared_objective": null,
+      "predeclared_objective_evaluation": null,
+      "evidence": {
+        "period_result": {
+          "schema_version": 2,
+          "experiment_id": "SL9-004-STRESS-TREND",
+          "name": "Stress + trend confirmation",
+          "hypothesis": "Capping exposure only when lagged realized volatility is high and QQQ is below its lagged SMA200 may preserve crisis drawdown protection while avoiding unnecessary intervention in high-volatility uptrends.",
+          "baseline": "StockLens 8.0 FROZEN",
+          "periods": {
+            "development": {
+              "status": "NEUTRAL",
+              "excess_cagr": -1.199040866595169e-14,
+              "max_drawdown": -0.4570464065122275,
+              "benchmark_max_drawdown": -0.45704640651222816,
+              "drawdown_delta": 6.661338147750939e-16,
+              "sharpe": 1.059174061157882,
+              "turnover": null,
+              "numerical_excess_tolerance": 1e-10,
+              "sessions": 2097
+            },
+            "validation": {
+              "status": "PASS",
+              "excess_cagr": 0.009666192779428595,
+              "max_drawdown": -0.5048900959284589,
+              "benchmark_max_drawdown": -0.5048900959284593,
+              "drawdown_delta": 4.440892098500626e-16,
+              "sharpe": 1.1371758913201357,
+              "turnover": null,
+              "numerical_excess_tolerance": 1e-10,
+              "sessions": 1008
+            },
+            "holdout": {
+              "status": "NEUTRAL",
+              "excess_cagr": -6.439293542825908e-15,
+              "max_drawdown": -0.43804102663691347,
+              "benchmark_max_drawdown": -0.43804102663691347,
+              "drawdown_delta": 0.0,
+              "sharpe": 0.9444508679467993,
+              "turnover": null,
+              "numerical_excess_tolerance": 1e-10,
+              "sessions": 668
+            }
+          },
+          "robustness": {
+            "status": "PROMISING_NOT_PROVEN",
+            "all_periods_positive_excess": false,
+            "no_material_negative_period": true,
+            "has_positive_period": true,
+            "minimum_excess_cagr": -1.199040866595169e-14,
+            "automatic_promotion": false
+          },
+          "intervention": {
+            "eligible_sessions": 4292,
+            "changed_sessions": 1,
+            "changed_fraction": 0.00023299161230195712
+          },
+          "status": "PROMISING_NOT_PROVEN",
+          "automatic_promotion": false,
+          "fingerprint": "97bca6d44438e23cb7926a8cbc09abff01d7b4d53e925ccc99c54db721b0ea9a"
+        },
+        "fixed_validation": {
+          "schema_version": 1,
+          "walk_forward": {
+            "folds": [
+              {
+                "test_start": "2012-09-02",
+                "test_end": "2013-09-02",
+                "strategy_cagr": 0.18208307084450714,
+                "baseline_cagr": 0.18208307084450936,
+                "excess_cagr": -2.220446049250313e-15,
+                "strategy_max_drawdown": -0.2799151922717017,
+                "baseline_max_drawdown": -0.27991519227170314
+              },
+              {
+                "test_start": "2013-09-02",
+                "test_end": "2014-09-02",
+                "strategy_cagr": 1.3145082335572775,
+                "baseline_cagr": 1.3145082335573002,
+                "excess_cagr": -2.2648549702353193e-14,
+                "strategy_max_drawdown": -0.21558999402259627,
+                "baseline_max_drawdown": -0.21558999402259593
+              },
+              {
+                "test_start": "2014-09-02",
+                "test_end": "2015-09-02",
+                "strategy_cagr": 0.02395736224256595,
+                "baseline_cagr": 0.023957362242572167,
+                "excess_cagr": -6.217248937900877e-15,
+                "strategy_max_drawdown": -0.3216072728608994,
+                "baseline_max_drawdown": -0.3216072728608991
+              },
+              {
+                "test_start": "2015-09-02",
+                "test_end": "2016-09-02",
+                "strategy_cagr": 0.12568050031075506,
+                "baseline_cagr": 0.1256805003107604,
+                "excess_cagr": -5.329070518200751e-15,
+                "strategy_max_drawdown": -0.3628085796876658,
+                "baseline_max_drawdown": -0.3628085796876652
+              },
+              {
+                "test_start": "2016-09-02",
+                "test_end": "2017-09-02",
+                "strategy_cagr": 0.9392217243853493,
+                "baseline_cagr": 0.9392217243853762,
+                "excess_cagr": -2.6867397195928788e-14,
+                "strategy_max_drawdown": -0.14523671724697884,
+                "baseline_max_drawdown": -0.14523671724697873
+              },
+              {
+                "test_start": "2017-09-02",
+                "test_end": "2018-09-02",
+                "strategy_cagr": 0.9763353682392348,
+                "baseline_cagr": 0.976335368239259,
+                "excess_cagr": -2.4202861936828413e-14,
+                "strategy_max_drawdown": -0.2961330941132475,
+                "baseline_max_drawdown": -0.29613309411324795
+              },
+              {
+                "test_start": "2018-09-02",
+                "test_end": "2019-09-02",
+                "strategy_cagr": -0.33149295059372275,
+                "baseline_cagr": -0.3473852165432535,
+                "excess_cagr": 0.01589226594953075,
+                "strategy_max_drawdown": -0.4537161280146377,
+                "baseline_max_drawdown": -0.4666009664950156
+              },
+              {
+                "test_start": "2019-09-02",
+                "test_end": "2020-09-02",
+                "strategy_cagr": 2.25126837993363,
+                "baseline_cagr": 2.251268379933676,
+                "excess_cagr": -4.618527782440651e-14,
+                "strategy_max_drawdown": -0.504890095928459,
+                "baseline_max_drawdown": -0.5048900959284592
+              },
+              {
+                "test_start": "2020-09-02",
+                "test_end": "2021-09-02",
+                "strategy_cagr": 0.7629075540897117,
+                "baseline_cagr": 0.7629075540897265,
+                "excess_cagr": -1.4876988529977098e-14,
+                "strategy_max_drawdown": -0.3313828113677657,
+                "baseline_max_drawdown": -0.33138281136776515
+              },
+              {
+                "test_start": "2021-09-02",
+                "test_end": "2022-09-02",
+                "strategy_cagr": -0.35517031514001707,
+                "baseline_cagr": -0.3551703151400135,
+                "excess_cagr": -3.552713678800501e-15,
+                "strategy_max_drawdown": -0.4552250818628314,
+                "baseline_max_drawdown": -0.45522508186283117
+              },
+              {
+                "test_start": "2022-09-02",
+                "test_end": "2023-09-02",
+                "strategy_cagr": 1.174288972706992,
+                "baseline_cagr": 1.1742889727069996,
+                "excess_cagr": -7.549516567451064e-15,
+                "strategy_max_drawdown": -0.2052037672515642,
+                "baseline_max_drawdown": -0.20520376725156464
+              },
+              {
+                "test_start": "2023-09-02",
+                "test_end": "2024-09-02",
+                "strategy_cagr": 0.8830563027024909,
+                "baseline_cagr": 0.8830563027025133,
+                "excess_cagr": -2.2426505097428162e-14,
+                "strategy_max_drawdown": -0.3672735043644014,
+                "baseline_max_drawdown": -0.367273504364402
+              },
+              {
+                "test_start": "2024-09-02",
+                "test_end": "2025-09-02",
+                "strategy_cagr": 0.4257104783395522,
+                "baseline_cagr": 0.42571047833956577,
+                "excess_cagr": -1.354472090042691e-14,
+                "strategy_max_drawdown": -0.4387517211367279,
+                "baseline_max_drawdown": -0.4387517211367281
+              },
+              {
+                "test_start": "2025-09-02",
+                "test_end": "2026-09-02",
+                "strategy_cagr": 0.6199610699823355,
+                "baseline_cagr": 0.6199610699823448,
+                "excess_cagr": -9.325873406851315e-15,
+                "strategy_max_drawdown": -0.32608002269767156,
+                "baseline_max_drawdown": -0.32608002269767267
+              }
+            ],
+            "positive_excess_fraction": 0.07142857142857142,
+            "fold_count": 14
+          },
+          "bootstrap": {
+            "status": "OK",
+            "method": "moving_block_bootstrap",
+            "iterations": 1000,
+            "block_sessions": 20,
+            "annualized_mean_excess_ci95": [
+              -4.5080426096993376e-15,
+              0.003997397509183531
+            ],
+            "probability_positive": 0.641
+          },
+          "note": "Walk-forward here measures temporal consistency of a frozen challenger; it does not retune parameters inside folds."
+        },
+        "costs": {
+          "schema_version": 2,
+          "method": "EXPLICIT_EXPOSURE_CHANGE_COST_MODEL",
+          "research_only": true,
+          "qc_parity": false,
+          "scenarios": [
+            {
+              "scenario": "LOW",
+              "fee_bps": 2,
+              "slippage_bps": 5,
+              "total_bps_per_turnover": 7,
+              "turnover_exposure_units": 109.0,
+              "cagr": 0.48133280110245336,
+              "max_drawdown": -0.5055036099097674,
+              "ending_multiple": 806.3292527052735,
+              "sharpe": 1.0639538481987327
+            },
+            {
+              "scenario": "BASE",
+              "fee_bps": 2,
+              "slippage_bps": 10,
+              "total_bps_per_turnover": 12,
+              "turnover_exposure_units": 109.0,
+              "cagr": 0.47659476383967636,
+              "max_drawdown": -0.5059416112853716,
+              "ending_multiple": 763.5120295010043,
+              "sharpe": 1.0572234111029715
+            },
+            {
+              "scenario": "HIGH",
+              "fee_bps": 5,
+              "slippage_bps": 20,
+              "total_bps_per_turnover": 25,
+              "turnover_exposure_units": 109.0,
+              "cagr": 0.4643289208866932,
+              "max_drawdown": -0.5070795455645836,
+              "ending_multiple": 662.3922578435378,
+              "sharpe": 1.039672535176859
+            }
+          ],
+          "limitations": [
+            "Daily exposure-change approximation; does not reproduce intraday 09:31/09:32 fills or TQQQ path dependence."
+          ]
+        },
+        "execution": {
+          "schema_version": 1,
+          "model": "EXPLICIT_TARGET_EXPOSURE_ON_UNDERLYING_DAILY_APPROXIMATION",
+          "timing": "target shifted one full session before execution return",
+          "fee_bps": 2,
+          "slippage_bps": 10,
+          "invested_buffer": 0.985,
+          "turnover_exposure_units": 107.36500000000001,
+          "total_cost_fraction": 0.128838,
+          "metrics": {
+            "status": "OK",
+            "sessions": 4292,
+            "ending_multiple": 563.3019767141806,
+            "cagr": 0.45046318587864365,
+            "max_drawdown": -0.5006049205961354,
+            "sharpe": 1.0248678186007685
+          },
+          "limitations": [
+            "Explicit exposure model still does not reproduce TQQQ path dependence or intraday 09:31/09:32 fills.",
+            "Must not be labelled QuantConnect parity or production execution evidence."
+          ]
+        },
+        "regimes": {
+          "schema_version": 1,
+          "classification_timing": "all regime features lagged one session",
+          "regimes": {
+            "HIGH_VOL": {
+              "sessions": 2661,
+              "strategy_cagr": 0.4301824579152034,
+              "baseline_cagr": 0.4301824579152158,
+              "excess_cagr": -1.2434497875801753e-14,
+              "strategy_max_drawdown": -0.5820230788209109,
+              "baseline_max_drawdown": -0.5820230788209096
+            },
+            "HIGH_VOL_NEGATIVE_TREND": {
+              "sessions": 509,
+              "strategy_cagr": 0.5092583576331853,
+              "baseline_cagr": 0.49152805448999826,
+              "excess_cagr": 0.01773030314318702,
+              "strategy_max_drawdown": -0.28028172014153274,
+              "baseline_max_drawdown": -0.2802817201415334
+            },
+            "NEGATIVE_TREND": {
+              "sessions": 333,
+              "strategy_cagr": 0.6168862260476993,
+              "baseline_cagr": 0.6168862260477082,
+              "excess_cagr": -8.881784197001252e-15,
+              "strategy_max_drawdown": -0.23278525269678663,
+              "baseline_max_drawdown": -0.23278525269678663
+            },
+            "NORMAL": {
+              "sessions": 789,
+              "strategy_cagr": 0.6271464027033347,
+              "baseline_cagr": 0.6271464027033509,
+              "excess_cagr": -1.6209256159527285e-14,
+              "strategy_max_drawdown": -0.316753361900763,
+              "baseline_max_drawdown": -0.3167533619007634
+            }
+          },
+          "research_only": true,
+          "automatic_promotion": false
+        }
+      }
+    },
+    {
+      "experiment_id": "SL9-005-DRAWDOWN-BREAKER",
+      "hypothesis": "A separately versioned lagged drawdown-state circuit breaker may reduce severe path risk by capping exposure only after QQQ is at least 15% below its prior 252-session high, without using volatility thresholds or breadth data.",
+      "baseline": "StockLens 8.0 FROZEN",
+      "queue_status": "COMPLETED",
+      "fingerprint": "4939ef9908ff3330abd1127c78e61f7dc10cc693332bc9fba1658718dd1fc401",
+      "robustness": "NOT_VALIDATED",
+      "missing_evidence": [],
+      "disposition": "NOT_VALIDATED",
+      "automatic_promotion": false,
+      "predeclared_failure_rule": null,
+      "predeclared_rule_evaluation": null,
+      "predeclared_objective": null,
+      "predeclared_objective_evaluation": null,
+      "evidence": {
+        "period_result": {
+          "schema_version": 2,
+          "experiment_id": "SL9-005-DRAWDOWN-BREAKER",
+          "name": "Lagged drawdown circuit breaker",
+          "hypothesis": "A separately versioned lagged drawdown-state circuit breaker may reduce severe path risk by capping exposure only after QQQ is at least 15% below its prior 252-session high, without using volatility thresholds or breadth data.",
+          "baseline": "StockLens 8.0 FROZEN",
+          "periods": {
+            "development": {
+              "status": "NEUTRAL",
+              "excess_cagr": -1.199040866595169e-14,
+              "max_drawdown": -0.4570464065122275,
+              "benchmark_max_drawdown": -0.45704640651222816,
+              "drawdown_delta": 6.661338147750939e-16,
+              "sharpe": 1.059174061157882,
+              "turnover": null,
+              "numerical_excess_tolerance": 1e-10,
+              "sessions": 2097
+            },
+            "validation": {
+              "status": "NEUTRAL",
+              "excess_cagr": -1.354472090042691e-14,
+              "max_drawdown": -0.5048900959284588,
+              "benchmark_max_drawdown": -0.5048900959284593,
+              "drawdown_delta": 5.551115123125783e-16,
+              "sharpe": 1.126308528151327,
+              "turnover": null,
+              "numerical_excess_tolerance": 1e-10,
+              "sessions": 1008
+            },
+            "holdout": {
+              "status": "FAIL",
+              "excess_cagr": -0.07660714343822783,
+              "max_drawdown": -0.43804102663691347,
+              "benchmark_max_drawdown": -0.43804102663691347,
+              "drawdown_delta": 0.0,
+              "sharpe": 0.8144304819617175,
+              "turnover": null,
+              "numerical_excess_tolerance": 1e-10,
+              "sessions": 668
+            }
+          },
+          "robustness": {
+            "status": "NOT_VALIDATED",
+            "all_periods_positive_excess": false,
+            "no_material_negative_period": false,
+            "has_positive_period": false,
+            "minimum_excess_cagr": -0.07660714343822783,
+            "automatic_promotion": false
+          },
+          "intervention": {
+            "eligible_sessions": 4292,
+            "changed_sessions": 14,
+            "changed_fraction": 0.0032618825722274
+          },
+          "status": "NOT_VALIDATED",
+          "automatic_promotion": false,
+          "fingerprint": "4939ef9908ff3330abd1127c78e61f7dc10cc693332bc9fba1658718dd1fc401"
+        },
+        "fixed_validation": {
+          "schema_version": 1,
+          "walk_forward": {
+            "folds": [
+              {
+                "test_start": "2012-09-02",
+                "test_end": "2013-09-02",
+                "strategy_cagr": 0.18208606817934547,
+                "baseline_cagr": 0.18208606817935724,
+                "excess_cagr": -1.176836406102666e-14,
+                "strategy_max_drawdown": -0.27991424976234125,
+                "baseline_max_drawdown": -0.279914249762342
+              },
+              {
+                "test_start": "2013-09-02",
+                "test_end": "2014-09-02",
+                "strategy_cagr": 1.3145052890884292,
+                "baseline_cagr": 1.31450528908845,
+                "excess_cagr": -2.0872192862952943e-14,
+                "strategy_max_drawdown": -0.21559160890900764,
+                "baseline_max_drawdown": -0.21559160890900753
+              },
+              {
+                "test_start": "2014-09-02",
+                "test_end": "2015-09-02",
+                "strategy_cagr": 0.023957219879703562,
+                "baseline_cagr": 0.023957219879710223,
+                "excess_cagr": -6.661338147750939e-15,
+                "strategy_max_drawdown": -0.32160834540907624,
+                "baseline_max_drawdown": -0.321608345409076
+              },
+              {
+                "test_start": "2015-09-02",
+                "test_end": "2016-09-02",
+                "strategy_cagr": 0.1256804173769619,
+                "baseline_cagr": 0.12568041737696767,
+                "excess_cagr": -5.773159728050814e-15,
+                "strategy_max_drawdown": -0.3628082367802733,
+                "baseline_max_drawdown": -0.3628082367802721
+              },
+              {
+                "test_start": "2016-09-02",
+                "test_end": "2017-09-02",
+                "strategy_cagr": 0.9392205742256656,
+                "baseline_cagr": 0.9392205742256832,
+                "excess_cagr": -1.7541523789077473e-14,
+                "strategy_max_drawdown": -0.14523830974709084,
+                "baseline_max_drawdown": -0.14523830974709107
+              },
+              {
+                "test_start": "2017-09-02",
+                "test_end": "2018-09-02",
+                "strategy_cagr": 0.9763361100466379,
+                "baseline_cagr": 0.976336110046659,
+                "excess_cagr": -2.1094237467877974e-14,
+                "strategy_max_drawdown": -0.29613131552516014,
+                "baseline_max_drawdown": -0.2961313155251605
+              },
+              {
+                "test_start": "2018-09-02",
+                "test_end": "2019-09-02",
+                "strategy_cagr": -0.3473845354725562,
+                "baseline_cagr": -0.34738453547255255,
+                "excess_cagr": -3.6637359812630166e-15,
+                "strategy_max_drawdown": -0.46660056031265607,
+                "baseline_max_drawdown": -0.4666005603126543
+              },
+              {
+                "test_start": "2019-09-02",
+                "test_end": "2020-09-02",
+                "strategy_cagr": 2.251269140788181,
+                "baseline_cagr": 2.2512691407882204,
+                "excess_cagr": -3.952393967665557e-14,
+                "strategy_max_drawdown": -0.5048906969766219,
+                "baseline_max_drawdown": -0.5048906969766225
+              },
+              {
+                "test_start": "2020-09-02",
+                "test_end": "2021-09-02",
+                "strategy_cagr": 0.7629039458387001,
+                "baseline_cagr": 0.7629039458387206,
+                "excess_cagr": -2.042810365310288e-14,
+                "strategy_max_drawdown": -0.33138382625905727,
+                "baseline_max_drawdown": -0.33138382625905694
+              },
+              {
+                "test_start": "2021-09-02",
+                "test_end": "2022-09-02",
+                "strategy_cagr": -0.3551699206530231,
+                "baseline_cagr": -0.35516992065302155,
+                "excess_cagr": -1.5543122344752192e-15,
+                "strategy_max_drawdown": -0.45522530518655346,
+                "baseline_max_drawdown": -0.4552253051865537
+              },
+              {
+                "test_start": "2022-09-02",
+                "test_end": "2023-09-02",
+                "strategy_cagr": 0.863784187617626,
+                "baseline_cagr": 1.174290785221292,
+                "excess_cagr": -0.31050659760366606,
+                "strategy_max_drawdown": -0.20520335411419066,
+                "baseline_max_drawdown": -0.20520335411419122
+              },
+              {
+                "test_start": "2023-09-02",
+                "test_end": "2024-09-02",
+                "strategy_cagr": 0.8830558180056138,
+                "baseline_cagr": 0.8830558180056352,
+                "excess_cagr": -2.1316282072803006e-14,
+                "strategy_max_drawdown": -0.36727354721847305,
+                "baseline_max_drawdown": -0.36727354721847294
+              },
+              {
+                "test_start": "2024-09-02",
+                "test_end": "2025-09-02",
+                "strategy_cagr": 0.42571045489521886,
+                "baseline_cagr": 0.4257104548952333,
+                "excess_cagr": -1.4432899320127035e-14,
+                "strategy_max_drawdown": -0.4387512992127435,
+                "baseline_max_drawdown": -0.4387512992127426
+              },
+              {
+                "test_start": "2025-09-02",
+                "test_end": "2026-09-02",
+                "strategy_cagr": 0.6199605557823209,
+                "baseline_cagr": 0.6199605557823313,
+                "excess_cagr": -1.0436096431476471e-14,
+                "strategy_max_drawdown": -0.32607999607744975,
+                "baseline_max_drawdown": -0.32607999607745075
+              }
+            ],
+            "positive_excess_fraction": 0.0,
+            "fold_count": 14
+          },
+          "bootstrap": {
+            "status": "OK",
+            "method": "moving_block_bootstrap",
+            "iterations": 1000,
+            "block_sessions": 20,
+            "annualized_mean_excess_ci95": [
+              -0.030066018201510808,
+              -2.7554309093605735e-15
+            ],
+            "probability_positive": 0.0
+          },
+          "note": "Walk-forward here measures temporal consistency of a frozen challenger; it does not retune parameters inside folds."
+        },
+        "costs": {
+          "schema_version": 2,
+          "method": "EXPLICIT_EXPOSURE_CHANGE_COST_MODEL",
+          "research_only": true,
+          "qc_parity": false,
+          "scenarios": [
+            {
+              "scenario": "LOW",
+              "fee_bps": 2,
+              "slippage_bps": 5,
+              "total_bps_per_turnover": 7,
+              "turnover_exposure_units": 109.0,
+              "cagr": 0.46599132611822136,
+              "max_drawdown": -0.5055042102560137,
+              "ending_multiple": 675.317221175674,
+              "sharpe": 1.043259323187729
+            },
+            {
+              "scenario": "BASE",
+              "fee_bps": 2,
+              "slippage_bps": 10,
+              "total_bps_per_turnover": 12,
+              "turnover_exposure_units": 109.0,
+              "cagr": 0.4613050938473331,
+              "max_drawdown": -0.5059422111305161,
+              "ending_multiple": 639.4773088377297,
+              "sharpe": 1.0365260873163247
+            },
+            {
+              "scenario": "HIGH",
+              "fee_bps": 5,
+              "slippage_bps": 20,
+              "total_bps_per_turnover": 25,
+              "turnover_exposure_units": 109.0,
+              "cagr": 0.4491737508740534,
+              "max_drawdown": -0.5070801441079047,
+              "ending_multiple": 554.8335801350736,
+              "sharpe": 1.0189695859384311
+            }
+          ],
+          "limitations": [
+            "Daily exposure-change approximation; does not reproduce intraday 09:31/09:32 fills or TQQQ path dependence."
+          ]
+        },
+        "execution": {
+          "schema_version": 1,
+          "model": "EXPLICIT_TARGET_EXPOSURE_ON_UNDERLYING_DAILY_APPROXIMATION",
+          "timing": "target shifted one full session before execution return",
+          "fee_bps": 2,
+          "slippage_bps": 10,
+          "invested_buffer": 0.985,
+          "turnover_exposure_units": 107.36500000000001,
+          "total_cost_fraction": 0.128838,
+          "metrics": {
+            "status": "OK",
+            "sessions": 4292,
+            "ending_multiple": 477.1399227245263,
+            "cagr": 0.43639439687295667,
+            "max_drawdown": -0.5006052431995451,
+            "sharpe": 1.005522988353856
+          },
+          "limitations": [
+            "Explicit exposure model still does not reproduce TQQQ path dependence or intraday 09:31/09:32 fills.",
+            "Must not be labelled QuantConnect parity or production execution evidence."
+          ]
+        },
+        "regimes": {
+          "schema_version": 1,
+          "classification_timing": "all regime features lagged one session",
+          "regimes": {
+            "HIGH_VOL": {
+              "sessions": 2661,
+              "strategy_cagr": 0.4234820415811391,
+              "baseline_cagr": 0.4301823509141478,
+              "excess_cagr": -0.006700309333008692,
+              "strategy_max_drawdown": -0.5820230761567162,
+              "baseline_max_drawdown": -0.5820230761567159
+            },
+            "HIGH_VOL_NEGATIVE_TREND": {
+              "sessions": 509,
+              "strategy_cagr": 0.49153417576854186,
+              "baseline_cagr": 0.4915341757685501,
+              "excess_cagr": -8.215650382226158e-15,
+              "strategy_max_drawdown": -0.2802837910049121,
+              "baseline_max_drawdown": -0.28028379100491274
+            },
+            "NEGATIVE_TREND": {
+              "sessions": 333,
+              "strategy_cagr": 0.6168822454893295,
+              "baseline_cagr": 0.6168822454893397,
+              "excess_cagr": -1.021405182655144e-14,
+              "strategy_max_drawdown": -0.23278456323016783,
+              "baseline_max_drawdown": -0.23278456323016827
+            },
+            "NORMAL": {
+              "sessions": 789,
+              "strategy_cagr": 0.5740355901066458,
+              "baseline_cagr": 0.6271434966498115,
+              "excess_cagr": -0.05310790654316566,
+              "strategy_max_drawdown": -0.31675606386330024,
+              "baseline_max_drawdown": -0.31675606386330024
+            }
+          },
+          "research_only": true,
+          "automatic_promotion": false
+        }
+      }
+    },
+    {
+      "experiment_id": "SL9-006-MOMENTUM-ACCELERATION",
+      "hypothesis": "A small additive exposure overlay during unusually strong persistent QQQ momentum may improve excess return without relying on prior risk-off mechanisms.",
+      "baseline": "StockLens 8.0 FROZEN",
+      "queue_status": "COMPLETED",
+      "fingerprint": "9469dd044db2e64876f934d12bc02566a29639e004afff14aaa5d9c0025acacc",
+      "robustness": "NOT_VALIDATED",
+      "missing_evidence": [],
+      "disposition": "REJECTED_PREDECLARED_RULE",
+      "automatic_promotion": false,
+      "predeclared_failure_rule": {
+        "period": "holdout",
+        "reject_if_excess_cagr_lte": 0,
+        "reject_if_drawdown_delta_lt": -0.05
+      },
+      "predeclared_rule_evaluation": {
+        "passed": false,
+        "reasons": [
+          "EXCESS_CAGR_RULE_FAILED"
+        ],
+        "observed_excess_cagr": -6.439293542825908e-15,
+        "observed_drawdown_delta": 0.0
+      },
+      "predeclared_objective": null,
+      "predeclared_objective_evaluation": null,
+      "evidence": {
+        "period_result": {
+          "schema_version": 2,
+          "experiment_id": "SL9-006-MOMENTUM-ACCELERATION",
+          "name": "Momentum acceleration overlay",
+          "hypothesis": "A small additive exposure overlay during unusually strong persistent QQQ momentum may improve excess return without relying on prior risk-off mechanisms.",
+          "baseline": "StockLens 8.0 FROZEN",
+          "periods": {
+            "development": {
+              "status": "NEUTRAL",
+              "excess_cagr": -1.199040866595169e-14,
+              "max_drawdown": -0.4570464065122275,
+              "benchmark_max_drawdown": -0.45704640651222816,
+              "drawdown_delta": 6.661338147750939e-16,
+              "sharpe": 1.059174061157882,
+              "turnover": null,
+              "numerical_excess_tolerance": 1e-10,
+              "sessions": 2097
+            },
+            "validation": {
+              "status": "FAIL",
+              "excess_cagr": -0.004274571032296448,
+              "max_drawdown": -0.5131009765247918,
+              "benchmark_max_drawdown": -0.5048900959284593,
+              "drawdown_delta": -0.00821088059633246,
+              "sharpe": 1.1197304307913731,
+              "turnover": null,
+              "numerical_excess_tolerance": 1e-10,
+              "sessions": 1008
+            },
+            "holdout": {
+              "status": "NEUTRAL",
+              "excess_cagr": -6.439293542825908e-15,
+              "max_drawdown": -0.43804102663691347,
+              "benchmark_max_drawdown": -0.43804102663691347,
+              "drawdown_delta": 0.0,
+              "sharpe": 0.9444508679467993,
+              "turnover": null,
+              "numerical_excess_tolerance": 1e-10,
+              "sessions": 668
+            }
+          },
+          "robustness": {
+            "status": "NOT_VALIDATED",
+            "all_periods_positive_excess": false,
+            "no_material_negative_period": false,
+            "has_positive_period": false,
+            "minimum_excess_cagr": -0.004274571032296448,
+            "automatic_promotion": false
+          },
+          "intervention": {
+            "eligible_sessions": 4292,
+            "changed_sessions": 47,
+            "changed_fraction": 0.010950605778191985
+          },
+          "status": "NOT_VALIDATED",
+          "automatic_promotion": false,
+          "fingerprint": "9469dd044db2e64876f934d12bc02566a29639e004afff14aaa5d9c0025acacc"
+        },
+        "fixed_validation": {
+          "schema_version": 1,
+          "walk_forward": {
+            "folds": [
+              {
+                "test_start": "2012-09-02",
+                "test_end": "2013-09-02",
+                "strategy_cagr": 0.1820864332914891,
+                "baseline_cagr": 0.18208643329149865,
+                "excess_cagr": -9.547918011776346e-15,
+                "strategy_max_drawdown": -0.2799149899401705,
+                "baseline_max_drawdown": -0.2799149899401713
+              },
+              {
+                "test_start": "2013-09-02",
+                "test_end": "2014-09-02",
+                "strategy_cagr": 1.3145020486787735,
+                "baseline_cagr": 1.3145020486788042,
+                "excess_cagr": -3.064215547965432e-14,
+                "strategy_max_drawdown": -0.2155910093535739,
+                "baseline_max_drawdown": -0.21559100935357312
+              },
+              {
+                "test_start": "2014-09-02",
+                "test_end": "2015-09-02",
+                "strategy_cagr": 0.023958256946907452,
+                "baseline_cagr": 0.023958256946912115,
+                "excess_cagr": -4.6629367034256575e-15,
+                "strategy_max_drawdown": -0.3216077529162368,
+                "baseline_max_drawdown": -0.3216077529162371
+              },
+              {
+                "test_start": "2015-09-02",
+                "test_end": "2016-09-02",
+                "strategy_cagr": 0.1256796998460401,
+                "baseline_cagr": 0.1256796998460441,
+                "excess_cagr": -3.9968028886505635e-15,
+                "strategy_max_drawdown": -0.3628089601505575,
+                "baseline_max_drawdown": -0.3628089601505575
+              },
+              {
+                "test_start": "2016-09-02",
+                "test_end": "2017-09-02",
+                "strategy_cagr": 0.9392211471985017,
+                "baseline_cagr": 0.9392211471985192,
+                "excess_cagr": -1.7541523789077473e-14,
+                "strategy_max_drawdown": -0.1452388386369241,
+                "baseline_max_drawdown": -0.14523883863692488
+              },
+              {
+                "test_start": "2017-09-02",
+                "test_end": "2018-09-02",
+                "strategy_cagr": 0.9763361247436797,
+                "baseline_cagr": 0.9763361247437039,
+                "excess_cagr": -2.4202861936828413e-14,
+                "strategy_max_drawdown": -0.2961325137692702,
+                "baseline_max_drawdown": -0.29613251376927086
+              },
+              {
+                "test_start": "2018-09-02",
+                "test_end": "2019-09-02",
+                "strategy_cagr": -0.34738529099486504,
+                "baseline_cagr": -0.3473852909948615,
+                "excess_cagr": -3.552713678800501e-15,
+                "strategy_max_drawdown": -0.46660081058604486,
+                "baseline_max_drawdown": -0.4666008105860433
+              },
+              {
+                "test_start": "2019-09-02",
+                "test_end": "2020-09-02",
+                "strategy_cagr": 2.1975564827138006,
+                "baseline_cagr": 2.2512640902099634,
+                "excess_cagr": -0.05370760749616288,
+                "strategy_max_drawdown": -0.5131012988749606,
+                "baseline_max_drawdown": -0.5048904025003809
+              },
+              {
+                "test_start": "2020-09-02",
+                "test_end": "2021-09-02",
+                "strategy_cagr": 0.7737352049023523,
+                "baseline_cagr": 0.762909632496789,
+                "excess_cagr": 0.010825572405563255,
+                "strategy_max_drawdown": -0.3309472061632941,
+                "baseline_max_drawdown": -0.33138240688014864
+              },
+              {
+                "test_start": "2021-09-02",
+                "test_end": "2022-09-02",
+                "strategy_cagr": -0.3551705713022486,
+                "baseline_cagr": -0.35517057130224805,
+                "excess_cagr": -5.551115123125783e-16,
+                "strategy_max_drawdown": -0.4552255565466572,
+                "baseline_max_drawdown": -0.45522555654665786
+              },
+              {
+                "test_start": "2022-09-02",
+                "test_end": "2023-09-02",
+                "strategy_cagr": 1.1742913752511455,
+                "baseline_cagr": 1.174291375251157,
+                "excess_cagr": -1.1546319456101628e-14,
+                "strategy_max_drawdown": -0.20520391072227806,
+                "baseline_max_drawdown": -0.20520391072227795
+              },
+              {
+                "test_start": "2023-09-02",
+                "test_end": "2024-09-02",
+                "strategy_cagr": 0.8830544624009837,
+                "baseline_cagr": 0.8830544624010102,
+                "excess_cagr": -2.6423307986078726e-14,
+                "strategy_max_drawdown": -0.3672734026109611,
+                "baseline_max_drawdown": -0.3672734026109613
+              },
+              {
+                "test_start": "2024-09-02",
+                "test_end": "2025-09-02",
+                "strategy_cagr": 0.4257112960376801,
+                "baseline_cagr": 0.42571129603769453,
+                "excess_cagr": -1.4432899320127035e-14,
+                "strategy_max_drawdown": -0.438751128757916,
+                "baseline_max_drawdown": -0.4387511287579151
+              },
+              {
+                "test_start": "2025-09-02",
+                "test_end": "2026-09-02",
+                "strategy_cagr": 0.6202726701064949,
+                "baseline_cagr": 0.6199600307956865,
+                "excess_cagr": 0.0003126393108083825,
+                "strategy_max_drawdown": -0.32594996153983624,
+                "baseline_max_drawdown": -0.3260800226976722
+              }
+            ],
+            "positive_excess_fraction": 0.14285714285714285,
+            "fold_count": 14
+          },
+          "bootstrap": {
+            "status": "OK",
+            "method": "moving_block_bootstrap",
+            "iterations": 1000,
+            "block_sessions": 20,
+            "annualized_mean_excess_ci95": [
+              -0.0029413824008468975,
+              0.001870579821238137
+            ],
+            "probability_positive": 0.452
+          },
+          "note": "Walk-forward here measures temporal consistency of a frozen challenger; it does not retune parameters inside folds."
+        },
+        "costs": {
+          "schema_version": 2,
+          "method": "EXPLICIT_EXPOSURE_CHANGE_COST_MODEL",
+          "research_only": true,
+          "qc_parity": false,
+          "scenarios": [
+            {
+              "scenario": "LOW",
+              "fee_bps": 2,
+              "slippage_bps": 5,
+              "total_bps_per_turnover": 7,
+              "turnover_exposure_units": 108.0,
+              "cagr": 0.47841731042683877,
+              "max_drawdown": -0.5138739637520311,
+              "ending_multiple": 779.7224601724495,
+              "sharpe": 1.0587059928535965
+            },
+            {
+              "scenario": "BASE",
+              "fee_bps": 2,
+              "slippage_bps": 10,
+              "total_bps_per_turnover": 12,
+              "turnover_exposure_units": 108.0,
+              "cagr": 0.4737332410249604,
+              "max_drawdown": -0.5144253115957282,
+              "ending_multiple": 738.6991195303796,
+              "sharpe": 1.0520549237868357
+            },
+            {
+              "scenario": "HIGH",
+              "fee_bps": 5,
+              "slippage_bps": 20,
+              "total_bps_per_turnover": 25,
+              "turnover_exposure_units": 108.0,
+              "cagr": 0.4616065804707745,
+              "max_drawdown": -0.5158566510848035,
+              "ending_multiple": 641.7280722006992,
+              "sharpe": 1.0347114344242025
+            }
+          ],
+          "limitations": [
+            "Daily exposure-change approximation; does not reproduce intraday 09:31/09:32 fills or TQQQ path dependence."
+          ]
+        },
+        "execution": {
+          "schema_version": 1,
+          "model": "EXPLICIT_TARGET_EXPOSURE_ON_UNDERLYING_DAILY_APPROXIMATION",
+          "timing": "target shifted one full session before execution return",
+          "fee_bps": 2,
+          "slippage_bps": 10,
+          "invested_buffer": 0.985,
+          "turnover_exposure_units": 106.38,
+          "total_cost_fraction": 0.127656,
+          "metrics": {
+            "status": "OK",
+            "sessions": 4292,
+            "ending_multiple": 575.7923883379347,
+            "cagr": 0.45233210984074446,
+            "max_drawdown": -0.5006045546360844,
+            "sharpe": 1.026629393169694
+          },
+          "limitations": [
+            "Explicit exposure model still does not reproduce TQQQ path dependence or intraday 09:31/09:32 fills.",
+            "Must not be labelled QuantConnect parity or production execution evidence."
+          ]
+        },
+        "regimes": {
+          "schema_version": 1,
+          "classification_timing": "all regime features lagged one session",
+          "regimes": {
+            "HIGH_VOL": {
+              "sessions": 2661,
+              "strategy_cagr": 0.4287734679917188,
+              "baseline_cagr": 0.4301824490153612,
+              "excess_cagr": -0.0014089810236423972,
+              "strategy_max_drawdown": -0.5889536413089165,
+              "baseline_max_drawdown": -0.5820218933938717
+            },
+            "HIGH_VOL_NEGATIVE_TREND": {
+              "sessions": 509,
+              "strategy_cagr": 0.49152984814276834,
+              "baseline_cagr": 0.4915298481427737,
+              "excess_cagr": -5.329070518200751e-15,
+              "strategy_max_drawdown": -0.28028202108590383,
+              "baseline_max_drawdown": -0.2802820210859035
+            },
+            "NEGATIVE_TREND": {
+              "sessions": 333,
+              "strategy_cagr": 0.6168852742034197,
+              "baseline_cagr": 0.6168852742034276,
+              "excess_cagr": -7.993605777301127e-15,
+              "strategy_max_drawdown": -0.23278611575209895,
+              "baseline_max_drawdown": -0.23278611575209884
+            },
+            "NORMAL": {
+              "sessions": 789,
+              "strategy_cagr": 0.62714655470013,
+              "baseline_cagr": 0.6271465547001456,
+              "excess_cagr": -1.554312234475219e-14,
+              "strategy_max_drawdown": -0.31675269703114217,
+              "baseline_max_drawdown": -0.3167526970311433
+            }
+          },
+          "research_only": true,
+          "automatic_promotion": false
+        }
+      }
+    },
+    {
+      "experiment_id": "SL9-007-UPSHIFT-CONFIRMATION",
+      "hypothesis": "One extra completed-session confirmation before frozen-8.0 exposure increases may reduce whipsaw drawdown with limited CAGR drag while reductions remain immediate.",
+      "baseline": "StockLens 8.0 FROZEN",
+      "queue_status": "COMPLETED",
+      "fingerprint": "995ffc17a889c63d3fcc68376a2b9a688f038c6866820e6baace660e67d02528",
+      "robustness": "NOT_VALIDATED",
+      "missing_evidence": [],
+      "disposition": "PREDECLARED_OBJECTIVE_MET_NOT_PROMOTED",
+      "automatic_promotion": false,
+      "predeclared_failure_rule": null,
+      "predeclared_rule_evaluation": null,
+      "predeclared_objective": {
+        "period": "holdout",
+        "min_excess_cagr": -0.01,
+        "min_drawdown_delta": 0.02
+      },
+      "predeclared_objective_evaluation": {
+        "passed": true,
+        "reasons": [],
+        "observed_excess_cagr": 0.007967374952337458,
+        "observed_drawdown_delta": 0.021455353362670238
+      },
+      "evidence": {
+        "period_result": {
+          "schema_version": 2,
+          "experiment_id": "SL9-007-UPSHIFT-CONFIRMATION",
+          "name": "Asymmetric upshift confirmation",
+          "hypothesis": "One extra completed-session confirmation before frozen-8.0 exposure increases may reduce whipsaw drawdown with limited CAGR drag while reductions remain immediate.",
+          "baseline": "StockLens 8.0 FROZEN",
+          "periods": {
+            "development": {
+              "status": "FAIL",
+              "excess_cagr": -0.00870519000086789,
+              "max_drawdown": -0.4590049772534939,
+              "benchmark_max_drawdown": -0.45704640651222816,
+              "drawdown_delta": -0.0019585707412657083,
+              "sharpe": 1.0459223974813725,
+              "turnover": null,
+              "numerical_excess_tolerance": 1e-10,
+              "sessions": 2097
+            },
+            "validation": {
+              "status": "PASS",
+              "excess_cagr": 0.00024952654969401245,
+              "max_drawdown": -0.5048900959284592,
+              "benchmark_max_drawdown": -0.5048900959284593,
+              "drawdown_delta": 1.1102230246251565e-16,
+              "sharpe": 1.1282241386401877,
+              "turnover": null,
+              "numerical_excess_tolerance": 1e-10,
+              "sessions": 1008
+            },
+            "holdout": {
+              "status": "PASS",
+              "excess_cagr": 0.007967374952337458,
+              "max_drawdown": -0.41658567327424323,
+              "benchmark_max_drawdown": -0.43804102663691347,
+              "drawdown_delta": 0.021455353362670238,
+              "sharpe": 0.9612912066075562,
+              "turnover": null,
+              "numerical_excess_tolerance": 1e-10,
+              "sessions": 668
+            }
+          },
+          "robustness": {
+            "status": "NOT_VALIDATED",
+            "all_periods_positive_excess": false,
+            "no_material_negative_period": false,
+            "has_positive_period": true,
+            "minimum_excess_cagr": -0.00870519000086789,
+            "automatic_promotion": false
+          },
+          "intervention": {
+            "eligible_sessions": 4292,
+            "changed_sessions": 38,
+            "changed_fraction": 0.008853681267474371
+          },
+          "status": "NOT_VALIDATED",
+          "automatic_promotion": false,
+          "fingerprint": "995ffc17a889c63d3fcc68376a2b9a688f038c6866820e6baace660e67d02528"
+        },
+        "fixed_validation": {
+          "schema_version": 1,
+          "walk_forward": {
+            "folds": [
+              {
+                "test_start": "2012-09-02",
+                "test_end": "2013-09-02",
+                "strategy_cagr": 0.20249241064119472,
+                "baseline_cagr": 0.18208307084450936,
+                "excess_cagr": 0.020409339796685355,
+                "strategy_max_drawdown": -0.2748620488621105,
+                "baseline_max_drawdown": -0.27991519227170314
+              },
+              {
+                "test_start": "2013-09-02",
+                "test_end": "2014-09-02",
+                "strategy_cagr": 1.3145082335572775,
+                "baseline_cagr": 1.3145082335573002,
+                "excess_cagr": -2.2648549702353193e-14,
+                "strategy_max_drawdown": -0.21558999402259627,
+                "baseline_max_drawdown": -0.21558999402259593
+              },
+              {
+                "test_start": "2014-09-02",
+                "test_end": "2015-09-02",
+                "strategy_cagr": 0.02395736224256595,
+                "baseline_cagr": 0.023957362242572167,
+                "excess_cagr": -6.217248937900877e-15,
+                "strategy_max_drawdown": -0.3216072728608994,
+                "baseline_max_drawdown": -0.3216072728608991
+              },
+              {
+                "test_start": "2015-09-02",
+                "test_end": "2016-09-02",
+                "strategy_cagr": 0.0999246266904088,
+                "baseline_cagr": 0.1256805003107604,
+                "excess_cagr": -0.025755873620351588,
+                "strategy_max_drawdown": -0.3696846743453066,
+                "baseline_max_drawdown": -0.3628085796876652
+              },
+              {
+                "test_start": "2016-09-02",
+                "test_end": "2017-09-02",
+                "strategy_cagr": 0.9392217243853493,
+                "baseline_cagr": 0.9392217243853762,
+                "excess_cagr": -2.6867397195928788e-14,
+                "strategy_max_drawdown": -0.14523671724697884,
+                "baseline_max_drawdown": -0.14523671724697873
+              },
+              {
+                "test_start": "2017-09-02",
+                "test_end": "2018-09-02",
+                "strategy_cagr": 0.9763353682392348,
+                "baseline_cagr": 0.976335368239259,
+                "excess_cagr": -2.4202861936828413e-14,
+                "strategy_max_drawdown": -0.2961330941132475,
+                "baseline_max_drawdown": -0.29613309411324795
+              },
+              {
+                "test_start": "2018-09-02",
+                "test_end": "2019-09-02",
+                "strategy_cagr": -0.30999000755604167,
+                "baseline_cagr": -0.3473852165432535,
+                "excess_cagr": 0.037395208987211825,
+                "strategy_max_drawdown": -0.4285255636838231,
+                "baseline_max_drawdown": -0.4666009664950156
+              },
+              {
+                "test_start": "2019-09-02",
+                "test_end": "2020-09-02",
+                "strategy_cagr": 2.1757611801317145,
+                "baseline_cagr": 2.251268379933676,
+                "excess_cagr": -0.07550719980196163,
+                "strategy_max_drawdown": -0.504890095928459,
+                "baseline_max_drawdown": -0.5048900959284592
+              },
+              {
+                "test_start": "2020-09-02",
+                "test_end": "2021-09-02",
+                "strategy_cagr": 0.708979971625006,
+                "baseline_cagr": 0.7629075540897265,
+                "excess_cagr": -0.053927582464720514,
+                "strategy_max_drawdown": -0.3411514679148997,
+                "baseline_max_drawdown": -0.33138281136776515
+              },
+              {
+                "test_start": "2021-09-02",
+                "test_end": "2022-09-02",
+                "strategy_cagr": -0.3305509934400479,
+                "baseline_cagr": -0.3551703151400135,
+                "excess_cagr": 0.024619321699965613,
+                "strategy_max_drawdown": -0.4344258083824153,
+                "baseline_max_drawdown": -0.45522508186283117
+              },
+              {
+                "test_start": "2022-09-02",
+                "test_end": "2023-09-02",
+                "strategy_cagr": 1.1267804877325327,
+                "baseline_cagr": 1.1742889727069996,
+                "excess_cagr": -0.047508484974466914,
+                "strategy_max_drawdown": -0.20520376725156442,
+                "baseline_max_drawdown": -0.20520376725156464
+              },
+              {
+                "test_start": "2023-09-02",
+                "test_end": "2024-09-02",
+                "strategy_cagr": 0.8830563027024909,
+                "baseline_cagr": 0.8830563027025133,
+                "excess_cagr": -2.2426505097428162e-14,
+                "strategy_max_drawdown": -0.3672735043644014,
+                "baseline_max_drawdown": -0.367273504364402
+              },
+              {
+                "test_start": "2024-09-02",
+                "test_end": "2025-09-02",
+                "strategy_cagr": 0.3889147568398603,
+                "baseline_cagr": 0.42571047833956577,
+                "excess_cagr": -0.03679572149970545,
+                "strategy_max_drawdown": -0.4387517211367279,
+                "baseline_max_drawdown": -0.4387517211367281
+              },
+              {
+                "test_start": "2025-09-02",
+                "test_end": "2026-09-02",
+                "strategy_cagr": 0.6288550062481697,
+                "baseline_cagr": 0.6199610699823448,
+                "excess_cagr": 0.008893936265824909,
+                "strategy_max_drawdown": -0.31442563056366457,
+                "baseline_max_drawdown": -0.32608002269767267
+              }
+            ],
+            "positive_excess_fraction": 0.2857142857142857,
+            "fold_count": 14
+          },
+          "bootstrap": {
+            "status": "OK",
+            "method": "moving_block_bootstrap",
+            "iterations": 1000,
+            "block_sessions": 20,
+            "annualized_mean_excess_ci95": [
+              -0.015106702956369922,
+              0.007672279061631772
+            ],
+            "probability_positive": 0.249
+          },
+          "note": "Walk-forward here measures temporal consistency of a frozen challenger; it does not retune parameters inside folds."
+        },
+        "costs": {
+          "schema_version": 2,
+          "method": "EXPLICIT_EXPOSURE_CHANGE_COST_MODEL",
+          "research_only": true,
+          "qc_parity": false,
+          "scenarios": [
+            {
+              "scenario": "LOW",
+              "fee_bps": 2,
+              "slippage_bps": 5,
+              "total_bps_per_turnover": 7,
+              "turnover_exposure_units": 96.5,
+              "cagr": 0.47525658557265693,
+              "max_drawdown": -0.5055036099097674,
+              "ending_multiple": 751.8123043720101,
+              "sharpe": 1.05680809334235
+            },
+            {
+              "scenario": "BASE",
+              "fee_bps": 2,
+              "slippage_bps": 10,
+              "total_bps_per_turnover": 12,
+              "turnover_exposure_units": 96.5,
+              "cagr": 0.47108535755730907,
+              "max_drawdown": -0.5059416112853716,
+              "ending_multiple": 716.4166557417575,
+              "sharpe": 1.0508616997593898
+            },
+            {
+              "scenario": "HIGH",
+              "fee_bps": 5,
+              "slippage_bps": 20,
+              "total_bps_per_turnover": 25,
+              "turnover_exposure_units": 96.5,
+              "cagr": 0.4602792276064953,
+              "max_drawdown": -0.5070795455645836,
+              "ending_multiple": 631.8741867515174,
+              "sharpe": 1.0353520492235397
+            }
+          ],
+          "limitations": [
+            "Daily exposure-change approximation; does not reproduce intraday 09:31/09:32 fills or TQQQ path dependence."
+          ]
+        },
+        "execution": {
+          "schema_version": 1,
+          "model": "EXPLICIT_TARGET_EXPOSURE_ON_UNDERLYING_DAILY_APPROXIMATION",
+          "timing": "target shifted one full session before execution return",
+          "fee_bps": 2,
+          "slippage_bps": 10,
+          "invested_buffer": 0.985,
+          "turnover_exposure_units": 95.05250000000001,
+          "total_cost_fraction": 0.114063,
+          "metrics": {
+            "status": "OK",
+            "sessions": 4292,
+            "ending_multiple": 464.55688019948764,
+            "cagr": 0.43414221091901717,
+            "max_drawdown": -0.5169142435363285,
+            "sharpe": 1.003320431916583
+          },
+          "limitations": [
+            "Explicit exposure model still does not reproduce TQQQ path dependence or intraday 09:31/09:32 fills.",
+            "Must not be labelled QuantConnect parity or production execution evidence."
+          ]
+        },
+        "regimes": {
+          "schema_version": 1,
+          "classification_timing": "all regime features lagged one session",
+          "regimes": {
+            "HIGH_VOL": {
+              "sessions": 2661,
+              "strategy_cagr": 0.4286172429226758,
+              "baseline_cagr": 0.4301824579152158,
+              "excess_cagr": -0.0015652149925400316,
+              "strategy_max_drawdown": -0.5799975885702692,
+              "baseline_max_drawdown": -0.5820230788209096
+            },
+            "HIGH_VOL_NEGATIVE_TREND": {
+              "sessions": 509,
+              "strategy_cagr": 0.3907397700507893,
+              "baseline_cagr": 0.49152805448999826,
+              "excess_cagr": -0.10078828443920895,
+              "strategy_max_drawdown": -0.3077910584872564,
+              "baseline_max_drawdown": -0.2802817201415334
+            },
+            "NEGATIVE_TREND": {
+              "sessions": 333,
+              "strategy_cagr": 0.7479161030317676,
+              "baseline_cagr": 0.6168862260477082,
+              "excess_cagr": 0.13102987698405943,
+              "strategy_max_drawdown": -0.18198353647423304,
+              "baseline_max_drawdown": -0.23278525269678663
+            },
+            "NORMAL": {
+              "sessions": 789,
+              "strategy_cagr": 0.6245031496392546,
+              "baseline_cagr": 0.6271464027033509,
+              "excess_cagr": -0.002643253064096296,
+              "strategy_max_drawdown": -0.30509834544923653,
+              "baseline_max_drawdown": -0.3167533619007634
+            }
+          },
+          "research_only": true,
+          "automatic_promotion": false
+        }
+      }
+    }
+  ],
+  "note": "Disposition is governed research status, never an instruction to replace frozen 8.0."
+}

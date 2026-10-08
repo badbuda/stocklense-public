@@ -1,0 +1,162 @@
+{
+  "schema_version": 1,
+  "policy": "Additive challengers only. StockLens 8.0 is immutable and never auto-promoted over.",
+  "experiments": [
+    {
+      "experiment_id": "SL9-001-VOLATILITY-GATE",
+      "name": "Volatility gate challenger",
+      "hypothesis": "A separately versioned volatility-aware challenger may improve benchmark-relative drawdown without sacrificing robust excess CAGR.",
+      "baseline": "StockLens 8.0 FROZEN",
+      "status": "COMPLETED",
+      "returns_csv": "research/data/SL9-001-VOLATILITY-GATE.csv",
+      "prepared": {
+        "name": "volatility_gate",
+        "vol_window": 20,
+        "vol_cutoff": 0.32,
+        "rows": 4292
+      },
+      "result_path": "research/results/SL9-001-VOLATILITY-GATE/ee48a96f12c78d0ced187ac910f8a8f5cfc5f999577a8896aa984f4e8b202ab9.json",
+      "fingerprint": "ee48a96f12c78d0ced187ac910f8a8f5cfc5f999577a8896aa984f4e8b202ab9",
+      "planned_fingerprint": "ee48a96f12c78d0ced187ac910f8a8f5cfc5f999577a8896aa984f4e8b202ab9"
+    },
+    {
+      "experiment_id": "SL9-002-TREND-BREADTH",
+      "name": "Trend breadth challenger",
+      "hypothesis": "A separately versioned breadth confirmation layer may reduce false risk-on transitions while preserving long-run excess return.",
+      "baseline": "StockLens 8.0 FROZEN",
+      "status": "BLOCKED",
+      "blocked_reason": "Survivorship-safe point-in-time breadth constituent history is not yet repository evidence."
+    },
+    {
+      "experiment_id": "SL9-003-STRESS-ONLY",
+      "name": "Stress-only volatility intervention",
+      "hypothesis": "Restricting volatility intervention to lagged high-volatility stress may retain the observed stress-regime drawdown benefit without paying the normal-regime performance penalty.",
+      "baseline": "StockLens 8.0 FROZEN",
+      "status": "COMPLETED",
+      "returns_csv": "research/data/SL9-003-STRESS-ONLY.csv",
+      "parent_evidence": "SL9-001 failed globally; regime diagnostics motivate a distinct stress-only challenger",
+      "prepared": {
+        "name": "stress_only",
+        "vol_window": 20,
+        "vol_cutoff": 0.32
+      },
+      "result_path": "research/results/SL9-003-STRESS-ONLY/5d80c68bf2461fce46b080ba7fafc4d3a0fbdeb0505000baa1c2c90c9688e248.json",
+      "fingerprint": "5d80c68bf2461fce46b080ba7fafc4d3a0fbdeb0505000baa1c2c90c9688e248",
+      "planned_fingerprint": "5d80c68bf2461fce46b080ba7fafc4d3a0fbdeb0505000baa1c2c90c9688e248"
+    },
+    {
+      "experiment_id": "SL9-004-STRESS-TREND",
+      "name": "Stress + trend confirmation",
+      "hypothesis": "Capping exposure only when lagged realized volatility is high and QQQ is below its lagged SMA200 may preserve crisis drawdown protection while avoiding unnecessary intervention in high-volatility uptrends.",
+      "baseline": "StockLens 8.0 FROZEN",
+      "status": "COMPLETED",
+      "returns_csv": "research/data/SL9-004-STRESS-TREND.csv",
+      "prepared": {
+        "name": "stress_trend_confirmation",
+        "vol_window": 20,
+        "vol_cutoff": 0.32,
+        "trend": "lagged_close_below_lagged_sma200",
+        "rows": 4292
+      },
+      "planned_fingerprint": "97bca6d44438e23cb7926a8cbc09abff01d7b4d53e925ccc99c54db721b0ea9a",
+      "result_path": "research/results/SL9-004-STRESS-TREND/97bca6d44438e23cb7926a8cbc09abff01d7b4d53e925ccc99c54db721b0ea9a.json",
+      "fingerprint": "97bca6d44438e23cb7926a8cbc09abff01d7b4d53e925ccc99c54db721b0ea9a"
+    },
+    {
+      "experiment_id": "SL9-005-DRAWDOWN-BREAKER",
+      "name": "Lagged drawdown circuit breaker",
+      "hypothesis": "A separately versioned lagged drawdown-state circuit breaker may reduce severe path risk by capping exposure only after QQQ is at least 15% below its prior 252-session high, without using volatility thresholds or breadth data.",
+      "baseline": "StockLens 8.0 FROZEN",
+      "status": "COMPLETED",
+      "research_family": "DRAWDOWN_STATE_V1",
+      "predeclared_parameters": {
+        "lookback": 252,
+        "drawdown_cutoff": -0.15,
+        "cap": 1.25
+      },
+      "selection_rule": "No parameter selection on validation or holdout; initial challenger parameters are predeclared before evaluation.",
+      "returns_csv": "research/data/SL9-005-DRAWDOWN-BREAKER.csv",
+      "prepared": {
+        "name": "drawdown_circuit_breaker",
+        "lookback": 252,
+        "drawdown_cutoff": -0.15,
+        "cap": 1.25,
+        "timing": "prior_completed_close_vs_prior_rolling_high",
+        "rows": 4292
+      },
+      "planned_fingerprint": "4939ef9908ff3330abd1127c78e61f7dc10cc693332bc9fba1658718dd1fc401",
+      "result_path": "research/results/SL9-005-DRAWDOWN-BREAKER/4939ef9908ff3330abd1127c78e61f7dc10cc693332bc9fba1658718dd1fc401.json",
+      "fingerprint": "4939ef9908ff3330abd1127c78e61f7dc10cc693332bc9fba1658718dd1fc401"
+    },
+    {
+      "experiment_id": "SL9-006-MOMENTUM-ACCELERATION",
+      "name": "Momentum acceleration overlay",
+      "hypothesis": "A small additive exposure overlay during unusually strong persistent QQQ momentum may improve excess return without relying on prior risk-off mechanisms.",
+      "baseline": "StockLens 8.0 FROZEN",
+      "status": "COMPLETED",
+      "research_family": "MOMENTUM_ACCELERATION_V1",
+      "predeclaration": "research/predeclarations/SL9-006-MOMENTUM-ACCELERATION.md",
+      "predeclared_parameters": {
+        "long_lookback": 252,
+        "short_lookback": 63,
+        "mom12_threshold": 0.25,
+        "mom3_threshold": 0,
+        "add": 0.25,
+        "cap": 3
+      },
+      "selection_rule": "No parameter selection on validation or holdout; initial parameters predeclared before implementation.",
+      "predeclared_failure_rule": {
+        "period": "holdout",
+        "reject_if_excess_cagr_lte": 0,
+        "reject_if_drawdown_delta_lt": -0.05
+      },
+      "returns_csv": "research/data/SL9-006-MOMENTUM-ACCELERATION.csv",
+      "prepared": {
+        "name": "momentum_acceleration",
+        "long_lookback": 252,
+        "short_lookback": 63,
+        "mom12_threshold": 0.25,
+        "mom3_threshold": 0.0,
+        "add": 0.25,
+        "cap": 3.0,
+        "timing": "prior_completed_close_only",
+        "rows": 4292
+      },
+      "planned_fingerprint": "9469dd044db2e64876f934d12bc02566a29639e004afff14aaa5d9c0025acacc",
+      "result_path": "research/results/SL9-006-MOMENTUM-ACCELERATION/9469dd044db2e64876f934d12bc02566a29639e004afff14aaa5d9c0025acacc.json",
+      "fingerprint": "9469dd044db2e64876f934d12bc02566a29639e004afff14aaa5d9c0025acacc"
+    },
+    {
+      "experiment_id": "SL9-007-UPSHIFT-CONFIRMATION",
+      "name": "Asymmetric upshift confirmation",
+      "hypothesis": "One extra completed-session confirmation before frozen-8.0 exposure increases may reduce whipsaw drawdown with limited CAGR drag while reductions remain immediate.",
+      "baseline": "StockLens 8.0 FROZEN",
+      "status": "COMPLETED",
+      "research_family": "STATE_PERSISTENCE_V1",
+      "predeclaration": "research/predeclarations/SL9-007-UPSHIFT-CONFIRMATION.md",
+      "predeclared_parameters": {
+        "up_confirm": 2,
+        "down_confirm": 1
+      },
+      "predeclared_objective": {
+        "period": "holdout",
+        "min_excess_cagr": -0.01,
+        "min_drawdown_delta": 0.02
+      },
+      "selection_rule": "No parameter selection on validation or holdout; objective and confirmation count were predeclared before implementation.",
+      "returns_csv": "research/data/SL9-007-UPSHIFT-CONFIRMATION.csv",
+      "prepared": {
+        "name": "asymmetric_upshift_confirmation",
+        "up_confirm": 2,
+        "down_confirm": 1,
+        "timing": "baseline target already lagged to execution session; challenger confirms consecutive upshift targets",
+        "rows": 4292,
+        "changed_sessions": 38,
+        "changed_fraction": 0.008853681267474371
+      },
+      "planned_fingerprint": "995ffc17a889c63d3fcc68376a2b9a688f038c6866820e6baace660e67d02528",
+      "result_path": "research/results/SL9-007-UPSHIFT-CONFIRMATION/995ffc17a889c63d3fcc68376a2b9a688f038c6866820e6baace660e67d02528.json",
+      "fingerprint": "995ffc17a889c63d3fcc68376a2b9a688f038c6866820e6baace660e67d02528"
+    }
+  ]
+}
