@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "status": "PASS",
+  "sessions": 250,
+  "positive_sessions": 136,
+  "top1_positive_gross_return_share": 0.0272958517662935,
+  "top5_positive_gross_return_share": 0.12933752541293878,
+  "top10_positive_gross_return_share": 0.2236977218205544,
+  "top20_positive_gross_return_share": 0.3722865893767571,
+  "top10_session_dates": [
+    "2026-08-04",
+    "2026-06-11",
+    "2026-07-30",
+    "2026-06-15",
+    "2026-09-21",
+    "2025-11-24",
+    "2026-06-18",
+    "2026-05-08",
+    "2025-11-10",
+    "2025-10-13"
+  ],
+  "median_daily_gross_return": 0.0034248397707805633,
+  "semantics": "Concentration of summed positive daily gross replay returns. This is diagnostic, not additive compounded performance and not a promotion rule.",
+  "automatic_promotion": false
+}

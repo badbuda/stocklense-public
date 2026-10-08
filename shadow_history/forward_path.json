@@ -1,0 +1,11 @@
+{
+  "status": "WAITING_FOR_RETURN_PATH",
+  "sessions": 0,
+  "stocklens_return": null,
+  "qqq_price_return": null,
+  "excess_return": null,
+  "stocklens_max_drawdown": null,
+  "qqq_max_drawdown": null,
+  "points": [],
+  "benchmark_note": "QQQ close-to-close price return from the paper ledger; dividends are not included."
+}

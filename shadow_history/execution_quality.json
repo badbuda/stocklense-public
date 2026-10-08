@@ -1,0 +1,12 @@
+{
+  "status": "WAITING_FOR_PROSPECTIVE_DATA",
+  "sessions": 0,
+  "trades": 0,
+  "total_turnover_notional": 0,
+  "cumulative_fees": 0,
+  "cumulative_modeled_slippage": 0,
+  "total_modeled_execution_cost": 0,
+  "execution_cost_bps_of_turnover": null,
+  "execution_cost_pct_of_start_equity": null,
+  "assumption_note": "Paper model costs, not observed broker fills."
+}

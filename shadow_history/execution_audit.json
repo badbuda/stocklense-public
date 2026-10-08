@@ -1,0 +1,24 @@
+{
+  "status": "PASS",
+  "ledger_sessions": 0,
+  "trades": 0,
+  "problems": [],
+  "policy": {
+    "fee_bps": 2.0,
+    "slippage_bps": 10.0
+  },
+  "execution_contract_sha256": "03aed5ec1f6ee348f83d5022012a761ac86d116f9fc140c8fd79de6e4ce0d3e7",
+  "checks": [
+    "modeled fill matches canonical slippage policy",
+    "fee/slippage assumptions match canonical paper policy",
+    "fee amount reconciles to gross notional",
+    "slippage amount reconciles to reference-vs-fill delta",
+    "ledger session trade count equals trade log",
+    "cumulative fees/slippage reconcile to trade log",
+    "cash flow reconciles from canonical initial equity through trades and dividends",
+    "cumulative dividends reconcile to session credits",
+    "ledger equity reconciles to cash plus marked holdings",
+    "turnover reconciles to session trade notionals",
+    "terminal state equity/peak/dividends/trade count reconcile to ledger and trade log"
+  ]
+}

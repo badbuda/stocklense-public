@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "status": "READY",
+  "mode": "PAPER",
+  "live_submission_authorized": false,
+  "current_positions": {
+    "QQQ": 0,
+    "TQQQ": 0
+  },
+  "target_positions": {
+    "QQQ": 0,
+    "TQQQ": 0
+  },
+  "reference_prices": {
+    "QQQ": 757.72998046875,
+    "TQQQ": 0.0
+  },
+  "orders": [],
+  "order_state": {
+    "schema_version": 1,
+    "status": "NO_ORDERS",
+    "live_submission_authorized": false,
+    "orders": []
+  },
+  "target_gap": {
+    "status": "MATCH",
+    "differences": [],
+    "live_gate_eligible": false,
+    "semantics": "PRE_EXECUTION_TARGET_GAP_NOT_BROKER_RECONCILIATION"
+  },
+  "reconciliation": {
+    "status": "NOT_RUN",
+    "semantics": "REQUIRES_EXTERNAL_BROKER_POSITION_SNAPSHOT",
+    "differences": [],
+    "live_gate_eligible": false
+  },
+  "execution_windows": {},
+  "execution_window": {
+    "status": "NO_ORDERS",
+    "windows": {}
+  },
+  "note": "Dry-run plan only. No live broker order is submitted."
+}

@@ -1,0 +1,12 @@
+{
+  "status": "WAITING_FOR_PROSPECTIVE_DATA",
+  "sessions": 0,
+  "benchmark": "QQQ",
+  "stocklens_return": null,
+  "qqq_return": null,
+  "excess_return": null,
+  "experiment_id": "SL9-007-UPSHIFT-CONFIRMATION",
+  "inception_date": "2026-09-26",
+  "rejected_rows": 0,
+  "gate": "STRICTLY_AFTER_INCEPTION"
+}

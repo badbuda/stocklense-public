@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "generated_at_utc": "2026-10-08T09:29:27.911962+00:00",
+  "status": "NO_ACTION_REQUIRED",
+  "next_action": "WAIT_FOR_NEXT_SIGNAL",
+  "window_statuses": {},
+  "blocked_sides": [],
+  "automatic_catchup": false,
+  "catchup_policy": "NEVER_AUTO_EXECUTE_AFTER_MISSED_OR_LATE_WINDOW",
+  "live_submission_authorized": false,
+  "broker_reconciliation_required_for_live": true,
+  "note": "Late or missed execution windows are never chased automatically; await review or the next valid frozen signal/session."
+}

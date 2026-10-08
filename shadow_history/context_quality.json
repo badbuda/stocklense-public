@@ -1,0 +1,9 @@
+{
+  "status": "AVAILABLE",
+  "vix_available": true,
+  "vix_fresh_calendar_days": true,
+  "history_sessions": 1,
+  "affects_frozen_signal": false,
+  "blocking": false,
+  "interpretation": "Research context only; quality never gates StockLens 8.0 signal generation."
+}

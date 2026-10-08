@@ -1,0 +1,10 @@
+{
+  "status": "COMPLETE",
+  "source": "YFINANCE_QQQ_AUTO_ADJUSTED",
+  "raw_rows": 4721,
+  "completed_rows": 4721,
+  "last_completed_date": "2026-10-07",
+  "feature_window_sessions": 253,
+  "feature_window_sha256": "177ce875a160eb908587b016bcc662b3c3f709173ace7d01cae9066d57274f34",
+  "dropped_incomplete_current_session": false
+}

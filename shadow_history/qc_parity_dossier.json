@@ -1,0 +1,17 @@
+{
+  "status": "REFERENCE_PARITY_ONLY",
+  "reference_evidence": {
+    "lean_sessions": 3774,
+    "daily_state_fingerprint": "1c7751a0cd816500ef838ba7532c825cd4764730dda54cfbc5d55ea949c809d5",
+    "transition_and_execution_reference_locked": true
+  },
+  "same_input_evidence": {
+    "input_export_status": "MISSING",
+    "compared_sessions": 0,
+    "proven": false
+  },
+  "blockers": [
+    "Missing validated LEAN daily feature export with close,SMA50,SMA200,VOL20,MOM12,level,defense,leverage for all 3,774 sessions."
+  ],
+  "claim_allowed": "QC reference integrity/execution parity only; do not claim full feature/input parity."
+}

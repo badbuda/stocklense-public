@@ -1,0 +1,7 @@
+{
+  "status": "WAITING_FOR_PROSPECTIVE_DATA",
+  "current_drawdown": null,
+  "worst_drawdown": null,
+  "distance_to_frozen_qc_maxdd": null,
+  "qc_historical_max_drawdown": -0.4969
+}

@@ -1,0 +1,17 @@
+{
+  "schema_version": 3,
+  "status": "WAITING_FOR_TRADES",
+  "trade_count": 0,
+  "execution_contract_sha256": "03aed5ec1f6ee348f83d5022012a761ac86d116f9fc140c8fd79de6e4ce0d3e7",
+  "execution_policy": {
+    "fee_bps": 2.0,
+    "slippage_bps": 10.0,
+    "reductions_time_et": "09:31",
+    "additions_time_et": "09:32",
+    "mode": "PROSPECTIVE_PAPER",
+    "policy_sha256": "098348585fb5cf1a85aa7b8849546ee6d287abfa843ead1b4d0cbea0307aa0c3"
+  },
+  "receipts": [],
+  "broker_confirmation": false,
+  "note": "Deterministic receipts derived from prospective paper trades; not broker confirmations."
+}

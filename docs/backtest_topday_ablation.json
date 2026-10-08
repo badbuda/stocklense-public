@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "status": "PASS",
+  "full_compounded_gross_return": 0.6279555953188771,
+  "cases": [
+    {
+      "removed_top_positive_sessions": 1,
+      "remaining_compounded_gross_return": 0.4774025990486541,
+      "delta_vs_full": -0.150552996270223,
+      "removed_dates": [
+        "2026-08-04"
+      ]
+    },
+    {
+      "removed_top_positive_sessions": 5,
+      "remaining_compounded_gross_return": 0.026804498491461937,
+      "delta_vs_full": -0.6011510968274152,
+      "removed_dates": [
+        "2026-08-04",
+        "2026-06-11",
+        "2026-07-30",
+        "2026-06-15",
+        "2026-09-21"
+      ]
+    },
+    {
+      "removed_top_positive_sessions": 10,
+      "remaining_compounded_gross_return": -0.269417959525038,
+      "delta_vs_full": -0.8973735548439151,
+      "removed_dates": [
+        "2026-08-04",
+        "2026-06-11",
+        "2026-07-30",
+        "2026-06-15",
+        "2026-09-21",
+        "2025-11-24",
+        "2026-06-18",
+        "2026-05-08",
+        "2025-11-10",
+        "2025-10-13"
+      ]
+    },
+    {
+      "removed_top_positive_sessions": 20,
+      "remaining_compounded_gross_return": -0.5741742357901328,
+      "delta_vs_full": -1.2021298311090098,
+      "removed_dates": [
+        "2026-08-04",
+        "2026-06-11",
+        "2026-07-30",
+        "2026-06-15",
+        "2026-09-21",
+        "2025-11-24",
+        "2026-06-18",
+        "2026-05-08",
+        "2025-11-10",
+        "2025-10-13",
+        "2026-02-06",
+        "2026-05-06",
+        "2026-04-24",
+        "2026-07-21",
+        "2026-04-14",
+        "2025-10-27",
+        "2026-05-26",
+        "2026-08-03",
+        "2026-09-17",
+        "2026-04-22"
+      ]
+    }
+  ],
+  "semantics": "Counterfactual diagnostic removing the strongest gross replay sessions. Not a tradable scenario, forecast, ranking or retuning rule.",
+  "automatic_promotion": false,
+  "retuning_authorized": false
+}

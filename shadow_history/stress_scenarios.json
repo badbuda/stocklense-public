@@ -1,0 +1,32 @@
+{
+  "mode": "ILLUSTRATIVE_LINEAR_STRESS_NOT_FORECAST",
+  "level": 3,
+  "target_leverage": 3.0,
+  "invested_fraction": 0.985,
+  "scenarios": [
+    {
+      "qqq_shock": -0.05,
+      "linearized_portfolio_impact": -0.14775000000000002,
+      "ending_value_per_100": 85.225
+    },
+    {
+      "qqq_shock": -0.1,
+      "linearized_portfolio_impact": -0.29550000000000004,
+      "ending_value_per_100": 70.44999999999999
+    },
+    {
+      "qqq_shock": -0.2,
+      "linearized_portfolio_impact": -0.5910000000000001,
+      "ending_value_per_100": 40.89999999999999
+    },
+    {
+      "qqq_shock": -0.3,
+      "linearized_portfolio_impact": -0.8865,
+      "ending_value_per_100": 11.350000000000005
+    }
+  ],
+  "limitations": [
+    "TQQQ path dependence, compounding, volatility drag, gaps, fees and tracking error make realized outcomes differ.",
+    "Does not change the frozen signal."
+  ]
+}

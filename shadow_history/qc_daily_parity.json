@@ -1,0 +1,1224 @@
+{
+  "status": "DATA_SOURCE_DRIFT",
+  "semantics": "QC724_360_BAR_INIT_PRESTART_AUG2009_CAPTURE_GAP_PRIOR_CAPTURED_CLOSES",
+  "reference_sessions": 3774,
+  "actual_sessions": 3774,
+  "expected_transition_count": 67,
+  "actual_transition_count": 69,
+  "expected_sha256": "5561588a3bcd8a416cc13320536d7d3ff51bdb6de418e4f2c31b85eaf2ac745b",
+  "actual_sha256": "8e22b16c2fd62664f0334600e8d321d52d1124c27f8f569397a80d9a5b72f594",
+  "mismatch_count": 64,
+  "first_mismatches": [
+    {
+      "index": 1,
+      "actual": [
+        "2010-05-19",
+        2.0
+      ],
+      "expected": [
+        "2010-05-21",
+        2
+      ],
+      "actual_features": {
+        "close": 40.25625991821289,
+        "sma50": 41.9722093963623,
+        "sma200": 38.22327708244324,
+        "vol20": 0.32076950893597134,
+        "mom12": 0.400765467878768,
+        "level": 2,
+        "defense": false,
+        "leverage": 2.0
+      },
+      "features_on_expected_date": {
+        "close": 38.45283889770508,
+        "sma50": 41.91238784790039,
+        "sma200": 38.30851647377014,
+        "vol20": 0.33795666105178584,
+        "mom12": 0.36339027414337544,
+        "level": 2,
+        "defense": false,
+        "leverage": 2.0
+      }
+    },
+    {
+      "index": 6,
+      "actual": [
+        "2010-07-15",
+        3.0
+      ],
+      "expected": [
+        "2010-07-23",
+        3
+      ],
+      "actual_features": {
+        "close": 39.654624938964844,
+        "sma50": 39.53507865905762,
+        "sma200": 39.24642936706543,
+        "vol20": 0.21507059182873065,
+        "mom12": 0.2540839194044804,
+        "level": 3,
+        "defense": false,
+        "leverage": 3.0
+      },
+      "features_on_expected_date": {
+        "close": 39.837406158447266,
+        "sma50": 39.31476387023926,
+        "sma200": 39.34218162536621,
+        "vol20": 0.26113685384870305,
+        "mom12": 0.31463226436362923,
+        "level": 3,
+        "defense": false,
+        "leverage": 3.0
+      }
+    },
+    {
+      "index": 7,
+      "actual": [
+        "2010-07-19",
+        1.25
+      ],
+      "expected": [
+        "2010-08-13",
+        1.25
+      ],
+      "actual_features": {
+        "close": 38.592750549316406,
+        "sma50": 39.42544441223144,
+        "sma200": 39.27195770263672,
+        "vol20": 0.2332337853176295,
+        "mom12": 0.2582662173974257,
+        "level": 1,
+        "defense": false,
+        "leverage": 1.25
+      },
+      "features_on_expected_date": {
+        "close": 39.20201873779297,
+        "sma50": 39.46066551208496,
+        "sma200": 39.58892320632935,
+        "vol20": 0.21371352453031997,
+        "mom12": 0.2704857160553795,
+        "level": 3,
+        "defense": false,
+        "leverage": 3.0
+      }
+    },
+    {
+      "index": 8,
+      "actual": [
+        "2010-07-23",
+        3.0
+      ],
+      "expected": [
+        "2010-09-09",
+        3
+      ],
+      "actual_features": {
+        "close": 39.837406158447266,
+        "sma50": 39.31476387023926,
+        "sma200": 39.34218162536621,
+        "vol20": 0.26113685384870305,
+        "mom12": 0.31463226436362923,
+        "level": 3,
+        "defense": false,
+        "leverage": 3.0
+      },
+      "features_on_expected_date": {
+        "close": 40.25517654418945,
+        "sma50": 39.200630264282225,
+        "sma200": 39.75837377548218,
+        "vol20": 0.22146853905972605,
+        "mom12": 0.1438622342652256,
+        "level": 3,
+        "defense": false,
+        "leverage": 3.0
+      }
+    },
+    {
+      "index": 9,
+      "actual": [
+        "2010-08-16",
+        1.25
+      ],
+      "expected": [
+        "2011-06-20",
+        1.25
+      ],
+      "actual_features": {
+        "close": 38.92350387573242,
+        "sma50": 39.42950210571289,
+        "sma200": 39.60049142837524,
+        "vol20": 0.19033308363456763,
+        "mom12": 0.22045904215099932,
+        "level": 1,
+        "defense": false,
+        "leverage": 1.25
+      },
+      "features_on_expected_date": {
+        "close": 47.19248962402344,
+        "sma50": 50.086492462158205,
+        "sma200": 47.78110679626465,
+        "vol20": 0.1620059931959388,
+        "mom12": 0.15589440154158773,
+        "level": 1,
+        "defense": false,
+        "leverage": 1.25
+      }
+    },
+    {
+      "index": 10,
+      "actual": [
+        "2010-09-09",
+        3.0
+      ],
+      "expected": [
+        "2011-06-22",
+        3
+      ],
+      "actual_features": {
+        "close": 40.25517654418945,
+        "sma50": 39.200630264282225,
+        "sma200": 39.75837377548218,
+        "vol20": 0.22146853905972605,
+        "mom12": 0.1438622342652256,
+        "level": 3,
+        "defense": false,
+        "leverage": 3.0
+      },
+      "features_on_expected_date": {
+        "close": 48.45585632324219,
+        "sma50": 50.00552146911621,
+        "sma200": 47.863377742767334,
+        "vol20": 0.17999543679734858,
+        "mom12": 0.2063451965143055,
+        "level": 3,
+        "defense": false,
+        "leverage": 3.0
+      }
+    },
+    {
+      "index": 11,
+      "actual": [
+        "2011-06-20",
+        1.25
+      ],
+      "expected": [
+        "2011-08-05",
+        1.25
+      ],
+      "actual_features": {
+        "close": 47.19248962402344,
+        "sma50": 50.086492462158205,
+        "sma200": 47.78110679626465,
+        "vol20": 0.1620059931959388,
+        "mom12": 0.15589440154158773,
+        "level": 1,
+        "defense": false,
+        "leverage": 1.25
+      },
+      "features_on_expected_date": {
+        "close": 47.525882720947266,
+        "sma50": 49.81707138061523,
+        "sma200": 49.07556058883667,
+        "vol20": 0.24894452816943077,
+        "mom12": 0.1659928087926683,
+        "level": 1,
+        "defense": false,
+        "leverage": 1.25
+      }
+    },
+    {
+      "index": 12,
+      "actual": [
+        "2011-06-22",
+        3.0
+      ],
+      "expected": [
+        "2011-09-19",
+        3
+      ],
+      "actual_features": {
+        "close": 48.45585632324219,
+        "sma50": 50.00552146911621,
+        "sma200": 47.863377742767334,
+        "vol20": 0.17999543679734858,
+        "mom12": 0.2063451965143055,
+        "level": 3,
+        "defense": false,
+        "leverage": 3.0
+      },
+      "features_on_expected_date": {
+        "close": 49.741119384765625,
+        "sma50": 48.460335693359376,
+        "sma200": 49.23099988937378,
+        "vol20": 0.27861352186371624,
+        "mom12": 0.18806148786402632,
+        "level": 3,
+        "defense": false,
+        "leverage": 3.0
+      }
+    },
+    {
+      "index": 13,
+      "actual": [
+        "2011-08-05",
+        1.25
+      ],
+      "expected": [
+        "2011-09-22",
+        1.25
+      ],
+      "actual_features": {
+        "close": 47.525882720947266,
+        "sma50": 49.81707138061523,
+        "sma200": 49.07556058883667,
+        "vol20": 0.24894452816943077,
+        "mom12": 0.1659928087926683,
+        "level": 1,
+        "defense": false,
+        "leverage": 1.25
+      },
+      "features_on_expected_date": {
+        "close": 48.677589416503906,
+        "sma50": 48.3577254486084,
+        "sma200": 49.26661458969116,
+        "vol20": 0.24566712424075637,
+        "mom12": 0.14594410812442815,
+        "level": 1,
+        "defense": false,
+        "leverage": 1.25
+      }
+    },
+    {
+      "index": 14,
+      "actual": [
+        "2011-09-19",
+        3.0
+      ],
+      "expected": [
+        "2011-10-13",
+        2
+      ],
+      "actual_features": {
+        "close": 49.741119384765625,
+        "sma50": 48.460335693359376,
+        "sma200": 49.23099988937378,
+        "vol20": 0.27861352186371624,
+        "mom12": 0.18806148786402632,
+        "level": 3,
+        "defense": false,
+        "leverage": 3.0
+      },
+      "features_on_expected_date": {
+        "close": 49.749908447265625,
+        "sma50": 47.31925888061524,
+        "sma200": 49.272186813354494,
+        "vol20": 0.2905366731366582,
+        "mom12": 0.12876361572993944,
+        "level": 1,
+        "defense": false,
+        "leverage": 1.25
+      }
+    }
+  ],
+  "matched_transition_count": 5,
+  "transition_match_rate": 0.07246376811594203,
+  "session_coverage_vs_qc_reference": 1.0,
+  "daily_state_comparison_available": false,
+  "daily_state_comparison_blocker": "QC artifact contains 3,774 daily leverage states, but the compact per-date series is not yet repository evidence; hashes alone cannot support by-date comparison.",
+  "data_audit": {
+    "source": "YFINANCE_QQQ_AUTO_ADJUSTED",
+    "raw_rows": 4721,
+    "completed_rows": 4721,
+    "feature_window_sessions": 253,
+    "feature_window_sha256": "1e9f49d9fd8c1a647b7363ce4241ae006eb3539e6fdedfa2acb2a3fc77518761",
+    "raw_last_date": "2026-10-07",
+    "last_completed_date": "2026-10-07",
+    "dropped_incomplete_current_session": false,
+    "ny_time_at_validation": "2026-10-08T05:13:25.824577-04:00",
+    "safe_after_ny_time": "18:00"
+  },
+  "drift_decomposition": {
+    "status": "DIAGNOSTIC_ONLY",
+    "variants": {
+      "LEAN_CAPTURE_GAP_PRIOR_CLOSE": {
+        "transition_count": 69,
+        "exact_index_matches": 5,
+        "exact_index_match_rate": 0.07246376811594203,
+        "same_leverage_within_3_calendar_days": 67,
+        "near_date_match_rate": 1.0,
+        "offsets": [
+          {
+            "expected_date": "2009-09-01",
+            "actual_date": "2009-09-01",
+            "leverage": 3,
+            "offset_calendar_days": 0
+          },
+          {
+            "expected_date": "2010-05-21",
+            "actual_date": "2010-05-19",
+            "leverage": 2,
+            "offset_calendar_days": -2
+          },
+          {
+            "expected_date": "2010-06-09",
+            "actual_date": "2010-06-09",
+            "leverage": 1.25,
+            "offset_calendar_days": 0
+          },
+          {
+            "expected_date": "2010-06-14",
+            "actual_date": "2010-06-14",
+            "leverage": 2,
+            "offset_calendar_days": 0
+          },
+          {
+            "expected_date": "2010-06-21",
+            "actual_date": "2010-06-21",
+            "leverage": 3,
+            "offset_calendar_days": 0
+          },
+          {
+            "expected_date": "2010-06-30",
+            "actual_date": "2010-06-30",
+            "leverage": 1.25,
+            "offset_calendar_days": 0
+          },
+          {
+            "expected_date": "2010-07-23",
+            "actual_date": "2010-07-23",
+            "leverage": 3,
+            "offset_calendar_days": 0
+          },
+          {
+            "expected_date": "2010-08-13",
+            "actual_date": "2010-08-16",
+            "leverage": 1.25,
+            "offset_calendar_days": 3
+          },
+          {
+            "expected_date": "2010-09-09",
+            "actual_date": "2010-09-09",
+            "leverage": 3,
+            "offset_calendar_days": 0
+          },
+          {
+            "expected_date": "2011-06-20",
+            "actual_date": "2011-06-20",
+            "leverage": 1.25,
+            "offset_calendar_days": 0
+          },
+          {
+            "expected_date": "2011-06-22",
+            "actual_date": "2011-06-22",
+            "leverage": 3,
+            "offset_calendar_days": 0
+          },
+          {
+            "expected_date": "2011-08-05",
+            "actual_date": "2011-08-05",
+            "leverage": 1.25,
+            "offset_calendar_days": 0
+          },
+          {
+            "expected_date": "2011-09-19",
+            "actual_date": "2011-09-19",
+            "leverage": 3,
+            "offset_calendar_days": 0
+          },
+          {
+            "expected_date": "2011-09-22",
+            "actual_date": "2011-09-22",
+            "leverage": 1.25,
+            "offset_calendar_days": 0
+          },
+          {
+            "expected_date": "2011-10-13",
+            "actual_date": "2011-10-14",
+            "leverage": 2,
+            "offset_calendar_days": 1
+          },
+          {
+            "expected_date": "2011-10-21",
+            "actual_date": "2011-10-21",
+            "leverage": 3,
+            "offset_calendar_days": 0
+          },
+          {
+            "expected_date": "2011-11-21",
+            "actual_date": "2011-11-21",
+            "leverage": 1.25,
+            "offset_calendar_days": 0
+          },
+          {
+            "expected_date": "2011-12-02",
+            "actual_date": "2011-12-02",
+            "leverage": 2,
+            "offset_calendar_days": 0
+          },
+          {
+            "expected_date": "2011-12-09",
+            "actual_date": "2011-12-09",
+            "leverage": 3,
+            "offset_calendar_days": 0
+          },
+          {
+            "expected_date": "2011-12-15",
+            "actual_date": "2011-12-15",
+            "leverage": 1.25,
+            "offset_calendar_days": 0
+          },
+          {
+            "expected_date": "2012-01-04",
+            "actual_date": "2012-01-04",
+            "leverage": 3,
+            "offset_calendar_days": 0
+          },
+          {
+            "expected_date": "2012-11-08",
+            "actual_date": "2012-11-08",
+            "leverage": 1.25,
+            "offset_calendar_days": 0
+          },
+          {
+            "expected_date": "2012-12-19",
+            "actual_date": "2012-12-19",
+            "leverage": 3,
+            "offset_calendar_days": 0
+          },
+          {
+            "expected_date": "2012-12-28",
+            "actual_date": "2012-12-28",
+            "leverage": 1.25,
+            "offset_calendar_days": 0
+          },
+          {
+            "expected_date": "2013-01-03",
+            "actual_date": "2013-01-03",
+            "leverage": 3,
+            "offset_calendar_days": 0
+          },
+          {
+            "expected_date": "2015-08-24",
+            "actual_date": "2015-08-24",
+            "leverage": 1.25,
+            "offset_calendar_days": 0
+          },
+          {
+            "expected_date": "2015-10-16",
+            "actual_date": "2015-10-16",
+            "leverage": 3,
+            "offset_calendar_days": 0
+          },
+          {
+            "expected_date": "2016-01-08",
+            "actual_date": "2016-01-08",
+            "leverage": 1.25,
+            "offset_calendar_days": 0
+          },
+          {
+            "expected_date": "2016-02-09",
+            "actual_date": "2016-02-09",
+            "leverage": 0,
+            "offset_calendar_days": 0
+          },
+          {
+            "expected_date": "2016-03-10",
+            "actual_date": "2016-03-10",
+            "leverage": 1.25,
+            "offset_calendar_days": 0
+          },
+          {
+            "expected_date": "2016-03-30",
+            "actual_date": "2016-03-30",
+            "leverage": 3,
+            "offset_calendar_days": 0
+          },
+          {
+            "expected_date": "2016-04-26",
+            "actual_date": "2016-04-26",
+            "leverage": 0,
+            "offset_calendar_days": 0
+          },
+          {
+            "expected_date": "2016-05-04",
+            "actual_date": "2016-05-04",
+            "leverage": 1.25,
+            "offset_calendar_days": 0
+          },
+          {
+            "expected_date": "2016-05-25",
+            "actual_date": "2016-05-25",
+            "leverage": 3,
+            "offset_calendar_days": 0
+          },
+          {
+            "expected_date": "2016-06-27",
+            "actual_date": "2016-06-27",
+            "leverage": 1.25,
+            "offset_calendar_days": 0
+          },
+          {
+            "expected_date": "2016-07-07",
+            "actual_date": "2016-07-07",
+            "leverage": 3,
+            "offset_calendar_days": 0
+          },
+          {
+            "expected_date": "2018-10-25",
+            "actual_date": "2018-10-25",
+            "leverage": 1.25,
+            "offset_calendar_days": 0
+          },
+          {
+            "expected_date": "2018-11-08",
+            "actual_date": "2018-11-08",
+            "leverage": 2,
+            "offset_calendar_days": 0
+          },
+          {
+            "expected_date": "2018-11-13",
+            "actual_date": "2018-11-13",
+            "leverage": 1.25,
+            "offset_calendar_days": 0
+          },
+          {
+            "expected_date": "2018-12-20",
+            "actual_date": "2018-12-20",
+            "leverage": 0,
+            "offset_calendar_days": 0
+          },
+          {
+            "expected_date": "2019-01-03",
+            "actual_date": "2019-01-03",
+            "leverage": 1.25,
+            "offset_calendar_days": 0
+          },
+          {
+            "expected_date": "2019-01-04",
+            "actual_date": "2019-01-04",
+            "leverage": 0,
+            "offset_calendar_days": 0
+          },
+          {
+            "expected_date": "2019-01-11",
+            "actual_date": "2019-01-11",
+            "leverage": 1.25,
+            "offset_calendar_days": 0
+          },
+          {
+            "expected_date": "2019-01-14",
+            "actual_date": "2019-01-14",
+            "leverage": 0,
+            "offset_calendar_days": 0
+          },
+          {
+            "expected_date": "2019-01-22",
+            "actual_date": "2019-01-22",
+            "leverage": 1.25,
+            "offset_calendar_days": 0
+          },
+          {
+            "expected_date": "2019-01-23",
+            "actual_date": "2019-01-23",
+            "leverage": 0,
+            "offset_calendar_days": 0
+          },
+          {
+            "expected_date": "2019-02-01",
+            "actual_date": "2019-02-01",
+            "leverage": 1.25,
+            "offset_calendar_days": 0
+          },
+          {
+            "expected_date": "2019-02-04",
+            "actual_date": "2019-02-04",
+            "leverage": 0,
+            "offset_calendar_days": 0
+          },
+          {
+            "expected_date": "2019-02-05",
+            "actual_date": "2019-02-05",
+            "leverage": 1.25,
+            "offset_calendar_days": 0
+          },
+          {
+            "expected_date": "2019-02-26",
+            "actual_date": "2019-02-26",
+            "leverage": 3,
+            "offset_calendar_days": 0
+          },
+          {
+            "expected_date": "2019-06-04",
+            "actual_date": "2019-06-04",
+            "leverage": 1.25,
+            "offset_calendar_days": 0
+          },
+          {
+            "expected_date": "2019-06-06",
+            "actual_date": "2019-06-06",
+            "leverage": 3,
+            "offset_calendar_days": 0
+          },
+          {
+            "expected_date": "2020-03-03",
+            "actual_date": "2020-03-03",
+            "leverage": 2,
+            "offset_calendar_days": 0
+          },
+          {
+            "expected_date": "2020-03-10",
+            "actual_date": "2020-03-10",
+            "leverage": 1.25,
+            "offset_calendar_days": 0
+          },
+          {
+            "expected_date": "2020-05-06",
+            "actual_date": "2020-05-06",
+            "leverage": 2,
+            "offset_calendar_days": 0
+          },
+          {
+            "expected_date": "2020-05-20",
+            "actual_date": "2020-05-20",
+            "leverage": 3,
+            "offset_calendar_days": 0
+          },
+          {
+            "expected_date": "2020-09-10",
+            "actual_date": "2020-09-10",
+            "leverage": 2,
+            "offset_calendar_days": 0
+          },
+          {
+            "expected_date": "2020-10-09",
+            "actual_date": "2020-10-09",
+            "leverage": 3,
+            "offset_calendar_days": 0
+          },
+          {
+            "expected_date": "2021-03-19",
+            "actual_date": "2021-03-19",
+            "leverage": 2,
+            "offset_calendar_days": 0
+          },
+          {
+            "expected_date": "2021-04-01",
+            "actual_date": "2021-04-01",
+            "leverage": 3,
+            "offset_calendar_days": 0
+          },
+          {
+            "expected_date": "2022-01-24",
+            "actual_date": "2022-01-24",
+            "leverage": 1.25,
+            "offset_calendar_days": 0
+          },
+          {
+            "expected_date": "2022-04-18",
+            "actual_date": "2022-04-18",
+            "leverage": 0,
+            "offset_calendar_days": 0
+          },
+          {
+            "expected_date": "2022-04-19",
+            "actual_date": "2022-04-19",
+            "leverage": 1.25,
+            "offset_calendar_days": 0
+          },
+          {
+            "expected_date": "2022-04-25",
+            "actual_date": "2022-04-25",
+            "leverage": 0,
+            "offset_calendar_days": 0
+          },
+          {
+            "expected_date": "2022-05-05",
+            "actual_date": "2022-05-05",
+            "leverage": 1.25,
+            "offset_calendar_days": 0
+          },
+          {
+            "expected_date": "2022-05-06",
+            "actual_date": "2022-05-06",
+            "leverage": 0,
+            "offset_calendar_days": 0
+          },
+          {
+            "expected_date": "2023-03-13",
+            "actual_date": "2023-03-13",
+            "leverage": 3,
+            "offset_calendar_days": 0
+          }
+        ],
+        "offset_summary": {
+          "min": -2,
+          "max": 3,
+          "mean": 0.029850746268656716,
+          "early": 1,
+          "same_day": 64,
+          "late": 2
+        },
+        "unmatched_actual_transitions": [
+          {
+            "actual_date": "2010-07-15",
+            "leverage": 3.0,
+            "actual_index": 6
+          },
+          {
+            "actual_date": "2010-07-19",
+            "leverage": 1.25,
+            "actual_index": 7
+          }
+        ]
+      },
+      "STANDARD_COMPLETED_CLOSE": {
+        "transition_count": 69,
+        "exact_index_matches": 1,
+        "exact_index_match_rate": 0.014492753623188406,
+        "same_leverage_within_3_calendar_days": 65,
+        "near_date_match_rate": 0.9701492537313433,
+        "offsets": [
+          {
+            "expected_date": "2009-09-01",
+            "actual_date": "2009-09-01",
+            "leverage": 3,
+            "offset_calendar_days": 0
+          },
+          {
+            "expected_date": "2010-05-21",
+            "actual_date": "2010-05-18",
+            "leverage": 2,
+            "offset_calendar_days": -3
+          },
+          {
+            "expected_date": "2010-06-09",
+            "actual_date": "2010-06-07",
+            "leverage": 1.25,
+            "offset_calendar_days": -2
+          },
+          {
+            "expected_date": "2010-06-14",
+            "actual_date": "2010-06-11",
+            "leverage": 2,
+            "offset_calendar_days": -3
+          },
+          {
+            "expected_date": "2010-06-21",
+            "actual_date": "2010-06-18",
+            "leverage": 3,
+            "offset_calendar_days": -3
+          },
+          {
+            "expected_date": "2010-06-30",
+            "actual_date": "2010-06-29",
+            "leverage": 1.25,
+            "offset_calendar_days": -1
+          },
+          {
+            "expected_date": "2010-07-23",
+            "actual_date": "2010-07-22",
+            "leverage": 3,
+            "offset_calendar_days": -1
+          },
+          {
+            "expected_date": "2010-08-13",
+            "actual_date": "2010-08-13",
+            "leverage": 1.25,
+            "offset_calendar_days": 0
+          },
+          {
+            "expected_date": "2010-09-09",
+            "actual_date": "2010-09-08",
+            "leverage": 3,
+            "offset_calendar_days": -1
+          },
+          {
+            "expected_date": "2011-06-20",
+            "actual_date": "2011-06-17",
+            "leverage": 1.25,
+            "offset_calendar_days": -3
+          },
+          {
+            "expected_date": "2011-06-22",
+            "actual_date": "2011-06-21",
+            "leverage": 3,
+            "offset_calendar_days": -1
+          },
+          {
+            "expected_date": "2011-08-05",
+            "actual_date": "2011-08-04",
+            "leverage": 1.25,
+            "offset_calendar_days": -1
+          },
+          {
+            "expected_date": "2011-09-19",
+            "actual_date": "2011-09-16",
+            "leverage": 3,
+            "offset_calendar_days": -3
+          },
+          {
+            "expected_date": "2011-09-22",
+            "actual_date": "2011-09-21",
+            "leverage": 1.25,
+            "offset_calendar_days": -1
+          },
+          {
+            "expected_date": "2011-10-13",
+            "actual_date": "2011-10-13",
+            "leverage": 2,
+            "offset_calendar_days": 0
+          },
+          {
+            "expected_date": "2011-10-21",
+            "actual_date": "2011-10-20",
+            "leverage": 3,
+            "offset_calendar_days": -1
+          },
+          {
+            "expected_date": "2011-11-21",
+            "actual_date": "2011-11-18",
+            "leverage": 1.25,
+            "offset_calendar_days": -3
+          },
+          {
+            "expected_date": "2011-12-02",
+            "actual_date": "2011-12-01",
+            "leverage": 2,
+            "offset_calendar_days": -1
+          },
+          {
+            "expected_date": "2011-12-09",
+            "actual_date": "2011-12-08",
+            "leverage": 3,
+            "offset_calendar_days": -1
+          },
+          {
+            "expected_date": "2011-12-15",
+            "actual_date": "2011-12-14",
+            "leverage": 1.25,
+            "offset_calendar_days": -1
+          },
+          {
+            "expected_date": "2012-01-04",
+            "actual_date": "2012-01-03",
+            "leverage": 3,
+            "offset_calendar_days": -1
+          },
+          {
+            "expected_date": "2012-11-08",
+            "actual_date": "2012-11-07",
+            "leverage": 1.25,
+            "offset_calendar_days": -1
+          },
+          {
+            "expected_date": "2012-12-19",
+            "actual_date": "2012-12-18",
+            "leverage": 3,
+            "offset_calendar_days": -1
+          },
+          {
+            "expected_date": "2012-12-28",
+            "actual_date": "2012-12-27",
+            "leverage": 1.25,
+            "offset_calendar_days": -1
+          },
+          {
+            "expected_date": "2013-01-03",
+            "actual_date": "2013-01-02",
+            "leverage": 3,
+            "offset_calendar_days": -1
+          },
+          {
+            "expected_date": "2015-08-24",
+            "actual_date": "2015-08-21",
+            "leverage": 1.25,
+            "offset_calendar_days": -3
+          },
+          {
+            "expected_date": "2015-10-16",
+            "actual_date": "2015-10-15",
+            "leverage": 3,
+            "offset_calendar_days": -1
+          },
+          {
+            "expected_date": "2016-01-08",
+            "actual_date": "2016-01-07",
+            "leverage": 1.25,
+            "offset_calendar_days": -1
+          },
+          {
+            "expected_date": "2016-02-09",
+            "actual_date": "2016-02-08",
+            "leverage": 0,
+            "offset_calendar_days": -1
+          },
+          {
+            "expected_date": "2016-03-10",
+            "actual_date": "2016-03-09",
+            "leverage": 1.25,
+            "offset_calendar_days": -1
+          },
+          {
+            "expected_date": "2016-03-30",
+            "actual_date": "2016-03-29",
+            "leverage": 3,
+            "offset_calendar_days": -1
+          },
+          {
+            "expected_date": "2016-04-26",
+            "actual_date": "2016-04-25",
+            "leverage": 0,
+            "offset_calendar_days": -1
+          },
+          {
+            "expected_date": "2016-05-04",
+            "actual_date": "2016-05-03",
+            "leverage": 1.25,
+            "offset_calendar_days": -1
+          },
+          {
+            "expected_date": "2016-05-25",
+            "actual_date": "2016-05-24",
+            "leverage": 3,
+            "offset_calendar_days": -1
+          },
+          {
+            "expected_date": "2016-06-27",
+            "actual_date": "2016-06-24",
+            "leverage": 1.25,
+            "offset_calendar_days": -3
+          },
+          {
+            "expected_date": "2016-07-07",
+            "actual_date": "2016-07-06",
+            "leverage": 3,
+            "offset_calendar_days": -1
+          },
+          {
+            "expected_date": "2018-10-25",
+            "actual_date": "2018-10-24",
+            "leverage": 1.25,
+            "offset_calendar_days": -1
+          },
+          {
+            "expected_date": "2018-11-08",
+            "actual_date": "2018-11-07",
+            "leverage": 2,
+            "offset_calendar_days": -1
+          },
+          {
+            "expected_date": "2018-11-13",
+            "actual_date": "2018-11-12",
+            "leverage": 1.25,
+            "offset_calendar_days": -1
+          },
+          {
+            "expected_date": "2018-12-20",
+            "actual_date": "2018-12-19",
+            "leverage": 0,
+            "offset_calendar_days": -1
+          },
+          {
+            "expected_date": "2019-01-03",
+            "actual_date": "2019-01-02",
+            "leverage": 1.25,
+            "offset_calendar_days": -1
+          },
+          {
+            "expected_date": "2019-01-04",
+            "actual_date": "2019-01-03",
+            "leverage": 0,
+            "offset_calendar_days": -1
+          },
+          {
+            "expected_date": "2019-01-11",
+            "actual_date": "2019-01-10",
+            "leverage": 1.25,
+            "offset_calendar_days": -1
+          },
+          {
+            "expected_date": "2019-01-14",
+            "actual_date": "2019-01-11",
+            "leverage": 0,
+            "offset_calendar_days": -3
+          },
+          {
+            "expected_date": "2019-01-23",
+            "actual_date": "2019-01-22",
+            "leverage": 0,
+            "offset_calendar_days": -1
+          },
+          {
+            "expected_date": "2019-02-01",
+            "actual_date": "2019-01-31",
+            "leverage": 1.25,
+            "offset_calendar_days": -1
+          },
+          {
+            "expected_date": "2019-02-04",
+            "actual_date": "2019-02-01",
+            "leverage": 0,
+            "offset_calendar_days": -3
+          },
+          {
+            "expected_date": "2019-02-05",
+            "actual_date": "2019-02-04",
+            "leverage": 1.25,
+            "offset_calendar_days": -1
+          },
+          {
+            "expected_date": "2019-02-26",
+            "actual_date": "2019-02-25",
+            "leverage": 3,
+            "offset_calendar_days": -1
+          },
+          {
+            "expected_date": "2019-06-04",
+            "actual_date": "2019-06-03",
+            "leverage": 1.25,
+            "offset_calendar_days": -1
+          },
+          {
+            "expected_date": "2019-06-06",
+            "actual_date": "2019-06-05",
+            "leverage": 3,
+            "offset_calendar_days": -1
+          },
+          {
+            "expected_date": "2020-03-03",
+            "actual_date": "2020-03-02",
+            "leverage": 2,
+            "offset_calendar_days": -1
+          },
+          {
+            "expected_date": "2020-03-10",
+            "actual_date": "2020-03-09",
+            "leverage": 1.25,
+            "offset_calendar_days": -1
+          },
+          {
+            "expected_date": "2020-05-06",
+            "actual_date": "2020-05-05",
+            "leverage": 2,
+            "offset_calendar_days": -1
+          },
+          {
+            "expected_date": "2020-05-20",
+            "actual_date": "2020-05-19",
+            "leverage": 3,
+            "offset_calendar_days": -1
+          },
+          {
+            "expected_date": "2020-09-10",
+            "actual_date": "2020-09-09",
+            "leverage": 2,
+            "offset_calendar_days": -1
+          },
+          {
+            "expected_date": "2020-10-09",
+            "actual_date": "2020-10-08",
+            "leverage": 3,
+            "offset_calendar_days": -1
+          },
+          {
+            "expected_date": "2021-03-19",
+            "actual_date": "2021-03-18",
+            "leverage": 2,
+            "offset_calendar_days": -1
+          },
+          {
+            "expected_date": "2021-04-01",
+            "actual_date": "2021-03-31",
+            "leverage": 3,
+            "offset_calendar_days": -1
+          },
+          {
+            "expected_date": "2022-01-24",
+            "actual_date": "2022-01-21",
+            "leverage": 1.25,
+            "offset_calendar_days": -3
+          },
+          {
+            "expected_date": "2022-04-19",
+            "actual_date": "2022-04-18",
+            "leverage": 1.25,
+            "offset_calendar_days": -1
+          },
+          {
+            "expected_date": "2022-04-25",
+            "actual_date": "2022-04-22",
+            "leverage": 0,
+            "offset_calendar_days": -3
+          },
+          {
+            "expected_date": "2022-05-05",
+            "actual_date": "2022-05-04",
+            "leverage": 1.25,
+            "offset_calendar_days": -1
+          },
+          {
+            "expected_date": "2022-05-06",
+            "actual_date": "2022-05-05",
+            "leverage": 0,
+            "offset_calendar_days": -1
+          },
+          {
+            "expected_date": "2023-03-13",
+            "actual_date": "2023-03-10",
+            "leverage": 3,
+            "offset_calendar_days": -3
+          }
+        ],
+        "offset_summary": {
+          "min": -3,
+          "max": 0,
+          "mean": -1.3692307692307693,
+          "early": 62,
+          "same_day": 3,
+          "late": 0
+        },
+        "unmatched_actual_transitions": [
+          {
+            "actual_date": "2010-07-14",
+            "leverage": 3.0,
+            "actual_index": 6
+          },
+          {
+            "actual_date": "2010-07-16",
+            "leverage": 1.25,
+            "actual_index": 7
+          },
+          {
+            "actual_date": "2019-01-18",
+            "leverage": 1.25,
+            "actual_index": 46
+          },
+          {
+            "actual_date": "2022-04-14",
+            "leverage": 0.0,
+            "actual_index": 63
+          }
+        ]
+      }
+    },
+    "winner_selection": false,
+    "model_mutation": false,
+    "claim_boundary": "Cross-provider lifecycle timing diagnostic only; does not establish identical LEAN inputs or authorize retuning."
+  },
+  "replication_dossier": {
+    "provider": "YFINANCE_QQQ_AUTO_ADJUSTED",
+    "classification": "INDEPENDENT_CROSS_PROVIDER_REPLICATION",
+    "session_coverage": 1.0,
+    "transition_match_rate": 0.07246376811594203,
+    "transition_count_delta": 2,
+    "matched_transitions": 5,
+    "expected_transitions": 67,
+    "hypotheses_to_test": [
+      "PRICE_ADJUSTMENT_SEMANTICS",
+      "LEAN_CONSOLIDATION_AND_SESSION_CLOSE_SEMANTICS",
+      "WARMUP_AND_PRESTART_CAPTURE_SEMANTICS",
+      "FEATURE_NUMERICAL_IMPLEMENTATION"
+    ],
+    "claim_boundary": "Yahoo can independently reconstruct market-price inputs, but cannot establish original LEAN equity/cash/holdings/orders or identical-input parity."
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "schema_version": 2,
+  "publication_identity": {
+    "schema_version": 2,
+    "git_sha": "911cbe1e983159de20ac850d48f024956f9750b8",
+    "signal_asof": null,
+    "replay_dataset_sha256": "db0889da31af43b1b75e005c1f4ab2cad421dfb55a6c55a77a223e0623950d95",
+    "replay_rows_sha256": "327aa28bfe8fb364d576b101382bfc4aa4bd21c6508f563c6190795990d5b721",
+    "simulator_contract_sha256": "80745a3640c6fe667a3c500571fb15abee1d532a5b720fb6efc8b52f291dfc68",
+    "generation_id": "86c6c3c46c3813ed910c35e4b71d9cf446b09fb9bf31582c5c71e37353102bc6"
+  },
+  "status": "INCOMPLETE",
+  "checks": [
+    {
+      "id": "ROBUSTNESS_WINDOWS",
+      "status": "PASS"
+    },
+    {
+      "id": "ADVERSARIAL_COST_DELAY",
+      "status": "PASS"
+    },
+    {
+      "id": "REGIME_DECOMPOSITION",
+      "status": "PASS"
+    },
+    {
+      "id": "RETURN_CONCENTRATION",
+      "status": "PASS"
+    },
+    {
+      "id": "TOP_DAY_ABLATION",
+      "status": "PASS"
+    },
+    {
+      "id": "LEAVE_ONE_YEAR_OUT",
+      "status": "PASS"
+    },
+    {
+      "id": "ROLLING_PATH_FRAGILITY",
+      "status": "PASS"
+    },
+    {
+      "id": "DRAWDOWN_RECOVERY",
+      "status": "PASS"
+    },
+    {
+      "id": "EXPOSURE_ATTRIBUTION",
+      "status": "PASS"
+    },
+    {
+      "id": "TRANSITION_ATTRIBUTION",
+      "status": "PASS"
+    },
+    {
+      "id": "TRANSITION_FRAGILITY",
+      "status": "PASS"
+    },
+    {
+      "id": "TRANSITION_NEIGHBORHOOD",
+      "status": "PASS"
+    },
+    {
+      "id": "PROSPECTIVE_IMPLEMENTATION",
+      "status": "WAITING"
+    }
+  ],
+  "rule": "Failures are evidence against robustness. Passing this battery is survival evidence only and never proof of future return.",
+  "frozen_model_mutation": false,
+  "automatic_promotion": false
+}

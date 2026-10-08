@@ -1,0 +1,84 @@
+{
+  "schema_version": 2,
+  "publication_identity": {
+    "schema_version": 2,
+    "git_sha": "911cbe1e983159de20ac850d48f024956f9750b8",
+    "signal_asof": null,
+    "replay_dataset_sha256": "db0889da31af43b1b75e005c1f4ab2cad421dfb55a6c55a77a223e0623950d95",
+    "replay_rows_sha256": "327aa28bfe8fb364d576b101382bfc4aa4bd21c6508f563c6190795990d5b721",
+    "simulator_contract_sha256": "80745a3640c6fe667a3c500571fb15abee1d532a5b720fb6efc8b52f291dfc68",
+    "generation_id": "86c6c3c46c3813ed910c35e4b71d9cf446b09fb9bf31582c5c71e37353102bc6"
+  },
+  "status": "PASS",
+  "full_path": {
+    "compounded_gross_return": 0.6279555953188771,
+    "max_drawdown": -0.3260799960774514,
+    "max_drawdown_peak_date": "2026-06-02",
+    "max_drawdown_trough_date": "2026-07-29"
+  },
+  "rolling_windows": [
+    {
+      "sessions": 21,
+      "window_count": 230,
+      "worst_return_window": {
+        "compounded_gross_return": -0.23608180049453253,
+        "max_drawdown": -0.26122199331996343,
+        "max_drawdown_peak_date": "2026-06-30",
+        "max_drawdown_trough_date": "2026-07-29",
+        "start": "2026-06-30",
+        "end": "2026-07-29"
+      },
+      "worst_drawdown_window": {
+        "compounded_gross_return": -0.18814015353984803,
+        "max_drawdown": -0.26122199331996376,
+        "max_drawdown_peak_date": null,
+        "max_drawdown_trough_date": "2026-07-29",
+        "start": "2026-07-01",
+        "end": "2026-07-30"
+      }
+    },
+    {
+      "sessions": 63,
+      "window_count": 188,
+      "worst_return_window": {
+        "compounded_gross_return": -0.24167172286715788,
+        "max_drawdown": -0.27179836939419677,
+        "max_drawdown_peak_date": "2026-01-28",
+        "max_drawdown_trough_date": "2026-03-30",
+        "start": "2025-12-29",
+        "end": "2026-03-30"
+      },
+      "worst_drawdown_window": {
+        "compounded_gross_return": 0.04579648293053773,
+        "max_drawdown": -0.32607999607745153,
+        "max_drawdown_peak_date": "2026-06-02",
+        "max_drawdown_trough_date": "2026-07-29",
+        "start": "2026-05-01",
+        "end": "2026-07-31"
+      }
+    },
+    {
+      "sessions": 126,
+      "window_count": 125,
+      "worst_return_window": {
+        "compounded_gross_return": -0.10900952524946617,
+        "max_drawdown": -0.2915011830347801,
+        "max_drawdown_peak_date": "2025-10-29",
+        "max_drawdown_trough_date": "2026-03-30",
+        "start": "2025-10-07",
+        "end": "2026-04-08"
+      },
+      "worst_drawdown_window": {
+        "compounded_gross_return": 0.5786267670608236,
+        "max_drawdown": -0.32607999607745175,
+        "max_drawdown_peak_date": "2026-06-02",
+        "max_drawdown_trough_date": "2026-07-29",
+        "start": "2026-02-13",
+        "end": "2026-08-14"
+      }
+    }
+  ],
+  "semantics": "Chronological rolling path-risk diagnostic over frozen gross replay. Windows are exhaustive for fixed widths; no winner selection, retuning or future-performance inference.",
+  "automatic_promotion": false,
+  "retuning_authorized": false
+}

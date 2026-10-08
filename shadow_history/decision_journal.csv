@@ -1,0 +1,2 @@
+asof_date,action,level,defense_active,target_leverage,qqq_weight,tqqq_weight,close,sma50,sma200,vol20,mom12,previous_date,previous_level,previous_defense,previous_leverage
+2026-10-07,NO_CHANGE,3,False,3.0,0.0,0.985,757.72998046875,720.9028576660156,669.5385388183594,0.15432005621727532,0.2527196087811727,2026-10-06,3,False,3.0

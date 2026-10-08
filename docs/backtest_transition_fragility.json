@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "status": "PASS",
+  "transition_sessions": {
+    "sessions": 4,
+    "mean_strategy_gross_return": -0.030621489979414884,
+    "median_strategy_gross_return": -0.030432019421791523,
+    "positive_share": 0.25,
+    "gross_return_sum": -0.12248595991765954
+  },
+  "non_transition_sessions": {
+    "sessions": 246,
+    "mean_strategy_gross_return": 0.003125203923568202,
+    "median_strategy_gross_return": 0.0038262175373546814,
+    "positive_share": 0.5487804878048781,
+    "gross_return_sum": 0.7688001651977776
+  },
+  "transition_pairs": {
+    "1.25->3": {
+      "sessions": 1,
+      "mean_strategy_gross_return": 0.03716507049993323,
+      "median_strategy_gross_return": 0.03716507049993323,
+      "positive_share": 1.0,
+      "gross_return_sum": 0.03716507049993323
+    },
+    "2->3": {
+      "sessions": 1,
+      "mean_strategy_gross_return": -0.0054190773221138855,
+      "median_strategy_gross_return": -0.0054190773221138855,
+      "positive_share": 0.0,
+      "gross_return_sum": -0.0054190773221138855
+    },
+    "3->1.25": {
+      "sessions": 1,
+      "mean_strategy_gross_return": -0.05544496152146916,
+      "median_strategy_gross_return": -0.05544496152146916,
+      "positive_share": 0.0,
+      "gross_return_sum": -0.05544496152146916
+    },
+    "3->2": {
+      "sessions": 1,
+      "mean_strategy_gross_return": -0.09878699157400972,
+      "median_strategy_gross_return": -0.09878699157400972,
+      "positive_share": 0.0,
+      "gross_return_sum": -0.09878699157400972
+    }
+  },
+  "transitions": [
+    {
+      "date": "2026-03-20",
+      "strategy_gross_return": -0.05544496152146916,
+      "qqq_return": -0.01848165384048972,
+      "transition": true,
+      "from_exposure": 3.0,
+      "to_exposure": 1.25
+    },
+    {
+      "date": "2026-04-08",
+      "strategy_gross_return": 0.03716507049993323,
+      "qqq_return": 0.029732056399946583,
+      "transition": true,
+      "from_exposure": 1.25,
+      "to_exposure": 3.0
+    },
+    {
+      "date": "2026-06-23",
+      "strategy_gross_return": -0.09878699157400972,
+      "qqq_return": -0.03292899719133657,
+      "transition": true,
+      "from_exposure": 3.0,
+      "to_exposure": 2.0
+    },
+    {
+      "date": "2026-07-15",
+      "strategy_gross_return": -0.0054190773221138855,
+      "qqq_return": -0.0027095386610569427,
+      "transition": true,
+      "from_exposure": 2.0,
+      "to_exposure": 3.0
+    }
+  ],
+  "semantics": "Descriptive attribution of frozen replay returns on sessions where target exposure changes versus sessions where it does not. It does not infer causality, alpha or execution parity.",
+  "retuning_authorized": false,
+  "automatic_promotion": false
+}

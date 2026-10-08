@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "kind": "BACKTEST_ROBUSTNESS_EVIDENCE",
+  "status": "PASS",
+  "publication_identity": {
+    "schema_version": 2,
+    "git_sha": "911cbe1e983159de20ac850d48f024956f9750b8",
+    "signal_asof": null,
+    "replay_dataset_sha256": "db0889da31af43b1b75e005c1f4ab2cad421dfb55a6c55a77a223e0623950d95",
+    "replay_rows_sha256": "327aa28bfe8fb364d576b101382bfc4aa4bd21c6508f563c6190795990d5b721",
+    "simulator_contract_sha256": "80745a3640c6fe667a3c500571fb15abee1d532a5b720fb6efc8b52f291dfc68",
+    "generation_id": "86c6c3c46c3813ed910c35e4b71d9cf446b09fb9bf31582c5c71e37353102bc6"
+  },
+  "evidence_class": "REPLAY_APPROXIMATION",
+  "window_policy": "PREDEFINED_TIME_PARTITIONS_ONLY",
+  "window_count": 3,
+  "summary": {
+    "window_count": 3,
+    "positive_pnl_windows": 2,
+    "positive_pnl_share": 0.6666666666666666,
+    "cagr_min": -0.10315400435738109,
+    "cagr_median": 0.656300614930901,
+    "cagr_max": 1.8945132917394236,
+    "cagr_range": 1.9976672960968047,
+    "cagr_population_stdev": 0.8233142087969382,
+    "worst_max_drawdown": -0.3096763863461206,
+    "median_max_drawdown": -0.22506892339324114,
+    "total_estimated_transaction_cost_across_windows": 260.39657845109355,
+    "positive_pnl_total": 60562.74344874734,
+    "top1_positive_pnl_share": 0.6968751530845602,
+    "top3_positive_pnl_share": 1.0,
+    "positive_contributor_count": 2,
+    "concentration_semantics": "Shares of summed positive window P&L; overlapping rolling windows are descriptive and not additive portfolio returns.",
+    "nonoverlapping_thirds_concentration": {
+      "window_count": 3,
+      "positive_pnl_windows": 2,
+      "positive_pnl_total": 60562.74344874734,
+      "top1_positive_pnl_share": 0.6968751530845602,
+      "top2_positive_pnl_share": 1.0,
+      "semantics": "Non-overlapping chronological thirds only; cleaner concentration diagnostic than overlapping rolling windows."
+    }
+  },
+  "windows": [
+    {
+      "window_id": "THIRD_1",
+      "selection_policy": "FIXED_TIME_PARTITION",
+      "start": "2025-10-06",
+      "end": "2026-02-04",
+      "sessions": 84,
+      "end_equity": 96457.51253103564,
+      "replay_profit_loss": -3542.487468964362,
+      "max_drawdown": -0.22506892339324114,
+      "cagr": -0.10315400435738109,
+      "total_estimated_transaction_cost": 0.0,
+      "request_sha256": "fea04adc558b71a3430f0ef7a7754c67664997961d698441ceb94a4f7e725b09",
+      "rows_sha256": "eb0229a6cf2d2fc65806115bcebf71bc2d814ef61aacaa2cdedaa9bd7f36107d",
+      "ledger_sha256": "fec56b384329b1e3cd3cd5c9dcdd1571bc9a898df18f8d68baee582116018739"
+    },
+    {
+      "window_id": "THIRD_2",
+      "selection_policy": "FIXED_TIME_PARTITION",
+      "start": "2026-02-04",
+      "end": "2026-06-05",
+      "sessions": 85,
+      "end_equity": 142204.67111206675,
+      "replay_profit_loss": 42204.671112066746,
+      "max_drawdown": -0.20619234750435578,
+      "cagr": 1.8945132917394236,
+      "total_estimated_transaction_cost": 157.51310564576573,
+      "request_sha256": "e80db621a9faf6873930b8d06d52b933235f63eb57ef1237c8adcb95e016e6b7",
+      "rows_sha256": "ec59f237d4dfa0e163383f226acf494dbb419c56f3fcdc3767f2f62f55fc7b0d",
+      "ledger_sha256": "2cd27fb7ff9de36824c68d503080abae60f75447b7b1080438a6f83a67fa0a56"
+    },
+    {
+      "window_id": "THIRD_3",
+      "selection_policy": "FIXED_TIME_PARTITION",
+      "start": "2026-06-05",
+      "end": "2026-10-05",
+      "sessions": 84,
+      "end_equity": 118358.07233668059,
+      "replay_profit_loss": 18358.07233668059,
+      "max_drawdown": -0.3096763863461206,
+      "cagr": 0.656300614930901,
+      "total_estimated_transaction_cost": 102.88347280532778,
+      "request_sha256": "c2fa49a656a7b8ff18db15833ad1c2f59274189021e28573b4a36d305a823804",
+      "rows_sha256": "c376f4bc811fe1efa4e19df555a624bc2a244da126930755f88ea9740b591f7f",
+      "ledger_sha256": "2cda1c4d78cdb1504b49d3664b9a404f4d8c9bc9d6711ff9a22644d3827b8343"
+    }
+  ],
+  "automatic_promotion": false,
+  "retuning_authorized": false,
+  "interpretation": "Predefined time-window stability evidence only. No window is selected as a winner and no model parameter is retuned."
+}

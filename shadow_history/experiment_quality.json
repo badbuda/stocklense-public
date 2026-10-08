@@ -1,0 +1,10 @@
+{
+  "status": "LIMITED",
+  "gates": {
+    "pipeline_green": true,
+    "prospective_sample_interpretable": false,
+    "qc_reference_integrity": false
+  },
+  "historical_qc_record_is_reference_not_live_proof": true,
+  "prospective_and_historical_evidence_kept_separate": true
+}

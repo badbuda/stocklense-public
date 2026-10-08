@@ -1,0 +1,13 @@
+{
+  "stage": "BOOTSTRAP",
+  "prospective_sessions": 0,
+  "prospective_signal_sessions": 1,
+  "prospective_transitions": 0,
+  "performance_interpretation_allowed": false,
+  "strong_live_claims_allowed": false,
+  "warning": "Do not infer live performance quality from a short prospective sample.",
+  "experiment_id": "SL9-007-UPSHIFT-CONFIRMATION",
+  "inception_date": "2026-09-26",
+  "rejected_pre_inception_or_invalid": 0,
+  "gate": "STRICTLY_AFTER_INCEPTION_AND_COMPLETED_XNYS"
+}

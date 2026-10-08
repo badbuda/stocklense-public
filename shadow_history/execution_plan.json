@@ -1,0 +1,38 @@
+{
+  "status": "PLAN_READY",
+  "signal_date": "2026-10-07",
+  "signal_action": "NO_CHANGE",
+  "bootstrap": true,
+  "execution_required": true,
+  "target": {
+    "level": 3,
+    "defense": false,
+    "leverage": 3.0,
+    "qqq_weight": 0.0,
+    "tqqq_weight": 0.985
+  },
+  "prior_paper_session": null,
+  "policy": {
+    "reductions": "09:31 ET reference open",
+    "additions": "09:32 ET reference open",
+    "fee_bps": 2.0,
+    "slippage_bps": 10.0,
+    "whole_shares": true
+  },
+  "execution_contract_sha256": "03aed5ec1f6ee348f83d5022012a761ac86d116f9fc140c8fd79de6e4ce0d3e7",
+  "execution_contract": {
+    "schema_version": 1,
+    "mode": "PROSPECTIVE_PAPER",
+    "reductions_time_et": "09:31",
+    "additions_time_et": "09:32",
+    "whole_shares": true,
+    "fee_bps": 2.0,
+    "slippage_bps": 10.0,
+    "broker_orders_authorized": false,
+    "live_trading_authorized": false
+  },
+  "broker_orders_sent": false,
+  "broker_authorized": false,
+  "capital_scaling_authorized": false,
+  "note": "Prospective paper execution plan only. No broker order is sent."
+}

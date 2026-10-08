@@ -1,0 +1,15 @@
+{
+  "status": "BLOCKED_MISSING_PORTFOLIO_PATH",
+  "portfolio_path_parity_proven": false,
+  "return_parity_proven": false,
+  "compared_sessions": 0,
+  "missing": [
+    "governance/qc_lean_daily_portfolio.csv",
+    "governance/qc_lean_portfolio_reference.csv"
+  ],
+  "tolerances": {
+    "nav_rel": 1e-08,
+    "cash_abs": 1e-06,
+    "quantity_abs": 1e-08
+  }
+}

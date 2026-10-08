@@ -1,0 +1,19 @@
+{
+  "status": "ALLOW",
+  "checks": {
+    "pipeline_validation": true,
+    "dependency_integrity": true,
+    "artifact_integrity": true,
+    "artifact_catalog_present": true,
+    "incident_clear": true,
+    "git_identity_present": true,
+    "provenance_current_commit": true,
+    "manifest_current_commit": true,
+    "canonical_generation_present": true,
+    "provenance_generation_canonical": true,
+    "manifest_generation_canonical": true
+  },
+  "source_git_sha": "911cbe1e983159de20ac850d48f024956f9750b8",
+  "publication_generation": "86c6c3c46c3813ed910c35e4b71d9cf446b09fb9bf31582c5c71e37353102bc6",
+  "rule": "Evidence publication is allowed only from a complete internally consistent run. Remote branch freshness is enforced by workflow before push."
+}

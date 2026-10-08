@@ -1,0 +1,13 @@
+{
+  "status": "ACTIVE",
+  "sessions": 252,
+  "level_counts": {
+    "3": 225,
+    "1": 12,
+    "2": 15
+  },
+  "defense_sessions": 0,
+  "state_transitions": 4,
+  "current_level": 3,
+  "current_level_streak_sessions": 60
+}

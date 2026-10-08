@@ -1,0 +1,276 @@
+{
+  "schema_version": 1,
+  "status": "PASS",
+  "evidence_class": "YAHOO_INDEPENDENT_LONG_HISTORY_RECONSTRUCTION",
+  "research_verdict": {
+    "status": "PASS",
+    "checks": {
+      "sanity": true,
+      "lean_claim_boundary_preserved": true,
+      "cost_50bps_finite": true,
+      "rolling_5y_available": true,
+      "annual_comparison_available": true,
+      "retroactive_isolated": true
+    },
+    "interpretation_policy": "DESCRIPTIVE_RESEARCH_ONLY_NO_AUTOMATIC_PROMOTION",
+    "promotion_allowed": false,
+    "status_meaning": "PACKAGE_INTEGRITY_ONLY_NOT_STRATEGY_VALIDATION",
+    "canonical_claim": "Yahoo independently reconstructs frozen StockLens rules from the canonical 2009 start; it does not prove original LEAN execution parity.",
+    "retroactive_claim": "Pre-2009 results are a separate retroactive research extension and are never baseline evidence."
+  },
+  "period": {
+    "start": "2009-09-01",
+    "end": "2026-10-07",
+    "sessions": 4301
+  },
+  "source_audit": {
+    "source": "YFINANCE_QQQ_AUTO_ADJUSTED",
+    "raw_rows": 4721,
+    "completed_rows": 4721,
+    "feature_window_sessions": 253,
+    "feature_window_sha256": "1e9f49d9fd8c1a647b7363ce4241ae006eb3539e6fdedfa2acb2a3fc77518761",
+    "raw_last_date": "2026-10-07",
+    "last_completed_date": "2026-10-07",
+    "dropped_incomplete_current_session": false,
+    "ny_time_at_validation": "2026-10-08T05:13:27.362442-04:00",
+    "safe_after_ny_time": "18:00"
+  },
+  "canonical": {
+    "strategy_cagr": 0.48351092941546137,
+    "qqq_cagr": 0.19920142283420583,
+    "excess_cagr": 0.28430950658125553,
+    "strategy_max_drawdown": -0.5053235113347918,
+    "qqq_max_drawdown": -0.3511872378546279,
+    "strategy_end_equity": 84872797.50457685,
+    "qqq_end_equity": 2233139.2921903334,
+    "ending_equity_ratio": 38.0060472722823
+  },
+  "monthly_3500": {
+    "strategy_end_equity": 186736728.65937456,
+    "qqq_end_equity": 7158623.960540863,
+    "paid_capital": 817500.0,
+    "matched_cost_assumption": true,
+    "strategy_minus_qqq": 179578104.6988337
+  },
+  "robustness": {
+    "annual": {
+      "years_compared": 18,
+      "strategy_above_qqq_years": 14,
+      "strategy_below_qqq_years": 4,
+      "strategy_equal_qqq_years": 0,
+      "full_years_compared": 16,
+      "best_strategy_year": {
+        "year": 2023,
+        "full_year": true,
+        "start": "2023-01-03",
+        "end": "2023-12-29",
+        "sessions": 250,
+        "strategy_cagr": 1.7686959889890086,
+        "strategy_max_drawdown": -0.30755925630818604,
+        "qqq_cagr": 0.5692107644196738,
+        "qqq_max_drawdown": -0.10779937697425279,
+        "excess_cagr": 1.1994852245693348
+      },
+      "worst_strategy_year": {
+        "year": 2022,
+        "full_year": true,
+        "start": "2022-01-03",
+        "end": "2022-12-30",
+        "sessions": 251,
+        "strategy_cagr": -0.4440900753663437,
+        "strategy_max_drawdown": -0.4402857723516205,
+        "qqq_cagr": -0.33536012396091475,
+        "qqq_max_drawdown": -0.34827982849180084,
+        "excess_cagr": -0.10872995140542896
+      },
+      "best_worst_excludes_partial_years": true
+    },
+    "rolling": {
+      "1y": {
+        "samples": 193,
+        "strategy_above_qqq": 147,
+        "worst_excess_cagr": -0.3449715592561453,
+        "best_excess_cagr": 1.7820133090888697
+      },
+      "3y": {
+        "samples": 169,
+        "strategy_above_qqq": 165,
+        "worst_excess_cagr": -0.0534013046006947,
+        "best_excess_cagr": 0.6374280088850057
+      },
+      "5y": {
+        "samples": 145,
+        "strategy_above_qqq": 145,
+        "worst_excess_cagr": 0.08498221950515017,
+        "best_excess_cagr": 0.5256399139547447
+      }
+    },
+    "cost_stress": [
+      {
+        "cost_bps": 0,
+        "end_equity": 89494260.19958551,
+        "cagr": 0.4881183715001818,
+        "max_drawdown": -0.5048903832531915,
+        "estimated_cost": 0.0
+      },
+      {
+        "cost_bps": 5,
+        "end_equity": 84872797.50457685,
+        "cagr": 0.48351092941546137,
+        "max_drawdown": -0.5053235113347918,
+        "estimated_cost": 293680.5086507881
+      },
+      {
+        "cost_bps": 10,
+        "end_equity": 80486624.92802623,
+        "cagr": 0.4789141406937425,
+        "max_drawdown": -0.5057564537502857,
+        "estimated_cost": 560244.7600693601
+      },
+      {
+        "cost_bps": 25,
+        "end_equity": 68624656.80845244,
+        "cagr": 0.46518752678707953,
+        "max_drawdown": -0.5070541670001301,
+        "estimated_cost": 1215585.8383065287
+      },
+      {
+        "cost_bps": 50,
+        "end_equity": 52566449.99685105,
+        "cagr": 0.4425213391285765,
+        "max_drawdown": -0.5189868491383778,
+        "estimated_cost": 1920704.7074538514
+      }
+    ],
+    "downside_windows": {
+      "strategy": {
+        "1m": {
+          "return": -0.4865118640879542,
+          "start": "2020-02-20",
+          "end": "2020-03-20",
+          "sessions": 21
+        },
+        "3m": {
+          "return": -0.4223861982571412,
+          "start": "2018-10-03",
+          "end": "2019-01-04",
+          "sessions": 63
+        },
+        "6m": {
+          "return": -0.4574006124462977,
+          "start": "2021-11-19",
+          "end": "2022-05-23",
+          "sessions": 126
+        },
+        "12m": {
+          "return": -0.4574006124462977,
+          "start": "2021-11-19",
+          "end": "2022-11-21",
+          "sessions": 252
+        }
+      },
+      "qqq": {
+        "1m": {
+          "return": -0.2764028629634956,
+          "start": "2020-02-13",
+          "end": "2020-03-16",
+          "sessions": 21
+        },
+        "3m": {
+          "return": -0.23501388588895733,
+          "start": "2022-03-30",
+          "end": "2022-06-30",
+          "sessions": 63
+        },
+        "6m": {
+          "return": -0.3147647532861809,
+          "start": "2021-12-15",
+          "end": "2022-06-16",
+          "sessions": 126
+        },
+        "12m": {
+          "return": -0.3475839211607621,
+          "start": "2021-12-28",
+          "end": "2022-12-28",
+          "sessions": 252
+        }
+      }
+    },
+    "underwater": {
+      "strategy": {
+        "underwater_sessions": 3839,
+        "underwater_fraction": 0.8925831202046036,
+        "longest_underwater_run_sessions": 393
+      },
+      "qqq": {
+        "underwater_sessions": 3646,
+        "underwater_fraction": 0.8477098349221112,
+        "longest_underwater_run_sessions": 493
+      }
+    },
+    "drawdown_profile": {
+      "strategy": {
+        "max_drawdown": -0.5053235113347918,
+        "trough_date": "2020-03-16",
+        "recovery_date": "2020-07-06",
+        "recovered": true,
+        "underwater_sessions_after_trough": 77
+      },
+      "qqq": {
+        "max_drawdown": -0.3511872378546279,
+        "trough_date": "2022-11-03",
+        "recovery_date": "2023-12-13",
+        "recovered": true,
+        "underwater_sessions_after_trough": 278
+      }
+    }
+  },
+  "canonical_lean_cagr_unlocked": false,
+  "canonical_lean_cagr_status": "BLOCKED_PENDING_FULL_SAME_RUN_LEAN_EXPORT",
+  "exposure": {
+    "sessions": 4301,
+    "counts": {
+      "3.0": 3494,
+      "2.0": 91,
+      "1.25": 442,
+      "0.0": 274
+    },
+    "fractions": {
+      "3.0": 0.8123692164612881,
+      "2.0": 0.021157870262729597,
+      "1.25": 0.10276679841897234,
+      "0.0": 0.06370611485701
+    }
+  },
+  "retroactive_extension": {
+    "evidence_class": "RETROACTIVE_RESEARCH_EXTENSION_NOT_FROZEN_BASELINE",
+    "baseline_mutated": false,
+    "start": "2008-12-31",
+    "end": "2026-10-07",
+    "sessions": 4469,
+    "strategy_cagr": 0.47850713535231604,
+    "strategy_max_drawdown": -0.5053235113347917,
+    "qqq_cagr": 0.21003290447927436,
+    "qqq_max_drawdown": -0.35118723785462935,
+    "warning": "Applies frozen decision rules before their canonical 2009 trading start. Research only; not LEAN parity or original StockLens 8.0 evidence."
+  },
+  "retroactive_subperiods": [],
+  "retroactive_coverage": {
+    "requested_start": "2000-01-01",
+    "actual_start": "2008-12-31",
+    "partial_initial_period": true
+  },
+  "claim_boundary": "Independent Yahoo reconstruction; not original LEAN execution evidence.",
+  "instrument_semantics": {
+    "model": "DAILY_QQQ_RETURN_TIMES_PRIOR_SESSION_TARGET_LEVERAGE",
+    "actual_tqqq_history": false,
+    "synthetic_before_tqqq_inception": true,
+    "limitations": [
+      "No actual leveraged-ETF fee series",
+      "No financing spread",
+      "No tracking error",
+      "No intraday rebalance mechanics",
+      "Daily compounding is modeled from QQQ returns rather than observed TQQQ prices"
+    ]
+  }
+}

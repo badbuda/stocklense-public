@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "files": [
+    {
+      "path": "governance/qc_724_daily_state_manifest.json",
+      "sha256": "0b928664b58b26d23000d4e0d1c921c1a91ea5d12f999374a5d4c5d9ab8c1cd9",
+      "bytes": 974
+    },
+    {
+      "path": "governance/qc_724_order_golden_master.json",
+      "sha256": "153edd0a5c8ebeed408b5d3b7d6a79af508c6f3f5ee8ed1868a3a65fc0fe17fb",
+      "bytes": 696
+    },
+    {
+      "path": "governance/qc_lean_feature_export_schema.json",
+      "sha256": "379c3e82e10d0dab2ad4fee63248dda6c6fc8791698e9780ddbf8af305ee58c4",
+      "bytes": 899
+    },
+    {
+      "path": "shadow_history/health.json",
+      "sha256": "bc81beec9eea19c97bf1c899613013e985908c6fe74417209adde6b40dffb104",
+      "bytes": 146
+    },
+    {
+      "path": "shadow_history/readiness.json",
+      "sha256": "c6e49fb0eeab5414724d4a301b09c866adebf43b2218aed68c2e84f13c1b0307",
+      "bytes": 617
+    },
+    {
+      "path": "shadow_history/qc_daily_parity.json",
+      "sha256": "e84e124fbd7d47bac08a3c52e84748deae5cd93629742e2d3c7fd8748e268e7a",
+      "bytes": 34794
+    },
+    {
+      "path": "shadow_history/qc_parity_dossier.json",
+      "sha256": "e4bb958f4eb44cc7b19799d788dee5f38fa79c219eaeb455f976d17063e5222c",
+      "bytes": 631
+    },
+    {
+      "path": "shadow_history/data_provenance.json",
+      "sha256": "ed5693386f3f06108076e16d560f95b4a88f40176a658be8ccfa6b50329d6cc4",
+      "bytes": 330
+    },
+    {
+      "path": "shadow_history/anomalies.json",
+      "sha256": "5ca2b265895f13c521ae6c4e48b61c4382070bdcfd720dbfb662192fd80d37ee",
+      "bytes": 1319
+    },
+    {
+      "path": "shadow_history/market_context.json",
+      "sha256": "1d802f7e2b3e7f959343f314301da552447a9ce9ba518c4b5f20727d3ed58b61",
+      "bytes": 533
+    },
+    {
+      "path": "shadow_history/context_quality.json",
+      "sha256": "78e684ef50c88868c70b22b9a205d85ee9a0fbad2ba0abf510744ff2b15bafa2",
+      "bytes": 267
+    },
+    {
+      "path": "shadow_history/context_analytics.json",
+      "sha256": "4135cf4c2463d159c5532f95754d50d5da9a6a1e02c29104fd6e59bf90ad5d2e",
+      "bytes": 217
+    }
+  ],
+  "count": 12
+}
