@@ -148,6 +148,7 @@ jobs:
           python tradable_tqqq_execution_comparison.py
           python tradable_tqqq_execution_validate.py
           python observed_tqqq_risk_audit.py
+          python observed_etf_statistical_robustness.py
           python observed_tqqq_only_gate.py
           python financed_1_25x_reality_check.py
           python frozen8_parameter_start_sensitivity.py
@@ -590,6 +591,8 @@ jobs:
             research/data/observed_etf_qqq_tqqq_adjusted.csv
             docs/tradable_tqqq_execution_comparison.json
             research/observed_tqqq_risk_audit.json
+            research/observed_etf_statistical_robustness.json
+            docs/observed_etf_statistical_robustness.json
             docs/observed_tqqq_risk_audit.json
             docs/backtest_live_readiness.json
             docs/paper_forward_audit.json
@@ -693,7 +696,7 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           # Optional research folders do not necessarily exist on a clean checkout.
           # Stage available evidence and tracked deletions, but never fail on absent folders.
-          for path in shadow_history/ paper_portfolio/ historical_replay/ docs/data.json docs/timeseries.json docs/research.json docs/backtest_*.json docs/prove_or_break.json research/results/ research/reports/ research/sweeps/ research/validation/ research/prospective/ research/queue.json research/tradable_tqqq_execution_comparison.json research/observed_tqqq_risk_audit.json research/backtest_live_readiness.json research/yahoo_long_history.json research/yahoo_end_of_day_scorecard.json research/risk_overlay_multifactor.json research/risk_overlay_deep_dive.json; do
+          for path in shadow_history/ paper_portfolio/ historical_replay/ docs/data.json docs/timeseries.json docs/research.json docs/backtest_*.json docs/prove_or_break.json research/results/ research/reports/ research/sweeps/ research/validation/ research/prospective/ research/queue.json research/tradable_tqqq_execution_comparison.json research/observed_tqqq_risk_audit.json research/observed_etf_statistical_robustness.json research/backtest_live_readiness.json research/yahoo_long_history.json research/yahoo_end_of_day_scorecard.json research/risk_overlay_multifactor.json research/risk_overlay_deep_dive.json; do
             if [ -e "$path" ] || [ -n "$(git ls-files -- "$path")" ]; then
               git add -A -- "$path"
             fi
