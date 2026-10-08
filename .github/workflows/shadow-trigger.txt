@@ -1,1 +1,1 @@
-public-ci-handoff-complete-2026-10-08-29194b15
+public-ci-full-source-handoff-2026-10-08-7478a6b
