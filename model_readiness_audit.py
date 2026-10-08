@@ -102,6 +102,19 @@ def evaluate(*, report, capital, benchmark, paper_gap, workbench, observation,
          "date": decision_parity.get("signal_asof"),
          "errors": decision_parity.get("errors", [])})
 
+    intraday_journal = _load("docs/prospective_intraday_etf_journal.json")
+    intraday_count = int(intraday_journal.get("observed_completed_sessions") or 0)
+    add("PROSPECTIVE_OBSERVED_MINUTE_QUOTE_JOURNAL", "Execution reality",
+        intraday_count >= REVIEW_PAIRED_SESSION_FLOOR
+        and intraday_journal.get("synthetic_quotes_used") is False
+        and intraday_journal.get("broker_fills_observed") is False
+        and intraday_journal.get("journal_tail_sha256") not in (None, "0" * 64),
+        "Collect at least 63 prospective, time-stamped observed QQQ/TQQQ 09:30/09:31/09:32 minute prices, with no synthetic backfill. These quotes are NOT broker fills.",
+        {"verified_completed_sessions": intraday_count,
+         "review_floor": REVIEW_PAIRED_SESSION_FLOOR,
+         "journal_status": intraday_journal.get("status", "MISSING"),
+         "broker_fill_parity": False})
+
     add("LIVE_EXECUTION_TIME_PARITY", "Execution reality", False,
         "Daily adjusted OPEN is not an observed 09:31/09:32 execution price. Obtain verified minute-bar and fill evidence.",
         {"observed_0931_0932_fills": report.get("intraday_0931_0932_fills_observed"),

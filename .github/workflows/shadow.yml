@@ -531,6 +531,7 @@ jobs:
           python backtest_paper_gap.py
           python research_selection_inventory.py
           python observed_intraday_execution_gap.py
+          python prospective_intraday_price_journal.py
           python model_readiness_audit.py
           python public_dashboard_feeds.py
           python dashboard_bundle_validate.py
@@ -601,6 +602,8 @@ jobs:
             docs/backtest_live_readiness.json
             docs/observed_intraday_execution_gap.json
             docs/paper_forward_audit.json
+            docs/prospective_intraday_etf_journal.json
+            research/prospective/observed_intraday_etf_journal.jsonl
             docs/broker_failure_harness.json
             docs/selection_bias_inventory.json
             research/selection_bias_inventory.json
