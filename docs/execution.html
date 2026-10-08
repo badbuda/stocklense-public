@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>StockLens 8.0 — Execution Observation</title>
+<style>
+:root{font-family:system-ui,-apple-system,sans-serif;color-scheme:dark;background:#101826;color:#f3f6fc}
+body{max-width:1000px;margin:auto;padding:24px;line-height:1.5}
+a{color:#9bcbff} main{display:grid;gap:18px}
+section{border:1px solid #354258;border-radius:12px;padding:18px;background:#172236}
+h1{font-size:1.6rem}h2{font-size:1.15rem}pre{white-space:pre-wrap;overflow-wrap:anywhere}
+strong{color:#f7d494}.warn{color:#f7d494}
+button{padding:10px 16px;background:#344f6b;color:white;border:1px solid #637791;border-radius:8px;cursor:pointer}
+</style></head>
+<body>
+<header><a href="./index.html">← StockLens Control Center</a><h1>Current → Target → Dry-run orders</h1>
+<p class="warn">תצוגת מחקר וביצוע מדומה בלבד. אין כאן חיבור לברוקר, הוראות מסחר או הרשאה למסחר אמיתי.</p></header>
+<main>
+<section><h2>Current and target positions</h2><div id="positions">UNVERIFIED — טעינת נתונים</div></section>
+<section><h2>Dry-run orders</h2><div id="orders">UNVERIFIED — טעינת נתונים</div></section>
+<section><h2>Execution window</h2><div id="window">UNVERIFIED</div><p id="timingPolicy">No broker action authorized.</p></section>
+<section><h2>Retry safety</h2><p id="retry">Automatic catch-up disabled.</p><p id="nextSafe">Unknown until the latest evidence is validated.</p></section>
+<section><h2>Source and governance</h2><p id="audit">Loading current publication evidence.</p></section>
+</main>
+<script>
+(function(){
+ const ids=['positions','orders','window','retry','timingPolicy','nextSafe','audit'];
+ const show=(id,value)=>{document.getElementById(id).textContent=String(value)};
+ const json=(v)=>JSON.stringify(v??null,null,2);
+ ids.forEach(x=>show(x,'UNAVAILABLE — fail closed'));
+ fetch('./data.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error('HTTP '+r.status);return r.json()})
+ .then(d=>{
+  const cockpit=d.execution_cockpit||{};
+  const policy=d.execution_policy||{};
+  const enabled=cockpit.live_submission_authorized===true||policy.live_submission_authorized===true;
+  if(enabled)throw Error('LIVE_TRADING_AUTHORIZATION_CONTRADICTION');
+  const plan=d.execution_plan||{};
+  show('positions',json({current_positions:cockpit.current_positions??null,target_positions:cockpit.target_positions??null,signal_asof:d.signal?.asof_date??null}));
+  show('orders',json({mode:'DRY_RUN_ONLY',orders:cockpit.orders??[],broker_orders_sent:false}));
+  show('window',json(cockpit.execution_window??{status:'NO_VERIFIED_WINDOW'}));
+  show('timingPolicy',json({planned_reference_times:plan.policy??null,readiness:policy.status??'UNVERIFIED'}));
+  show('retry',policy.automatic_catchup===false?'Automatic catch-up DISABLED':'UNVERIFIED — automatic catch-up must remain disabled');
+  show('nextSafe',policy.next_action??'Review before any execution');
+  show('audit',json({mode:'PAPER_ONLY',source_session:d.signal?.asof_date??null,publication_gate:d.publication_gate?.status??'UNVERIFIED',live_trading_authorized:false}));
+ }).catch(e=>{ids.forEach(x=>show(x,'BLOCKED: '+e.message));});
+})();
+</script></body></html>

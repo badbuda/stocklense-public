@@ -1,0 +1,9 @@
+{
+  "name": "StockLens 8.0 Dashboard",
+  "short_name": "StockLens",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#0b0d12",
+  "theme_color": "#0b0d12",
+  "description": "Frozen StockLens 8.0 shadow and prospective paper dashboard"
+}

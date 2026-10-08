@@ -411,6 +411,11 @@ jobs:
           PYTHONPATH: ${{ github.workspace }}
         run: python decision_journal.py
 
+      - name: Build source-grounded public research curves
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: python dashboard_research_curves.py
+
       - name: Validate dashboard JavaScript bundle
         env:
           PYTHONPATH: ${{ github.workspace }}
@@ -450,6 +455,13 @@ jobs:
         env:
           PYTHONPATH: ${{ github.workspace }}
         run: python capital_readiness.py
+
+      - name: Rebuild public dashboard feeds from this run
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          python execution_observation.py
+          python public_dashboard_feeds.py
 
       - name: Build current incident state
         env:

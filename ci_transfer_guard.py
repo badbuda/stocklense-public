@@ -9,10 +9,21 @@ from pathlib import Path
 
 MANIFEST = Path("ci_transfer_manifest.json")
 # Generated output and the one-shot trigger are not source-code inputs.
-DYNAMIC_PREFIXES = ("docs/", "shadow_history/", "historical_replay/", "research/prospective/", "research/data/")
+DYNAMIC_PREFIXES = ("shadow_history/", "historical_replay/", "research/prospective/", "research/data/")
 EXCLUDED = {"ci_transfer_manifest.json", ".github/workflows/shadow-trigger.txt"}
+STATIC_DOCS = {
+    "docs/index.html", "docs/legacy.html", "docs/workbench.html",
+    "docs/execution.html", "docs/research.html", "docs/research-engine.js",
+    "docs/manifest.webmanifest", "docs/sw.js",
+}
 MANDATORY = (
     "requirements.txt",
+    "docs/index.html",
+    "docs/legacy.html",
+    "docs/workbench.html",
+    "docs/execution.html",
+    "docs/manifest.webmanifest",
+    "docs/sw.js",
     ".github/workflows/shadow.yml",
     "research/prospective/registry.json",
     "research/queue.json",
@@ -36,7 +47,7 @@ LOCAL_PREFIXES = (
 
 
 def in_scope(path: str) -> bool:
-    return path not in EXCLUDED and not path.startswith(DYNAMIC_PREFIXES)
+    return path not in EXCLUDED and (path in STATIC_DOCS if path.startswith("docs/") else not path.startswith(DYNAMIC_PREFIXES))
 
 
 def tracked_paths() -> set[str]:
