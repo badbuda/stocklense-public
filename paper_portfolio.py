@@ -114,7 +114,8 @@ def reconcile(
     current_path = Path(current_signal_path)
     prior_path = Path(prior_signal_path)
     STATE_DIR.mkdir(parents=True, exist_ok=True)
-    paths={"trades":TRADES_PATH,"ledger":LEDGER_PATH,"state":STATE_PATH,"latest":LATEST_MD_PATH}
+    paths={"trades":TRADES_PATH,"ledger":LEDGER_PATH,"state":STATE_PATH,
+           "latest":LATEST_MD_PATH,"snapshot":STATE_DIR/"latest_session.json"}
     recovered=recover_paper_transaction(paths)
     if recovered:
         return {"paper_updated":"true","paper_status":"RECOVERED_PREPARED_PAPER_SESSION",
