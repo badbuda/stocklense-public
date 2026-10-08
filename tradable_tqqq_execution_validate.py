@@ -47,12 +47,37 @@ def validate(source=SOURCE, public=PUBLIC):
                 fail.append(key + "_" + name + "_DRAWDOWN")
         if s.get("paid_capital") != q.get("paid_capital"):
             fail.append(key + "_PAID_CAPITAL")
+        expected_method = (
+            "CHAINED_NAV_EXCLUDING_START_OF_SESSION_EXTERNAL_CASHFLOWS"
+            if key == "initial_100k_monthly_3500"
+            else "RAW_NAV_NO_EXTERNAL_CONTRIBUTIONS"
+        )
+        for name, item in (("STOCKLENS", s), ("QQQ", q)):
+            if item.get("max_drawdown_method") != expected_method:
+                fail.append(key + "_" + name + "_DRAWDOWN_METHOD")
+            adjusted = item.get("cashflow_adjusted_max_drawdown")
+            raw = item.get("raw_equity_max_drawdown")
+            if not all(isinstance(v, (int, float)) and math.isfinite(v)
+                       and -1.0 <= v <= 0.0 for v in (adjusted, raw)):
+                fail.append(key + "_" + name + "_DRAWDOWN_METRICS")
+            if item.get("max_drawdown") != (adjusted if key == "initial_100k_monthly_3500" else raw):
+                fail.append(key + "_" + name + "_DRAWDOWN_RECONCILIATION")
         if cohort.get("additional_signal_lag_sessions") != 0:
             fail.append(key + "_SIGNAL_LAG")
     if len(r.get("slippage_stress_no_contributions", [])) != 5:
         fail.append("COST_GRID")
     if len(r.get("signal_lag_stress_no_contributions", [])) != 3:
         fail.append("LAG_GRID")
+    joint = r.get("joint_lag_slippage_stress") or []
+    expected = {(lag, bps) for lag in (0, 1, 2) for bps in (10.0, 25.0, 50.0)}
+    actual = {(x.get("additional_signal_lag_sessions"), x.get("slippage_bps_per_side"))
+              for x in joint if isinstance(x, dict)}
+    if len(joint) != 9 or actual != expected:
+        fail.append("JOINT_LAG_COST_STRESS")
+    windows = (r.get("no_contributions") or {}).get("rolling_observed_etf_windows") or {}
+    if any((not isinstance(windows.get(str(n)), dict)) or
+           windows[str(n)].get("window_count", 0) < 1 for n in (21, 63, 252, 756, 1260)):
+        fail.append("OBSERVED_ETF_ROLLING_RISK")
     if fail:
         raise ValueError("INVALID_OBSERVED_ETF_REPLAY:" + ",".join(sorted(set(fail))))
     print(json.dumps({"status": "PASS", "sessions": period["sessions"],

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "kind": "STOCKLENS_COMPLETE_SOURCE_HANDOFF",
-  "source_snapshot_base": "d5587d17d0504c3614ee12279aff0ae3c476b175",
+  "source_snapshot_base": "2e536fd0c602214b9f8219e33f5cbfa8f74ca55f",
   "runner": "explicit-trigger-or-scheduled",
   "frozen_stocklens8_untouched": true,
   "files": {
@@ -240,11 +240,11 @@
     "tests/test_paper_execution_contract.py": "f6072b6c2ac43e2f94d1156552988fd27f7590ff",
     "tests/test_paper_forward_audit.py": "91110461f6f9913c069c7945b84b4dd7ae395952",
     "tests/test_research_selection_inventory.py": "1e88681c7e8ea3aaab110ddefc553aa539570427",
-    "tests/test_tradable_tqqq_execution_comparison.py": "a4cc2e8720ca0cfacb6e9bc7914f56844ea5f23f",
+    "tests/test_tradable_tqqq_execution_comparison.py": "1a96dfd482446c1a94ef8201c0827518a3367477",
     "tqqq_reality_check.py": "776f226d601406118ff47de8c9463b00bacefca7",
     "tradable_blend_challenger.py": "77289af3e9134befb6876100bd48704ef38205bd",
-    "tradable_tqqq_execution_comparison.py": "f2f7411c41d155bcdf13a7583c68ad247f10fa58",
-    "tradable_tqqq_execution_validate.py": "e01338113c543ee859a628d68b383e0bced001c4",
+    "tradable_tqqq_execution_comparison.py": "61b44836392bc67373c324c8c4ec25bd9c8e1a22",
+    "tradable_tqqq_execution_validate.py": "41764614efc90535848a9af7abed847d8342fec6",
     "trade_receipts.py": "d535976552a5f9d2a6cbf63d25b73eab43592465",
     "transition_explainer.py": "01fb39ab704f3f5c4670dfa61f77d2a7d0b41b00",
     "two_of_three_cap20_independent_redteam.py": "42badc990f2eaf43f6758f6547f1befea30e5fe7",
