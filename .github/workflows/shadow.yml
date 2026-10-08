@@ -5,32 +5,13 @@ on:
   schedule:
     # 23:20 UTC is after 18:00 New York in both EDT and EST; daily bars are eligible.
     - cron: '20 23 * * 1-5'
+  # Source files are assembled and fingerprinted on transfer/* branches first.
+  # Only a dedicated handoff marker starts the expensive research CI.
   push:
     branches:
-      - 'research/**'
       - 'main'
     paths:
-      - '*.py'
-      - 'stocklens/**'
-      - 'tests/**'
-      - 'research/**'
-      - '.github/workflows/shadow.yml'
       - '.github/workflows/shadow-trigger.txt'
-      - 'preflight.py'
-      - 'json_artifacts.py'
-      - 'simulator_contract.py'
-      - 'historical_replay/**'
-      - 'governance/**'
-      - 'docs/**'
-      - 'lean_regime_analytics.py'
-      - 'qc_*.py'
-      - 'shadow_history/**'
-      - 'research/golden_evidence/**'
-      - 'backtest_*.py'
-      - 'backtest_contract.py'
-      - 'backtest_engine.py'
-      - 'prove_or_break.py'
-      - 'publication_identity.py'
 concurrency:
   # One research Shadow for the whole repository. A newer research commit supersedes
   # any older in-flight Shadow instead of burning private-runner minutes in parallel.
@@ -68,6 +49,11 @@ jobs:
       - name: Guard branch base before validation
         if: github.event_name == 'pull_request'
         run: python branch_base_guard.py
+
+      - name: Verify complete source handoff before heavy research
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: python ci_transfer_guard.py
 
       - name: Python source preflight
         env:
