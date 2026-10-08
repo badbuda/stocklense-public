@@ -28,6 +28,7 @@ jobs:
       ROLE_ARN: ${{ vars.AWS_STOCKLENS_AUDIT_ROLE_ARN }}
       TABLE: ${{ vars.AWS_STOCKLENS_JOURNAL_TABLE }}
     steps:
+      - uses: actions/checkout@v7
       - name: Require complete nonsecret AWS repository variables
         shell: bash
         run: |
@@ -61,20 +62,4 @@ jobs:
             --key "{\"session_date\":{\"S\":\"$session\"}}" \
             --consistent-read \
             --output json > /tmp/aws-journal.json
-          SESSION="$session" python3 - <<'PY'
-          import json
-          import os
-          import sys
-          item = json.load(open("/tmp/aws-journal.json")).get("Item")
-          session = os.environ["SESSION"]
-          if not item:
-              sys.exit("AWS_SHADOW_JOURNAL_MISSING_COMPLETED_SESSION:" + session)
-          if item.get("broker_orders_authorized", {}).get("BOOL") is not False:
-              sys.exit("AWS_SHADOW_JOURNAL_UNSAFE_BROKER_FLAG")
-          signal = json.loads(item["signal_json"]["S"])
-          if signal.get("mode") != "SHADOW_ONLY_NO_BROKER_ACTIONS":
-              sys.exit("AWS_SHADOW_JOURNAL_UNEXPECTED_MODE")
-          if signal.get("latest", {}).get("asof_date") != session:
-              sys.exit("AWS_SHADOW_JOURNAL_SIGNAL_DATE_MISMATCH")
-          print("AWS_SHADOW_JOURNAL=PASS;asof=" + session + ";broker_execution=false")
-          PY
+          python3 aws_shadow_journal_verify.py /tmp/aws-journal.json "$session"
