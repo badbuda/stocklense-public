@@ -16,6 +16,25 @@ def validate(source=SOURCE, public=PUBLIC):
         raise ValueError("TRADABLE_REPORT_PUBLICATION_MISMATCH")
     r = json.loads(a.read_text(encoding="utf-8"))
     fail = []
+    provenance = r.get("observed_price_snapshot") or {}
+    if (provenance.get("kind") != "DERIVED_YAHOO_AUTO_ADJUSTED_OPEN_CLOSE"
+            or provenance.get("independent_vendor_verified") is not False
+            or provenance.get("raw_unadjusted_exchange_prices") is not False):
+        fail.append("PRICE_ARCHIVE_CLAIM_BOUNDARY")
+    location = Path(provenance.get("path") or "__MISSING_OBSERVED_PRICE_SNAPSHOT__")
+    if not location.is_file():
+        fail.append("PRICE_ARCHIVE_MISSING")
+    else:
+        blob = location.read_bytes()
+        if hashlib.sha256(blob).hexdigest() != provenance.get("sha256"):
+            fail.append("PRICE_ARCHIVE_SHA_MISMATCH")
+        archive_rows = blob.decode("utf-8").splitlines()
+        if (len(archive_rows) != int(provenance.get("rows") or 0) + 1 or
+            not archive_rows[0].startswith("date,qqq_adjusted_open,qqq_adjusted_close,tqqq_adjusted_open,tqqq_adjusted_close")):
+            fail.append("PRICE_ARCHIVE_ROWS_OR_SCHEMA")
+        if len(archive_rows) >= 2 and len(archive_rows[-1]) >= 10:
+            if archive_rows[1][:10] != provenance.get("first_date") or archive_rows[-1][:10] != provenance.get("last_date"):
+                fail.append("PRICE_ARCHIVE_DATES")
     if r.get("status") != "PASS" or r.get("baseline") != "StockLens 8.0 FROZEN":
         fail.append("STATUS_OR_BASELINE")
     if r.get("observed_instruments") != ["QQQ", "TQQQ"]:

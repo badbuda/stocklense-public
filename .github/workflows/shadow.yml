@@ -587,6 +587,7 @@ jobs:
             research/yahoo_end_of_day_scorecard.json
             research/tqqq_reality_check.json
             research/tradable_tqqq_execution_comparison.json
+            research/data/observed_etf_qqq_tqqq_adjusted.csv
             docs/tradable_tqqq_execution_comparison.json
             research/observed_tqqq_risk_audit.json
             docs/observed_tqqq_risk_audit.json

@@ -242,6 +242,37 @@ def run_execution(qqq: dict, tqqq: dict, decisions: dict, *,
     }
 
 
+def archive_observed_adjusted_prices(qqq: dict, tqqq: dict,
+                                    path: str = "research/data/observed_etf_qqq_tqqq_adjusted.csv") -> dict:
+    """Snapshot the EXACT adjusted Yahoo OHLC observations used in this run.
+
+    This is a derived Yahoo adjusted-price copy, NOT independent vendor evidence
+    or the provider's unadjusted original exchange tape. CI retains it as a
+    time-limited audit artifact, never as proof of LEAN/broker execution.
+    """
+    cohort = _validate_prices(qqq, tqqq)
+    lines = ["date,qqq_adjusted_open,qqq_adjusted_close,tqqq_adjusted_open,tqqq_adjusted_close"]
+    for d in cohort:
+        q, t = qqq[d], tqqq[d]
+        lines.append(",".join((d, *(format(float(x), ".17g") for x in (
+            q["open"], q["close"], t["open"], t["close"])))))
+    snapshot = "\n".join(lines) + "\n"
+    target = Path(path)
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text(snapshot, encoding="utf-8")
+    return {
+        "schema_version": 1,
+        "path": str(target),
+        "sha256": hashlib.sha256(snapshot.encode("utf-8")).hexdigest(),
+        "rows": len(cohort),
+        "first_date": cohort[0], "last_date": cohort[-1],
+        "kind": "DERIVED_YAHOO_AUTO_ADJUSTED_OPEN_CLOSE",
+        "independent_vendor_verified": False,
+        "raw_unadjusted_exchange_prices": False,
+        "retention": "GITHUB_CI_ARTIFACT_NOT_PERMANENT_STORAGE",
+    }
+
+
 def build(out: str = REPORT_PATH, public_out: str = PUBLIC_PATH) -> dict:
     qqq = _download("QQQ")
     tqqq = _download("TQQQ")
@@ -253,6 +284,7 @@ def build(out: str = REPORT_PATH, public_out: str = PUBLIC_PATH) -> dict:
                          f"{tqqq[d]['open']:.12g},{tqqq[d]['close']:.12g}"
                          for d in sorted(tqqq) if d in qqq)
     digest = hashlib.sha256(evidence.encode()).hexdigest()
+    source_snapshot = archive_observed_adjusted_prices(qqq, tqqq)
     no_contrib = run_execution(qqq, tqqq, decisions, include_daily_path=True)
     monthly = run_execution(qqq, tqqq, decisions, monthly=MONTHLY_CONTRIBUTION)
     cost_grid = [
@@ -288,6 +320,7 @@ def build(out: str = REPORT_PATH, public_out: str = PUBLIC_PATH) -> dict:
         "price_source": "YFINANCE_AUTO_ADJUSTED_DAILY_OPEN_AND_CLOSE",
         "observed_instruments": ["QQQ", "TQQQ"],
         "price_fingerprint_sha256": digest,
+        "observed_price_snapshot": source_snapshot,
         "first_valid_real_TQQQ_date": min(tqqq),
         "period": {"start": no_contrib["start"], "end": no_contrib["end"],
                    "sessions": no_contrib["sessions"]},
