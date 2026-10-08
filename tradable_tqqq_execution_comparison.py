@@ -160,6 +160,12 @@ def run_execution(qqq: dict, tqqq: dict, decisions: dict, *,
     }
     peak = {key: float(initial) for key in strategies}
     maxdd = {key: 0.0 for key in strategies}
+    # Cash contributions cannot erase prior investment losses. Keep both views,
+    # but publish drawdown on a chained time-weighted NAV when monthly > 0.
+    twr_index = {key: 1.0 for key in strategies}
+    twr_peak = {key: 1.0 for key in strategies}
+    twr_maxdd = {key: 0.0 for key in strategies}
+    prev_session_nav = {key: float(initial) for key in strategies}
     paid = float(initial)
     last_month, last_leverage = None, None
     recent = []
@@ -202,6 +208,17 @@ def run_execution(qqq: dict, tqqq: dict, decisions: dict, *,
                 raise ValueError("NONPOSITIVE_PORTFOLIO_NAV")
             peak[name] = max(peak[name], net)
             maxdd[name] = min(maxdd[name], net / peak[name] - 1.0)
+            # Start-of-session external contribution is excluded from the
+            # denominator's return, and cannot raise the chained index.
+            start_value = prev_session_nav[name] + deposit
+            if start_value <= 0:
+                raise ValueError("INVALID_CASHFLOW_ADJUSTED_BASE")
+            twr_index[name] *= net / start_value
+            twr_peak[name] = max(twr_peak[name], twr_index[name])
+            twr_maxdd[name] = min(
+                twr_maxdd[name], twr_index[name] / twr_peak[name] - 1.0
+            )
+            prev_session_nav[name] = net
             record[name + "_nav"] = round(net, 6)
         recent.append(record)
         if should_rebalance:
@@ -218,7 +235,13 @@ def run_execution(qqq: dict, tqqq: dict, decisions: dict, *,
             "profit_loss": last - paid,
             "cagr_without_contributions": (last / initial) ** (1 / years) - 1
             if monthly == 0 else None,
-            "max_drawdown": maxdd[name],
+            "max_drawdown": twr_maxdd[name] if monthly else maxdd[name],
+            "raw_equity_max_drawdown": maxdd[name],
+            "cashflow_adjusted_max_drawdown": twr_maxdd[name],
+            "max_drawdown_method": (
+                "CHAINED_NAV_EXCLUDING_START_OF_SESSION_EXTERNAL_CASHFLOWS"
+                if monthly else "RAW_NAV_NO_EXTERNAL_CONTRIBUTIONS"
+            ),
             "total_modeled_commissions": p["fees"],
             "total_modeled_slippage": p["slippage"],
             "trades": p["trades"],
@@ -236,9 +259,43 @@ def run_execution(qqq: dict, tqqq: dict, decisions: dict, *,
                                stats("qqq")["ending_equity"],
         "ending_equity_delta": stats("stocklens")["ending_equity"] -
                                stats("qqq")["ending_equity"],
+        "rolling_observed_etf_windows": _observed_rolling_windows(recent) if monthly == 0 else None,
         "events": events[-12:],
         "chart_rows": recent[::21] + ([recent[-1]] if recent[-1] != recent[::21][-1] else []),
     }
+
+
+def _observed_rolling_windows(rows: list[dict]) -> dict:
+    """Descriptive overlapping windows from actual ETF portfolio NAV, no deposits."""
+    if not rows:
+        return {}
+    result = {}
+    for sessions in (21, 63, 252, 756, 1260):
+        samples = []
+        for i in range(sessions, len(rows), 21):
+            start, end = rows[i - sessions], rows[i]
+            s0 = float(start["stocklens_nav"])
+            q0 = float(start["qqq_nav"])
+            if min(s0, q0) <= 0:
+                raise ValueError("ROLLING_NAV_INVALID")
+            stock_growth = float(end["stocklens_nav"]) / s0
+            qqq_growth = float(end["qqq_nav"]) / q0
+            samples.append((stock_growth - 1, qqq_growth - 1,
+                            end["date"], stock_growth / qqq_growth - 1))
+        if not samples:
+            result[str(sessions)] = {"window_count": 0, "stocklens_above_qqq": 0}
+            continue
+        worst_stock = min(samples, key=lambda x: x[0])
+        worst_relative = min(samples, key=lambda x: x[3])
+        result[str(sessions)] = {
+            "window_count": len(samples),
+            "stocklens_above_qqq": sum(1 for x in samples if x[3] > 0),
+            "worst_stocklens_window_return": worst_stock[0],
+            "worst_stocklens_window_end": worst_stock[2],
+            "worst_relative_wealth_vs_qqq": worst_relative[3],
+            "worst_relative_window_end": worst_relative[2],
+        }
+    return result
 
 
 def build(out: str = REPORT_PATH, public_out: str = PUBLIC_PATH) -> dict:
@@ -299,6 +356,14 @@ def build(out: str = REPORT_PATH, public_out: str = PUBLIC_PATH) -> dict:
         "initial_100k_monthly_3500": monthly,
         "slippage_stress_no_contributions": cost_grid,
         "signal_lag_stress_no_contributions": delay_grid,
+        "joint_lag_slippage_stress": [
+            {"additional_signal_lag_sessions": lag, "slippage_bps_per_side": bps,
+             **{k: v for k, v in run_execution(
+                 qqq, tqqq, decisions, extra_signal_lag=lag,
+                 slippage_bps=bps,
+             ).items() if k in ("stocklens", "qqq_buy_hold", "ending_equity_ratio")}}
+            for lag in (0, 1, 2) for bps in (10.0, 25.0, 50.0)
+        ],
         "evidence_class": "TRADEABLE_ETF_HISTORICAL_PRICE_EXECUTION_PROXY",
         "full_lean_execution_parity": False,
         "broker_fills_observed": False,

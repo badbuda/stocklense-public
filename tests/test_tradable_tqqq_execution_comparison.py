@@ -98,3 +98,42 @@ def test_non_frozen_exposure_rejected(synthetic_market):
     rogue[next(d for d in q if d >= "2010-02-08")] = 2.5
     with pytest.raises(ValueError, match="FROZEN_EXPOSURE_NOT_RECOGNIZED"):
         run_execution(q, t, rogue)
+
+
+def test_cashflow_adjusted_drawdown_is_explicit_and_finite(synthetic_market):
+    q, t, signals = synthetic_market
+    base = run_execution(q, t, signals)
+    funded = run_execution(q, t, signals, monthly=3500)
+    for side in ("stocklens", "qqq_buy_hold"):
+        a = base[side]
+        b = funded[side]
+        assert a["max_drawdown_method"] == "RAW_NAV_NO_EXTERNAL_CONTRIBUTIONS"
+        assert a["max_drawdown"] == pytest.approx(a["raw_equity_max_drawdown"])
+        assert a["max_drawdown"] == pytest.approx(a["cashflow_adjusted_max_drawdown"])
+        assert b["max_drawdown_method"] == "CHAINED_NAV_EXCLUDING_START_OF_SESSION_EXTERNAL_CASHFLOWS"
+        assert b["max_drawdown"] == pytest.approx(b["cashflow_adjusted_max_drawdown"])
+        assert -1.0 <= b["max_drawdown"] <= 0.0
+        assert b["paid_capital"] > a["paid_capital"]
+
+
+def test_cash_only_monthly_contributions_are_not_reported_as_market_returns(synthetic_market):
+    q, t, _ = synthetic_market
+    out = run_execution(q, t, {day: 0.0 for day in q}, monthly=3500)
+    cash = out["stocklens"]
+    assert cash["max_drawdown"] == 0.0
+    assert cash["cashflow_adjusted_max_drawdown"] == 0.0
+    assert cash["profit_loss"] == pytest.approx(0.0)
+    assert cash["cagr_without_contributions"] is None
+
+
+def test_rolling_risk_windows_derived_from_actual_portfolio_nav(synthetic_market):
+    q, t, decisions = synthetic_market
+    data = run_execution(q, t, decisions, monthly=0)
+    windows = data["rolling_observed_etf_windows"]
+    assert set(windows) == {"21", "63", "252", "756", "1260"}
+    assert windows["1260"]["window_count"] > 0
+    for sample in windows.values():
+        assert 0 <= sample["stocklens_above_qqq"] <= sample["window_count"]
+        assert sample["worst_stocklens_window_return"] > -1
+    with_contributions = run_execution(q, t, decisions, monthly=3500)
+    assert with_contributions["rolling_observed_etf_windows"] is None
