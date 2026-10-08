@@ -528,6 +528,7 @@ jobs:
           python dashboard.py
           python backtest_paper_gap.py
           python research_selection_inventory.py
+          python observed_intraday_execution_gap.py
           python model_readiness_audit.py
           python public_dashboard_feeds.py
           python dashboard_bundle_validate.py
@@ -592,6 +593,7 @@ jobs:
             research/observed_tqqq_risk_audit.json
             docs/observed_tqqq_risk_audit.json
             docs/backtest_live_readiness.json
+            docs/observed_intraday_execution_gap.json
             docs/paper_forward_audit.json
             docs/broker_failure_harness.json
             docs/selection_bias_inventory.json

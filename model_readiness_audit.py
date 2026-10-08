@@ -249,6 +249,15 @@ def build(out=OUT, research_out=RESEARCH_OUT):
         "statistical_independence_proven": False,
         "live_broker_authorized": False,
     }
+    intraday = _load("docs/observed_intraday_execution_gap.json")
+    result["engineering_diagnostics"]["observed_intraday_price_gap"] = {
+        "status": intraday.get("status", "MISSING"),
+        "observed_etf_minute_sessions": intraday.get("sessions", 0),
+        "source": intraday.get("price_source", "UNVERIFIED"),
+        "broker_fill_parity": False,
+        "execution_time_parity_proven": False,
+        "risk_gate_satisfied": False,
+    }
     for dest in (out, research_out):
         target = Path(dest)
         target.parent.mkdir(parents=True, exist_ok=True)
