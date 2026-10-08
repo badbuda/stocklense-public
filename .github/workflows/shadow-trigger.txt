@@ -1,1 +1,1 @@
-public-ci-validated-batch-2026-10-08-587de42-stage-path-fix
+public-ci-validated-feed-publication-2026-10-08-afcd5e6
