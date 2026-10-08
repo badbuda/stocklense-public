@@ -2,26 +2,26 @@
   "schema_version": 1,
   "publication_identity": {
     "schema_version": 2,
-    "git_sha": "08d395309348bb75be544f107ba6fc1fb883ac5d",
+    "git_sha": "1881a80d016d4290e87c8862ccf83379b0dd5c2d",
     "signal_asof": null,
     "replay_dataset_sha256": "db0889da31af43b1b75e005c1f4ab2cad421dfb55a6c55a77a223e0623950d95",
-    "replay_rows_sha256": "948a2d02ae5d67f9ffea9bbd0244b6134c4414bc2825617c3098c2ac6dec617e",
+    "replay_rows_sha256": "be86daace4e80ca96c10ed2e611f9b0045e2d515cb03cffeb536b7015ce0e49a",
     "simulator_contract_sha256": "80745a3640c6fe667a3c500571fb15abee1d532a5b720fb6efc8b52f291dfc68",
-    "generation_id": "b555a7c3a74f2253363860a39d285cac9facdd050808d39308278c5d7c416b15"
+    "generation_id": "f97ac9e9aa9ab8ef459b97111cadb8cd7ca705e0895cf630ad8c0095409de17f"
   },
   "status": "PASS",
   "transition_count": 4,
   "upshift_count": 2,
   "downshift_count": 2,
-  "upshift_avg_next_session_qqq_return": -0.004837954265368705,
-  "downshift_avg_next_session_qqq_return": 0.00361662578499955,
+  "upshift_avg_next_session_qqq_return": -0.004837903805950838,
+  "downshift_avg_next_session_qqq_return": 0.0036165725722427933,
   "transitions": [
     {
       "date": "2026-03-20",
       "from_exposure": 3.0,
       "to_exposure": 1.25,
-      "same_session_qqq_return": -0.01848165574914795,
-      "next_session_qqq_return": 0.011479043469861727,
+      "same_session_qqq_return": -0.01848165384048972,
+      "next_session_qqq_return": 0.011478937044348214,
       "direction": "DOWN"
     },
     {
@@ -29,7 +29,7 @@
       "from_exposure": 1.25,
       "to_exposure": 3.0,
       "same_session_qqq_return": 0.029732056399946583,
-      "next_session_qqq_return": 0.006764589558553746,
+      "next_session_qqq_return": 0.006764690477389479,
       "direction": "UP"
     },
     {

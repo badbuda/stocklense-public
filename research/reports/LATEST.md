@@ -1,6 +1,6 @@
 # StockLens Research — Latest Human Report
 
-Generated: 2026-10-08T15:17:53.690917+00:00
+Generated: 2026-10-08T16:09:15.708015+00:00
 
 ## שורה תחתונה
 StockLens 8.0 נשאר קפוא ולא שונה. אין קידום אוטומטי של אף challenger.

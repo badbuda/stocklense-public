@@ -4,15 +4,15 @@
   "status": "BLOCKED_FOR_LIVE_TRADING",
   "model": "StockLens 8.0 FROZEN",
   "evidence_class": "OBSERVED_ETF_DAILY_OPEN_PROXY_NOT_BROKER_LIVE",
-  "generated_at_utc": "2026-10-08T15:17:51.494012+00:00",
+  "generated_at_utc": "2026-10-08T16:09:14.233601+00:00",
   "backtest_window": {
     "start": "2010-02-11",
     "end": "2026-10-07",
     "sessions": 4189
   },
-  "historical_observed_etf_cagr": 0.4027782389548482,
-  "historical_qqq_cagr": 0.19819719601502372,
-  "historical_max_drawdown": -0.49075667022940617,
+  "historical_observed_etf_cagr": 0.40277811496884053,
+  "historical_qqq_cagr": 0.1981971974445167,
+  "historical_max_drawdown": -0.4907568794375248,
   "statistical_significance_not_proven": true,
   "observed_daily_open_not_true_fills": true,
   "prospective_challenger_sessions": 8,
@@ -32,7 +32,7 @@
           "sessions": 4189
         },
         "source": "YFINANCE_AUTO_ADJUSTED_DAILY_OPEN_AND_CLOSE",
-        "data_sha256": "cc55efdb478dca2c0c578099a6f0308240abd6d13e9252d9a8a72e39edcd8207"
+        "data_sha256": "175104a866ad4689af45c2c9b8f37e57dc698e5199819c9ce127d81a2f841166"
       },
       "severity": "REQUIRED"
     },
@@ -42,9 +42,23 @@
       "status": "PASS",
       "description": "Both strategies require identical market dates and external cashflows.",
       "evidence": {
-        "stocklens": 28031986.476737,
-        "qqq": 2030716.698977,
+        "stocklens": 28031945.219291,
+        "qqq": 2030716.73932,
         "contribution_matched": true
+      },
+      "severity": "REQUIRED"
+    },
+    {
+      "id": "OBSERVED_ETF_XNYS_DAILY_COVERAGE",
+      "category": "Backtest data",
+      "status": "PASS",
+      "description": "Every observed QQQ/TQQQ backtest session must align with the XNYS exchange calendar and same-run price snapshot.",
+      "evidence": {
+        "status": "PASS",
+        "expected": 4189,
+        "observed": 4189,
+        "missing": [],
+        "suspicious_large_moves": 0
       },
       "severity": "REQUIRED"
     },
@@ -68,6 +82,19 @@
         "status": "PASS",
         "date": "2026-10-07",
         "errors": []
+      },
+      "severity": "REQUIRED"
+    },
+    {
+      "id": "PROSPECTIVE_OBSERVED_MINUTE_QUOTE_JOURNAL",
+      "category": "Execution reality",
+      "status": "BLOCKED",
+      "description": "Collect at least 63 prospective, time-stamped observed QQQ/TQQQ 09:30/09:31/09:32 minute prices, with no synthetic backfill. These quotes are NOT broker fills.",
+      "evidence": {
+        "verified_completed_sessions": 0,
+        "review_floor": 63,
+        "journal_status": "WAITING_FOR_COMPLETED_SESSION",
+        "broker_fill_parity": false
       },
       "severity": "REQUIRED"
     },
@@ -196,7 +223,7 @@
       "status": "BLOCKED",
       "description": "Human-approved loss budget, position sizing, concentration, volatility gap limits, kill switch and response playbook must be validated.",
       "evidence": {
-        "historical_max_drawdown": -0.49075667022940617,
+        "historical_max_drawdown": -0.4907568794375248,
         "stress_loss_guarantee": false,
         "policy": "NOT_YET_APPROVED"
       },
@@ -214,9 +241,10 @@
       "severity": "REQUIRED"
     }
   ],
-  "passed_count": 5,
-  "blocked_count": 11,
+  "passed_count": 6,
+  "blocked_count": 12,
   "blockers": [
+    "PROSPECTIVE_OBSERVED_MINUTE_QUOTE_JOURNAL",
     "LIVE_EXECUTION_TIME_PARITY",
     "RAW_LEAN_SAME_RUN_EXPORT",
     "POINT_IN_TIME_AND_PROVIDER_AUDIT",
@@ -256,6 +284,27 @@
       "rolling_windows_count": 1082,
       "statistical_independence_proven": false,
       "live_broker_authorized": false
+    },
+    "observed_intraday_price_gap": {
+      "status": "OBSERVED_SAMPLE_NOT_FILL_PARITY",
+      "observed_etf_minute_sessions": 4,
+      "source": "YFINANCE_1MIN_UNADJUSTED_OBSERVED_OPEN",
+      "broker_fill_parity": false,
+      "execution_time_parity_proven": false,
+      "risk_gate_satisfied": false
+    },
+    "historical_robustness_not_forward_proof": {
+      "status": "PASS",
+      "source_prices_match": true,
+      "moving_block_sizes": [
+        21,
+        63,
+        126
+      ],
+      "calendar_year_exclusion_count": 17,
+      "independent_out_of_sample_evidence": false,
+      "significance_proven": false,
+      "risk_gate_satisfied": false
     }
   }
 }

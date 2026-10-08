@@ -1,0 +1,132 @@
+{
+  "schema_version": 1,
+  "kind": "OBSERVED_ETF_INTRADAY_OPEN_TIME_GAP_AUDIT",
+  "status": "OBSERVED_SAMPLE_NOT_FILL_PARITY",
+  "observed_symbols": [
+    "QQQ",
+    "TQQQ"
+  ],
+  "market_dates": [
+    "2026-10-02",
+    "2026-10-05",
+    "2026-10-06",
+    "2026-10-07"
+  ],
+  "sessions": 4,
+  "samples": [
+    {
+      "date": "2026-10-02",
+      "QQQ": {
+        "minute_0930_open": 751.3099975585938,
+        "minute_0931_open": 750.010009765625,
+        "minute_0932_open": 749.239990234375,
+        "sell_0931_minus_0930_bps": -17.30294814647926,
+        "buy_0932_minus_0930_bps": -27.55197363199402
+      },
+      "TQQQ": {
+        "minute_0930_open": 81.61119842529297,
+        "minute_0931_open": 81.17870330810547,
+        "minute_0932_open": 80.91999816894531,
+        "sell_0931_minus_0930_bps": -52.994579853328226,
+        "buy_0932_minus_0930_bps": -84.69429069594914
+      }
+    },
+    {
+      "date": "2026-10-05",
+      "QQQ": {
+        "minute_0930_open": 749.3400268554688,
+        "minute_0931_open": 749.3499755859375,
+        "minute_0932_open": 750.6514282226562,
+        "sell_0931_minus_0930_bps": 0.13276656940952591,
+        "buy_0932_minus_0930_bps": 17.500751597250286
+      },
+      "TQQQ": {
+        "minute_0930_open": 80.95500183105469,
+        "minute_0931_open": 80.94000244140625,
+        "minute_0932_open": 81.36000061035156,
+        "sell_0931_minus_0930_bps": -1.8528057944755538,
+        "buy_0932_minus_0930_bps": 50.02764129905968
+      }
+    },
+    {
+      "date": "2026-10-06",
+      "QQQ": {
+        "minute_0930_open": 760.5399780273438,
+        "minute_0931_open": 761.4400024414062,
+        "minute_0932_open": 760.2899780273438,
+        "sell_0931_minus_0930_bps": 11.834018461422957,
+        "buy_0932_minus_0930_bps": -3.2871381810650746
+      },
+      "TQQQ": {
+        "minute_0930_open": 84.54000091552734,
+        "minute_0931_open": 84.87000274658203,
+        "minute_0932_open": 84.47000122070312,
+        "sell_0931_minus_0930_bps": 39.03499260479393,
+        "buy_0932_minus_0930_bps": -8.280067904679056
+      }
+    },
+    {
+      "date": "2026-10-07",
+      "QQQ": {
+        "minute_0930_open": 753.8699951171875,
+        "minute_0931_open": 754.0999755859375,
+        "minute_0932_open": 754.4600219726562,
+        "sell_0931_minus_0930_bps": 3.0506648392902846,
+        "buy_0932_minus_0930_bps": 7.826639331587337
+      },
+      "TQQQ": {
+        "minute_0930_open": 82.31999969482422,
+        "minute_0931_open": 82.5199966430664,
+        "minute_0932_open": 82.52999877929688,
+        "sell_0931_minus_0930_bps": 24.29506182988428,
+        "buy_0932_minus_0930_bps": 25.510092960538966
+      }
+    }
+  ],
+  "excluded": [
+    {
+      "date": "2026-10-08",
+      "reason": "CURRENT_OR_FUTURE_SESSION_UNVERIFIED"
+    }
+  ],
+  "statistics": {
+    "QQQ": {
+      "sell_0931_minus_0930_bps": {
+        "count": 4,
+        "mean_bps": -0.571374569089123,
+        "worst_absolute_bps": 17.30294814647926,
+        "min_bps": -17.30294814647926,
+        "max_bps": 11.834018461422957
+      },
+      "buy_0932_minus_0930_bps": {
+        "count": 4,
+        "mean_bps": -1.3779302210553679,
+        "worst_absolute_bps": 27.55197363199402,
+        "min_bps": -27.55197363199402,
+        "max_bps": 17.500751597250286
+      }
+    },
+    "TQQQ": {
+      "sell_0931_minus_0930_bps": {
+        "count": 4,
+        "mean_bps": 2.120667196718607,
+        "worst_absolute_bps": 52.994579853328226,
+        "min_bps": -52.994579853328226,
+        "max_bps": 39.03499260479393
+      },
+      "buy_0932_minus_0930_bps": {
+        "count": 4,
+        "mean_bps": -4.359156085257386,
+        "worst_absolute_bps": 84.69429069594914,
+        "min_bps": -84.69429069594914,
+        "max_bps": 50.02764129905968
+      }
+    }
+  },
+  "price_source": "YFINANCE_1MIN_UNADJUSTED_OBSERVED_OPEN",
+  "evidence_scope": "OBSERVED_HISTORICAL_MINUTE_OPEN_PRICES_ONLY",
+  "daily_adjusted_open_execution_parity": false,
+  "broker_fill_parity": false,
+  "automatic_trading_authorized": false,
+  "warning": "This records observed 09:30/09:31/09:32 ETF minute-bar opening prices. It is not a broker fill, venue microstructure, transaction quote, adjusted daily-open equality, or prospective account P&L. No missing TQQQ quote is synthesized."
+}

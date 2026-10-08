@@ -12,15 +12,15 @@
     "sma50": {
       "relative_change": 0.0023063971550491423,
       "absolute_limit": 0.05,
-      "rolling_median_change": 0.0004133457545933383,
-      "rolling_mad": 0.0002619131470370861,
+      "rolling_median_change": 0.00041334489867177795,
+      "rolling_mad": 0.00026191143329927285,
       "effective_limit": 0.05
     },
     "sma200": {
-      "relative_change": 0.0011324219857494757,
+      "relative_change": 0.0011324224389654245,
       "absolute_limit": 0.02,
-      "rolling_median_change": 0.0008448842460474095,
-      "rolling_mad": 8.588205192588516e-05,
+      "rolling_median_change": 0.0008448842369789952,
+      "rolling_mad": 8.588205188973813e-05,
       "effective_limit": 0.02
     },
     "vol20": {
@@ -31,10 +31,10 @@
       "effective_limit": 0.75
     },
     "mom12": {
-      "relative_change": 0.04757190195031172,
+      "relative_change": 0.04757237834461072,
       "absolute_limit": 0.75,
-      "rolling_median_change": 0.04242807031945,
-      "rolling_mad": 0.020952392735007354,
+      "rolling_median_change": 0.04242833087090975,
+      "rolling_mad": 0.020952909428183123,
       "effective_limit": 0.75
     }
   },

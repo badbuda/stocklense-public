@@ -1,12 +1,12 @@
 {
   "publication_identity": {
     "schema_version": 2,
-    "git_sha": "08d395309348bb75be544f107ba6fc1fb883ac5d",
+    "git_sha": "1881a80d016d4290e87c8862ccf83379b0dd5c2d",
     "signal_asof": null,
     "replay_dataset_sha256": "db0889da31af43b1b75e005c1f4ab2cad421dfb55a6c55a77a223e0623950d95",
-    "replay_rows_sha256": "948a2d02ae5d67f9ffea9bbd0244b6134c4414bc2825617c3098c2ac6dec617e",
+    "replay_rows_sha256": "be86daace4e80ca96c10ed2e611f9b0045e2d515cb03cffeb536b7015ce0e49a",
     "simulator_contract_sha256": "80745a3640c6fe667a3c500571fb15abee1d532a5b720fb6efc8b52f291dfc68",
-    "generation_id": "b555a7c3a74f2253363860a39d285cac9facdd050808d39308278c5d7c416b15"
+    "generation_id": "f97ac9e9aa9ab8ef459b97111cadb8cd7ca705e0895cf630ad8c0095409de17f"
   },
   "backtest_request": {
     "strategy_id": "STOCKLENS_8_FROZEN_REPLAY",
@@ -24,8 +24,8 @@
     "status": "PASS",
     "result_kind": "GENERIC_BACKTEST_RESULT",
     "request_sha256": "fa4678524dd1f34f131a57c82f25b64ba685e4205fa712ea1207296af57d9401",
-    "rows_sha256": "948a2d02ae5d67f9ffea9bbd0244b6134c4414bc2825617c3098c2ac6dec617e",
-    "ledger_sha256": "22bb9cf5b2174686536b3d74264252485b68ccc28d5bd898a722eaf4fb222e90",
+    "rows_sha256": "be86daace4e80ca96c10ed2e611f9b0045e2d515cb03cffeb536b7015ce0e49a",
+    "ledger_sha256": "3c3c045e98f3c9bc7499de10aa86ffd5b709a050fd033847efdfa19ea750f463",
     "frozen_accounting_parity": {
       "end_equity": true,
       "paid_capital": true,
@@ -34,11 +34,11 @@
     },
     "analytics": {
       "cagr_without_contribution_distortion": null,
-      "annualized_volatility_proxy": 0.5643275069262842,
-      "sharpe_proxy_zero_risk_free": 1.1880476525735164,
+      "annualized_volatility_proxy": 0.5643274463661219,
+      "sharpe_proxy_zero_risk_free": 1.188048129867816,
       "total_turnover_proxy": 5.5,
-      "cost_to_paid_capital": 0.002574905926912776,
-      "ending_to_paid_capital_multiple": 1.5864242805776743,
+      "cost_to_paid_capital": 0.002574906526520318,
+      "ending_to_paid_capital_multiple": 1.5864245913241517,
       "semantics": "Descriptive replay analytics. CAGR is omitted when monthly contributions are non-zero."
     }
   },
@@ -47,46 +47,46 @@
   "start": "2025-10-07",
   "end": "2026-10-07",
   "replay_dataset_sha256": "db0889da31af43b1b75e005c1f4ab2cad421dfb55a6c55a77a223e0623950d95",
-  "replay_rows_sha256": "948a2d02ae5d67f9ffea9bbd0244b6134c4414bc2825617c3098c2ac6dec617e",
+  "replay_rows_sha256": "be86daace4e80ca96c10ed2e611f9b0045e2d515cb03cffeb536b7015ce0e49a",
   "contract_sha256": "80745a3640c6fe667a3c500571fb15abee1d532a5b720fb6efc8b52f291dfc68",
   "replay_evidence": "FROZEN_MODEL_HISTORICAL_REPLAY",
   "provenance": {
     "status": "PASS",
     "dataset_sha256": "db0889da31af43b1b75e005c1f4ab2cad421dfb55a6c55a77a223e0623950d95",
-    "replay_rows_sha256": "948a2d02ae5d67f9ffea9bbd0244b6134c4414bc2825617c3098c2ac6dec617e",
+    "replay_rows_sha256": "be86daace4e80ca96c10ed2e611f9b0045e2d515cb03cffeb536b7015ce0e49a",
     "contract_sha256": "80745a3640c6fe667a3c500571fb15abee1d532a5b720fb6efc8b52f291dfc68",
-    "generation_id": "b555a7c3a74f2253363860a39d285cac9facdd050808d39308278c5d7c416b15",
+    "generation_id": "f97ac9e9aa9ab8ef459b97111cadb8cd7ca705e0895cf630ad8c0095409de17f",
     "evidence_class": "REPLAY_APPROXIMATION",
     "full_lean_execution_parity": false
   },
-  "end_equity": 225272.24784202976,
-  "qqq_end_equity": 174403.91096009072,
+  "end_equity": 225272.29196802955,
+  "qqq_end_equity": 174403.91135835936,
   "paid": 142000.0,
-  "replay_profit_loss": 83272.24784202976,
-  "ending_to_paid_multiple": 1.5864242805776743,
-  "max_drawdown": -0.31442732303141574,
+  "replay_profit_loss": 83272.29196802955,
+  "ending_to_paid_multiple": 1.5864245913241517,
+  "max_drawdown": -0.3144272985540876,
   "exposure_changes": 4,
-  "total_estimated_transaction_cost": 365.63664162161416,
+  "total_estimated_transaction_cost": 365.63672676588516,
   "cost_sensitivity": [
     {
       "cost_bps": 0.0,
-      "end_equity": 225828.98214405205,
+      "end_equity": 225829.02638854535,
       "total_estimated_transaction_cost": 0.0
     },
     {
       "cost_bps": 5.0,
-      "end_equity": 225272.24784203022,
-      "total_estimated_transaction_cost": 365.6366416216144
+      "end_equity": 225272.2919680297,
+      "total_estimated_transaction_cost": 365.63672676588544
     },
     {
       "cost_bps": 10.0,
-      "end_equity": 224716.6060180496,
-      "total_estimated_transaction_cost": 730.424618026833
+      "end_equity": 224716.6500257918,
+      "total_estimated_transaction_cost": 730.424788136236
     },
     {
       "cost_bps": 20.0,
-      "end_equity": 223608.5941664366,
-      "total_estimated_transaction_cost": 1457.4594504773954
+      "end_equity": 223608.63793836767,
+      "total_estimated_transaction_cost": 1457.4597899807009
     }
   ],
   "cost_ledger": [
@@ -94,33 +94,33 @@
       "date": "2026-03-20",
       "event": "SELL_EXPOSURE",
       "turnover": 1.75,
-      "estimated_cost": 87.80525420420499,
-      "cumulative_cost": 87.80525420420499,
-      "nav_after_cost": 100261.05669345862
+      "estimated_cost": 87.80528306306327,
+      "cumulative_cost": 87.80528306306327,
+      "nav_after_cost": 100261.0896461521
     },
     {
       "date": "2026-04-08",
       "event": "BUY_EXPOSURE",
       "turnover": 1.75,
-      "estimated_cost": 95.63032412895882,
-      "cumulative_cost": 183.4355783331638,
-      "nav_after_cost": 109196.1686803954
+      "estimated_cost": 95.63034228634469,
+      "cumulative_cost": 183.43562534940796,
+      "nav_after_cost": 109196.18941353617
     },
     {
       "date": "2026-06-23",
       "event": "SELL_EXPOSURE",
       "turnover": 1.0,
-      "estimated_cost": 89.91491449701965,
-      "cumulative_cost": 273.35049283018344,
-      "nav_after_cost": 179739.91407954227
+      "estimated_cost": 89.91493348585598,
+      "cumulative_cost": 273.35055883526394,
+      "nav_after_cost": 179739.95203822613
     },
     {
       "date": "2026-07-15",
       "event": "BUY_EXPOSURE",
       "turnover": 1.0,
-      "estimated_cost": 92.28614879143073,
-      "cumulative_cost": 365.63664162161416,
-      "nav_after_cost": 184480.01143407
+      "estimated_cost": 92.28616793062122,
+      "cumulative_cost": 365.63672676588516,
+      "nav_after_cost": 184480.04969331183
     }
   ],
   "accounting_invariants": {

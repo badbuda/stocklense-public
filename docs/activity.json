@@ -2,6 +2,48 @@
   "schema_version": 1,
   "items": [
     {
+      "short_sha": "1881a80",
+      "date": "2026-10-08T18:50:18+03:00",
+      "title": "ci: validate prospective observed ETF minute journal in one complete batch",
+      "kind": "FIX",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "9eca263",
+      "date": "2026-10-08T18:49:41+03:00",
+      "title": "research: accumulate immutable prospective observed ETF minute quotes and keep live gate closed",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "856eebc",
+      "date": "2026-10-08T18:29:30+03:00",
+      "title": "audit: verify real QQQ/TQQQ price cohort against NYSE calendar and live-readiness gate",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "457ce2d",
+      "date": "2026-10-08T18:19:58+03:00",
+      "title": "ci: validate consolidated observed QQQ/TQQQ research and guard once",
+      "kind": "FIX",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "c87111e",
+      "date": "2026-10-08T18:19:28+03:00",
+      "title": "research: verify observed TQQQ minute timing and paired historical robustness in one source-locked batch",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "d3deda7",
+      "date": "2026-10-08T15:17:54Z",
+      "title": "shadow: record prospective evidence 2026-10-07",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
       "short_sha": "08d3953",
       "date": "2026-10-08T17:57:25+03:00",
       "title": "ci: validate real TQQQ causal tests and archived price source in one batch",
@@ -40,54 +82,54 @@
       "short_sha": "f394a59",
       "date": "2026-10-08T14:08:41Z",
       "title": "shadow: record prospective evidence 2026-10-07",
-      "kind": "PROJECT",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "2e536fd",
-      "date": "2026-10-08T16:48:45+03:00",
-      "title": "ci: validate batched paper capture and broker failure safeguards",
-      "kind": "FIX",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "41eca22",
-      "date": "2026-10-08T16:48:08+03:00",
-      "title": "test: fail-closed paper capture, local broker failure harness, and model-selection inventory",
-      "kind": "PROJECT",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "d5587d1",
-      "date": "2026-10-08T13:09:39Z",
-      "title": "shadow: record prospective evidence 2026-10-07",
-      "kind": "PROJECT",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "ac6744c",
-      "date": "2026-10-08T15:50:09+03:00",
-      "title": "ci: validate decision parity once after atomic handoff",
-      "kind": "FIX",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "8f09995",
-      "date": "2026-10-08T15:49:43+03:00",
-      "title": "ci: enforce identical frozen 8.0 backtest and shadow trading decisions on observed ETF data",
-      "kind": "FIX",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "26154d1",
-      "date": "2026-10-08T15:38:31+03:00",
-      "title": "audit: block live StockLens until observed ETF, forward paper, raw LEAN and broker evidence is complete",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     }
   ],
   "high_signal_items": [
     {
+      "short_sha": "1881a80",
+      "date": "2026-10-08T18:50:18+03:00",
+      "title": "ci: validate prospective observed ETF minute journal in one complete batch",
+      "kind": "FIX",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "9eca263",
+      "date": "2026-10-08T18:49:41+03:00",
+      "title": "research: accumulate immutable prospective observed ETF minute quotes and keep live gate closed",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "856eebc",
+      "date": "2026-10-08T18:29:30+03:00",
+      "title": "audit: verify real QQQ/TQQQ price cohort against NYSE calendar and live-readiness gate",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "457ce2d",
+      "date": "2026-10-08T18:19:58+03:00",
+      "title": "ci: validate consolidated observed QQQ/TQQQ research and guard once",
+      "kind": "FIX",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "c87111e",
+      "date": "2026-10-08T18:19:28+03:00",
+      "title": "research: verify observed TQQQ minute timing and paired historical robustness in one source-locked batch",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "d3deda7",
+      "date": "2026-10-08T15:17:54Z",
+      "title": "shadow: record prospective evidence 2026-10-07",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
       "short_sha": "08d3953",
       "date": "2026-10-08T17:57:25+03:00",
       "title": "ci: validate real TQQQ causal tests and archived price source in one batch",
@@ -128,69 +170,27 @@
       "title": "shadow: record prospective evidence 2026-10-07",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "2e536fd",
-      "date": "2026-10-08T16:48:45+03:00",
-      "title": "ci: validate batched paper capture and broker failure safeguards",
-      "kind": "FIX",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "41eca22",
-      "date": "2026-10-08T16:48:08+03:00",
-      "title": "test: fail-closed paper capture, local broker failure harness, and model-selection inventory",
-      "kind": "PROJECT",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "d5587d1",
-      "date": "2026-10-08T13:09:39Z",
-      "title": "shadow: record prospective evidence 2026-10-07",
-      "kind": "PROJECT",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "ac6744c",
-      "date": "2026-10-08T15:50:09+03:00",
-      "title": "ci: validate decision parity once after atomic handoff",
-      "kind": "FIX",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "8f09995",
-      "date": "2026-10-08T15:49:43+03:00",
-      "title": "ci: enforce identical frozen 8.0 backtest and shadow trading decisions on observed ETF data",
-      "kind": "FIX",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "26154d1",
-      "date": "2026-10-08T15:38:31+03:00",
-      "title": "audit: block live StockLens until observed ETF, forward paper, raw LEAN and broker evidence is complete",
-      "kind": "PROJECT",
-      "impact": "Repository change; CI validation is separate."
     }
   ],
   "recent_summary": [
     {
-      "short_sha": "08d3953",
-      "date": "2026-10-08T17:57:25+03:00",
-      "title": "ci: validate real TQQQ causal tests and archived price source in one batch",
+      "short_sha": "1881a80",
+      "date": "2026-10-08T18:50:18+03:00",
+      "title": "ci: validate prospective observed ETF minute journal in one complete batch",
       "kind": "FIX",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "1dfb6b0",
-      "date": "2026-10-08T17:56:58+03:00",
-      "title": "test: audit causal TQQQ replay and preserve observed adjusted price snapshots for reproducibility",
+      "short_sha": "9eca263",
+      "date": "2026-10-08T18:49:41+03:00",
+      "title": "research: accumulate immutable prospective observed ETF minute quotes and keep live gate closed",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "052467c",
-      "date": "2026-10-08T14:54:29Z",
-      "title": "shadow: record prospective evidence 2026-10-07",
+      "short_sha": "856eebc",
+      "date": "2026-10-08T18:29:30+03:00",
+      "title": "audit: verify real QQQ/TQQQ price cohort against NYSE calendar and live-readiness gate",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     }

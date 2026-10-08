@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "status": "WAITING_FOR_COMPLETED_SESSION",
+  "source": "YFINANCE_OBSERVED_1MIN_RAW_OPEN",
+  "observed_completed_sessions": 0,
+  "first_session": null,
+  "last_session": null,
+  "journal_tail_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+  "session_under_review": "2026-10-08",
+  "daily_0931_0932_quotes_observed": false,
+  "broker_fills_observed": false,
+  "synthetic_quotes_used": false,
+  "live_trading_authorized": false,
+  "note": "Prospective same-day-after-close observed 1-minute ETF quotes only. Never inferred broker fills or reconstructed old missing bars."
+}
