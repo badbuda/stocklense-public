@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "status": "WAITING_FOR_NEXT_COMPLETED_SESSION",
+  "current_signal_date": "2026-10-07",
+  "persisted_signal_date": "2026-10-07",
+  "paper_sessions": 0,
+  "explicit_missed_sessions": 0,
+  "errors": [],
+  "live_trading_authorized": false,
+  "backfill_authorized": false,
+  "claim": "A waiting status is not execution evidence; absent paper sessions never become simulated historical fills."
+}

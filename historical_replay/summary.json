@@ -11,17 +11,17 @@
     "2": 15,
     "3": 225
   },
-  "dataset_sha256": "2e8b1b53c2c3a1de9e4c6427776369fd90aa904bd065092d96c9d6e571433a7a",
+  "dataset_sha256": "5e2b0fe244b7b7f7d4deb3e4ed32971b24f88056cba7a643ad61d6d1f7105e0a",
   "source_audit": {
     "source": "YFINANCE_QQQ_AUTO_ADJUSTED",
-    "raw_rows": 4721,
+    "raw_rows": 4722,
     "completed_rows": 4721,
     "feature_window_sessions": 253,
-    "feature_window_sha256": "c632df7ea44b053548dcafcb8087dd8f093492a854d23ee5c5574be70d84b6a3",
-    "raw_last_date": "2026-10-07",
+    "feature_window_sha256": "64532c0bdd1c49de8e6fdf50ae490722cd38dfbbf78a73bf5be4ec719773c800",
+    "raw_last_date": "2026-10-08",
     "last_completed_date": "2026-10-07",
-    "dropped_incomplete_current_session": false,
-    "ny_time_at_validation": "2026-10-08T09:09:25.514341-04:00",
+    "dropped_incomplete_current_session": true,
+    "ny_time_at_validation": "2026-10-08T10:08:27.088827-04:00",
     "safe_after_ny_time": "18:00"
   }
 }

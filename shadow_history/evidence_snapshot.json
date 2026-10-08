@@ -18,7 +18,7 @@
     },
     {
       "path": "shadow_history/health.json",
-      "sha256": "9533e7a5cb5cbff541db25334ce198fefaeadf04fd24f52680d060f1aef7e78e",
+      "sha256": "5e90ef9327aff3cc8dc74f7a152d40380d5a20d15a449c4ca810c18aa35266c7",
       "bytes": 185
     },
     {
@@ -28,8 +28,8 @@
     },
     {
       "path": "shadow_history/qc_daily_parity.json",
-      "sha256": "37d59016e391384af278a111057d6d4a3f7038fe07ec497ee5fccbd17b4e9662",
-      "bytes": 34795
+      "sha256": "a976dfa0d1e3df290b1e6e9e82021a9a846adb52f974a21fbed22435b3144a7c",
+      "bytes": 34785
     },
     {
       "path": "shadow_history/qc_parity_dossier.json",
@@ -38,13 +38,13 @@
     },
     {
       "path": "shadow_history/data_provenance.json",
-      "sha256": "d8f49bef8d0349266f3f43132d8c972ad6a5f932c2ccc0db3752d5b0fd0a887c",
-      "bytes": 330
+      "sha256": "b18294ea70976a3897b4bd78a43cc6b88e6f3310b0c182089549a615a278e22e",
+      "bytes": 329
     },
     {
       "path": "shadow_history/anomalies.json",
-      "sha256": "dd8fd85f3bca00aff0055ab98a6717035625cbc3798614e985d8839f464c83b4",
-      "bytes": 1317
+      "sha256": "d45e2891382863e03a14fdb9bf2be709d527b794e066959bad013a319110ba31",
+      "bytes": 1320
     },
     {
       "path": "shadow_history/execution_audit.json",
@@ -58,7 +58,7 @@
     },
     {
       "path": "shadow_history/market_context.json",
-      "sha256": "3a8f904d85b8f437f486b8026a8025a956ebdf3d39056c405a0fb2a286440c5a",
+      "sha256": "8e0f975b91019493f16116453bb429491f079ed15c557cab095c56e7b64aab26",
       "bytes": 533
     },
     {

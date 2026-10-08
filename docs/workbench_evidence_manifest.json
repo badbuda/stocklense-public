@@ -5,7 +5,7 @@
   "automatic_model_change": false,
   "automatic_promotion": false,
   "artifacts": {
-    "historical_replay/daily_states.csv": "2e8b1b53c2c3a1de9e4c6427776369fd90aa904bd065092d96c9d6e571433a7a",
+    "historical_replay/daily_states.csv": "5e2b0fe244b7b7f7d4deb3e4ed32971b24f88056cba7a643ad61d6d1f7105e0a",
     "governance/qc_724_leverage_transitions.json": "e2d5851aed6688ae27cb6590a9adfac3ece449818d7ca923d7d011147b3a553e",
     "governance/qc_724_order_golden_master.json": "153edd0a5c8ebeed408b5d3b7d6a79af508c6f3f5ee8ed1868a3a65fc0fe17fb",
     "governance/qc_724_daily_state_manifest.json": "0b928664b58b26d23000d4e0d1c921c1a91ea5d12f999374a5d4c5d9ab8c1cd9",
@@ -18,5 +18,5 @@
     "lean_daily_state": "VERIFIED_FINGERPRINT_RAW_ROWS_MISSING",
     "prospective": "IMMATURE_FUTURE_ONLY"
   },
-  "manifest_sha256": "163257190aab3f3ce0638c948f24b3ffa35f3d13b7c0a8b3de71398d0cee894d"
+  "manifest_sha256": "ac410762327507428a2b219f39f9cdc573e79b34608a2998ec4971f77c7245f7"
 }

@@ -2,12 +2,12 @@
   "schema_version": 1,
   "publication_identity": {
     "schema_version": 2,
-    "git_sha": "ac6744ce6ba06836d1fd3ff8bb2d1857220b0aac",
+    "git_sha": "2e536fd0c602214b9f8219e33f5cbfa8f74ca55f",
     "signal_asof": null,
     "replay_dataset_sha256": "db0889da31af43b1b75e005c1f4ab2cad421dfb55a6c55a77a223e0623950d95",
-    "replay_rows_sha256": "45e58af5f416a1e26ac216814726f1f66824221e681177cf221a7295951fa825",
+    "replay_rows_sha256": "46d64a0a484c2259eadc4b1fd9e28fae36bf11d1d015e0111f83e6c6655b548b",
     "simulator_contract_sha256": "80745a3640c6fe667a3c500571fb15abee1d532a5b720fb6efc8b52f291dfc68",
-    "generation_id": "7f9fee0751055ea869e5d85003db17458ed653910133b3a459eb796dad583457"
+    "generation_id": "e7836a1f7e58e929dd95aaaca08ff3deafc7b05cb058810bdbc862e30f90098e"
   },
   "status": "PASS",
   "regime_definition": {
@@ -17,29 +17,29 @@
   "regimes": {
     "BULL_LOW_VOL": {
       "sessions": 37,
-      "strategy_gross_sum": -0.18968979648975837,
-      "qqq_sum": -0.06322993216325279,
+      "strategy_gross_sum": -0.18969040770424572,
+      "qqq_sum": -0.06323013590141524,
       "positive_strategy_sessions": 17,
       "positive_strategy_session_share": 0.4594594594594595
     },
     "BULL_MID_VOL": {
       "sessions": 105,
-      "strategy_gross_sum": 0.564876933168326,
-      "qqq_sum": 0.18829231105610866,
+      "strategy_gross_sum": 0.5648766433906851,
+      "qqq_sum": 0.1882922144635617,
       "positive_strategy_sessions": 60,
       "positive_strategy_session_share": 0.5714285714285714
     },
     "MIXED_MID_VOL": {
       "sessions": 66,
-      "strategy_gross_sum": 0.24916790292200192,
-      "qqq_sum": 0.10838773855627082,
+      "strategy_gross_sum": 0.24916882141055047,
+      "qqq_sum": 0.10838804471912034,
       "positive_strategy_sessions": 38,
       "positive_strategy_session_share": 0.5757575757575758
     },
     "MIXED_LOW_VOL": {
       "sessions": 10,
-      "strategy_gross_sum": 0.1078830553638872,
-      "qqq_sum": 0.03596101845462907,
+      "strategy_gross_sum": 0.10788276031463584,
+      "qqq_sum": 0.03596092010487861,
       "positive_strategy_sessions": 7,
       "positive_strategy_session_share": 0.7
     },

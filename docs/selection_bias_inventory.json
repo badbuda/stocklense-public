@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "status": "SELECTION_INDEPENDENCE_NOT_ESTABLISHED",
+  "source_fingerprints": {
+    "research_results_sha256": "d0467f17a1e88ad28a803636fd24956ebed4e4b40104ba7e30263583ecc7cb6d",
+    "research_queue_sha256": "35171b55744ad60757e0938adb41cb975c4118bfe74c29164add80cf9458f8b1"
+  },
+  "recorded_research_results": 100,
+  "queued_hypotheses": 7,
+  "result_status_counts": {
+    "NOT_VALIDATED": 100
+  },
+  "per_experiment_result_counts": {
+    "SL9-005-DRAWDOWN-BREAKER": 12,
+    "SL9-006-MOMENTUM-ACCELERATION": 46,
+    "SL9-007-UPSHIFT-CONFIRMATION": 42
+  },
+  "full_variant_search_count_known": false,
+  "holdout_never_reused_proven": false,
+  "post_selection_significance_proven": false,
+  "independent_third_party_reproduction": false,
+  "allowed_claim": "Inventory of available records only; not complete candidate-selection history.",
+  "unresolved": [
+    "Full chronology of all internal and manual parameter tests",
+    "Which historical intervals were viewed during selection",
+    "Multiple-testing adjustment across all candidates",
+    "One truly untouched forward dataset with frozen protocol",
+    "Independent replication from source snapshots and execution records"
+  ],
+  "automatic_model_promotion": false,
+  "live_trading_authorized": false
+}

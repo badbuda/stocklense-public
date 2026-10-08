@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "status": "PASS",
+  "mode": "LOCAL_SIMULATOR_ONLY",
+  "broker_connected": false,
+  "broker_fills_observed": false,
+  "live_trading_authorized": false,
+  "tests": {
+    "duplicate_key_collision": true,
+    "excess_position_sale": true,
+    "max_notional": true,
+    "reconciliation_drift": true,
+    "kill_switch": true
+  },
+  "no_real_orders_sent": true,
+  "note": "Local contract selfcheck only, not an external broker sandbox qualification."
+}
