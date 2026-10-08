@@ -8,7 +8,7 @@ Resources:
       AttributeDefinitions: [{AttributeName: session_date, AttributeType: S}]
       KeySchema: [{AttributeName: session_date, KeyType: HASH}]
       BillingMode: PROVISIONED
-      ProvisionedThroughput: {ReadCapacityUnits: 1, WriteCapacityUnits: 1}
+      ProvisionedThroughput: {ReadCapacityUnits: 1, WriteCapacityUnits: 5}
       SSESpecification: {SSEEnabled: true}
   LambdaLogs:
     Type: AWS::Logs::LogGroup
