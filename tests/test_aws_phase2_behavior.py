@@ -68,7 +68,12 @@ def test_prior_signal_must_precede_open():
     rejects(values,"LATE_SIGNAL")
 
 def test_no_missing_trade_receipts():
-    values=inputs();values[1]=values[1].replace(",1\n",",2\n")
+    values=inputs()
+    lines=values[1].splitlines()
+    cols=lines[0].split(",")
+    fields=lines[1].split(",")
+    fields[cols.index("trade_count_session")]="2"
+    values[1]=",".join(cols)+"\n"+",".join(fields)+"\n"
     rejects(values,"TRADE_COUNT_BAD")
 
 def test_no_stale_current_signal():
