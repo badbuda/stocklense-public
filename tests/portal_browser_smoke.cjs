@@ -27,7 +27,31 @@ try{
  await page.locator('button[data-page=research]').click();
  assert.ok(await page.locator('#experiments .experiment').count()>=1,'Research experiments populated');
  await page.locator('button[data-page=simulator]').click();
- await page.waitForFunction(()=>document.querySelector('#sim-message')?.textContent?.includes('מוכן'),{timeout:15000});
+ await page.waitForFunction(()=>document.querySelector('#sim-strategy')?.textContent?.includes('
+ await page.locator('#sim-form button[type=submit]').click();
+ const first=await page.locator('#sim-strategy').textContent();
+ assert.match(first,/\$/);
+ assert.ok(await page.locator('#sim-chart polyline').count()===2,'Scenario compares real modeled StockLens and QQQ');
+ assert.ok(await page.locator('#sim-events tr').count()>1,'Scenario produces simulated trade receipts');
+ await page.locator('#sim-initial').fill('150000');
+ await page.locator('#sim-form button[type=submit]').click();
+ const second=await page.locator('#sim-strategy').textContent();
+ assert.notEqual(first,second,'Changing capital must change output');
+ await page.screenshot({path:'/tmp/stocklens-desktop.png',fullPage:true});
+ const mobile=await browser.newPage({viewport:{width:390,height:844},deviceScaleFactor:1});
+ mobile.on('pageerror',e=>failures.push(e.message));
+ await mobile.goto(base+'/portal.html',{waitUntil:'networkidle',timeout:60000});
+ await mobile.waitForFunction(()=>document.querySelector('#kpi-days')?.textContent!=='—',{timeout:25000});
+ await mobile.locator('#menu-toggle').click();
+ assert.equal(await mobile.locator('#menu-toggle').getAttribute('aria-expanded'),'true');
+ await mobile.locator('button[data-page=paper]').click();
+ assert.equal((await mobile.locator('.page.visible').getAttribute('data-view')),'paper');
+ await mobile.screenshot({path:'/tmp/stocklens-mobile.png',fullPage:true});
+ assert.deepEqual(failures,[],'No uncaught client JS exceptions');
+ console.log('PORTAL_E2E_PASS: desktop/mobile, historic charts, paper ledger, Yahoo real-TQQQ simulator, cost and input recalculation');
+} finally{await browser.close()}
+})().catch(err=>{console.error('PORTAL_E2E_FAILURE',err);process.exitCode=1});
+),{timeout:15000});
  await page.locator('#sim-form button[type=submit]').click();
  const first=await page.locator('#sim-strategy').textContent();
  assert.match(first,/\$/);
