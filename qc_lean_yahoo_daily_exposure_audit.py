@@ -48,6 +48,8 @@ def diagnose(original, proxy_rows):
         proxy[day]=lev
         prev_date=day
     proxy_dates=list(proxy)
+    if not proxy_dates:
+        raise ValueError("EMPTY_PROXY_SESSION_SET")
     orig_first=next(iter(orig))
     orig_last=next(reversed(orig))
     pindex={d:i for i,d in enumerate(proxy_dates)}
