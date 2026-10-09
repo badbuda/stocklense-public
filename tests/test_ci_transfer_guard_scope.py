@@ -10,6 +10,11 @@ def test_generated_research_evidence_is_not_locked_source():
         "research/yahoo_end_of_day_scorecard.json",
         "docs/site_health.json",
         "historical_replay/daily_states.csv",
+        "paper_portfolio/ledger.csv",
+        "paper_portfolio/trades.csv",
+        "paper_portfolio/state.json",
+        "paper_portfolio/latest.md",
+        "paper_portfolio/latest_session.json",
     ]
     assert all(not in_scope(path) for path in outputs)
 

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "kind": "STOCKLENS_COMPLETE_SOURCE_HANDOFF",
-  "source_snapshot_base": "cc710cbbc39c1c338d87b750eebc4aa9ee98302f",
+  "source_snapshot_base": "4a61c2740478bcf1c0895e3c075d2212b6d8f683",
   "runner": "explicit-trigger-or-scheduled",
   "frozen_stocklens8_untouched": true,
   "files": {
@@ -58,7 +58,7 @@
     "capital_readiness.py": "ca240e09e6bbcac234103e17a427431d29810843",
     "change_digest.py": "2791b3b5b6688b2f1a0f11343cad07a6414de337",
     "ci_quota_efficiency.py": "a440c243b4b63ca898a91f44e01f21dafacc4d4f",
-    "ci_transfer_guard.py": "9a177560b8e727fa96d54624ea2742867b1b06c5",
+    "ci_transfer_guard.py": "dfe56e0d8d4b4cf78f6814276f6ce54657671cf6",
     "context_analytics.py": "7a48dab906bb8ddeaa7eacbf742402df723a37e5",
     "context_quality.py": "b0d9853c13c235c3665b6aadf9118efd8db7bd72",
     "cost_attribution.py": "16d7a921883ecebaf0054c4125746209f44985f1",
@@ -248,7 +248,7 @@
     "tests/test_backtest_cashflow_causality.py": "e0fb6cb2a643626f6c448294e5bb995187748df9",
     "tests/test_backtest_contract.py": "bc87a3ac969acb1d297d1427bc70d8c21c87d873",
     "tests/test_broker_failure_harness.py": "e981b94e1ba43b0113b3bc26badec5be4254472c",
-    "tests/test_ci_transfer_guard_scope.py": "9286bf1ed2fec161e2d42bcb9986bfce5667164a",
+    "tests/test_ci_transfer_guard_scope.py": "bbbaea6276fc458796b88771dddea75d65cceaad",
     "tests/test_dashboard_research_curves.py": "8bb31a70127e0e92929c3710c476837ccf022de3",
     "tests/test_frozen_decision_parity_gate.py": "90c17f8b58366ae3c354e6f39466a0170ef3d70e",
     "tests/test_model_readiness_audit.py": "6492e91bfa25f57f1bd678de6271e9757e47ff1a",
