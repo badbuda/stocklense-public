@@ -9,8 +9,10 @@ const screenshotSuffix=(process.env.PORTAL_SCREENSHOT_SUFFIX || 'local').replace
 const browser=await chromium.launch({headless:true,args:['--no-sandbox']});
 try{
  const page=await browser.newPage({viewport:{width:1440,height:900},deviceScaleFactor:1});
- page.on('pageerror',e=>failures.push(e.message));
+ page.on('pageerror',e=>{failures.push(e.message);console.error('PORTAL_RUNTIME_STACK:',e.stack||e.message)});
  page.on('console',m=>{if(m.type()==='error')console.error('BROWSER_CONSOLE_ERROR:',m.text())});
+ page.on('requestfailed',q=>console.error('BROWSER_REQUEST_FAILED:',q.url(),q.failure()?.errorText));
+ page.on('response',r=>{if(r.status()>=400)console.error('BROWSER_HTTP_ERROR:',r.status(),r.url())});
  await page.goto(base+'/',{waitUntil:'networkidle',timeout:60000});
  await page.waitForURL(/portal\.html/,{timeout:12000});
  assert.match(await page.title(),/StockLens/);
