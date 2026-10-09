@@ -49,8 +49,25 @@ jobs:
           PORTAL_BASE_URL: https://main.d20nvlvzjafg5m.amplifyapp.com
           PORTAL_SCREENSHOT_SUFFIX: aws
         run: |
-          curl -fLsS --retry 3 --retry-delay 2 --max-time 20 "$PORTAL_BASE_URL/portal.html" -o /tmp/stocklens-deployed.html
-          grep -q 'StockLens' /tmp/stocklens-deployed.html
+          # Amplify deploys asynchronously after GitHub main pushes.
+          # Never compare a newly merged checkout to stale CDN HTML.
+          expected="$(sha256sum docs/portal.html | cut -d' ' -f1)"
+          ready=0
+          for attempt in $(seq 1 45); do
+            curl -fLsS --max-time 15 "$PORTAL_BASE_URL/portal.html?deploy_probe=$attempt" -o /tmp/stocklens-deployed.html || true
+            actual="$(sha256sum /tmp/stocklens-deployed.html 2>/dev/null | cut -d' ' -f1 || true)"
+            if test "$actual" = "$expected"; then
+              echo "AMPLIFY_DEPLOY_SHA_MATCH=PASS;attempt=$attempt;sha=$actual"
+              ready=1
+              break
+            fi
+            echo "Amplify is still publishing; remote=$actual source=$expected attempt=$attempt"
+            sleep 8
+          done
+          if test "$ready" != 1; then
+            echo "::error::AWS Amplify did not publish the exact expected main HTML artifact"
+            exit 1
+          fi
           node tests/portal_browser_smoke.cjs
       - name: Upload actual screenshots for review
         if: always()

@@ -1,0 +1,8 @@
+{
+  "enabled": false,
+  "api_base_url": null,
+  "cognito_domain": null,
+  "client_id": null,
+  "redirect_uri": null,
+  "note": "DynamoDB live access is disabled until a separate Cognito/API stack is deployed; no AWS secrets belong here."
+}
