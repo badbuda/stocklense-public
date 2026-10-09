@@ -253,7 +253,7 @@
     "stocklens8_falsification_report.py": "11cd389e8a194aec5c9db26ddfd724db00e47e08",
     "stress_scenarios.py": "70c27a967122c9acdfbe61ded5e82a7278f7d568",
     "tail_risk_challengers.py": "705ad85beec36defde041e48052a89f069fe9ba7",
-    "tests/portal_browser_smoke.cjs": "cfc8cb061c2743933a4435f5cca46a5462446b12",
+    "tests/portal_browser_smoke.cjs": "3e41cf3096bc8b28823933d97177bf27b52c7b47",
     "tests/portal_insights_unit.cjs": "96615eaa8d0cba7b0c7ceb51665172287d0ff414",
     "tests/test_aws_b6_bounded_receipt.py": "c1153e49e87df1cd30e5ce882800cc5b1d7c0c8f",
     "tests/test_aws_journal_export.py": "10118ab3c9ac2e674873da95a1346d4679f9ce35",
