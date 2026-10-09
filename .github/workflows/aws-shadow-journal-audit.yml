@@ -14,7 +14,7 @@ on:
     paths:
       - '.github/workflows/aws-shadow-journal-audit.yml'
   schedule:
-    - cron: '40 3 * * 2-6'
+    - cron: '40 9 * * 2-6'
 
 permissions:
   id-token: write
@@ -55,7 +55,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          session="$(TZ=America/New_York date +%F)"
+          session="$(TZ=America/New_York date -d yesterday +%F)"
           aws dynamodb get-item \
             --table-name "$TABLE" \
             --key "{\"session_date\":{\"S\":\"$session\"}}" \
@@ -84,7 +84,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          session="$(TZ=America/New_York date +%F)"
+          session="$(TZ=America/New_York date -d yesterday +%F)"
           key="$session#PAPER"
           aws dynamodb get-item --table-name "$TABLE" --key "{\"session_date\":{\"S\":\"$key\"}}" --consistent-read --output json > /tmp/paper.json
           SESSION="$session" python3 - <<'PY'
