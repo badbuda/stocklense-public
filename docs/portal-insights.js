@@ -67,6 +67,7 @@ export function forwardGapReport(paper,history){
  const errors=[];
  if(duplicates.length)errors.push('כפילות בימים: '+[...new Set(duplicates)].join(', '));
  if(observed.length===0)return {expected:[],missing:[],duplicates,status:'NO_FORWARD_SESSIONS',errors};
+ if(dates.length===0)return {expected:[],missing:[],duplicates,status:'UNVERIFIED_EXCHANGE_CALENDAR',errors};
  const begin=observed.reduce((x,y)=>x<y?x:y);
  const latestObserved=observed.reduce((x,y)=>x>y?x:y);
  const lastKnown=history?.updated_session||latestObserved;
@@ -92,6 +93,7 @@ export function showGapReport(paper,history){
    'אין חורים בין ימי המסחר של Yahoo ליומן Paper עד יום המחירים האחרון שפורסם.':
    d.status==='AWAITING_PUBLICATION'?'יש ימי מסחר שמחיריהם פורסמו ב־Yahoo אך טרם התווספו ליומן Paper. אין להשלים עסקאות בדיעבד.':
    d.status==='NO_FORWARD_SESSIONS'?'עדיין אין רשומות מסחר מדומה.':
+   d.status==='UNVERIFIED_EXCHANGE_CALENDAR'?'אין כרגע היסטוריית ימי בורסה מאומתת להשוואה. לא ניתן לקבוע אם יש חורים.':
    'נמצאה חריגה ברצף תיעוד ה־Paper; נדרשת בדיקה.';
  node.textContent=stateText;
  node.classList.toggle('bad',d.status==='GAPS_OR_DUPLICATES');
