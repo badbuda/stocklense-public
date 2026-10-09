@@ -35,15 +35,27 @@ jobs:
           sleep 2
       - name: Check E2E test syntax before launching browser
         run: node --check tests/portal_browser_smoke.cjs
-      - name: Verify desktop, mobile and simulator in browser
+      - name: Verify local build in desktop and mobile Chromium
+        env:
+          PORTAL_SCREENSHOT_SUFFIX: local
         run: node tests/portal_browser_smoke.cjs
+      - name: Verify actual AWS Amplify deployed website, not only local source
+        env:
+          PORTAL_BASE_URL: https://main.d20nvlvzjafg5m.amplifyapp.com
+          PORTAL_SCREENSHOT_SUFFIX: aws
+        run: |
+          curl -fLsS --retry 3 --retry-delay 2 --max-time 20 "$PORTAL_BASE_URL/portal.html" -o /tmp/stocklens-deployed.html
+          grep -q 'StockLens' /tmp/stocklens-deployed.html
+          node tests/portal_browser_smoke.cjs
       - name: Upload actual screenshots for review
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: stocklens-portal-browser
+          name: stocklens-portal-browser-local-and-amplify
           path: |
-            /tmp/stocklens-desktop.png
-            /tmp/stocklens-mobile.png
+            /tmp/stocklens-desktop-local.png
+            /tmp/stocklens-mobile-local.png
+            /tmp/stocklens-desktop-aws.png
+            /tmp/stocklens-mobile-aws.png
           if-no-files-found: warn
           retention-days: 14
