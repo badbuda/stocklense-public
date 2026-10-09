@@ -1,0 +1,243 @@
+{
+  "schema_version": 1,
+  "status": "VERIFIED_CROSS_PROVIDER_EXPOSURE_ALIGNMENT_NOT_LEAN_INPUT_PARITY",
+  "asof_reference": "2024-08-29",
+  "kind": "LEAN_SL724_ORIGINAL_VS_YAHOO_QQQ_TQQQ_PRIOR_SIGNAL_EXECUTION_EXPOSURE",
+  "provenance": {
+    "original_lean_results_filename": "Determined Red Orange Duck.json",
+    "original_lean_results_sha256": "65cb291e6552dc0f86b32106bc3fe3f7a7ed8a127b3d0d6f84a60a8f5800b6f7",
+    "original_daily_calendar_sha256": "feacf22f410c9f7fcf129b30e91c03c9a924c80e7a2b88dd8839103547adcb08",
+    "original_daily_date_leverage_sha256": "caa10bea0a07f3c5f6f60fef49fa407844da4ce514fa552e5202d6d1d10cefb5",
+    "original_transition_sha256": "5561588a3bcd8a416cc13320536d7d3ff51bdb6de418e4f2c31b85eaf2ac745b",
+    "yahoo_observed_etf_snapshot_sha256": "42732511d81bca12bdc533cc5eac912c69dc637f85c96137861f702be5adb89b",
+    "yahoo_portal_history_git_blob_sha": "e462198ab3a01a91e956562117e18b4def6165f7",
+    "data_lineage": "Private original LEAN saved chart CSV (daily calendar independently SHA verified) + public immutable LEAN transition schedule; separate Yahoo-adjusted QQQ replay_levels() decision stream, executed at next ETF session open, published by portal_feed.py.",
+    "computation_method": "Calendar-date join of genuine original LEAN chart dates with independently computed Yahoo daily-open execution proxy leverage; no missing data filled, no synthetic TQQQ.",
+    "source_files": [
+      "qc_original_lean_chart_audit.py",
+      "governance/qc_724_leverage_transitions.json",
+      "tradable_tqqq_execution_comparison.py",
+      "portal_feed.py",
+      "docs/portal-history.json"
+    ]
+  },
+  "reference_sessions": 3774,
+  "yahoo_proxy_sessions": 4190,
+  "reference_pre_yahoo_fund_inception_sessions": 112,
+  "overlap_sessions": 3662,
+  "reference_missing_inside_yahoo_proxy_window": 0,
+  "overlap_period": {
+    "start": "2010-02-11",
+    "end": "2024-08-29"
+  },
+  "matching_exposures": 3655,
+  "different_exposures": 7,
+  "daily_exposure_match_rate": 0.9980884762424904,
+  "by_original_regime": {
+    "3x": {
+      "reference_days": 2925,
+      "matching_days": 2923,
+      "rate": 0.9993162393162394
+    },
+    "non_3x": {
+      "reference_days": 737,
+      "matching_days": 732,
+      "rate": 0.9932157394843962
+    },
+    "cash": {
+      "reference_days": 274,
+      "matching_days": 274,
+      "rate": 1
+    }
+  },
+  "exact_transition_date_and_level_pairs": {
+    "original_events_in_overlap": 66,
+    "yahoo_proxy_events_including_initial_baseline": 69,
+    "yahoo_proxy_events_excluding_initial_baseline": 68,
+    "exact_matches": 62,
+    "reference_only_events": [
+      [
+        "2010-05-21",
+        2
+      ],
+      [
+        "2010-06-09",
+        1.25
+      ],
+      [
+        "2010-08-13",
+        1.25
+      ],
+      [
+        "2011-10-13",
+        2
+      ]
+    ],
+    "proxy_only_events": [
+      [
+        "2010-05-19",
+        2
+      ],
+      [
+        "2010-06-08",
+        1.25
+      ],
+      [
+        "2010-07-15",
+        3
+      ],
+      [
+        "2010-07-19",
+        1.25
+      ],
+      [
+        "2010-08-16",
+        1.25
+      ],
+      [
+        "2011-10-14",
+        2
+      ]
+    ]
+  },
+  "lags_in_yahoo_trading_sessions": [
+    {
+      "lag": -2,
+      "matched": 3541,
+      "compared": 3660,
+      "rate": 0.9674863387978142
+    },
+    {
+      "lag": -1,
+      "matched": 3592,
+      "compared": 3661,
+      "rate": 0.9811526905217154
+    },
+    {
+      "lag": 0,
+      "matched": 3655,
+      "compared": 3662,
+      "rate": 0.9980884762424904
+    },
+    {
+      "lag": 1,
+      "matched": 3593,
+      "compared": 3662,
+      "rate": 0.9811578372474058
+    },
+    {
+      "lag": 2,
+      "matched": 3541,
+      "compared": 3662,
+      "rate": 0.9669579464773348
+    }
+  ],
+  "mismatch_days": [
+    {
+      "date": "2010-05-19",
+      "original": 3,
+      "proxy": 2
+    },
+    {
+      "date": "2010-05-20",
+      "original": 3,
+      "proxy": 2
+    },
+    {
+      "date": "2010-06-08",
+      "original": 2,
+      "proxy": 1.25
+    },
+    {
+      "date": "2010-07-15",
+      "original": 1.25,
+      "proxy": 3
+    },
+    {
+      "date": "2010-07-16",
+      "original": 1.25,
+      "proxy": 3
+    },
+    {
+      "date": "2010-08-13",
+      "original": 1.25,
+      "proxy": 3
+    },
+    {
+      "date": "2011-10-13",
+      "original": 2,
+      "proxy": 1.25
+    }
+  ],
+  "per_year": {
+    "2010": {
+      "compared": 225,
+      "matched": 219
+    },
+    "2011": {
+      "compared": 252,
+      "matched": 251
+    },
+    "2012": {
+      "compared": 250,
+      "matched": 250
+    },
+    "2013": {
+      "compared": 252,
+      "matched": 252
+    },
+    "2014": {
+      "compared": 252,
+      "matched": 252
+    },
+    "2015": {
+      "compared": 252,
+      "matched": 252
+    },
+    "2016": {
+      "compared": 252,
+      "matched": 252
+    },
+    "2017": {
+      "compared": 251,
+      "matched": 251
+    },
+    "2018": {
+      "compared": 251,
+      "matched": 251
+    },
+    "2019": {
+      "compared": 252,
+      "matched": 252
+    },
+    "2020": {
+      "compared": 253,
+      "matched": 253
+    },
+    "2021": {
+      "compared": 252,
+      "matched": 252
+    },
+    "2022": {
+      "compared": 251,
+      "matched": 251
+    },
+    "2023": {
+      "compared": 250,
+      "matched": 250
+    },
+    "2024_to_aug29": {
+      "compared": 167,
+      "matched": 167
+    }
+  },
+  "claims": {
+    "same_input_feature_parity_proven": false,
+    "native_LEAN_source_code_identity_proven": false,
+    "LEAN_order_and_broker_execution_parity_proven": false,
+    "alpha_vs_QQQ_or_TQQQ_proven": false,
+    "live_trading_authorized": false,
+    "same_calendar_exposure_agreement_high": true
+  },
+  "interpretation": "The previous ~7.25% number is a strict index-aligned transition sequence metric, NOT 7.25% of daily signals agreeing. Daily same-date effective exposure agrees on 99.81% of TQQQ-available overlap days; 7 differences arise in 2010-2011. This is strong behavioral cross-provider evidence (including 99.32% matching on non-3x days), but still not identical LEAN input feature evidence. Comparands have differing signal/execution time semantics. Do not use as evidence of predictive alpha."
+}

@@ -48,6 +48,10 @@ def diagnose(original, proxy_rows):
         proxy[day]=lev
         prev_date=day
     proxy_dates=list(proxy)
+    if not proxy_dates:
+        raise ValueError("EMPTY_PROXY_SESSION_SET")
+    orig_first=next(iter(orig))
+    orig_last=next(reversed(orig))
     pindex={d:i for i,d in enumerate(proxy_dates)}
     common=[d for d in orig if d in pindex]
     if not common:
@@ -100,6 +104,40 @@ def diagnose(original, proxy_rows):
     baseline=next(x for x in profile if x["offset_in_yahoo_exchange_sessions"]==0)
     best=max(profile,key=lambda x:x["match_rate"] if x["match_rate"] is not None else -1)
     missing_original=len(orig)-len(common)
+    # Separate TQQQ pre-inception from actual missing exchange sessions.
+    original_pre_proxy=sum(day<proxy_dates[0] for day in orig)
+    original_post_proxy=sum(day>proxy_dates[-1] for day in orig)
+    original_missing_within_proxy=missing_original-original_pre_proxy-original_post_proxy
+    # Compare transitions as (date, leverage) pairs, not by event index;
+    # initial Yahoo exposure is a baseline, never a transition.
+    reference_changes=[]
+    previous=None
+    for day,lev in orig.items():
+        if previous is None or lev!=previous:
+            if proxy_dates[0]<=day<=proxy_dates[-1] and day!=proxy_dates[0]:
+                reference_changes.append([day,lev])
+            previous=lev
+    proxy_changes=[]
+    previous=None
+    for day,lev in proxy.items():
+        if previous is None or lev!=previous:
+            if orig_first<=day<=orig_last and day!=proxy_dates[0]:
+                proxy_changes.append([day,lev])
+            previous=lev
+    original_change_set={tuple(x) for x in reference_changes}
+    proxy_change_set={tuple(x) for x in proxy_changes}
+    observed_orig_non3=sum(orig[day]!=3.0 for day in common)
+    matched_orig_non3=sum(orig[day]!=3.0 and orig[day]==proxy[day] for day in common)
+    matched_3x=sum(orig[day]==3.0 and orig[day]==proxy[day] for day in common)
+    orig_3x=sum(orig[day]==3.0 for day in common)
+    denominators={
+        "non_3x_reference_days": observed_orig_non3,
+        "non_3x_matching_days": matched_orig_non3,
+        "non_3x_match_rate": matched_orig_non3/observed_orig_non3 if observed_orig_non3 else None,
+        "3x_reference_days": orig_3x,
+        "3x_matching_days": matched_3x,
+        "3x_match_rate": matched_3x/orig_3x if orig_3x else None,
+    }
     missing_proxy=len(proxy)-len(common)
     return {
         "status":"CROSS_PROVIDER_LEVERAGE_DIAGNOSTIC_ONLY",
@@ -109,6 +147,18 @@ def diagnose(original, proxy_rows):
         "overlap_first":common[0],"overlap_last":common[-1],
         "original_sessions_outside_proxy":missing_original,
         "proxy_sessions_outside_original":missing_proxy,
+        "reference_before_yahoo_proxy_inception":original_pre_proxy,
+        "reference_after_yahoo_proxy_end":original_post_proxy,
+        "missing_reference_sessions_inside_yahoo_proxy_window":original_missing_within_proxy,
+        "balanced_exposure_diagnostic":denominators,
+        "transitions":{
+            "reference_events_inside_proxy_period":len(reference_changes),
+            "proxy_events_excluding_initial_baseline":len(proxy_changes),
+            "exact_date_and_level_matches":len(original_change_set&proxy_change_set),
+            "reference_events_not_in_proxy":[list(x) for x in reference_changes if tuple(x) not in proxy_change_set],
+            "proxy_events_not_in_reference":[list(x) for x in proxy_changes if tuple(x) not in original_change_set],
+            "scope":"EXACT_DATE_AND_LEVEL_PAIRS_NOT_TRANSITION_SEQUENCE_INDEX"
+        },
         "matching_exposure_sessions":baseline["matching_sessions"],
         "same_date_exposure_match_rate":baseline["match_rate"],
         "lag_profile":profile,
@@ -121,7 +171,7 @@ def diagnose(original, proxy_rows):
         "first_mismatched_days":mismatches,
         "same_input_parity_proven":False,
         "diagnostic_lag_not_model_adjustment":True,
-        "critical_warning":"Do not interpret high same-date match as LEAN-vs-Python identity. Dominant persistent 3x exposure and prior-day Yahoo execution semantics can inflate equality, while original LEAN input is still missing.",
+        "critical_warning":"Even 99% cross-provider date-level exposure agreement cannot prove identical LEAN input features or alpha. This independently replays Yahoo QQQ completed closes but compares the original LEAN chart decision with a next-open Yahoo prior-close exposure; persistent 3x can inflate rates. Original native LEAN close/SMA/VOL/MOM values remain missing.",
     }
 
 
