@@ -7,7 +7,7 @@ This stack is a deliberately limited SHADOW SIGNAL ARCHIVE. It does not trade or
 3. Choose Create stack, upload infra/aws/paper-signal-journal.yaml and set stack name stocklens-paper. Review the changes and acknowledge CAPABILITY_IAM.
 4. Once CREATE_COMPLETE, open Outputs. Set GitHub repository Actions VARIABLES (not secrets) AWS_STOCKLENS_AUDIT_ROLE_ARN from GitHubAuditRoleArn and AWS_STOCKLENS_JOURNAL_TABLE from TableName.
 5. Review and merge this branch before triggering the separate GitHub read-only audit workflow. The OIDC trust is restricted to the newly-created immutable GitHub owner and repository IDs on main only.
-6. After a completed US market day the Lambda runs at 03:10 UTC on Tue-Sat, only copying published StockLens 8.0 shadow signals to DynamoDB. Audit runs at 03:40 UTC. Inaccurate or stale sessions fail closed, including NYSE weekday holidays. No synthetic quotes or retrospective paper fills are created.
+6. After GitHub publishes a completed US market day, the signal Lambda runs at 09:10 UTC Tue-Sat, archiving the previous New York calendar day. The paper Lambda follows at 09:20 UTC; the read-only audit runs at 09:40 UTC. Invalid or stale sessions fail closed, including NYSE weekday holidays. No synthetic quotes or retrospective paper fills are created.
 7. Investigate errors via CloudWatch ErrorAlarm and Lambda logs. The alarm has no email configured yet. Do not assume a skipped or passing GitHub check proves execution.
 8. A DynamoDB table is RETAINED if the stack is deleted; remove it explicitly when no longer needed. AWS service usage may cost money and Free Plan expires. Do not store AWS access keys in GitHub or send them to ChatGPT.
 
