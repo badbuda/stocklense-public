@@ -33,6 +33,8 @@ jobs:
           test -s docs/portal-history.json
           python3 -m http.server 8765 --bind 127.0.0.1 --directory docs >/tmp/stocklens-http.log 2>&1 &
           sleep 2
+      - name: Check E2E test syntax before launching browser
+        run: node --check tests/portal_browser_smoke.cjs
       - name: Verify desktop, mobile and simulator in browser
         run: node tests/portal_browser_smoke.cjs
       - name: Upload actual screenshots for review
