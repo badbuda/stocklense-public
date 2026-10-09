@@ -112,7 +112,7 @@ def diagnose(original, proxy_rows):
     previous=None
     for day,lev in orig.items():
         if previous is None or lev!=previous:
-            if proxy_dates[0]<=day<=proxy_dates[-1]:
+            if proxy_dates[0]<=day<=proxy_dates[-1] and day!=proxy_dates[0]:
                 reference_changes.append([day,lev])
             previous=lev
     proxy_changes=[]
