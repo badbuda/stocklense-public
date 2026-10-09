@@ -120,3 +120,24 @@ def test_missing_input_is_blocked(tmp_path):
     r=compare(path=tmp_path/"absent.csv",out=tmp_path/"out.json")
     assert r["status"]=="BLOCKED_MISSING_IDENTICAL_INPUT_EXPORT"
     assert not r["same_input_parity_proven"]
+
+
+def test_dossier_does_not_promote_spoofed_matching_state(tmp_path, monkeypatch):
+    from qc_parity_dossier import build
+    monkeypatch.chdir(tmp_path)
+    (tmp_path/"governance").mkdir()
+    (tmp_path/"shadow_history").mkdir()
+    (tmp_path/"governance/qc_724_daily_state_manifest.json").write_text(
+        json.dumps({"sessions":3774,"full_state_sha256":"golden"}))
+    (tmp_path/"shadow_history/qc_input_ingestion.json").write_text(
+        json.dumps({"status":"VALID","rows":3774,
+                    "source_authenticity_proven":False}))
+    (tmp_path/"shadow_history/qc_same_input_parity.json").write_text(
+        json.dumps({"same_input_state_match":True,"compared_sessions":3774,
+                    "mismatch_count":0,"same_input_parity_proven":True,
+                    "input_validation":{"status":"VALID"}}))
+    report=build()
+    assert report["status"]=="REFERENCE_PARITY_ONLY"
+    assert report["same_input_evidence"]["mathematical_state_match"] is True
+    assert report["same_input_evidence"]["proven"] is False
+    assert any("authenticity" in x.lower() for x in report["blockers"])
