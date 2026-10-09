@@ -3,7 +3,7 @@ let config=null, accessToken=null, expiresAt=0, getHistory=()=>null;
 const byId=id=>document.getElementById(id);
 const status=s=>{const n=byId('cloud-status');if(n)n.textContent=s};
 const html=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c]));
-const money=x=>x!=null&&x!==''&&Number.isFinite(Number(x))?'
+const money=x=>x!=null&&x!==''&&Number.isFinite(Number(x))?String.fromCharCode(36)+new Intl.NumberFormat('en-US',{maximumFractionDigits:2}).format(Number(x)):'—';
 const b64=bytes=>btoa(String.fromCharCode(...bytes)).replaceAll('+','-').replaceAll('/','_').replace(/=+$/,'');
 const random=()=>b64(crypto.getRandomValues(new Uint8Array(32)));
 async function challenge(verifier){return b64(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(verifier))))}
