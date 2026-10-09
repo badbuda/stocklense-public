@@ -2,7 +2,7 @@
 const assert=require('node:assert/strict');
 const { chromium }=require('playwright');
 const fs=require('node:fs');
-const base='http://127.0.0.1:8765';
+const base=(process.env.PORTAL_BASE_URL || 'http://127.0.0.1:8765').replace(/\/$/,'');
 const failures=[];
 (async()=>{
 const browser=await chromium.launch({headless:true,args:['--no-sandbox']});
