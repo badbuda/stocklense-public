@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "kind": "STOCKLENS_COMPLETE_SOURCE_HANDOFF",
-  "source_snapshot_base": "856eebc690ff404042279c34b9175e1881d4a6c9",
+  "source_snapshot_base": "cc710cbbc39c1c338d87b750eebc4aa9ee98302f",
   "runner": "explicit-trigger-or-scheduled",
   "frozen_stocklens8_untouched": true,
   "files": {
