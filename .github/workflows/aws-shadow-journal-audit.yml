@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       verify_session:
-        description: Verify today's completed NYSE session (off = credentials preflight only)
+        description: Verify previous NY session archive (off = credentials preflight only)
         type: boolean
         required: false
         default: false
@@ -63,6 +63,7 @@ jobs:
             --output json > /tmp/aws-journal.json
           SESSION="$session" python3 - <<'PY'
           import json
+          import hashlib
           import os
           import sys
           item = json.load(open("/tmp/aws-journal.json")).get("Item")
@@ -71,7 +72,10 @@ jobs:
               sys.exit("AWS_SHADOW_JOURNAL_MISSING_COMPLETED_SESSION:" + session)
           if item.get("broker_orders_authorized", {}).get("BOOL") is not False:
               sys.exit("AWS_SHADOW_JOURNAL_UNSAFE_BROKER_FLAG")
-          signal = json.loads(item["signal_json"]["S"])
+          body = item["signal_json"]["S"]
+          if hashlib.sha256(body.encode()).hexdigest() != item["signal_sha256"]["S"]:
+              sys.exit("AWS_SHADOW_JOURNAL_TAMPERED")
+          signal = json.loads(body)
           if signal.get("mode") != "SHADOW_ONLY_NO_BROKER_ACTIONS":
               sys.exit("AWS_SHADOW_JOURNAL_UNEXPECTED_MODE")
           if signal.get("latest", {}).get("asof_date") != session:
@@ -99,7 +103,11 @@ jobs:
           paper=json.loads(body)
           if paper["row"]["session_date"]!=os.environ["SESSION"] or paper["row"]["execution_source"]!="YFINANCE_1M_RAW":
               sys.exit("AWS_PAPER_DATE_OR_SOURCE_MISMATCH")
-          if len(paper["trades"])!=int(paper["row"]["trade_count_session"]):
+          receipts=paper.get("trs")
+          if not isinstance(receipts,list) or len(receipts)!=int(paper["row"]["trade_count_session"]):
               sys.exit("AWS_PAPER_TRADE_COUNT_MISMATCH")
+          for trade in receipts:
+              if trade.get("execution_session")!=os.environ["SESSION"]:
+                  sys.exit("AWS_PAPER_TRADE_SESSION_MISMATCH")
           print("AWS_PROSPECTIVE_PAPER=PASS_MODELED_ONLY;session="+os.environ["SESSION"])
           PY
