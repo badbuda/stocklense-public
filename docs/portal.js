@@ -81,9 +81,39 @@ function render(){
     byId('paper-chart-empty').textContent=equity.length===1?'יש לנו יום מדומה אחד בלבד. אחרי שיצטברו עוד ימים יופיע כאן גרף אמיתי, ללא קו שהומצא.':'עדיין אין ימי Paper Trading מאומתים.';
   }
   put('paper-chart-caption',equity.length+' ימי תיעוד · מקור: יומן Paper · לא מסחר בברוקר');
-  renderTrades();showGapReport(paper,state.history);renderResearch();renderRisk();renderHealth();
+  renderTrades();showGapReport(paper,state.history);renderResearch();renderRisk();renderHealth();renderGovernance(d);
   setupSimulation();
   paintPerformance();
+}
+function renderGovernance(d){
+  const capital=d.capital_readiness||{},qc=d.qc_frozen_record||{},paper=d.paper||{}, latest=paper.latest||{}, perf=d.performance||{};
+  const original=Number(latest.equity),cum=Number(latest.cumulative_return),hasPaper=latest.equity!=null&&latest.cumulative_return!=null;
+  const technical=capital.technical_checks_pass===true,auto=capital.automatic_trading_authorized===true;
+  const parity=capital.full_lean_execution_parity===true && d.qc_parity_dossier?.same_input_evidence?.proven===true;
+  put('real-paper-sessions',number(paper.sessions,0));
+  put('research-session-count',number(capital.prospective_completed_sessions,0));
+  put('real-paper-return',hasPaper?percentage(cum,2):'אין נתון');
+  byId('real-paper-return').className=hasPaper?signed(cum):'';
+  const baseline=hasPaper&&cum>-1?original/(1+cum):null;
+  put('real-paper-baseline',baseline!=null?'מאז '+money(baseline)+' שהושקעו, כולל יום הכניסה':'מועד הבסיס אינו מאומת');
+  put('model-parity-state',parity?'מאומת':'טרם הוכח');
+  const reasons=[];
+  if(!technical)reasons.push('בדיקות מוכנות ההון אינן עוברות במלואן');
+  if(!parity)reasons.push('התאמה יומית מלאה ל־LEAN המקורי טרם הוכחה');
+  if(!auto)reasons.push('שליחת הוראות לברוקר אינה מורשית');
+  put('readiness-message',reasons.length?reasons.join(' · '):'גם כשהבדיקות הטכניות עוברות, אין המלצת השקעה או הרשאה למסחר אוטומטי.');
+  const cockpit=d.execution_cockpit||{},planned=(cockpit.orders||[]).filter(x=>x.dry_run===true);
+  const singleShare=planned.some(x=>x.symbol==='TQQQ'&&Number(x.quantity)===1);
+  const inconsistent=hasPaper&&perf.sessions===paper.sessions&&
+     perf.total_return_pct!=null&&Math.abs(Number(perf.total_return_pct)-100*cum)>0.1;
+  setHtml('capital-readiness-details',[
+    tag('מוכנות הון טכנית','בדיקות האות, נתונים והצלבת הסימולטור',technical?'עבר':'חסום',technical),
+    tag('זהות מלאה מול LEAN','הנתונים והאיתות היומי נבדקו על אותו קלט מקורי',parity?'הוכחה':'לא הוכחה',parity),
+    tag('מסחר אמיתי','האם יש הרשאה לשלוח הוראות אוטומטיות',auto?'הרשאה קיימת':'אסור',false),
+    tag('שני מוני מחקר נפרדים','Paper: '+(paper.sessions??'—')+' · מחקר: '+(capital.prospective_completed_sessions??'—'),'לא אותו ניסוי',false),
+    tag('פער בין מדדי תשואה',inconsistent?'performance מראה '+number(perf.total_return_pct)+'%, ו־ledger מראה '+percentage(cum,2):'ללא פער מזוהה',inconsistent?'קיים — הצגה לפי ledger':'לא זוהה',!inconsistent),
+    tag('אי־התאמה בפקודות Dry Run',singleShare?'קיים תכנון למכירת מניית TQQQ אחת — ללא הוראה לברוקר':'אין דוגמת חריגה של מניה בודדת',singleShare?'דורש סבילות/יישוב יעדים':'מעקב בלבד',!singleShare)
+  ].join(''));
 }
 function renderTrades(){
   const paper=state.data.paper||{}, tr=paper.recent_trades||[], rows=paper.equity_history||[];
