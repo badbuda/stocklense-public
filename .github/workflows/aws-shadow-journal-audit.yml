@@ -36,6 +36,15 @@ jobs:
           test -n "$ROLE_ARN" || { echo "::error::Missing AWS_STOCKLENS_AUDIT_ROLE_ARN"; exit 1; }
           test -n "$TABLE" || { echo "::error::Missing AWS_STOCKLENS_JOURNAL_TABLE"; exit 1; }
           echo "AWS_STOCKLENS_CONFIG=SET"
+      - name: Checkout XNYS archive-calendar guard
+        uses: actions/checkout@v4
+      - name: Classify previous NY local day using exchange session calendar
+        id: market_calendar
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --quiet exchange-calendars==4.13.2
+          python aws_journal_session_guard.py --github-output "$GITHUB_OUTPUT"
       - name: Assume temporary read-only AWS role
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -52,7 +61,7 @@ jobs:
           echo "AWS_STOCKLENS_OIDC_PREFLIGHT=PASS_READ_ONLY_TABLE_ACTIVE"
           echo "AWS_STOCKLENS_LIVE_TRADING_AUTHORIZED=false"
       - name: Verify the scheduled completed-session signal, never broker fills
-        if: github.event_name == 'schedule' || github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.verify_session)
+        if: ${{ (github.event_name == 'schedule' || github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.verify_session)) && steps.market_calendar.outputs.required == 'true' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -85,7 +94,7 @@ jobs:
           PY
 
       - name: Validate separate modeled paper record in AWS; never broker fills
-        if: github.event_name == 'schedule' || github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.verify_session)
+        if: ${{ (github.event_name == 'schedule' || github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.verify_session)) && steps.market_calendar.outputs.required == 'true' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -120,7 +129,13 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           AUDIT_STATUS: ${{ job.status }}
           AUDIT_RUN_ID: ${{ github.run_id }}
+          MARKET_SESSION_REQUIRED: ${{ steps.market_calendar.outputs.required }}
+          MARKET_CALENDAR_OUTCOME: ${{ steps.market_calendar.outcome }}
         run: |
           set -euo pipefail
           session="$(TZ=America/New_York date -d yesterday +%F)"
-          gh issue comment 10 -R badbuda/stocklense-public --body "AWS_SIGNAL_AND_PAPER_AUDIT ${session}: **${AUDIT_STATUS}**. Read-only DynamoDB check; no broker orders or fills. [GitHub run](https://github.com/badbuda/stocklense-public/actions/runs/${AUDIT_RUN_ID}). If failure, inspect that run's step logs before claiming records were archived."
+          verdict="${AUDIT_STATUS}"
+          if [[ "${MARKET_CALENDAR_OUTCOME}" == "success" && "${MARKET_SESSION_REQUIRED}" == "false" ]]; then
+            verdict="NO_XNYS_SESSION_EXPECTED;IDENTITY_AND_TABLE_PREFLIGHT=${AUDIT_STATUS}"
+          fi
+          gh issue comment 10 -R badbuda/stocklense-public --body "AWS_SIGNAL_AND_PAPER_AUDIT ${session}: **${verdict}**. XNYS-calendar-aware read-only AWS audit; broker orders and fills remain disabled. [GitHub run](https://github.com/badbuda/stocklense-public/actions/runs/${AUDIT_RUN_ID}). If failure, inspect step logs before claiming records were archived."
