@@ -14,8 +14,8 @@ const setHtml=(id,value)=>{const e=byId(id);if(e)e.innerHTML=value};
 const dateText=s=>s?new Intl.DateTimeFormat('he-IL',{year:'numeric',month:'short',day:'numeric',timeZone:'UTC'}).format(new Date(s+'T12:00:00Z')):'—';
 const signed=v=>v>0?'positive':v<0?'negative':'';
 const PAGE_NAMES={overview:'תמונת מצב',paper:'העסקאות והתיק',performance:'ביצועים וסיכון',simulator:'סימולטור',research:'מעבדת מחקר',evidence:'נתונים ואמינות'};
-const state={data:null,series:null,history:null,risk:null,workbench:null,quality:null,lastSimulation:null};
-const DATA_ENDPOINTS={data:'data.json',series:'timeseries.json',history:'portal-history.json',risk:'observed_tqqq_risk_audit.json',workbench:'workbench.json',quality:'site_health.json'};
+const state={data:null,series:null,history:null,risk:null,workbench:null,quality:null,exposure:null,lastSimulation:null};
+const DATA_ENDPOINTS={data:'data.json',series:'timeseries.json',history:'portal-history.json',risk:'observed_tqqq_risk_audit.json',workbench:'workbench.json',quality:'site_health.json',exposure:'lean-exposure-evidence.json'};
 function navigate(page){
   if(!PAGE_NAMES[page])page='overview';
   document.querySelectorAll('.page').forEach(x=>x.classList.toggle('visible',x.dataset.view===page));
@@ -99,7 +99,7 @@ function renderGovernance(d){
   put('model-parity-state',parity?'מאומת':'טרם הוכח');
   const reasons=[];
   if(!technical)reasons.push('בדיקות מוכנות ההון אינן עוברות במלואן');
-  if(!parity)reasons.push('התאמה יומית מלאה ל־LEAN המקורי טרם הוכחה');
+  if(!parity)reasons.push('זהות קלט ומחירי ביצוע מול LEAN המקורי טרם הוכחו');
   if(!auto)reasons.push('שליחת הוראות לברוקר אינה מורשית');
   put('readiness-message',reasons.length?reasons.join(' · '):'גם כשהבדיקות הטכניות עוברות, אין המלצת השקעה או הרשאה למסחר אוטומטי.');
   const cockpit=d.execution_cockpit||{},planned=(cockpit.orders||[]).filter(x=>x.dry_run===true);
@@ -108,7 +108,8 @@ function renderGovernance(d){
      perf.total_return_pct!=null&&Math.abs(Number(perf.total_return_pct)-100*cum)>0.1;
   setHtml('capital-readiness-details',[
     tag('מוכנות הון טכנית','בדיקות האות, נתונים והצלבת הסימולטור',technical?'עבר':'חסום',technical),
-    tag('זהות מלאה מול LEAN','הנתונים והאיתות היומי נבדקו על אותו קלט מקורי',parity?'הוכחה':'לא הוכחה',parity),
+    exposureEvidenceTag(),
+    tag('זהות מלאה מול LEAN','זהות קלט, קוד וביצוע; שונה מהתאמת חשיפה יומית',parity?'הוכחה':'לא הוכחה',parity),
     tag('מסחר אמיתי','האם יש הרשאה לשלוח הוראות אוטומטיות',auto?'הרשאה קיימת':'אסור',false),
     tag('שני מוני מחקר נפרדים','Paper: '+(paper.sessions??'—')+' · מחקר: '+(capital.prospective_completed_sessions??'—'),'לא אותו ניסוי',false),
     tag('פער בין מדדי תשואה',inconsistent?'performance מראה '+number(perf.total_return_pct)+'%, ו־ledger מראה '+percentage(cum,2):'ללא פער מזוהה',inconsistent?'קיים — הצגה לפי ledger':'לא זוהה',!inconsistent),
@@ -133,9 +134,22 @@ function renderRisk(){
   const years=state.risk?.calendar_years||[];
   setHtml('years-body',years.length?[...years].reverse().map(y=>'<tr><td>'+clean(y.year)+'</td><td class="'+signed(Number(y.stocklens_return))+'">'+percentage(y.stocklens_return)+'</td><td class="'+signed(Number(y.qqq_return))+'">'+percentage(y.qqq_return)+'</td><td class="'+signed(Number(y.stocklens_return)-Number(y.qqq_return))+'">'+percentage(Number(y.stocklens_return)-Number(y.qqq_return))+'</td></tr>').join(''):'<tr><td colspan="4">אין נתוני סיכון תקפים.</td></tr>');
 }
+function exposureEvidenceTag(){
+  const e=state.exposure;
+  const verified=e?.status==='VERIFIED_CROSS_PROVIDER_EXPOSURE_ALIGNMENT_NOT_LEAN_INPUT_PARITY'
+     &&e?.kind==='LEAN_SL724_ORIGINAL_VS_YAHOO_QQQ_TQQQ_PRIOR_SIGNAL_EXECUTION_EXPOSURE'
+     &&Number.isInteger(e?.overlap_sessions)&&e.overlap_sessions>0
+     &&Number.isInteger(e?.matching_exposures)&&e.matching_exposures<=e.overlap_sessions
+     &&e.matching_exposures>=0
+     &&Math.abs(e.daily_exposure_match_rate-e.matching_exposures/e.overlap_sessions)<1e-9
+     &&e.full_same_input_parity_proven===false;
+  if(!verified)return tag('LEAN מול Yahoo — חשיפה יומית','עדות השוואת ספקים לא נטענה או לא אומתה','לא מאומת',false);
+  return tag('LEAN מול Yahoo — חשיפה יומית','התאמה בחשיפה בלבד, לא זהות קלט או מילוי בברוקר; '+e.matching_exposures+'/'+e.overlap_sessions+' ימים',percentage(e.daily_exposure_match_rate,2),'cross-provider');
+}
 function renderHealth(){
  const d=state.data,sig=d.signal||{},paper=d.paper||{},v=state.history;
  setHtml('health-list',[
+  exposureEvidenceTag(),
  tag('סיגנל יומי', 'מבוסס על סגירת QQQ האחרונה שהושלמה',sig.asof_date||'חסר',!!sig.asof_date),
  tag('תיק Paper', 'מספר ימי מסחר שנרשמו ביומן המודל',String(paper.sessions??'אין'),(paper.sessions||0)>0),
  tag('Yahoo / TQQQ היסטורי', 'עדכון לפי ביצוע משוער בשער פתיחה יומי',v?.updated_session||'עדיין לא נבנה תקציר',!!v?.daily?.length),
