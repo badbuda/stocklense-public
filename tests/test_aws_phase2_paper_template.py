@@ -40,3 +40,70 @@ def test_aws_email_alarm_and_duplicate_guards():
     assert T.count('ReturnValuesOnConditionCheckFailure')==2
     assert T.count('DIVERGENT_')>=2
     assert T.count('RetentionInDays: 30')==2
+
+
+def _audit_paper_python():
+    """Execute the exact Python script embedded in the GitHub AWS audit step."""
+    import textwrap
+    section=W.split("- name: Validate separate modeled paper record in AWS; never broker fills",1)[1]
+    script=section.split("python3 - <<'PY'\n",1)[1].split("\n          PY",1)[0]
+    return textwrap.dedent(script)
+
+
+def _run_audit_paper(monkeypatch, *, wrong_key=False, tampered=False, session="2026-10-08"):
+    import contextlib
+    import hashlib
+    import io
+    import json
+    monkeypatch.setenv("SESSION",session)
+    row={"session_date":"2026-10-08",
+         "execution_source":"YFINANCE_1M_RAW",
+         "trade_count_session":1}
+    trades=[{"execution_session":"2026-10-08","symbol":"TQQQ","side":"BUY"}]
+    # Match the archived Lambda's exact payload schema, including its trs key.
+    payload={"row":row,("trades" if wrong_key else "trs"):trades}
+    body=json.dumps(payload,sort_keys=True,separators=(",",":"))
+    entry={"broker_orders_authorized":{"BOOL":False},
+           "broker_fills_observed":{"BOOL":False},
+           "paper_evidence_json":{"S":body},
+           "paper_sha256":{"S":hashlib.sha256(body.encode()).hexdigest()}}
+    if tampered:
+        entry["paper_sha256"]["S"]="0"*64
+    namespace={"open":lambda name,*args,**kw:io.StringIO(json.dumps({"Item":entry}))}
+    out=io.StringIO()
+    with contextlib.redirect_stdout(out):
+        exec(compile(_audit_paper_python(),"github-aws-paper-audit","exec"),namespace)
+    return out.getvalue()
+
+
+def test_github_audit_reads_exact_lambda_paper_schema(monkeypatch):
+    assert '"trs":mt' in SRC
+    assert 'paper.get("trs")' in W
+    assert 'paper["trades"]' not in W
+    assert "AWS_PROSPECTIVE_PAPER=PASS_MODELED_ONLY;session=2026-10-08" in _run_audit_paper(monkeypatch)
+
+
+def test_github_audit_rejects_original_trades_key_bug(monkeypatch):
+    import pytest
+    with pytest.raises(SystemExit,match="AWS_PAPER_TRADE_COUNT_MISMATCH"):
+        _run_audit_paper(monkeypatch,wrong_key=True)
+
+
+def test_github_audit_rejects_tampered_archive(monkeypatch):
+    import pytest
+    with pytest.raises(SystemExit,match="AWS_PAPER_EVIDENCE_TAMPERED"):
+        _run_audit_paper(monkeypatch,tampered=True)
+
+
+def test_github_audit_rejects_another_session(monkeypatch):
+    import pytest
+    with pytest.raises(SystemExit,match="AWS_PAPER_DATE_OR_SOURCE_MISMATCH"):
+        _run_audit_paper(monkeypatch,session="2026-10-07")
+
+
+def test_aws_audit_result_is_visible_and_rechecks_on_workflow_change():
+    assert "issues: write" in W
+    assert "AWS_SIGNAL_AND_PAPER_AUDIT" in W
+    assert "github.event_name == 'push'" in W
+    assert "always()" in W
+    assert "gh issue comment 10" in W

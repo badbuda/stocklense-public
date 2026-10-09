@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       verify_session:
-        description: Verify today's completed NYSE session (off = credentials preflight only)
+        description: Verify previous NY session archive (off = credentials preflight only)
         type: boolean
         required: false
         default: false
@@ -19,6 +19,7 @@ on:
 permissions:
   id-token: write
   contents: read
+  issues: write
 
 jobs:
   audit:
@@ -51,7 +52,7 @@ jobs:
           echo "AWS_STOCKLENS_OIDC_PREFLIGHT=PASS_READ_ONLY_TABLE_ACTIVE"
           echo "AWS_STOCKLENS_LIVE_TRADING_AUTHORIZED=false"
       - name: Verify the scheduled completed-session signal, never broker fills
-        if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.verify_session)
+        if: github.event_name == 'schedule' || github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.verify_session)
         shell: bash
         run: |
           set -euo pipefail
@@ -63,6 +64,7 @@ jobs:
             --output json > /tmp/aws-journal.json
           SESSION="$session" python3 - <<'PY'
           import json
+          import hashlib
           import os
           import sys
           item = json.load(open("/tmp/aws-journal.json")).get("Item")
@@ -71,7 +73,10 @@ jobs:
               sys.exit("AWS_SHADOW_JOURNAL_MISSING_COMPLETED_SESSION:" + session)
           if item.get("broker_orders_authorized", {}).get("BOOL") is not False:
               sys.exit("AWS_SHADOW_JOURNAL_UNSAFE_BROKER_FLAG")
-          signal = json.loads(item["signal_json"]["S"])
+          body = item["signal_json"]["S"]
+          if hashlib.sha256(body.encode()).hexdigest() != item["signal_sha256"]["S"]:
+              sys.exit("AWS_SHADOW_JOURNAL_TAMPERED")
+          signal = json.loads(body)
           if signal.get("mode") != "SHADOW_ONLY_NO_BROKER_ACTIONS":
               sys.exit("AWS_SHADOW_JOURNAL_UNEXPECTED_MODE")
           if signal.get("latest", {}).get("asof_date") != session:
@@ -80,7 +85,7 @@ jobs:
           PY
 
       - name: Validate separate modeled paper record in AWS; never broker fills
-        if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.verify_session)
+        if: github.event_name == 'schedule' || github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.verify_session)
         shell: bash
         run: |
           set -euo pipefail
@@ -99,7 +104,23 @@ jobs:
           paper=json.loads(body)
           if paper["row"]["session_date"]!=os.environ["SESSION"] or paper["row"]["execution_source"]!="YFINANCE_1M_RAW":
               sys.exit("AWS_PAPER_DATE_OR_SOURCE_MISMATCH")
-          if len(paper["trades"])!=int(paper["row"]["trade_count_session"]):
+          receipts=paper.get("trs")
+          if not isinstance(receipts,list) or len(receipts)!=int(paper["row"]["trade_count_session"]):
               sys.exit("AWS_PAPER_TRADE_COUNT_MISMATCH")
+          for trade in receipts:
+              if trade.get("execution_session")!=os.environ["SESSION"]:
+                  sys.exit("AWS_PAPER_TRADE_SESSION_MISMATCH")
           print("AWS_PROSPECTIVE_PAPER=PASS_MODELED_ONLY;session="+os.environ["SESSION"])
           PY
+
+      - name: Record daily AWS journal audit outcome on project issue
+        if: ${{ always() && (github.event_name == 'schedule' || github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.verify_session)) }}
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          AUDIT_STATUS: ${{ job.status }}
+          AUDIT_RUN_ID: ${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          session="$(TZ=America/New_York date -d yesterday +%F)"
+          gh issue comment 10 -R badbuda/stocklense-public --body "AWS_SIGNAL_AND_PAPER_AUDIT ${session}: **${AUDIT_STATUS}**. Read-only DynamoDB check; no broker orders or fills. [GitHub run](https://github.com/badbuda/stocklense-public/actions/runs/${AUDIT_RUN_ID}). If failure, inspect that run's step logs before claiming records were archived."

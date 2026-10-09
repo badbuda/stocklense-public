@@ -5,7 +5,7 @@
   "runner": "explicit-trigger-or-scheduled",
   "frozen_stocklens8_untouched": true,
   "files": {
-    ".github/workflows/aws-shadow-journal-audit.yml": "828d756ed59b1a1ca08c04619a226fd5326bb543",
+    ".github/workflows/aws-shadow-journal-audit.yml": "352d1e0c2e755eaff2135c430a8a26b358292311",
     ".github/workflows/fast-guard.yml": "7773aba74e8da481e09063dcb301e7742c38e69b",
     ".github/workflows/shadow.yml": "f68cd414446334fa26cd4db6a1b56cc906c05423",
     "accel_mechanism_broad_megabatch.py": "aa9c3c2585a2505cdca95be3768f67a904c27e45",
@@ -242,7 +242,7 @@
     "tail_risk_challengers.py": "705ad85beec36defde041e48052a89f069fe9ba7",
     "tests/test_aws_b6_bounded_receipt.py": "c1153e49e87df1cd30e5ce882800cc5b1d7c0c8f",
     "tests/test_aws_phase2_behavior.py": "8cbd5c6e8124c05d684b9220484a68b8718f05f0",
-    "tests/test_aws_phase2_paper_template.py": "f3b13170b0c2681c805f1c8fa8e00fd45c3b60fa",
+    "tests/test_aws_phase2_paper_template.py": "deb9dfa4c0b0ddc5a92763dd9ee78006fc7ef407",
     "tests/test_backtest_adversarial.py": "c99ca53e2211c2b765e17dfdd6d02d5047c30e58",
     "tests/test_backtest_calendar_year_fragility.py": "220ad8dd6e2157dc54ed7bc2f180ab37e842c0f0",
     "tests/test_backtest_cashflow_causality.py": "e0fb6cb2a643626f6c448294e5bb995187748df9",
