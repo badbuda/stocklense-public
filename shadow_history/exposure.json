@@ -5,7 +5,11 @@
     "cash_weight": 0.015000000000000013,
     "effective_beta_proxy": 2.955
   },
-  "paper_status": "WAITING_FOR_FIRST_EXECUTION",
-  "drift": null,
+  "paper_status": "ACTIVE",
+  "drift": {
+    "qqq_weight": 0.0,
+    "tqqq_weight": 0.0005829717253172939,
+    "max_abs_weight_drift": 0.0005829717253172939
+  },
   "rebalance_required": false
 }

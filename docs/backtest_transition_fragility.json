@@ -3,17 +3,17 @@
   "status": "PASS",
   "transition_sessions": {
     "sessions": 4,
-    "mean_strategy_gross_return": -0.030621489979414884,
-    "median_strategy_gross_return": -0.030432019421791523,
+    "mean_strategy_gross_return": -0.030621491410908558,
+    "median_strategy_gross_return": -0.03043202228477887,
     "positive_share": 0.25,
-    "gross_return_sum": -0.12248595991765954
+    "gross_return_sum": -0.12248596564363423
   },
   "non_transition_sessions": {
     "sessions": 247,
-    "mean_strategy_gross_return": 0.0032012208355468846,
-    "median_strategy_gross_return": 0.003952373456129532,
+    "mean_strategy_gross_return": 0.0032012189556540793,
+    "median_strategy_gross_return": 0.0039520705182740645,
     "positive_share": 0.5506072874493927,
-    "gross_return_sum": 0.7907015463800804
+    "gross_return_sum": 0.7907010820465576
   },
   "transition_pairs": {
     "1.25->3": {
@@ -32,10 +32,10 @@
     },
     "3->1.25": {
       "sessions": 1,
-      "mean_strategy_gross_return": -0.05544496152146916,
-      "median_strategy_gross_return": -0.05544496152146916,
+      "mean_strategy_gross_return": -0.055444967247443855,
+      "median_strategy_gross_return": -0.055444967247443855,
       "positive_share": 0.0,
-      "gross_return_sum": -0.05544496152146916
+      "gross_return_sum": -0.055444967247443855
     },
     "3->2": {
       "sessions": 1,
@@ -48,8 +48,8 @@
   "transitions": [
     {
       "date": "2026-03-20",
-      "strategy_gross_return": -0.05544496152146916,
-      "qqq_return": -0.01848165384048972,
+      "strategy_gross_return": -0.055444967247443855,
+      "qqq_return": -0.01848165574914795,
       "transition": true,
       "from_exposure": 3.0,
       "to_exposure": 1.25

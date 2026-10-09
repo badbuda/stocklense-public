@@ -2,12 +2,12 @@
   "schema_version": 2,
   "publication_identity": {
     "schema_version": 2,
-    "git_sha": "1881a80d016d4290e87c8862ccf83379b0dd5c2d",
+    "git_sha": "a72dfbccb9e278d9edd3478655bc4832c212f82e",
     "signal_asof": null,
     "replay_dataset_sha256": "db0889da31af43b1b75e005c1f4ab2cad421dfb55a6c55a77a223e0623950d95",
-    "replay_rows_sha256": "be86daace4e80ca96c10ed2e611f9b0045e2d515cb03cffeb536b7015ce0e49a",
+    "replay_rows_sha256": "e76056f8625806490627f4ce0a8285575c01ebb26cb6e462469c8d844523965f",
     "simulator_contract_sha256": "80745a3640c6fe667a3c500571fb15abee1d532a5b720fb6efc8b52f291dfc68",
-    "generation_id": "f97ac9e9aa9ab8ef459b97111cadb8cd7ca705e0895cf630ad8c0095409de17f"
+    "generation_id": "9d51e80c8a9ab7928b40a8dad4a6972caa462dd6e6412a88c0bcfbef6d28818a"
   },
   "status": "PASS",
   "coverage": {
@@ -18,29 +18,29 @@
     "evidence_scope": "SHORT_REPLAY_ONLY",
     "warning": "Fewer than 3 near-full trading years are present; leave-one-year-out is descriptive and not evidence of long-horizon robustness."
   },
-  "full_compounded_gross_return": 0.664009353534303,
+  "full_compounded_gross_return": 0.6640084622750482,
   "calendar_years": [
     {
       "year": "2025",
       "sessions": 59,
-      "compounded_gross_return": 0.02843891165527146
+      "compounded_gross_return": 0.028438595518818888
     },
     {
       "year": "2026",
       "sessions": 192,
-      "compounded_gross_return": 0.6179953273608465
+      "compounded_gross_return": 0.617994958109874
     }
   ],
   "leave_one_year_out": [
     {
       "excluded_year": "2025",
-      "remaining_compounded_gross_return": 0.6179953273608465,
-      "delta_vs_full": -0.04601402617345651
+      "remaining_compounded_gross_return": 0.617994958109874,
+      "delta_vs_full": -0.046013504165174135
     },
     {
       "excluded_year": "2026",
-      "remaining_compounded_gross_return": 0.02843891165527146,
-      "delta_vs_full": -0.6355704418790316
+      "remaining_compounded_gross_return": 0.028438595518818888,
+      "delta_vs_full": -0.6355698667562293
     }
   ],
   "semantics": "Calendar-year attribution and leave-one-year-out fragility diagnostic. Years are not selected for optimization; no CAGR or alpha inference from partial years.",

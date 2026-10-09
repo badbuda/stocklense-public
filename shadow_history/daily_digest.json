@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
-  "summary": "2026-10-07 | L3 3.0x | NO_CHANGE | Health GREEN | READY",
-  "signal_date": "2026-10-07",
+  "summary": "2026-10-08 | L3 3.0x | NO_CHANGE | Health GREEN | READY",
+  "signal_date": "2026-10-08",
   "level": 3,
   "leverage": 3.0,
   "action": "NO_CHANGE",
@@ -10,10 +10,13 @@
   "execution_required": false,
   "benchmark_status": "WAITING_FOR_PROSPECTIVE_DATA",
   "paper": {
-    "last_executed_signal_date": null,
+    "last_executed_signal_date": "2026-10-07",
     "last_mark_date": null,
-    "cash": null,
-    "shares": null,
+    "cash": 1404.6216996342264,
+    "shares": {
+      "QQQ": 0,
+      "TQQQ": 1197
+    },
     "status": "WAITING_FOR_FIRST_VALID_PROSPECTIVE_EXECUTION"
   },
   "research": {

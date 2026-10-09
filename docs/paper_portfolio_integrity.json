@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "status": "PASS_MODELLED_PAPER_ACCOUNTING_NOT_BROKER_FILLS",
+  "verified_paper_sessions": 1,
+  "latest_session": "2026-10-08",
+  "modeled_trades": 1,
+  "equity": 97427.96316081587,
+  "errors": [],
+  "data_source": "YFINANCE_1M_RAW",
+  "broker_fills_observed": false,
+  "live_trading_authorized": false,
+  "note": "Observed QQQ/TQQQ 1m ETF opens with modeled fees/slippage. NOT actual broker execution."
+}

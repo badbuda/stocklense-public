@@ -1,6 +1,18 @@
 {
   "schema_version": 1,
-  "status": "NO_ORDERS",
+  "status": "ACTIVE",
   "live_submission_authorized": false,
-  "orders": []
+  "orders": [
+    {
+      "order_id": "38879405ddaca59d6eed",
+      "idempotency_key": "2e0a50bdb4fcef5166a28a4d04c4f8b909ce2a3a8b13fedb9b35e35050c32a72",
+      "session": "2026-10-09",
+      "symbol": "TQQQ",
+      "side": "SELL",
+      "quantity": 1,
+      "status": "PLANNED",
+      "broker_order_id": null,
+      "filled_quantity": 0
+    }
+  ]
 }

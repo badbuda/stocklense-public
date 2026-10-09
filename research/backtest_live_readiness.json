@@ -4,19 +4,19 @@
   "status": "BLOCKED_FOR_LIVE_TRADING",
   "model": "StockLens 8.0 FROZEN",
   "evidence_class": "OBSERVED_ETF_DAILY_OPEN_PROXY_NOT_BROKER_LIVE",
-  "generated_at_utc": "2026-10-08T16:09:14.233601+00:00",
+  "generated_at_utc": "2026-10-09T04:36:27.198045+00:00",
   "backtest_window": {
     "start": "2010-02-11",
-    "end": "2026-10-07",
-    "sessions": 4189
+    "end": "2026-10-08",
+    "sessions": 4190
   },
-  "historical_observed_etf_cagr": 0.40277811496884053,
-  "historical_qqq_cagr": 0.1981971974445167,
-  "historical_max_drawdown": -0.4907568794375248,
+  "historical_observed_etf_cagr": 0.3992614125645262,
+  "historical_qqq_cagr": 0.19719178907864143,
+  "historical_max_drawdown": -0.4907566543056123,
   "statistical_significance_not_proven": true,
   "observed_daily_open_not_true_fills": true,
-  "prospective_challenger_sessions": 8,
-  "prospective_frozen_paper_sessions": 0,
+  "prospective_challenger_sessions": 9,
+  "prospective_frozen_paper_sessions": 1,
   "paired_forward_paper_sessions": 0,
   "review_floors_are_not_proof": true,
   "checks": [
@@ -28,11 +28,11 @@
       "evidence": {
         "period": {
           "start": "2010-02-11",
-          "end": "2026-10-07",
-          "sessions": 4189
+          "end": "2026-10-08",
+          "sessions": 4190
         },
         "source": "YFINANCE_AUTO_ADJUSTED_DAILY_OPEN_AND_CLOSE",
-        "data_sha256": "175104a866ad4689af45c2c9b8f37e57dc698e5199819c9ce127d81a2f841166"
+        "data_sha256": "6bbff94b3e56ff48d54b3f558a504884d31ad54ec932b97e4de795155904baf7"
       },
       "severity": "REQUIRED"
     },
@@ -42,8 +42,8 @@
       "status": "PASS",
       "description": "Both strategies require identical market dates and external cashflows.",
       "evidence": {
-        "stocklens": 28031945.219291,
-        "qqq": 2030716.73932,
+        "stocklens": 26909151.43256,
+        "qqq": 2003514.797122,
         "contribution_matched": true
       },
       "severity": "REQUIRED"
@@ -55,8 +55,8 @@
       "description": "Every observed QQQ/TQQQ backtest session must align with the XNYS exchange calendar and same-run price snapshot.",
       "evidence": {
         "status": "PASS",
-        "expected": 4189,
-        "observed": 4189,
+        "expected": 4190,
+        "observed": 4190,
         "missing": [],
         "suspicious_large_moves": 0
       },
@@ -80,7 +80,7 @@
       "description": "Identical StockLens 8.0 target from the observed ETF backtest and the published shadow signal, for the same completed QQQ date.",
       "evidence": {
         "status": "PASS",
-        "date": "2026-10-07",
+        "date": "2026-10-08",
         "errors": []
       },
       "severity": "REQUIRED"
@@ -152,8 +152,8 @@
       "status": "BLOCKED",
       "description": "Prospective frozen StockLens 8.0, tracked AFTER registration, must be independently reviewed before live deployment.",
       "evidence": {
-        "sl9_challenger_sessions_not_baseline_proof": 8,
-        "prospective_baseline_verified_sessions": 0,
+        "sl9_challenger_sessions_not_baseline_proof": 9,
+        "prospective_baseline_verified_sessions": 1,
         "requested_review_checkpoints": [
           63,
           252
@@ -167,7 +167,7 @@
       "status": "BLOCKED",
       "description": "Record at least 63 completed paper execution sessions to begin a formal review, not to establish guaranteed profitability.",
       "evidence": {
-        "paper_sessions": 0,
+        "paper_sessions": 1,
         "review_floor": 63
       },
       "severity": "REQUIRED"
@@ -190,7 +190,7 @@
       "status": "BLOCKED",
       "description": "Real time-matched forward paper P&L versus QQQ net of modeled costs; never substitute challenger returns.",
       "evidence": {
-        "benchmark_sessions": 0,
+        "benchmark_sessions": 1,
         "benchmark_status": "WAITING_FOR_PROSPECTIVE_DATA"
       },
       "severity": "REQUIRED"
@@ -209,7 +209,7 @@
     {
       "id": "DECISION_MONITORING_AND_STALE_DATA",
       "category": "Operations",
-      "status": "PASS",
+      "status": "BLOCKED",
       "description": "Same-day exchange-calendar and source freshness, signal/replay alignment and fail-closed monitoring.",
       "evidence": {
         "health": "HEALTHY",
@@ -223,7 +223,7 @@
       "status": "BLOCKED",
       "description": "Human-approved loss budget, position sizing, concentration, volatility gap limits, kill switch and response playbook must be validated.",
       "evidence": {
-        "historical_max_drawdown": -0.4907568794375248,
+        "historical_max_drawdown": -0.4907566543056123,
         "stress_loss_guarantee": false,
         "policy": "NOT_YET_APPROVED"
       },
@@ -241,8 +241,8 @@
       "severity": "REQUIRED"
     }
   ],
-  "passed_count": 6,
-  "blocked_count": 12,
+  "passed_count": 5,
+  "blocked_count": 13,
   "blockers": [
     "PROSPECTIVE_OBSERVED_MINUTE_QUOTE_JOURNAL",
     "LIVE_EXECUTION_TIME_PARITY",
@@ -254,6 +254,7 @@
     "PAPER_REPLAY_PAIRED_ATTRIBUTION",
     "PROSPECTIVE_QQQ_BENCHMARK",
     "BROKER_SANDBOX_DRY_RUN",
+    "DECISION_MONITORING_AND_STALE_DATA",
     "RISK_LIMITS_AND_GAP_CONTROLS",
     "HUMAN_CAPITAL_AND_COMPLIANCE_APPROVAL"
   ],
@@ -268,8 +269,8 @@
       "broker_sandbox_qualified": false
     },
     "prospective_paper_capture": {
-      "status": "WAITING_FOR_NEXT_COMPLETED_SESSION",
-      "paper_sessions": 0,
+      "status": "PROSPECTIVE_PAPER_ACTIVE",
+      "paper_sessions": 1,
       "missed_sessions": 0,
       "error_count": 0
     },
@@ -287,7 +288,7 @@
     },
     "observed_intraday_price_gap": {
       "status": "OBSERVED_SAMPLE_NOT_FILL_PARITY",
-      "observed_etf_minute_sessions": 4,
+      "observed_etf_minute_sessions": 5,
       "source": "YFINANCE_1MIN_UNADJUSTED_OBSERVED_OPEN",
       "broker_fill_parity": false,
       "execution_time_parity_proven": false,

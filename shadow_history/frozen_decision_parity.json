@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "status": "PASS",
-  "signal_asof": "2026-10-07",
-  "research_asof": "2026-10-07",
+  "signal_asof": "2026-10-08",
+  "research_asof": "2026-10-08",
   "equal_frozen_target": true,
   "decision_engine": "stocklens.core.replay_levels",
   "observed_etf_prices_required": true,

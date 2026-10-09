@@ -1,9 +1,9 @@
 {
   "status": "PLAN_READY",
-  "signal_date": "2026-10-07",
+  "signal_date": "2026-10-08",
   "signal_action": "NO_CHANGE",
-  "bootstrap": true,
-  "execution_required": true,
+  "bootstrap": false,
+  "execution_required": false,
   "target": {
     "level": 3,
     "defense": false,
@@ -11,7 +11,7 @@
     "qqq_weight": 0.0,
     "tqqq_weight": 0.985
   },
-  "prior_paper_session": null,
+  "prior_paper_session": "2026-10-08",
   "policy": {
     "reductions": "09:31 ET reference open",
     "additions": "09:32 ET reference open",

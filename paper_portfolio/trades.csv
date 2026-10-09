@@ -1,0 +1,2 @@
+execution_session,signal_date,symbol,side,qty,time_et,reference_price,modeled_fill_price,gross_notional,fee,modeled_slippage_cost,fee_bps,slippage_bps
+2026-10-08,2026-10-07,TQQQ,BUY,1197,09:32,82.2699966430664,82.35226663970947,98575.66316773223,19.715132633546446,98.47718598174681,2.0,10.0

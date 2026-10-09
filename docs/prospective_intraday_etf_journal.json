@@ -6,7 +6,7 @@
   "first_session": null,
   "last_session": null,
   "journal_tail_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
-  "session_under_review": "2026-10-08",
+  "session_under_review": "2026-10-09",
   "daily_0931_0932_quotes_observed": false,
   "broker_fills_observed": false,
   "synthetic_quotes_used": false,

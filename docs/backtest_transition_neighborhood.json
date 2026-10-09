@@ -12,31 +12,31 @@
         {
           "offset": -3,
           "date": "2026-03-17",
-          "qqq_return": 0.004880223770939329,
+          "qqq_return": 0.004880325778041428,
           "applied_exposure": 3.0
         },
         {
           "offset": -2,
           "date": "2026-03-18",
-          "qqq_return": -0.01393968844637461,
+          "qqq_return": -0.013939788543025022,
           "applied_exposure": 3.0
         },
         {
           "offset": -1,
           "date": "2026-03-19",
-          "qqq_return": -0.0031602592610894265,
+          "qqq_return": -0.0031603622078371085,
           "applied_exposure": 3.0
         },
         {
           "offset": 0,
           "date": "2026-03-20",
-          "qqq_return": -0.01848165384048972,
+          "qqq_return": -0.01848165574914795,
           "applied_exposure": 3.0
         },
         {
           "offset": 1,
           "date": "2026-03-23",
-          "qqq_return": 0.011478937044348214,
+          "qqq_return": 0.011479043469861727,
           "applied_exposure": 1.25
         },
         {
@@ -85,19 +85,19 @@
         {
           "offset": 1,
           "date": "2026-04-09",
-          "qqq_return": 0.006764690477389479,
+          "qqq_return": 0.006764589558553746,
           "applied_exposure": 3.0
         },
         {
           "offset": 2,
           "date": "2026-04-10",
-          "qqq_return": 0.0014421634998613708,
+          "qqq_return": 0.0014421636444248431,
           "applied_exposure": 3.0
         },
         {
           "offset": 3,
           "date": "2026-04-13",
-          "qqq_return": 0.010342458753533679,
+          "qqq_return": 0.010342659981562141,
           "applied_exposure": 3.0
         }
       ]
@@ -110,13 +110,13 @@
         {
           "offset": -3,
           "date": "2026-06-17",
-          "qqq_return": -0.010070425515599668,
+          "qqq_return": -0.010070341710618935,
           "applied_exposure": 3.0
         },
         {
           "offset": -2,
           "date": "2026-06-18",
-          "qqq_return": 0.025065482590181487,
+          "qqq_return": 0.02506539581068923,
           "applied_exposure": 3.0
         },
         {

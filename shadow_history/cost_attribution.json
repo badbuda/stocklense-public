@@ -1,5 +1,16 @@
 {
-  "status": "WAITING_FOR_PROSPECTIVE_DATA",
-  "sessions": 0,
-  "execution_audit_required": true
+  "status": "ACTIVE_VERIFIED",
+  "sessions": 1,
+  "trade_count": 1,
+  "execution_audit_status": "PASS",
+  "costs_reconciled_to_trades": true,
+  "fees": 19.715132633546446,
+  "modeled_slippage": 98.47718598174681,
+  "dividends": 0.0,
+  "net_accounting_adjustment": -118.19231861529326,
+  "fee_share_of_cost": 0.16680553241126997,
+  "slippage_share_of_cost": 0.8331944675887301,
+  "net_adjustment_pct_of_first_equity": -0.12131252135508927,
+  "broker_execution_costs": false,
+  "semantics": "Verified modeled paper costs only; not observed broker execution costs."
 }

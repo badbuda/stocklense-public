@@ -1,8 +1,8 @@
 {
-  "signal_sessions_recorded": 1,
+  "signal_sessions_recorded": 2,
   "duplicate_signal_sessions": 0,
-  "latest_canonical_completed_session": "2026-10-07",
-  "latest_persisted_signal_session": "2026-10-07",
+  "latest_canonical_completed_session": "2026-10-08",
+  "latest_persisted_signal_session": "2026-10-08",
   "stale_vs_canonical_completed_session": false,
   "target": "one immutable validated signal per canonical completed market session",
   "status": "PASS"

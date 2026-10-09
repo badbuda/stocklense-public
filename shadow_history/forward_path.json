@@ -1,11 +1,20 @@
 {
   "status": "WAITING_FOR_RETURN_PATH",
-  "sessions": 0,
+  "sessions": 1,
   "stocklens_return": null,
   "qqq_price_return": null,
   "excess_return": null,
   "stocklens_max_drawdown": null,
   "qqq_max_drawdown": null,
-  "points": [],
+  "points": [
+    {
+      "session_date": "2026-10-08",
+      "stocklens_daily_return": null,
+      "qqq_daily_return": null,
+      "daily_excess_return": null,
+      "stocklens_index": 1.0,
+      "qqq_index": 1.0
+    }
+  ],
   "benchmark_note": "QQQ close-to-close price return from the paper ledger; dividends are not included."
 }

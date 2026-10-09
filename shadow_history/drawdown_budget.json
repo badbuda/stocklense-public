@@ -1,7 +1,7 @@
 {
-  "status": "WAITING_FOR_PROSPECTIVE_DATA",
-  "current_drawdown": null,
-  "worst_drawdown": null,
-  "distance_to_frozen_qc_maxdd": null,
+  "status": "ACTIVE",
+  "current_drawdown": -0.02572036839184133,
+  "worst_drawdown": -0.02572036839184133,
+  "distance_to_frozen_qc_maxdd": 0.4711796316081587,
   "qc_historical_max_drawdown": -0.4969
 }

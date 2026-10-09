@@ -1,12 +1,12 @@
 {
-  "status": "WAITING_FOR_PROSPECTIVE_DATA",
-  "sessions": 0,
-  "trades": 0,
-  "total_turnover_notional": 0,
-  "cumulative_fees": 0,
-  "cumulative_modeled_slippage": 0,
-  "total_modeled_execution_cost": 0,
-  "execution_cost_bps_of_turnover": null,
-  "execution_cost_pct_of_start_equity": null,
+  "status": "ACTIVE",
+  "sessions": 1,
+  "trades": 1,
+  "total_turnover_notional": 98575.66316773223,
+  "cumulative_fees": 19.715132633546446,
+  "cumulative_modeled_slippage": 98.47718598174681,
+  "total_modeled_execution_cost": 118.19231861529326,
+  "execution_cost_bps_of_turnover": 11.990009990009618,
+  "execution_cost_pct_of_start_equity": 0.12131252135508927,
   "assumption_note": "Paper model costs, not observed broker fills."
 }

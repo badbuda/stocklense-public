@@ -1,9 +1,9 @@
 {
   "status": "NO_DATA",
-  "sessions": 0,
+  "sessions": 1,
   "performance_comparison_allowed": false,
   "risk_comparison_allowed": false,
   "strong_live_claims_allowed": false,
-  "execution_cost_observable": false,
+  "execution_cost_observable": true,
   "warning": "Prospective observations are descriptive; small samples are not evidence of durable edge."
 }

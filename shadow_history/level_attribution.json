@@ -1,6 +1,6 @@
 {
   "status": "WAITING_FOR_RETURN_PATH",
-  "sessions": 0,
+  "sessions": 1,
   "by_target_level": {},
   "method": "session equity returns attributed to target_level active for that ledger session; prospective only"
 }

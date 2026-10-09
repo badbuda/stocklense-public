@@ -1,6 +1,6 @@
 {
   "status": "WAITING_FOR_PROSPECTIVE_DATA",
-  "sessions": 0,
+  "sessions": 1,
   "benchmark": "QQQ",
   "stocklens_return": null,
   "qqq_return": null,

@@ -1,0 +1,17 @@
+{
+  "version": "0.6",
+  "initial_equity": 100000.0,
+  "cash": 1404.6216996342264,
+  "shares": {
+    "QQQ": 0,
+    "TQQQ": 1197
+  },
+  "peak_equity": 100000.0,
+  "last_equity": 97427.96316081587,
+  "last_executed_signal_date": "2026-10-07",
+  "last_mark_session": "2026-10-08",
+  "cumulative_fees": 19.715132633546446,
+  "cumulative_slippage_cost": 98.47718598174681,
+  "cumulative_dividends": 0.0,
+  "trade_count": 1
+}
