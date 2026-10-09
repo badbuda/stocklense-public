@@ -9,8 +9,11 @@ const screenshotSuffix=(process.env.PORTAL_SCREENSHOT_SUFFIX || 'local').replace
 const browser=await chromium.launch({headless:true,args:['--no-sandbox']});
 try{
  const page=await browser.newPage({viewport:{width:1440,height:900},deviceScaleFactor:1});
+ const cdp=await page.context().newCDPSession(page);
+ await cdp.send('Runtime.enable');
+ cdp.on('Runtime.exceptionThrown',evt=>{const d=evt.exceptionDetails;console.error('CDP_EXCEPTION_LOCATION:',JSON.stringify({url:d.url,line:d.lineNumber,column:d.columnNumber,description:d.exception?.description,text:d.text}));});
  page.on('pageerror',e=>{failures.push(e.message);console.error('PORTAL_RUNTIME_STACK:',e.stack||e.message)});
- page.on('console',m=>{if(m.type()==='error')console.error('BROWSER_CONSOLE_ERROR:',m.text())});
+ page.on('console',m=>{if(m.type()==='error')console.error('BROWSER_CONSOLE_ERROR:',m.text(),JSON.stringify(m.location()))});
  page.on('requestfailed',q=>console.error('BROWSER_REQUEST_FAILED:',q.url(),q.failure()?.errorText));
  page.on('response',r=>{if(r.status()>=400)console.error('BROWSER_HTTP_ERROR:',r.status(),r.url())});
  await page.goto(base+'/',{waitUntil:'networkidle',timeout:60000});
