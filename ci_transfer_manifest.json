@@ -132,6 +132,7 @@
     "governance/qc_724_daily_state_manifest.json": "f1a22dea81a7f7d771f18faefc2e548a01d41a67",
     "governance/qc_724_leverage_transitions.json": "d655b43a1987bf990f9ddbf22bdf775d88071c0e",
     "governance/qc_724_order_golden_master.json": "5b24f71a5adf1951a64c71986d898737e158d374",
+    "governance/QC_EXECUTION_QUOTE_AUDIT.md": "d247cfea0bf390b492a001861caf2feebb186670",
     "governance/qc_lean_feature_export_schema.json": "93ca1e55192ff9fe6dcebb91d7c2212518d8c26f",
     "governance/qc_lean_full_run_export_schema.json": "ce511d840ab5213edee81d7cad65dd975e67d4be",
     "health_monitor.py": "b64dda9577eca2665b6544f6448931032c4516cc",
