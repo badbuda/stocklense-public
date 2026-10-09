@@ -69,7 +69,7 @@ Resources:
           from zoneinfo import ZoneInfo
           def validate(obj, now):
               ny = now.astimezone(ZoneInfo("America/New_York"))
-              if ny.weekday() >= 5 or ny.time() < time(18,0):
+              if ny.weekday() not in (1,2,3,4,5) or not 4 <= ny.hour < 18:
                   raise RuntimeError("NOT_COMPLETED_US_MARKET_SESSION")
               if obj.get("mode") != "SHADOW_ONLY_NO_BROKER_ACTIONS":
                   raise ValueError("NOT_PAPER_SHADOW")
@@ -78,7 +78,7 @@ Resources:
               if obj.get("execution_plan", {}).get("broker_actions_enabled") is not False:
                   raise ValueError("BROKER_MUST_REMAIN_DISABLED")
               d = obj.get("latest", {})
-              if d.get("asof_date") != ny.date().isoformat():
+              if d.get("asof_date") != (ny.date()-timedelta(days=1)).isoformat():
                   raise RuntimeError("STALE_COMPLETED_SESSION")
               gen = datetime.fromisoformat(obj["generated_at_utc"].replace("Z","+00:00"))
               if gen.tzinfo is None or gen > now or now-gen > timedelta(hours=18):
@@ -165,7 +165,7 @@ Resources:
         ZipFile: |
           import boto3,hashlib,json,os,urllib.request
           from botocore.exceptions import ClientError
-          from datetime import datetime,time,timezone
+          from datetime import datetime,timedelta,timezone
           from zoneinfo import ZoneInfo
           ROOT="https://raw.githubusercontent.com/badbuda/stocklense-public/main/"
           def read(path):
@@ -175,8 +175,8 @@ Resources:
               return b
           def evidence(now,rep,snap,prior,cur):
               ny=now.astimezone(ZoneInfo("America/New_York"))
-              day=ny.date().isoformat()
-              if ny.weekday()>4 or ny.time()<time(18,0): raise RuntimeError("NOT_CLOSED")
+              day=str(ny.date()-timedelta(days=1))
+              if ny.weekday() in (0,6) or not 4<=ny.hour<18: raise RuntimeError("NOT_CLOSED")
               if rep.get("status")!="PASS_MODELLED_PAPER_ACCOUNTING_NOT_BROKER_FILLS" or rep.get("latest_session")!=day or rep.get("broker_fills_observed") is not False:
                   raise RuntimeError("AUDIT_NOT_PASS")
               if cur.get("latest",{}).get("asof_date")!=day or cur.get("mode")!="SHADOW_ONLY_NO_BROKER_ACTIONS":
@@ -185,15 +185,15 @@ Resources:
                   raise RuntimeError("INVALID_SESSION_RECEIPT")
               row=snap.get("row",{})
               mt=snap.get("trades",[])
-              if row.get("session_date")!=day or not isinstance(mt,list):
-                  raise RuntimeError("BAD_RECEIPT_CONTENT")
+              if row.get("session_date")!=day or type(mt)!=list:
+                  raise RuntimeError("BAD_RECEIPT")
               if row.get("execution_source")!="YFINANCE_1M_RAW": raise RuntimeError("SYNTHETIC_SOURCE")
               sig=row.get("signal_date","")
               if not sig or sig>=day or prior.get("latest",{}).get("asof_date")!=sig or prior.get("mode")!="SHADOW_ONLY_NO_BROKER_ACTIONS":
                   raise RuntimeError("BAD_PRIOR_SIGNAL")
               at=datetime.fromisoformat(prior["generated_at_utc"].replace("Z","+00:00"))
               op=datetime.fromisoformat(day+"T09:30:00").replace(tzinfo=ZoneInfo("America/New_York"))
-              if at.tzinfo is None or at>=op: raise RuntimeError("LATE_SIGNAL")
+              if not at.tzinfo or at>=op: raise RuntimeError("LATE_SIGNAL")
               for k in ("qqq_weight","tqqq_weight"):
                   if abs(float(prior["latest"][k])-float(row["target_"+k]))>1e-9:
                       raise RuntimeError("WRONG_TARGET")
@@ -235,8 +235,8 @@ Resources:
   PaperEvidenceSchedule:
     Type: AWS::Events::Rule
     Properties:
-      Description: '03:20 UTC Tue-Sat: archive current US-session modeled paper evidence only.'
-      ScheduleExpression: 'cron(20 3 ? * TUE-SAT *)'
+      Description: '09:20 UTC Tue-Sat: archive previous NY calendar trading session after completed GitHub publication.'
+      ScheduleExpression: 'cron(20 9 ? * TUE-SAT *)'
       State: ENABLED
       Targets:
         - {Id: PaperEvidence, Arn: !GetAtt PaperEvidenceLambda.Arn}
@@ -265,8 +265,8 @@ Resources:
   NightlyRule:
     Type: AWS::Events::Rule
     Properties:
-      Description: After 23:20 UTC GitHub nightly run, Tuesday-Saturday UTC.
-      ScheduleExpression: 'cron(10 3 ? * TUE-SAT *)'
+      Description: At 09:10 UTC Tue-Sat, archive prior NY business-day signal after GitHub publication (fail closed on market holidays).
+      ScheduleExpression: 'cron(10 9 ? * TUE-SAT *)'
       State: ENABLED
       Targets:
         - {Id: ShadowArchive, Arn: !GetAtt ShadowLambda.Arn}

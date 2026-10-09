@@ -12,7 +12,7 @@ check=ns["evidence"]
 
 DAY="2026-10-08"
 SIGNAL="2026-10-07"
-NOW=datetime(2026,10,9,3,21,tzinfo=timezone.utc)
+NOW=datetime(2026,10,9,9,21,tzinfo=timezone.utc)
 
 def inputs():
     report={"status":"PASS_MODELLED_PAPER_ACCOUNTING_NOT_BROKER_FILLS",
@@ -44,7 +44,7 @@ def test_valid_observed_paper_evidence_is_model_only():
 
 def test_cannot_archive_unfinished_session():
     values=inputs()
-    try: check(datetime(2026,10,8,19,0,tzinfo=timezone.utc),*values)
+    try: check(datetime(2026,10,9,6,0,tzinfo=timezone.utc),*values)
     except RuntimeError as exc: assert str(exc)=="NOT_CLOSED"
     else: raise AssertionError("Captured incomplete market session")
 
@@ -83,3 +83,13 @@ def test_no_broker_fill_claim():
 def test_receipt_trade_window_is_tied_to_session():
     values=inputs();values[1]["trades"][0]["execution_session"]="2026-10-07"
     rejects(values,"BAD_TRADE_WINDOW")
+
+def test_previous_ny_session_is_required_even_after_midnight():
+    values=inputs();values[1]["session_date"]="2026-10-09"
+    rejects(values,"INVALID_SESSION_RECEIPT")
+
+def test_not_closed_if_invoked_before_four_ny():
+    values=inputs()
+    try: check(datetime(2026,10,9,7,0,tzinfo=timezone.utc),*values)
+    except RuntimeError as exc: assert str(exc)=="NOT_CLOSED"
+    else: raise AssertionError("Premature AWS paper archive accepted")

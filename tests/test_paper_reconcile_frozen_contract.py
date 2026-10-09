@@ -8,7 +8,7 @@ import pytest
 from stocklens.core import LEVEL_LEVERAGE,TARGET_INVESTED_FRACTION,weights_for_leverage
 from stocklens.paper import SessionMarket,PaperIntegrityError,new_state,rebalance_if_required,mark_session
 
-NOW=datetime(2026,10,9,3,10,tzinfo=timezone.utc)
+NOW=datetime(2026,10,9,9,10,tzinfo=timezone.utc)
 DAY="2026-10-08"
 
 def aws_validate():
@@ -96,3 +96,18 @@ def test_unreconciled_position_fails_closed_on_mark():
     state=new_state();state["last_executed_signal_date"]="2026-10-06"
     with pytest.raises(PaperIntegrityError,match="PAPER_POST_REBALANCE_TARGET_MISMATCH"):
         mark_session(state,paper_signal(),market(),[],{"dividends_credited":0.0},False)
+
+def test_lambda_rejects_same_ny_calendar_day_when_archiving_yesterday():
+    x=signal(3);x["latest"]["asof_date"]="2026-10-09"
+    with pytest.raises(RuntimeError,match="STALE_COMPLETED_SESSION"):
+        aws_validate()(x,NOW)
+
+def test_lambda_rejects_early_archive_before_ny_four_am():
+    with pytest.raises(RuntimeError,match="NOT_COMPLETED_US_MARKET_SESSION"):
+        aws_validate()(signal(3),datetime(2026,10,9,6,59,tzinfo=timezone.utc))
+
+def test_lambda_handles_est_winter_prior_session():
+    x=signal(3)
+    x["generated_at_utc"]="2026-12-09T00:00:00Z"
+    x["latest"]["asof_date"]="2026-12-08"
+    assert aws_validate()(x,datetime(2026,12,9,9,10,tzinfo=timezone.utc))=="2026-12-08"

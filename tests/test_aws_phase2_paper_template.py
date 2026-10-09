@@ -22,7 +22,9 @@ def test_real_qqq_tqqq_only_no_broker_orders():
 
 def test_two_isolated_scheduled_lambdas_and_no_secrets():
     assert T.count("Type: AWS::Lambda::Function")==2
-    assert "cron(20 3 ? * TUE-SAT *)" in T
+    assert "cron(20 9 ? * TUE-SAT *)" in T
+    assert "cron(10 9 ? * TUE-SAT *)" in T
+    assert "40 9 * * 2-6" in W
     assert "AWS_PROSPECTIVE_PAPER=PASS_MODELED_ONLY" in W
     assert "AWS_STOCKLENS_AUDIT_ROLE_ARN" in W
     assert "AWS_ACCESS_KEY_ID" not in W
