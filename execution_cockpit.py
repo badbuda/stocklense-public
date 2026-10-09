@@ -1,4 +1,5 @@
 from __future__ import annotations
+import math
 import csv,json
 from pathlib import Path
 from datetime import datetime,timezone
@@ -31,6 +32,14 @@ def build(plan_path="shadow_history/execution_plan.json",signal_path="output/lat
  target={}
  for symbol,weight in (("QQQ",float(plan["target"]["qqq_weight"])),("TQQQ",float(plan["target"]["tqqq_weight"]))):
   px=prices[symbol];target[symbol]=int((equity*weight)//px) if px>0 else current[symbol]
+ # Paper applies the same 50-bp tolerance for unchanged signals.
+ # This is a dry-run noise filter, not a broker authorization or execution parity.
+ if not all(math.isfinite(px) and px>0 for px in prices.values()):
+  raise ValueError("COCKPIT_MISSING_VALID_REFERENCE_PRICES")
+ gap=max(abs(current[s]*prices[s]/equity-float(plan["target"][s.lower()+"_weight"])) for s in ("QQQ","TQQQ"))
+ hold_no_change=(sig.get("action")=="NO_CHANGE" and gap<=0.005)
+ if hold_no_change:
+  target=dict(current)
  session=next_xnys_session(plan["signal_date"])
  intents=desired_orders(current,target,session,float(plan["target"]["leverage"]))
  records=[make_order(x.session,x.symbol,x.side,x.quantity,x.idempotency_key) for x in intents]
@@ -45,6 +54,7 @@ def build(plan_path="shadow_history/execution_plan.json",signal_path="output/lat
  "current_positions":current,"target_positions":target,"reference_prices":prices,
  "orders":[{**o.__dict__,"idempotency_key":o.idempotency_key,"status":"PLANNED","dry_run":True} for o in intents],
  "order_state":state,"target_gap":target_gap,"reconciliation":broker_rec,"execution_windows":windows,"execution_window":(next(iter(windows.values())) if len(windows)==1 else {"status":"MULTI_WINDOW" if windows else "NO_ORDERS","windows":windows}),
+ "no_change_tolerance_applied":hold_no_change,"pretrade_target_weight_gap":gap,
  "note":"Dry-run plan only. No live broker order is submitted."}
  write_json_atomic(out,payload);return payload
 if __name__=="__main__":print(json.dumps(build(),indent=2))
