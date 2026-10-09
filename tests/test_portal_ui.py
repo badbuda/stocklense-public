@@ -123,3 +123,14 @@ def test_published_snapshot_contains_separate_evidence_types():
     assert not capital["technical_checks_pass"]
     assert not capital["full_lean_execution_parity"]
     assert not capital["automatic_trading_authorized"]
+
+
+
+def test_optional_private_aws_api_is_explicitly_disabled_by_default():
+    import json
+    config=json.loads(Path("docs/cloud-config.json").read_text(encoding="utf-8"))
+    assert config["enabled"] is False
+    assert config.get("api_base_url") is None
+    assert config.get("cognito_domain") is None
+    assert config.get("client_id") is None
+    assert not any("secret" in key.lower() for key in config)
