@@ -34,6 +34,7 @@ jobs:
           python -c "from source_hygiene import syntax_errors; e=syntax_errors(); print(e); assert not e"
           python dashboard_workbench.py
           python simulator_smoke.py
+          node --check docs/portal.js
       - name: Unit and regression tests
         env:
           PYTHONPATH: ${{ github.workspace }}
@@ -46,7 +47,7 @@ jobs:
           python - <<'PY'
           from pathlib import Path
           s=Path("docs/index.html").read_text()
-          assert s.count("</script>")==1
+          assert s.count("</script>")==2
           assert s.count("</html>")==1
           assert s.rstrip().endswith("</html>")
           PY
