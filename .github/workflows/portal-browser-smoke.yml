@@ -6,6 +6,11 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/portal-browser-smoke.yml'
+      - 'docs/portal.js'
+      - 'docs/portal-cloud.js'
+      - 'docs/portal-insights.js'
+      - 'docs/portal.html'
+      - 'docs/portal.css'
       - 'tests/portal_browser_smoke.cjs'
 
 permissions:
