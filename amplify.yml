@@ -1,0 +1,18 @@
+version: 1
+frontend:
+  phases:
+    build:
+      commands:
+        - 'test -s docs/portal.html'
+        - 'test -s docs/portal.js'
+        - 'test -s docs/portal.css'
+        - 'test -s docs/data.json'
+        - 'test -s docs/timeseries.json'
+        - 'test -s docs/observed_tqqq_risk_audit.json'
+        - 'test -s docs/portal-history.json'
+  artifacts:
+    baseDirectory: docs
+    files:
+      - '**/*'
+  cache:
+    paths: []
