@@ -8,7 +8,7 @@
     ".github/workflows/aws-journal-export.yml": "f5a19164d85c48d9ce6adf243d1907085f2d6ffe",
     ".github/workflows/aws-shadow-journal-audit.yml": "352d1e0c2e755eaff2135c430a8a26b358292311",
     ".github/workflows/fast-guard.yml": "5da954996638eeb332d61c9cbe5b60f879ca4068",
-    ".github/workflows/portal-browser-smoke.yml": "5f0ed5cb50d3f3347fe0900520fd25eb0b75167a",
+    ".github/workflows/portal-browser-smoke.yml": "7142f481dd763d7e1184c7dadad7c597e49ecb2a",
     ".github/workflows/portal-history-build.yml": "2d731559dde6f3116cc349379190e74417a1ece9",
     ".github/workflows/shadow.yml": "b4db9958876eaa47bbe3f183aa815feb15ab10c0",
     "accel_mechanism_broad_megabatch.py": "aa9c3c2585a2505cdca95be3768f67a904c27e45",
