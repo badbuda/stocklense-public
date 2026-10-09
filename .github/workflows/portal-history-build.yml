@@ -1,0 +1,51 @@
+name: StockLens Portal Initial Yahoo Snapshot
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/portal-history-build.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: stocklens-portal-bootstrap
+  cancel-in-progress: false
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: Install Yahoo and research dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Build observed QQQ and TQQQ historical execution report
+        run: |
+          python tradable_tqqq_execution_comparison.py
+          python observed_tqqq_risk_audit.py
+          python portal_feed.py
+      - name: Prove same-session observed ETF feed
+        run: |
+          python -c 'import json; p=json.load(open("docs/portal-history.json")); r=json.load(open("docs/observed_tqqq_risk_audit.json")); assert p["observed_ohlc_available"] is True and p["instruments"]==["QQQ","TQQQ"] and p["updated_session"]==r["period"]["end"] and len(p["daily"])>=3000; print("PORTAL_OBSERVED_ETF_FEED_PASS")'
+          node --check docs/portal.js
+      - name: Publish verified historical charts
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- docs/portal-history.json docs/observed_tqqq_risk_audit.json docs/tradable_tqqq_execution_comparison.json
+          if ! git diff --cached --quiet; then
+            git commit -m "portal: publish latest Yahoo-observed QQQ/TQQQ history"
+            git push origin HEAD:main
+          fi
