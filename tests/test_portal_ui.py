@@ -81,3 +81,15 @@ def test_secure_aws_and_scenario_panels_are_present():
     assert "'./portal-insights.js'" in src
     assert "'./portal-cloud.js'" in src
     assert 'dynamodb:GetItem' in Path('infra/aws/portal-readonly-api.yaml').read_text()
+
+
+def test_cognito_module_is_unique_and_not_truncated():
+    src=Path("docs/portal-cloud.js").read_text(encoding="utf-8")
+    assert src.count("export function initCloudJournal(")==1
+    assert src.count("export async function refreshCloudJournal(")==1
+    assert src.count("function validateConfig(")==1
+    assert src.count("const b64=")==1
+    assert src.count("const money=")==1
+    assert not any(line.strip().startswith("+new Intl.NumberFormat(") for line in src.splitlines())
+    assert "const money=x=>" in src
+    assert src.rstrip().endswith("}")
