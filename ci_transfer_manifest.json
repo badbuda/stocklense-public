@@ -5,6 +5,7 @@
   "runner": "explicit-trigger-or-scheduled",
   "frozen_stocklens8_untouched": true,
   "files": {
+    ".github/workflows/aws-journal-export.yml": "f5a19164d85c48d9ce6adf243d1907085f2d6ffe",
     ".github/workflows/aws-shadow-journal-audit.yml": "352d1e0c2e755eaff2135c430a8a26b358292311",
     ".github/workflows/fast-guard.yml": "7773aba74e8da481e09063dcb301e7742c38e69b",
     ".github/workflows/shadow.yml": "f68cd414446334fa26cd4db6a1b56cc906c05423",
@@ -21,6 +22,7 @@
     "artifact_integrity.py": "9d7ac3f28c64a14b843bd0fd6a0c71ff0721d8a8",
     "asymmetric_tail_layer_validation.py": "f45cac1a23e2568859afe4440face3992b6aa968",
     "automation_guard.py": "96aa8d97f55f39694ce1fa5096a524ffb7c34d37",
+    "aws_journal_export.py": "084f5049659514036f0e73ab3da5e03cc6467746",
     "backtest_adversarial.py": "b11e59b25282a91e95a7365181df11be202b9691",
     "backtest_calendar_year_fragility.py": "0d9e56c844844579a6207e46c9c7c1fe1cb0da48",
     "backtest_contract.py": "a6e27db7f3e12ee5b7d31f66502efc685b46c7e4",
@@ -241,6 +243,7 @@
     "stress_scenarios.py": "70c27a967122c9acdfbe61ded5e82a7278f7d568",
     "tail_risk_challengers.py": "705ad85beec36defde041e48052a89f069fe9ba7",
     "tests/test_aws_b6_bounded_receipt.py": "c1153e49e87df1cd30e5ce882800cc5b1d7c0c8f",
+    "tests/test_aws_journal_export.py": "10118ab3c9ac2e674873da95a1346d4679f9ce35",
     "tests/test_aws_phase2_behavior.py": "8cbd5c6e8124c05d684b9220484a68b8718f05f0",
     "tests/test_aws_phase2_paper_template.py": "deb9dfa4c0b0ddc5a92763dd9ee78006fc7ef407",
     "tests/test_backtest_adversarial.py": "c99ca53e2211c2b765e17dfdd6d02d5047c30e58",

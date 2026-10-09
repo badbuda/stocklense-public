@@ -1,0 +1,78 @@
+name: StockLens AWS DynamoDB CSV Export
+
+on:
+  workflow_dispatch:
+    inputs:
+      max_sessions:
+        description: Number of latest NYSE trading days to include
+        type: choice
+        options:
+          - '15'
+          - '30'
+          - '60'
+          - '90'
+          - '252'
+        default: '60'
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/aws-journal-export.yml'
+  schedule:
+    # After the 09:10Z signal, 09:20Z paper archive and 09:40Z read-only audit.
+    - cron: '55 9 * * 2-6'
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    concurrency:
+      group: stocklens-aws-csv-export
+      cancel-in-progress: false
+    env:
+      ROLE_ARN: ${{ vars.AWS_STOCKLENS_AUDIT_ROLE_ARN }}
+      TABLE: ${{ vars.AWS_STOCKLENS_JOURNAL_TABLE }}
+    steps:
+      - name: Checkout export script and calendar tools
+        uses: actions/checkout@v4
+
+      - name: Require existing read-only AWS role and table variables
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$ROLE_ARN" || { echo "::error::Missing AWS_STOCKLENS_AUDIT_ROLE_ARN"; exit 1; }
+          test -n "$TABLE" || { echo "::error::Missing AWS_STOCKLENS_JOURNAL_TABLE"; exit 1; }
+
+      - name: Assume existing AWS read-only OIDC audit role
+        id: auth
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: eu-central-1
+          role-to-assume: ${{ vars.AWS_STOCKLENS_AUDIT_ROLE_ARN }}
+          role-session-name: stocklens-csv-export
+
+      - name: Install NYSE session calendar
+        run: python -m pip install 'exchange-calendars==4.13.2'
+
+      - name: Export and validate DynamoDB journal (no Scan, no writes)
+        env:
+          MAX_SESSIONS: ${{ inputs.max_sessions || '60' }}
+        run: |
+          set -euo pipefail
+          python aws_journal_export.py --table "$TABLE" --out aws-journal-export --max-sessions "$MAX_SESSIONS"
+
+      - name: Upload CSV + audit summary even if an expected day is missing
+        if: ${{ always() && steps.auth.outcome == 'success' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: stocklens-aws-journal-csv
+          path: |
+            aws-journal-export/sessions.csv
+            aws-journal-export/trades.csv
+            aws-journal-export/summary.json
+          if-no-files-found: warn
+          retention-days: 30
