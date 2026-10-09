@@ -101,3 +101,34 @@ python qc_lean_yahoo_daily_exposure_audit.py \
 This produces same-calendar-session agreement, a trading-session lag profile at ±2 sessions, year-by-year agreement, exposure-confusion counts and the longest mismatched episodes. **The Yahoo daily-open execution proxy's `l` is based on a prior-session signal**, whereas the LEAN reference chart marks its original decision session. A high raw same-day match will be inflated by both systems spending most of the time at 3x; a better match at +1 day is not a model fix or proof of equal inputs. No source-only change authorizes a new trading rule.
 
 Never report `FULL_SAME_INPUT_PARITY_PROVEN` until native LEAN features exist with 3,774 validated dates, model decisions match on identical original inputs, AND evidence provenance is independently attested. An unknown original data source is a blocker, not a green status.
+
+## Independent Yahoo cross-provider exposure audit (9 October 2026)
+
+New frozen result: [research/lean_yahoo_cross_provider_20261009.json](../research/lean_yahoo_cross_provider_20261009.json).
+
+**Precise comparison:** original saved SL724 LEAN per-session *effective leverage* vs. the separately computed Yahoo-Q QQQ/TQQQ **next-open exposure** in `docs/portal-history.json` (snapshot SHA `42732511d81bca12bdc533cc5eac912c69dc637f85c96137861f702be5adb89b`). The Yahoo stream comes from `tradable_tqqq_execution_comparison.py`: `replay_levels` operating on adjusted Yahoo QQQ completed daily closes, followed by a prior-close-next-open ETF execution proxy. `portal_feed.py` serializes each day into `l`. It does not load the original LEAN chart. This is a **cross-provider behavioral comparison**, not same-input parity.
+
+- **3,774 original** LEAN sessions; **4,190 Yahoo** actual ETF-proxy sessions.
+- **112 original sessions precede TQQQ inception/first observed ETF session**, so only **3,662** LEAN chart days are comparable (2010-02-11 through 2024-08-29). There are **no missing original session dates within the proxy's compared interval**.
+- Daily effective exposure: **3,655 / 3,662 = 99.8088%** same-calendar-date agreement; **7** daily mismatches (6 in 2010, 1 in 2011).
+- The non-3x subset also agrees: **732/737 = 99.32%**. The 3x subset agrees on **2,923/2,925 = 99.93%**; original cash days agree **274/274**.
+- Frozen original transition `(date, leverage)` pairs inside the Yahoo interval: **66**; Yahoo proxy transition events excluding its initial baseline: **68**; **62** exact original pairs recur in the proxy. The previous **~7.25% transition-index metric** is **not** the fraction of daily LEAN levels that match — it used a different strict index-aligned event comparison / lifecycle replay; avoid conflating them.
+- ±1 Yahoo-session shifts are *worse*: lag -1 agrees **3,592/3,661 (98.12%)**, lag +1 **3,593/3,662 (98.12%)**. A uniform one-session offset does not explain the observed differences.
+- Complete agreement 2012–August 2024 in the overlapping ETF proxy, **not** LEAN input-feature identity.
+
+The seven disputed dates are 2010-05-19, 2010-05-20, 2010-06-08, 2010-07-15, 2010-07-16, 2010-08-13 and 2011-10-13. The original private LEAN `Determined Red Orange Duck.json` (pinned SHA) and exact daily chart calendar/daily exposures (pinned SHAs) remain separate from the public repo, but their source identities are recorded in the published audit.
+
+### Reproduce without source contamination
+
+With the private original unchanged, and the pinned Yahoo market-price snapshot available:
+
+```bash
+python qc_lean_yahoo_daily_exposure_audit.py \
+  --original "/private/Determined Red Orange Duck.json" \
+  --proxy docs/portal-history.json \
+  --out research/local/cross_provider_exposure_reproduced.json
+```
+
+If `docs/portal-history.json` has refreshed after the pinned 2026-10-08 snapshot, results may include additional future days beyond the fixed historical overlap but **the original overlap through 2024-08-29 must remain reproducible**. Verify the SHA before comparing a current run to the frozen dated report. This diagnostic does **not** prove native LEAN `close/sma50/sma200/vol20/mom12` input series are identical. That is still blocked until original-chart-derived feature export is obtained. Same model source identity and real broker execution remain unverified.
+
+These results justify moving the original 7.25% index-transition figure out of any "daily model accuracy" dashboard claim; they do NOT justify automated model promotion, real trading or claims of statistically significant alpha.
