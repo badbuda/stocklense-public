@@ -1,1 +1,1 @@
-stocklens-single-real-etf-minute-journal-validation-2026-10-08-9eca2630
+stocklens-shadow-recovery-one-shot-2026-10-09-handoff-pr13
