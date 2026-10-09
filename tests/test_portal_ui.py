@@ -93,3 +93,33 @@ def test_cognito_module_is_unique_and_not_truncated():
     assert not any(line.strip().startswith("+new Intl.NumberFormat(") for line in src.splitlines())
     assert "const money=x=>" in src
     assert src.rstrip().endswith("}")
+
+
+def test_portal_displays_real_forward_loss_and_blocks_false_ready_claims():
+    html=P.read_text(encoding="utf-8")
+    js=JS.read_text(encoding="utf-8")
+    for element in ("readiness-clarity","readiness-message","real-paper-sessions",
+                    "research-session-count","real-paper-return","real-paper-baseline",
+                    "model-parity-state","capital-readiness-details"):
+        assert f'id="{element}"' in html
+    assert "renderGovernance(d)" in js
+    assert "technical_checks_pass===true" in js
+    assert "automatic_trading_authorized===true" in js
+    assert "full_lean_execution_parity===true" in js
+    assert "latest.cumulative_return" in js
+    assert "original/(1+cum)" in js
+    assert "prospective_completed_sessions" in js
+    assert "performance מראה" in js
+    assert "מניית TQQQ אחת" in js
+
+
+def test_published_snapshot_contains_separate_evidence_types():
+    import json
+    data=json.loads(Path("docs/data.json").read_text(encoding="utf-8"))
+    paper=data["paper"]
+    capital=data["capital_readiness"]
+    assert paper["sessions"] != capital["prospective_completed_sessions"]
+    assert float(paper["latest"]["cumulative_return"]) < 0
+    assert not capital["technical_checks_pass"]
+    assert not capital["full_lean_execution_parity"]
+    assert not capital["automatic_trading_authorized"]

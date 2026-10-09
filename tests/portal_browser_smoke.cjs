@@ -27,6 +27,20 @@ try{
  assert.match(currentSignal,/20\d\d-\d\d-\d\d/);
  assert.equal((await page.locator('.page.visible').getAttribute('data-view')),'overview');
  assert.match(await page.locator('#kpi-nav').textContent(),/^\$/);
+ assert.match(await page.locator('#readiness-clarity').textContent(),/אין אישור למסחר אמיתי/);
+ const governance=await page.evaluate(async()=>{
+   const d=await (await fetch('data.json')).json();
+   return {paper:d.paper.sessions,research:d.capital_readiness.prospective_completed_sessions,
+     cum:d.paper.latest.cumulative_return,technical:d.capital_readiness.technical_checks_pass};
+ });
+ assert.equal((await page.locator('#real-paper-sessions').textContent()).trim(),
+   new Intl.NumberFormat('en-US').format(governance.paper));
+ assert.equal((await page.locator('#research-session-count').textContent()).trim(),
+   new Intl.NumberFormat('en-US').format(governance.research));
+ assert.equal((await page.locator('#real-paper-return').textContent()).trim(),
+   (100*governance.cum).toFixed(2)+'%');
+ assert.equal(governance.technical,false,'Technical capital gate remains blocked');
+ assert.match(await page.locator('#model-parity-state').textContent(),/טרם הוכח/);
  if(await page.locator('#paper-chart-empty').isVisible()) assert.match(await page.locator('#paper-chart-empty').textContent(),/יום מדומה אחד|אין ימי Paper/);
  await page.locator('button[data-page=paper]').click();
  assert.match(await page.locator('#trades-body').textContent(),/TQQQ/);

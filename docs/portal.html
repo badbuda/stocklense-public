@@ -35,6 +35,16 @@
 <section class="page visible" data-view="overview">
   <div class="page-heading"><div><div class="eyebrow">THE BIG PICTURE</div><h1>מה קורה עם הכסף שלנו?</h1><p>תמונה אחת, בלי קיצורים מבלבלים. הנתונים מופרדים בין תוצאות מדומות לתוצאות היסטוריות.</p></div><div class="head-links"><a href="#evidence" data-goto="evidence" class="text-link">איך קוראים את הנתונים? ↗</a></div></div>
   <div class="notice"><span class="notice-icon">ⓘ</span><span><b>חשוב:</b> המערכת פועלת במצב <b>Paper Trading</b>. אין ביצוע עסקאות בחשבון אמיתי. מחירי Yahoo אינם ציטוטי מסחר בזמן אמת, וסימולציות אינן הוכחת תשואה עתידית.</span></div>
+  <div class="readiness-clarity" id="readiness-clarity" role="status">
+    <div class="readiness-title"><span class="readiness-stop">אין אישור למסחר אמיתי</span><strong>המערכת פועלת לניסוי ולתיעוד בלבד</strong></div>
+    <div id="readiness-message" class="readiness-message">בודק את מסמכי מוכנות ההון, ההתאמה ל־LEAN, ויומן העסקאות המדומות…</div>
+    <div class="readiness-stats">
+      <div><small>ימי Paper קדימה</small><b id="real-paper-sessions">—</b><span>יומן עסקאות מודל</span></div>
+      <div><small>ימי מחקר נפרדים</small><b id="research-session-count">—</b><span>לא ימי מסחר בברוקר</span></div>
+      <div><small>תשואה מצטברת בתיק המדומה</small><b id="real-paper-return">—</b><span id="real-paper-baseline">מאז ההון ההתחלתי, כולל יום הכניסה</span></div>
+      <div><small>מצב אימות זהות המודל</small><b id="model-parity-state">—</b><span>מול נתוני המקור של LEAN</span></div>
+    </div>
+  </div>
   <div class="overview-grid">
     <div class="hero-card">
       <div class="eyebrow light">החלטת האלגוריתם האחרונה</div><div class="hero-line"><strong id="hero-state">טוען…</strong><span id="hero-level" class="level-tag">—</span></div>
@@ -125,6 +135,7 @@
   <div class="page-heading"><div><div class="eyebrow">DATA & TRUST</div><h1>על אילו נתונים אפשר לסמוך?</h1><p>איך המידע מגיע אלינו, ומה ההבדל בין מחיר שוק, סימולציה ורשומה ב־AWS.</p></div><button id="export-summary" class="secondary-btn">↓ הורדת סיכום נתונים</button></div>
   <div class="two-cols">
     <div class="panel"><div class="section-title"><div><h2>שרשרת המידע</h2><p>מה מקור כל מספר באתר</p></div></div><div class="pipeline"><div><span>01</span><div><b>Yahoo Finance</b><small>QQQ ו־TQQQ · מחירי OHLC מותאמים היסטוריים, לא ציטוטים בזמן אמת</small></div></div><div><span>02</span><div><b>StockLens GitHub Actions</b><small>מחשב את הסיגנל הקפוא, סימולציה ובדיקות תקינות</small></div></div><div><span>03</span><div><b>Paper Trading</b><small>מחירי דקה שנצפו מ־Yahoo יחד עם עמלות והחלקה מדומות</small></div></div><div><span>04</span><div><b>AWS DynamoDB</b><small>יומן סיגנלים ותיעוד מדומה, לכל יום מסחר; ללא גישה לברוקר</small></div></div></div></div>
+    <div class="panel"><div class="section-title"><div><h2>בדיקות מוכנות לכסף אמיתי</h2><p>בדיקות תפעוליות עשויות להיות ירוקות בזמן שמסחר אמיתי עדיין חסום.</p></div></div><div id="capital-readiness-details" class="factor-list"></div></div>
     <div class="panel"><div class="section-title"><div><h2>בריאות הנתונים</h2><p>המועד האחרון שאפשר לאמת במידע שנטען בדפדפן</p></div></div><div id="health-list" class="factor-list"></div><div class="notice compact"><span class="notice-icon">!</span><span>סימון PASS פירושו שהבדיקה הטכנית עברה — לא שהמודל צפוי לנצח בעתיד.</span></div></div>
   </div>
   <div class="panel"><div class="section-title"><div><h2>תיעוד וייצוא</h2><p>קבצים זמינים למעקב עצמאי</p></div></div><div class="download-grid"><a href="./data.json" download>נתוני הסיגנל והיומן ↗</a><a href="./portal-history.json" download>היסטוריה היסטורית מנורמלת ↗</a><a href="./observed_tqqq_risk_audit.json" download>דוח סיכון היסטורי ↗</a><a href="https://github.com/badbuda/stocklense-public/actions/workflows/aws-journal-export.yml" target="_blank" rel="noopener noreferrer">ייצוא נתוני DynamoDB ל־CSV ↗</a></div></div>
