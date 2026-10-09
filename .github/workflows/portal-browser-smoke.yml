@@ -6,6 +6,7 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/portal-browser-smoke.yml'
+      - 'tests/portal_browser_smoke.cjs'
 
 permissions:
   contents: read
