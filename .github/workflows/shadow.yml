@@ -149,6 +149,7 @@ jobs:
           python tradable_tqqq_execution_validate.py
           python observed_etf_market_calendar_audit.py
           python observed_tqqq_risk_audit.py
+          python portal_feed.py
           python observed_etf_statistical_robustness.py
           python observed_tqqq_only_gate.py
           python financed_1_25x_reality_check.py

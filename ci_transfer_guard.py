@@ -27,6 +27,7 @@ STATIC_DOCS = {
     "docs/index.html", "docs/legacy.html", "docs/workbench.html",
     "docs/execution.html", "docs/research.html", "docs/research-engine.js",
     "docs/manifest.webmanifest", "docs/sw.js",
+    "docs/portal.html", "docs/portal.css", "docs/portal.js",
 }
 MANDATORY = (
     "requirements.txt",
@@ -36,6 +37,7 @@ MANDATORY = (
     "docs/execution.html",
     "docs/manifest.webmanifest",
     "docs/sw.js",
+    "docs/portal.html", "docs/portal.css", "docs/portal.js",
     ".github/workflows/shadow.yml",
     "research/prospective/registry.json",
     "research/queue.json",

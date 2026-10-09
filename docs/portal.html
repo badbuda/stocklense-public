@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="dark"><meta name="theme-color" content="#080e18">
+<title>StockLens | מרכז ההשקעות והמחקר</title>
+<meta name="description" content="מרכז StockLens: סיגנל נוכחי, מסחר מדומה, ביצועי QQQ/TQQQ היסטוריים, סימולטור ומחקר - עם הסבר ברור של רמות האמינות.">
+<link rel="manifest" href="./manifest.webmanifest"><link rel="stylesheet" href="./portal.css">
+</head>
+<body>
+<a class="skip" href="#content">דילוג לתוכן</a>
+<div class="app">
+<aside class="sidebar" id="sidebar">
+  <div class="identity"><span class="logomark">S<span>↗</span></span><div><strong>StockLens</strong><small>Portfolio Intelligence</small></div></div>
+  <div class="side-label">מרכז הבקרה</div>
+  <nav class="main-nav" aria-label="ניווט ראשי">
+    <button class="nav-item selected" data-page="overview" aria-current="page"><span class="nav-icon">◫</span> תמונת מצב</button>
+    <button class="nav-item" data-page="paper"><span class="nav-icon">≡</span> העסקאות והתיק</button>
+    <button class="nav-item" data-page="performance"><span class="nav-icon">⌁</span> ביצועים וסיכון</button>
+    <button class="nav-item" data-page="simulator"><span class="nav-icon">◈</span> סימולטור</button>
+    <button class="nav-item" data-page="research"><span class="nav-icon">⚗</span> מעבדת מחקר</button>
+    <button class="nav-item" data-page="evidence"><span class="nav-icon">◎</span> נתונים ואמינות</button>
+  </nav>
+  <div class="side-bottom">
+    <div class="statusline"><span class="pulse"></span><span id="side-status">בודק נתונים…</span></div>
+    <div class="side-note">מצב תצפית בלבד · ללא הוראות לברוקר</div>
+    <a class="side-link" href="./index.html?legacy=1">לוח הבקרה הישן ↗</a>
+    <a class="side-link" href="https://github.com/badbuda/stocklense-public" target="_blank" rel="noopener noreferrer">GitHub ומקור המערכת ↗</a>
+  </div>
+</aside>
+<div class="workspace">
+<header class="topbar"><div class="topright"><button id="menu-toggle" class="menu-button" aria-label="תפריט" aria-expanded="false">☰</button><div class="breadcrumbs"><small>STOCKLENS / <span id="crumb">תמונת מצב</span></small><strong id="top-title">מרכז ההשקעות שלך</strong></div></div><div class="topactions"><span class="soft-tag">StockLens 8.0 · Frozen</span><span class="topdate" id="asof-badge">טוען נתונים</span><button class="icon-btn" id="refresh" title="רענון הנתונים">↻ <span>רענון</span></button></div></header>
+<main id="content" tabindex="-1">
+<div id="load-error" class="alert error" hidden role="alert"></div>
+<section class="page visible" data-view="overview">
+  <div class="page-heading"><div><div class="eyebrow">THE BIG PICTURE</div><h1>מה קורה עם הכסף שלנו?</h1><p>תמונה אחת, בלי קיצורים מבלבלים. הנתונים מופרדים בין תוצאות מדומות לתוצאות היסטוריות.</p></div><div class="head-links"><a href="#evidence" data-goto="evidence" class="text-link">איך קוראים את הנתונים? ↗</a></div></div>
+  <div class="notice"><span class="notice-icon">ⓘ</span><span><b>חשוב:</b> המערכת פועלת במצב <b>Paper Trading</b>. אין ביצוע עסקאות בחשבון אמיתי. מחירי Yahoo אינם ציטוטי מסחר בזמן אמת, וסימולציות אינן הוכחת תשואה עתידית.</span></div>
+  <div class="overview-grid">
+    <div class="hero-card">
+      <div class="eyebrow light">החלטת האלגוריתם האחרונה</div><div class="hero-line"><strong id="hero-state">טוען…</strong><span id="hero-level" class="level-tag">—</span></div>
+      <p id="hero-explain">טוען את הסיגנל האחרון.</p>
+      <div class="hero-columns"><div><span>חשיפה ל־TQQQ</span><b id="hero-tqqq">—</b></div><div><span>חשיפה ל־QQQ</span><b id="hero-qqq">—</b></div><div><span>מזומן לפי יעד</span><b id="hero-cash">—</b></div></div>
+      <div class="hero-bottom"><span id="hero-date">—</span><button class="hero-button" data-goto="paper">לצפייה בעסקאות ←</button></div>
+    </div>
+    <div class="info-card"><span class="mini-label">שווי תיק המסחר המדומה</span><b class="large-val" id="kpi-nav">—</b><span class="metric-delta" id="kpi-paper-change">—</span><p>מבוסס על העסקאות המדומות שתועדו, לא על חשבון ברוקר.</p><button class="underlink" data-goto="paper">לפתיחת התיק ←</button></div>
+    <div class="info-card"><span class="mini-label">כמה ימי מסחר תיעדנו?</span><b class="large-val" id="kpi-days">—</b><span class="metric-delta muted" id="kpi-trades">—</span><p id="kpi-days-note">יום אחד אינו מספיק להערכת הצלחת השיטה.</p><button class="underlink" data-goto="evidence">אמינות הנתונים ←</button></div>
+  </div>
+  <div class="two-cols">
+    <div class="panel"><div class="section-title"><div><h2>איך התיק המדומה מתקדם?</h2><p>מעקב אחר שווי התיק מאז תחילת התיעוד</p></div><span class="subtle-tag">FORWARD PAPER</span></div><div class="chart-area"><svg id="paper-chart" role="img" aria-label="גרף שווי תיק מדומה" viewBox="0 0 820 250" preserveAspectRatio="none"></svg><div class="chart-empty" id="paper-chart-empty" hidden></div></div><div class="chart-caption" id="paper-chart-caption"></div></div>
+    <div class="panel"><div class="section-title"><div><h2>למה זו ההחלטה?</h2><p>ההיגיון מאחורי הסיגנל האחרון, בשפה פשוטה</p></div><span class="subtle-tag">QQQ</span></div><div class="factor-list" id="factor-list"></div></div>
+  </div>
+  <div class="panel"><div class="section-title"><div><h2>היסטוריה לעומת המציאות</h2><p>אלה שני סוגי ראיות שונים — אסור לערבב ביניהם.</p></div><button class="underlink" data-goto="performance">ניתוח מפורט ←</button></div><div class="comparables">
+    <div><small>ביצוע היסטורי (מחירי ETF אמיתיים, ביצוע משוער)</small><b id="history-cagr">—</b><span>תשואה שנתית ממוצעת מחושבת (CAGR)</span></div>
+    <div><small>הסיכון הגדול לאורך ההיסטוריה</small><b class="negative" id="history-dd">—</b><span>הירידה המרבית מהשיא לשפל</span></div>
+    <div><small>התיעוד קדימה</small><b id="prospective-count">—</b><span>מספר ימי מסחר מדומה שנבדקו בפועל</span></div>
+  </div></div>
+</section>
+<section class="page" data-view="paper">
+  <div class="page-heading"><div><div class="eyebrow">PAPER JOURNAL</div><h1>מה המערכת קנתה ומכרה?</h1><p>כל פעולה מדומה, מתי חושבה, כמה מניות ובאיזה מחיר מודל.</p></div><button id="export-trades" class="secondary-btn">↓ הורדת עסקאות CSV</button></div>
+  <div class="notice"><span class="notice-icon">ⓘ</span><span>עסקאות Paper מבוססות על מחירי פתיחה של דקת מסחר מ־Yahoo ועל הנחות עלות. <b>אלו לא עסקאות שהברוקר ביצע</b>.</span></div>
+  <div class="metrics-strip"><div><small>שווי נוכחי</small><strong id="paper-nav">—</strong></div><div><small>מזומן</small><strong id="paper-cash">—</strong></div><div><small>מניות TQQQ</small><strong id="paper-shares">—</strong></div><div><small>עמלות מצטברות</small><strong id="paper-fees">—</strong></div><div><small>עלות החלקה משוערת</small><strong id="paper-slip">—</strong></div></div>
+  <div class="panel"><div class="section-title"><div><h2>יומן עסקאות</h2><p>מידע כפי שנשמר ביומן, כולל מקור המחיר והזמן</p></div><span class="subtle-tag" id="trades-count">—</span></div><div class="table-scroll"><table><thead><tr><th>יום ביצוע</th><th>פעולה</th><th>נייר</th><th>מניות</th><th>זמן ניו־יורק</th><th>מחיר בסיס</th><th>מחיר מדומה</th><th>עמלה</th><th>סיגנל קודם</th></tr></thead><tbody id="trades-body"><tr><td colspan="9">טוען…</td></tr></tbody></table></div></div>
+  <div class="panel"><div class="section-title"><div><h2>היסטוריית שווי תיק</h2><p>התפתחות התיק המדומה לפי יום, ללא השלמת ימים בדיעבד</p></div><button id="export-paper" class="underlink">↓ הורדת יומן CSV</button></div><div class="table-scroll"><table><thead><tr><th>תאריך</th><th>שווי תיק</th><th>תשואה מצטברת</th><th>ירידה משיא</th></tr></thead><tbody id="paper-body"></tbody></table></div></div>
+</section>
+<section class="page" data-view="performance">
+  <div class="page-heading"><div><div class="eyebrow">PERFORMANCE & RISK</div><h1>האם השיטה באמת טובה יותר?</h1><p>השוואה ל־QQQ על אותן שנים, בעזרת TQQQ אמיתי — ובזהירות לגבי המסקנות.</p></div><span class="subtle-tag">HISTORICAL MODEL · NOT LIVE</span></div>
+  <div class="metrics-strip four"><div><small>StockLens היסטורי שנתי</small><strong id="perf-cagr">—</strong></div><div><small>QQQ היסטורי שנתי</small><strong id="perf-qqq">—</strong></div><div><small>ירידה מרבית StockLens</small><strong id="perf-dd">—</strong></div><div><small>תקופת המדידה</small><strong id="perf-period">—</strong></div></div>
+  <div class="panel"><div class="section-title"><div><h2>השוואת צמיחת השקעה היסטורית</h2><p>קו מנורמל להון התחלתי של $100,000 וללא הפקדות. רק ממחירי ETF שנצפו בפועל, עם ביצוע משוער בפתיחת יום.</p></div><label class="inline-select">תקופה <select id="chart-range"><option value="all">כל ההיסטוריה</option><option value="10">10 שנים</option><option value="5">5 שנים</option><option value="3">3 שנים</option><option value="1">שנה</option></select></label></div><div class="legend"><span><i class="legend-sky"></i>StockLens 8.0</span><span><i class="legend-gold"></i>QQQ רגיל</span></div><div class="chart-area tall"><svg id="performance-chart" role="img" aria-label="גרף השוואת צמיחה היסטורית" viewBox="0 0 900 340" preserveAspectRatio="none"></svg><div class="chart-empty" id="performance-chart-empty" hidden></div></div><div id="performance-detail" class="chart-caption"></div></div>
+  <div class="two-cols">
+    <div class="panel"><div class="section-title"><div><h2>מתי השיטה התקשתה?</h2><p>תשואות בכל שנה, ללא הבטחה שהן יחזרו</p></div></div><div class="table-scroll"><table><thead><tr><th>שנה</th><th>StockLens</th><th>QQQ</th><th>הפרש</th></tr></thead><tbody id="years-body"></tbody></table></div></div>
+    <div class="panel"><div class="section-title"><div><h2>מה הבדיקה *לא* מוכיחה?</h2><p>חלק בלתי נפרד מקריאת הביצועים</p></div></div><div class="risk-notes"><p>⚠️ <b>ירידה של כ־49%</b> בהיסטוריה: זה סיכון ממשי, גם כשהתשואה השנתית גבוהה.</p><p>⚠️ העסקאות ההיסטוריות מחושבות במחיר פתיחה יומי מותאם — לא בפועל בדקות 09:31 / 09:32 ולא לפי נתוני ברוקר.</p><p>⚠️ בדיקת עבר אחת, גם של אלפי ימים, אינה הוכחה עצמאית לאלפא עתידית. טרם נצבר מספיק Forward Paper.</p><p>⚠️ אסטרטגיה ממונפת יכולה לאבד הון משמעותי גם לאורך שנים.</p></div></div>
+  </div>
+</section>
+<section class="page" data-view="simulator">
+  <div class="page-heading"><div><div class="eyebrow">SIMULATOR</div><h1>מה היה קורה לכסף שלי?</h1><p>סימולציה אינטראקטיבית על מחירי QQQ ו־TQQQ שנצפו מ־Yahoo. אפשר להשוות לתיק QQQ בלבד.</p></div><span class="subtle-tag">RESEARCH ONLY · NO ORDERS</span></div>
+  <div class="notice"><span class="notice-icon">ⓘ</span><span>הסימולטור משחזר <b>החלטות היסטוריות קפואות</b> במסחר משוער בפתיחת היום הבא, כולל מניות שלמות, עמלות והחלקה. הוא אינו מריץ מחדש את האלגוריתם על תרחישי שוק חדשים או מתיימר לשחזר מילויי ברוקר.</span></div>
+  <div class="panel"><form id="sim-form" class="sim-controls">
+    <label>סכום התחלה ($)<input id="sim-initial" type="number" value="100000" min="100" step="100" required></label>
+    <label>הפקדה חודשית ($)<input id="sim-monthly" type="number" value="3500" min="0" step="100" required></label>
+    <label>התחלה <input id="sim-start" type="date" required></label>
+    <label>סיום <input id="sim-end" type="date" required></label>
+    <label>עלות החלקה לצד (bps)<select id="sim-slip"><option value="0">0</option><option value="5">5</option><option value="10" selected>10 (ברירת מחדל)</option><option value="20">20</option><option value="50">50</option></select></label>
+    <button type="submit" class="primary-btn">חשב מחדש ←</button>
+  </form><div class="inline-alert" id="sim-message" role="status">טוען מחירי ETF היסטוריים…</div></div>
+  <div class="metrics-strip four"><div><small>שווי סופי StockLens</small><strong id="sim-strategy">—</strong></div><div><small>שווי סופי QQQ</small><strong id="sim-benchmark">—</strong></div><div><small>סך הפקדות</small><strong id="sim-paid">—</strong></div><div><small>ירידה מרבית</small><strong id="sim-dd">—</strong></div></div>
+  <div class="panel"><div class="section-title"><div><h2>תוצאות הסימולציה</h2><p>שווי ההון לאורך השנים — ההפקדות כלולות ולכן אין להסיק ממנו CAGR ישירות</p></div></div><div class="legend"><span><i class="legend-sky"></i>StockLens</span><span><i class="legend-gold"></i>QQQ</span></div><div class="chart-area tall"><svg id="sim-chart" role="img" aria-label="גרף תוצאות סימולציה" viewBox="0 0 900 340" preserveAspectRatio="none"></svg><div class="chart-empty" id="sim-chart-empty" hidden></div></div><div class="chart-caption" id="sim-footnote"></div></div>
+  <div class="panel"><div class="section-title"><div><h2>דוגמאות לקנייה ומכירה בסימולציה</h2><p>אירועים שהמודל היה מבצע במסגרת ההנחות שנבחרו</p></div><button id="sim-download" class="underlink">↓ הורדת CSV</button></div><div class="table-scroll"><table><thead><tr><th>תאריך</th><th>נייר</th><th>פעולה</th><th>מספר מניות</th><th>מחיר מדומה</th><th>סיבה</th></tr></thead><tbody id="sim-events"></tbody></table></div></div>
+</section>
+<section class="page" data-view="research">
+  <div class="page-heading"><div><div class="eyebrow">RESEARCH LAB</div><h1>מה בדקנו ומה למדנו?</h1><p>ניסויים, בקרה על האסטרטגיה והשוואת חלופות — בלי להציג ניסוי שנכשל כהצלחה.</p></div><a href="./research.html" class="secondary-btn">כניסה למעבדה המתקדמת ↗</a></div>
+  <div class="two-cols">
+    <div class="panel"><div class="section-title"><div><h2>אסטרטגיית הבסיס</h2><p>StockLens 8.0 היא הגרסה הקפואה — המחקר לא משנה אותה אוטומטית</p></div></div><div class="strategy-cards"><div><b>איתות מגמה</b><span>ממוצע נע של 200 יום ומנגנון היסטרזיס</span></div><div><b>ניהול תנודתיות</b><span>מעבר בין רמות חשיפה לפי תנודתיות 20 יום</span></div><div><b>מומנטום ובלימה</b><span>הגנה כאשר התנאים המצטברים מדרדרים</span></div><div><b>ביצוע ביום הבא</b><span>החלטה על בסיס סגירה שהושלמה, לא מידע עתידי</span></div></div></div>
+    <div class="panel"><div class="section-title"><div><h2>רמות חשיפה בפשטות</h2><p>מה פירוש כל מצב</p></div></div><div class="level-list"><div><b>הגנה</b><span>0% חשיפה · מזומן</span></div><div><b>רמה 1</b><span>יעד 1.25× בעזרת QQQ ו־TQQQ</span></div><div><b>רמה 2</b><span>יעד 2× בעזרת QQQ ו־TQQQ</span></div><div><b>רמה 3</b><span>יעד 3× עם TQQQ</span></div></div><p class="small-disclaimer">מינוף היומי אינו תשואה של פי 3 לאורך חודשים או שנים; תנודתיות יכולה לפגוע בצמיחה המצטברת.</p></div>
+  </div>
+  <div class="panel"><div class="section-title"><div><h2>יומן המחקר</h2><p>תוצאה מחקרית אינה אישור למסחר בכסף אמיתי</p></div></div><div id="experiments" class="research-list"></div></div>
+</section>
+<section class="page" data-view="evidence">
+  <div class="page-heading"><div><div class="eyebrow">DATA & TRUST</div><h1>על אילו נתונים אפשר לסמוך?</h1><p>איך המידע מגיע אלינו, ומה ההבדל בין מחיר שוק, סימולציה ורשומה ב־AWS.</p></div><button id="export-summary" class="secondary-btn">↓ הורדת סיכום נתונים</button></div>
+  <div class="two-cols">
+    <div class="panel"><div class="section-title"><div><h2>שרשרת המידע</h2><p>מה מקור כל מספר באתר</p></div></div><div class="pipeline"><div><span>01</span><div><b>Yahoo Finance</b><small>QQQ ו־TQQQ · מחירי OHLC מותאמים היסטוריים, לא ציטוטים בזמן אמת</small></div></div><div><span>02</span><div><b>StockLens GitHub Actions</b><small>מחשב את הסיגנל הקפוא, סימולציה ובדיקות תקינות</small></div></div><div><span>03</span><div><b>Paper Trading</b><small>מחירי דקה שנצפו מ־Yahoo יחד עם עמלות והחלקה מדומות</small></div></div><div><span>04</span><div><b>AWS DynamoDB</b><small>יומן סיגנלים ותיעוד מדומה, לכל יום מסחר; ללא גישה לברוקר</small></div></div></div></div>
+    <div class="panel"><div class="section-title"><div><h2>בריאות הנתונים</h2><p>המועד האחרון שאפשר לאמת במידע שנטען בדפדפן</p></div></div><div id="health-list" class="factor-list"></div><div class="notice compact"><span class="notice-icon">!</span><span>סימון PASS פירושו שהבדיקה הטכנית עברה — לא שהמודל צפוי לנצח בעתיד.</span></div></div>
+  </div>
+  <div class="panel"><div class="section-title"><div><h2>תיעוד וייצוא</h2><p>קבצים זמינים למעקב עצמאי</p></div></div><div class="download-grid"><a href="./data.json" download>נתוני הסיגנל והיומן ↗</a><a href="./portal-history.json" download>היסטוריה היסטורית מנורמלת ↗</a><a href="./observed_tqqq_risk_audit.json" download>דוח סיכון היסטורי ↗</a><a href="https://github.com/badbuda/stocklense-public/actions/workflows/aws-journal-export.yml" target="_blank" rel="noopener noreferrer">ייצוא נתוני DynamoDB ל־CSV ↗</a></div></div>
+  <div class="panel"><div class="section-title"><div><h2>מילון קצר</h2><p>המושגים שהכי חשוב להכיר</p></div></div><div class="glossary"><details><summary>מה זה CAGR?</summary><p>שיעור צמיחה שנתי ממוצע שמייצג את ההון כאילו גדל בקצב קבוע. לא תשואה שמתקבלת בכל שנה.</p></details><details><summary>מה זה Max Drawdown?</summary><p>הירידה הגדולה ביותר מהשיא עד השפל. מינוס 49% אומר שבנקודה כלשהי התיק איבד כמעט מחצית משווי השיא שלו.</p></details><details><summary>מה ההבדל בין Paper ל־Backtest?</summary><p>Backtest הוא שחזור על נתוני עבר; Paper מתעד החלטות ועסקאות מדומות בזמן שהמערכת פועלת היום. אף אחד מהם אינו ביצוע בברוקר.</p></details><details><summary>למה TQQQ לא תמיד פי שלוש מ־QQQ?</summary><p>TQQQ שואף לפי 3 מהתנועה היומית של Nasdaq-100, לפני גורמים נוספים. צבירה יומית ותנודתיות עלולות ליצור תוצאה שונה לגמרי בטווח ארוך.</p></details></div></div>
+</section>
+<footer class="footer"><span>StockLens 8.0 · Research & Paper Only</span><span>מחירי Yahoo מותאמים · ביצוע היסטורי משוער · אין מסחר בברוקר</span></footer>
+</main>
+</div></div>
+<script type="module" src="./portal.js"></script>
+</body></html>

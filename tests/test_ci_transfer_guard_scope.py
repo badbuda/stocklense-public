@@ -28,5 +28,9 @@ def test_governed_research_sources_remain_locked():
         ".github/workflows/shadow.yml",
         "docs/index.html",
         "docs/workbench.html",
+        "docs/portal.html",
+        "docs/portal.css",
+        "docs/portal.js",
+        "amplify.yml",
     ]
     assert all(in_scope(path) for path in sources)

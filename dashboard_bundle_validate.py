@@ -4,7 +4,17 @@ import json
 def validate(path="docs/index.html"):
  validate_simulator_artifact()
  h=Path(path).read_text()
+ # The canonical page redirects to the new portal. Keep validating the intact
+ # original control center in legacy mode, plus the new portal artifacts below.
+ redirect="<script>if(!new URLSearchParams(location.search).has('legacy'))location.replace('./portal.html'+location.hash);</script>"
+ has_portal_redirect = redirect in h
+ legacy_h=h.replace(redirect,"")
+ h=legacy_h
  checks={
+  "new_portal_is_default": has_portal_redirect,
+  "new_portal_entrypoints_present": all(Path("docs/"+p).is_file() for p in ("portal.html","portal.css","portal.js")),
+  "new_portal_has_real_data_contract": all(x in Path("docs/portal.js").read_text() for x in ("observed_ohlc_available","simulateRealETF","portal-history.json")),
+
   "single_script": h.count("<script>")==1 and h.count("</script>")==1,
   "single_document": h.count("</html>")==1 and h.rstrip().endswith("</script></body></html>"),
   "primary_sections": all(f'id="{x}"' in h for x in ("overview","performance","research","activity")),
