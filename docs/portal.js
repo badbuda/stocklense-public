@@ -1,4 +1,6 @@
 /* StockLens Portal — source-grounded UI only. No broker actions, no invented fill prices. */
+import {bindTradeInspector,showGapReport,updateScenarioComparison} from './portal-insights.js';
+import {initCloudJournal,refreshCloudJournal} from './portal-cloud.js';
 const byId=id=>document.getElementById(id);
 const shell=document.getElementById('sidebar');
 const fmt=new Intl.NumberFormat('en-US',{maximumFractionDigits:2});
@@ -79,14 +81,15 @@ function render(){
     byId('paper-chart-empty').textContent=equity.length===1?'יש לנו יום מדומה אחד בלבד. אחרי שיצטברו עוד ימים יופיע כאן גרף אמיתי, ללא קו שהומצא.':'עדיין אין ימי Paper Trading מאומתים.';
   }
   put('paper-chart-caption',equity.length+' ימי תיעוד · מקור: יומן Paper · לא מסחר בברוקר');
-  renderTrades();renderResearch();renderRisk();renderHealth();
+  renderTrades();showGapReport(paper,state.history);renderResearch();renderRisk();renderHealth();
   setupSimulation();
   paintPerformance();
 }
 function renderTrades(){
   const paper=state.data.paper||{}, tr=paper.recent_trades||[], rows=paper.equity_history||[];
   put('trades-count',number(paper.trades||tr.length,0)+' עסקאות');
-  setHtml('trades-body',tr.length?[...tr].reverse().map(t=>'<tr><td>'+clean(t.execution_session)+'</td><td><span class="research-status '+(t.side==='BUY'?'accepted':'rejected')+'">'+clean(t.side==='BUY'?'קנייה':t.side==='SELL'?'מכירה':t.side)+'</span></td><td>'+clean(t.symbol)+'</td><td>'+number(t.qty,0)+'</td><td>'+clean(t.time_et)+'</td><td>'+money(t.reference_price)+'</td><td>'+money(t.modeled_fill_price)+'</td><td>'+money(t.fee)+'</td><td>'+clean(t.signal_date)+'</td></tr>').join(''):'<tr><td colspan="9">עדיין אין פעולות מתועדות ביומן.</td></tr>');
+  setHtml('trades-body',tr.length?[...tr].reverse().map((t,i)=>'<tr tabindex="0" role="button" aria-label="פירוט עסקת '+clean(t.symbol)+'" data-trade-index="'+i+'"><td>'+clean(t.execution_session)+'</td><td><span class="research-status '+(t.side==='BUY'?'accepted':'rejected')+'">'+clean(t.side==='BUY'?'קנייה':t.side==='SELL'?'מכירה':t.side)+'</span></td><td>'+clean(t.symbol)+'</td><td>'+number(t.qty,0)+'</td><td>'+clean(t.time_et)+'</td><td>'+money(t.reference_price)+'</td><td>'+money(t.modeled_fill_price)+'</td><td>'+money(t.fee)+'</td><td>'+clean(t.signal_date)+'</td></tr>').join(''):'<tr><td colspan="9">עדיין אין פעולות מתועדות ביומן.</td></tr>');
+  bindTradeInspector(paper);
   setHtml('paper-body',rows.length?[...rows].reverse().map(t=>'<tr><td>'+clean(t.date)+'</td><td>'+money(t.equity)+'</td><td class="'+signed(Number(t.return))+'">'+percentage(t.return,2)+'</td><td class="'+signed(Number(t.drawdown))+'">'+percentage(t.drawdown,2)+'</td></tr>').join(''):'<tr><td colspan="4">אין עדיין יומן הון.</td></tr>');
 }
 function renderResearch(){
@@ -232,9 +235,12 @@ function runSimulation(e){
   put('sim-message','חושבו '+number(rows.length,0)+' ימי מסחר · '+number(result.events.length,0)+' אירועי קנייה/מכירה · ללא עסקאות ברוקר.');
   byId('sim-message').classList.remove('bad');
   put('sim-footnote','תוצאה היסטורית מותנית בהנחות: עמלות 2 bps לצד, החלקה '+slip+' bps לצד, מחיר פתיחה יומי מותאם מ־Yahoo. השיטה נשארה קפואה. רמת החשיפה 3× משתמשת ב־TQQQ נצפה, לא ב־QQQ×3.');
+  updateScenarioComparison({history:h,a:result,simulate:simulateRealETF,draw:drawChart});
   setHtml('sim-events',result.events.length?result.events.slice(-100).reverse().map(r=>'<tr><td>'+clean(r.date)+'</td><td>'+clean(r.symbol)+'</td><td>'+clean(r.side)+'</td><td>'+number(r.qty,0)+'</td><td>'+money(r.modeled_price)+'</td><td>'+clean(r.reason)+'</td></tr>').join(''):'<tr><td colspan="6">לא נמצאו עסקאות בתקופה הזו.</td></tr>');
  }catch(err){put('sim-message',err.message);byId('sim-message').classList.add('bad')}
 }
 byId('sim-form').addEventListener('submit',runSimulation);
+byId('scenario-b-form').addEventListener('submit',e=>{e.preventDefault();updateScenarioComparison({history:state.history,a:state.lastSimulation,simulate:simulateRealETF,draw:drawChart})});
 byId('sim-download').addEventListener('click',()=>downloadCSV('stocklens-historical-modelled-trades.csv',['date','symbol','side','qty','modeled_price','reason'],state.lastSimulation?.events||[]));
+initCloudJournal({getHistory:()=>state.history,showGaps:()=>showGapReport(state.data?.paper||{},state.history)});
 navigate(location.hash.slice(1)||'overview');refresh();

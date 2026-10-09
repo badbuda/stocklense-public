@@ -22,6 +22,11 @@ try{
  await page.locator('button[data-page=paper]').click();
  assert.match(await page.locator('#trades-body').textContent(),/TQQQ/);
  assert.match(await page.locator('#trades-body').textContent(),/BUY|קנייה/);
+ await page.locator('#trades-body tr[data-trade-index]').first().click();
+ assert.match(await page.locator('#paper-trade-detail').textContent(),/מחיר מקור|מחיר מדומה/);
+ assert.match(await page.locator('#paper-trade-detail').textContent(),/עלות החלקה/);
+ assert.match(await page.locator('#journal-status').textContent(),/יומן Paper|אין חורים|פרסום|רצף/);
+ assert.equal(await page.locator('#cloud-login').isDisabled(),true,'No public DynamoDB authentication without configured private stack');
  await page.locator('button[data-page=performance]').click();
  assert.ok(await page.locator('#performance-chart polyline').count()===2,'Both observed ETF curves drawn');
  assert.match(await page.locator('#perf-period').textContent(),/2010/);
@@ -34,6 +39,12 @@ try{
  assert.match(first,/\$/);
  assert.ok(await page.locator('#sim-chart polyline').count()===2,'Scenario compares real modeled StockLens and QQQ');
  assert.ok(await page.locator('#sim-events tr').count()>1,'Scenario produces simulated trade receipts');
+ assert.ok(await page.locator('#scenario-compare-body tr').count()>=6,'Scenario B comparison populated');
+ assert.ok(await page.locator('#scenario-compare-chart polyline').count()===2,'Scenario A and B are plotted independently');
+ const priorComparison=await page.locator('#scenario-compare-body').textContent();
+ await page.locator('#scenario-b-monthly').fill('9000');
+ await page.locator('#scenario-b-form button[type=submit]').click();
+ assert.notEqual(priorComparison,await page.locator('#scenario-compare-body').textContent(),'B contribution change must recompute comparison');
  await page.locator('#sim-initial').fill('150000');
  await page.locator('#sim-form button[type=submit]').click();
  const second=await page.locator('#sim-strategy').textContent();

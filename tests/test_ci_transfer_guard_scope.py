@@ -31,6 +31,10 @@ def test_governed_research_sources_remain_locked():
         "docs/portal.html",
         "docs/portal.css",
         "docs/portal.js",
+        "docs/portal-insights.js",
+        "docs/portal-cloud.js",
+        "infra/aws/portal-journal-handler.py",
+        "infra/aws/portal-readonly-api.yaml",
         "amplify.yml",
     ]
     assert all(in_scope(path) for path in sources)

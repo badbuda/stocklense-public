@@ -70,3 +70,14 @@ def test_ui_is_responsive_and_readable():
     assert '@media(max-width:660px)' in css
     assert 'data-view="simulator"' in html
     assert 'aria-label' in html
+
+
+def test_secure_aws_and_scenario_panels_are_present():
+    html=P.read_text(encoding='utf-8')
+    src=JS.read_text(encoding='utf-8')
+    for element in ('paper-trade-detail','journal-gap-list','cloud-login','cloud-load',
+                    'scenario-b-form','scenario-compare-chart','scenario-compare-body'):
+        assert f'id="{element}"' in html
+    assert "'./portal-insights.js'" in src
+    assert "'./portal-cloud.js'" in src
+    assert 'dynamodb:GetItem' in Path('infra/aws/portal-readonly-api.yaml').read_text()

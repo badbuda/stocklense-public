@@ -1,0 +1,259 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Secure, read-only StockLens DynamoDB journal API for the existing AWS Amplify portal.
+Parameters:
+  JournalTableName:
+    Type: String
+    Description: Physical table name of stocklens-paper Signals; reused read-only, never replaced.
+    AllowedPattern: '[a-zA-Z0-9_.-]+'
+  AmplifyOrigin:
+    Type: String
+    Default: https://main.d20nvlvzjafg5m.amplifyapp.com
+    Description: HTTPS origin of StockLens Amplify frontend; used as exact CORS origin.
+    AllowedPattern: 'https://[a-zA-Z0-9.-]+'
+  CognitoDomainPrefix:
+    Type: String
+    Description: Globally unique domain prefix for Cognito hosted login, e.g. stocklens-portal-unique123.
+    MinLength: 5
+    MaxLength: 55
+    AllowedPattern: '[a-z0-9][a-z0-9-]+[a-z0-9]'
+Resources:
+  PortalUserPool:
+    Type: AWS::Cognito::UserPool
+    DeletionPolicy: Retain
+    Properties:
+      UserPoolName: !Sub '${AWS::StackName}-readers'
+      UsernameAttributes: [email]
+      AutoVerifiedAttributes: [email]
+      AdminCreateUserConfig:
+        AllowAdminCreateUserOnly: true
+      Policies:
+        PasswordPolicy:
+          MinimumLength: 14
+          RequireLowercase: true
+          RequireUppercase: true
+          RequireNumbers: true
+          RequireSymbols: true
+  PortalUserPoolClient:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      ClientName: stocklens-read-only-portal
+      UserPoolId: !Ref PortalUserPool
+      GenerateSecret: false
+      SupportedIdentityProviders: [COGNITO]
+      AllowedOAuthFlowsUserPoolClient: true
+      AllowedOAuthFlows: [code]
+      AllowedOAuthScopes: [openid, email]
+      CallbackURLs:
+        - !Sub '${AmplifyOrigin}/portal.html'
+      LogoutURLs:
+        - !Sub '${AmplifyOrigin}/portal.html'
+      PreventUserExistenceErrors: ENABLED
+      AccessTokenValidity: 60
+      TokenValidityUnits:
+        AccessToken: minutes
+  PortalUserPoolDomain:
+    Type: AWS::Cognito::UserPoolDomain
+    Properties:
+      Domain: !Ref CognitoDomainPrefix
+      UserPoolId: !Ref PortalUserPool
+  JournalReadRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal: {Service: lambda.amazonaws.com}
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - !Sub 'arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'
+      Policies:
+        - PolicyName: JournalGetItemOnly
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: [dynamodb:GetItem]
+                Resource: !Sub 'arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${JournalTableName}'
+  JournalReadLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      Runtime: python3.12
+      Handler: index.handler
+      Role: !GetAtt JournalReadRole.Arn
+      Timeout: 20
+      MemorySize: 128
+      Environment:
+        Variables:
+          JOURNAL_TABLE: !Ref JournalTableName
+      Code:
+        ZipFile: |
+          """Authenticated, strictly read-only StockLens journal API for HTTP API JWT route.
+          
+          Never called without API Gateway Cognito JWT authorizer. No Scan, PutItem,
+          broker actions, Yahoo calls, synthetic backfills or IAM credentials in browser.
+          """
+          import hashlib
+          import json
+          import os
+          import re
+          from datetime import date
+          
+          _TABLE = None
+          KEY = re.compile(r"^20\d{2}-\d{2}-\d{2}$")
+          
+          
+          def json_response(code, body):
+              return {"statusCode": code,
+                      "headers": {"content-type": "application/json",
+                                  "cache-control": "no-store, private"},
+                      "body": json.dumps(body, separators=(",", ":"))}
+          
+          
+          def require_dates(raw):
+              if not isinstance(raw, str) or not raw:
+                  raise ValueError("MISSING_DATES")
+              dates = raw.split(",")
+              if len(dates) > 30 or len(dates) != len(set(dates)):
+                  raise ValueError("TOO_MANY_OR_DUPLICATE_DATES")
+              for day in dates:
+                  if not KEY.fullmatch(day):
+                      raise ValueError("INVALID_DATE")
+                  try:
+                      if date.fromisoformat(day) > date.today():
+                          raise ValueError("FUTURE_SESSION")
+                  except ValueError as exc:
+                      raise ValueError("INVALID_DATE") from exc
+              return sorted(dates)
+          
+          
+          def unpack(item, field, hash_field, day, kind):
+              if item is None:
+                  return None
+              if item.get("broker_orders_authorized") is not False:
+                  raise ValueError("BROKER_FLAG_DISALLOWED")
+              if kind == "paper" and item.get("broker_fills_observed") is not False:
+                  raise ValueError("BROKER_FILL_CLAIM")
+              raw, expected = item[field], item[hash_field]
+              if hashlib.sha256(raw.encode()).hexdigest() != expected:
+                  raise ValueError("SHA256_MISMATCH")
+              record = json.loads(raw)
+              if kind == "signal":
+                  if record.get("mode") != "SHADOW_ONLY_NO_BROKER_ACTIONS":
+                      raise ValueError("SIGNAL_NOT_SHADOW")
+                  if record.get("latest", {}).get("asof_date") != day:
+                      raise ValueError("SIGNAL_DAY_MISMATCH")
+              else:
+                  row, trades = record["row"], record.get("trs")
+                  if row.get("session_date") != day or row.get("execution_source") != "YFINANCE_1M_RAW":
+                      raise ValueError("INVALID_PAPER_SOURCE")
+                  if not isinstance(trades, list) or len(trades) != int(row["trade_count_session"]):
+                      raise ValueError("TRADE_COUNT_MISMATCH")
+                  if any(t.get("execution_session") != day for t in trades):
+                      raise ValueError("TRADE_DAY_MISMATCH")
+              return record
+          
+          
+          def read_session(day, getter):
+              try:
+                  signal = getter(day)
+                  paper = getter(day + "#PAPER")
+                  s = unpack(signal, "signal_json", "signal_sha256", day, "signal")
+                  p = unpack(paper, "paper_evidence_json", "paper_sha256", day, "paper")
+                  status = "PASS" if s and p else "MISSING_SIGNAL" if p else "MISSING_PAPER" if s else "MISSING_BOTH"
+                  return {
+                      "session_date": day, "status": status,
+                      "signal": {"level": s["latest"]["level"],
+                                 "target_leverage": s["latest"]["target_leverage"],
+                                 "recorded_at_utc": signal.get("recorded_at_utc", ""),
+                                 "sha256": signal["signal_sha256"]} if s else None,
+                      "paper": {"row": p["row"], "trades": p["trs"],
+                                "recorded_at_utc": paper.get("recorded_at_utc", ""),
+                                "sha256": paper["paper_sha256"]} if p else None,
+                  }
+              except (KeyError, ValueError, TypeError, json.JSONDecodeError):
+                  return {"session_date": day, "status": "INVALID_EVIDENCE",
+                          "signal": None, "paper": None}
+          
+          
+          def handler(event, context):
+              if event.get("requestContext", {}).get("http", {}).get("method") != "GET":
+                  return json_response(405, {"error": "METHOD_NOT_ALLOWED"})
+              try:
+                  days = require_dates((event.get("queryStringParameters") or {}).get("dates"))
+              except ValueError as exc:
+                  return json_response(400, {"error": str(exc)})
+              global _TABLE
+              if _TABLE is None:
+                  import boto3
+                  _TABLE = boto3.resource("dynamodb").Table(os.environ["JOURNAL_TABLE"])
+              def get(key):
+                  data = _TABLE.get_item(Key={"session_date": key}, ConsistentRead=True)
+                  return data.get("Item")
+              return json_response(200, {
+                  "kind": "STOCKLENS_AUTHENTICATED_READ_ONLY_AWS_JOURNAL",
+                  "sessions": [read_session(day, get) for day in days],
+                  "source": "DYNAMODB_GETITEM_SHA_VERIFIED",
+                  "broker_orders_authorized": False,
+                  "broker_fills_observed": False,
+              })
+  JournalApi:
+    Type: AWS::ApiGatewayV2::Api
+    Properties:
+      Name: stocklens-authenticated-journal
+      ProtocolType: HTTP
+      CorsConfiguration:
+        AllowOrigins: [!Ref AmplifyOrigin]
+        AllowMethods: [GET, OPTIONS]
+        AllowHeaders: [authorization, content-type]
+        MaxAge: 300
+  JournalAuthorizer:
+    Type: AWS::ApiGatewayV2::Authorizer
+    Properties:
+      ApiId: !Ref JournalApi
+      Name: cognito-jwt-only
+      AuthorizerType: JWT
+      IdentitySource: ['$request.header.Authorization']
+      JwtConfiguration:
+        Audience: [!Ref PortalUserPoolClient]
+        Issuer: !Sub 'https://cognito-idp.${AWS::Region}.amazonaws.com/${PortalUserPool}'
+  JournalIntegration:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId: !Ref JournalApi
+      IntegrationType: AWS_PROXY
+      IntegrationUri: !GetAtt JournalReadLambda.Arn
+      PayloadFormatVersion: '2.0'
+  JournalRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref JournalApi
+      RouteKey: GET /v1/sessions
+      AuthorizationType: JWT
+      AuthorizerId: !Ref JournalAuthorizer
+      Target: !Join ['', ['integrations/', !Ref JournalIntegration]]
+  JournalStage:
+    Type: AWS::ApiGatewayV2::Stage
+    Properties:
+      ApiId: !Ref JournalApi
+      StageName: '$default'
+      AutoDeploy: true
+  AllowApiInvoke:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref JournalReadLambda
+      Action: lambda:InvokeFunction
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub 'arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${JournalApi}/*/GET/v1/sessions'
+Outputs:
+  ApiBaseUrl:
+    Value: !Sub 'https://${JournalApi}.execute-api.${AWS::Region}.amazonaws.com'
+    Description: JWT-protected API Gateway endpoint; must never be opened publicly.
+  CognitoDomain:
+    Value: !Sub 'https://${CognitoDomainPrefix}.auth.${AWS::Region}.amazoncognito.com'
+  CognitoClientId:
+    Value: !Ref PortalUserPoolClient
+  CognitoUserPoolId:
+    Value: !Ref PortalUserPool
+  JournalTable:
+    Value: !Ref JournalTableName

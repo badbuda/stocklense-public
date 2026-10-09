@@ -35,6 +35,10 @@ jobs:
           python dashboard_workbench.py
           python simulator_smoke.py
           node --check docs/portal.js
+          node --check docs/portal-insights.js
+          node --check docs/portal-cloud.js
+          node --check tests/portal_insights_unit.cjs
+          node tests/portal_insights_unit.cjs
           node --check tests/portal_browser_smoke.cjs
       - name: Unit and regression tests
         env:

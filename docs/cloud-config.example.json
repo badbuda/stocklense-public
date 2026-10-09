@@ -1,0 +1,7 @@
+{
+  "enabled": false,
+  "api_base_url": "https://REPLACE_WITH_API.execute-api.eu-central-1.amazonaws.com",
+  "cognito_domain": "https://REPLACE_WITH_PREFIX.auth.eu-central-1.amazoncognito.com",
+  "client_id": "REPLACE_WITH_COGNITO_APP_CLIENT_ID",
+  "redirect_uri": "https://main.d20nvlvzjafg5m.amplifyapp.com/portal.html"
+}
