@@ -7,6 +7,7 @@ by multiplying QQQ returns.
 """
 from __future__ import annotations
 import hashlib
+import csv
 import json
 from pathlib import Path
 
@@ -33,9 +34,28 @@ def build(report: dict) -> dict:
         raise ValueError("QQQ_EQUITY_MISMATCH")
     if any(x.get("stocklens_nav", 0) <= 0 or x.get("qqq_nav", 0) <= 0 for x in rows):
         raise ValueError("INVALID_NAV_DATA")
+    # Only attach Yahoo OHLC when the exact price snapshot matches the audited
+    # source report. Never construct fake 3x TQQQ price history from QQQ.
+    price_file = Path("research/data/observed_etf_qqq_tqqq_adjusted.csv")
+    matched_prices = {}
+    if price_file.is_file():
+        snapshot = price_file.read_bytes()
+        if hashlib.sha256(snapshot).hexdigest() != report["observed_price_snapshot"]["sha256"]:
+            raise ValueError("YAHOO_PRICE_SNAPSHOT_HASH_DRIFT")
+        with price_file.open(newline="", encoding="utf-8") as fh:
+            for entry in csv.DictReader(fh):
+                matched_prices[entry["date"]] = {
+                    "qo": float(entry["qqq_adjusted_open"]),
+                    "qc": float(entry["qqq_adjusted_close"]),
+                    "to": float(entry["tqqq_adjusted_open"]),
+                    "tc": float(entry["tqqq_adjusted_close"]),
+                }
+        if len(matched_prices) != len(rows):
+            raise ValueError("YAHOO_PRICE_SNAPSHOT_SESSION_MISMATCH")
     compact = [
         {"date": r["date"], "s": round(r["stocklens_nav"], 2),
-         "q": round(r["qqq_nav"], 2), "l": r["leverage"],
+         "q": round(r["qqq_nav"], 2), **matched_prices.get(r["date"], {}),
+         "l": r["leverage"],
          "signal": r["effective_prior_signal_date"],
          "contribution": r["contribution"],
          "rebalance": r["rebalance"]}
@@ -44,6 +64,7 @@ def build(report: dict) -> dict:
     result = {
         "schema_version": 1, "evidence": "REAL_QQQ_TQQQ_ADJUSTED_DAILY_OPEN_EXECUTION_PROXY",
         "instruments": ["QQQ", "TQQQ"],
+        "observed_ohlc_available": len(matched_prices) == len(rows),
         "source": report["price_source"],
         "snapshot_sha256": report["price_fingerprint_sha256"],
         "period": report["period"],
