@@ -10,10 +10,17 @@ const browser=await chromium.launch({headless:true,args:['--no-sandbox']});
 try{
  const page=await browser.newPage({viewport:{width:1440,height:900},deviceScaleFactor:1});
  page.on('pageerror',e=>failures.push(e.message));
+ page.on('console',m=>{if(m.type()==='error')console.error('BROWSER_CONSOLE_ERROR:',m.text())});
  await page.goto(base+'/',{waitUntil:'networkidle',timeout:60000});
  await page.waitForURL(/portal\.html/,{timeout:12000});
  assert.match(await page.title(),/StockLens/);
- await page.waitForFunction(()=>document.querySelector('#kpi-days')?.textContent!=='—',{timeout:25000});
+ try {await page.waitForFunction(()=>document.querySelector('#kpi-days')?.textContent!=='—',{timeout:25000});} catch(error) {
+   console.error('PAGE_RUNTIME_ERRORS:',JSON.stringify(failures));
+   console.error('PAGE_LOCATION:',page.url());
+   console.error('PAGE_LOAD_ERROR:',await page.locator('#load-error').textContent());
+   console.error('PAGE_MODULES:',await page.locator('script[type=module]').count());
+   throw error;
+ }
  const currentSignal=await page.locator('#asof-badge').textContent();
  assert.match(currentSignal,/20\d\d-\d\d-\d\d/);
  assert.equal((await page.locator('.page.visible').getAttribute('data-view')),'overview');
