@@ -1,0 +1,46 @@
+name: StockLens Portal Browser E2E
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/portal-browser-smoke.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: stocklens-portal-browser
+  cancel-in-progress: false
+
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install headless Chromium
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+      - name: Serve real production docs (with full Yahoo ETF data)
+        run: |
+          test -s docs/portal-history.json
+          python3 -m http.server 8765 --bind 127.0.0.1 --directory docs >/tmp/stocklens-http.log 2>&1 &
+          sleep 2
+      - name: Verify desktop, mobile and simulator in browser
+        run: node tests/portal_browser_smoke.cjs
+      - name: Upload actual screenshots for review
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stocklens-portal-browser
+          path: |
+            /tmp/stocklens-desktop.png
+            /tmp/stocklens-mobile.png
+          if-no-files-found: warn
+          retention-days: 14
