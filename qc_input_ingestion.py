@@ -44,7 +44,7 @@ def original_daily_leverage_hash(rows):
 
 
 def original_session_dates_hash(dates):
-    return hashlib.sha256("\\n".join(dates).encode()).hexdigest()
+    return hashlib.sha256("\n".join(dates).encode()).hexdigest()
 
 
 def validate_export(path=DEFAULT, schema_path=SCHEMA, transitions_path=TRANSITIONS, state_path=STATE):
