@@ -281,7 +281,7 @@
     "tests/test_paper_transaction_recovery.py": "4b68a4ddc75908410ea7f2ae29794ab767c3bc4f",
     "tests/test_portal_feed.py": "8d052ebcf829a004744bfa4053df17901e2eff8b",
     "tests/test_portal_secure_journal.py": "3a779aa65c78787dfc6fb811d769ef0dbac65385",
-    "tests/test_portal_ui.py": "abab5c4dfa6a3080a352fd94f88d0e22ee270cab",
+    "tests/test_portal_ui.py": "0f911f1516f60f0169293c94dfb211c373fc810a",
     "tests/test_prospective_intraday_price_journal.py": "e9c595f6595f567607fa8a740b62541050ed2245",
     "tests/test_real_tqqq_causality_adversarial.py": "ec3201c3cbc7017af0e9aca3b254685c6088888f",
     "tests/test_research_selection_inventory.py": "1e88681c7e8ea3aaab110ddefc553aa539570427",
