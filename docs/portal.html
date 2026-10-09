@@ -59,7 +59,21 @@
   <div class="page-heading"><div><div class="eyebrow">PAPER JOURNAL</div><h1>מה המערכת קנתה ומכרה?</h1><p>כל פעולה מדומה, מתי חושבה, כמה מניות ובאיזה מחיר מודל.</p></div><button id="export-trades" class="secondary-btn">↓ הורדת עסקאות CSV</button></div>
   <div class="notice"><span class="notice-icon">ⓘ</span><span>עסקאות Paper מבוססות על מחירי פתיחה של דקת מסחר מ־Yahoo ועל הנחות עלות. <b>אלו לא עסקאות שהברוקר ביצע</b>.</span></div>
   <div class="metrics-strip"><div><small>שווי נוכחי</small><strong id="paper-nav">—</strong></div><div><small>מזומן</small><strong id="paper-cash">—</strong></div><div><small>מניות TQQQ</small><strong id="paper-shares">—</strong></div><div><small>עמלות מצטברות</small><strong id="paper-fees">—</strong></div><div><small>עלות החלקה משוערת</small><strong id="paper-slip">—</strong></div></div>
-  <div class="panel"><div class="section-title"><div><h2>יומן עסקאות</h2><p>מידע כפי שנשמר ביומן, כולל מקור המחיר והזמן</p></div><span class="subtle-tag" id="trades-count">—</span></div><div class="table-scroll"><table><thead><tr><th>יום ביצוע</th><th>פעולה</th><th>נייר</th><th>מניות</th><th>זמן ניו־יורק</th><th>מחיר בסיס</th><th>מחיר מדומה</th><th>עמלה</th><th>סיגנל קודם</th></tr></thead><tbody id="trades-body"><tr><td colspan="9">טוען…</td></tr></tbody></table></div></div>
+  <div class="panel"><div class="section-title"><div><h2>יומן עסקאות</h2><p>מידע כפי שנשמר ביומן, כולל מקור המחיר והזמן</p></div><span class="subtle-tag" id="trades-count">—</span></div><div class="table-scroll"><table><thead><tr><th>יום ביצוע</th><th>פעולה</th><th>נייר</th><th>מניות</th><th>זמן ניו־יורק</th><th>מחיר בסיס</th><th>מחיר מדומה</th><th>עמלה</th><th>סיגנל קודם</th></tr></thead><tbody id="trades-body"><tr><td colspan="9">טוען…</td></tr></tbody></table></div>
+    <p class="chart-caption">לחצי על עסקה ביומן כדי לראות את ההסבר, מקור המחיר, העלויות וההשפעה על התיק.</p>
+    <div id="paper-trade-detail" class="trade-detail" role="region" aria-live="polite" aria-label="פירוט עסקה">בחרי עסקה להצגת פירוט מלא.</div>
+  </div>
+  <div class="panel"><div class="section-title"><div><h2>מעקב AWS מול GitHub</h2><p>בדיקת ימים חסרים וסטטוס ארכוב — ללא השלמת עסקאות בדיעבד</p></div></div>
+    <div id="journal-status" class="inline-alert">בודק רציפות בין ימי הבורסה לפרסומי Paper…</div>
+    <div id="journal-gap-list" class="journal-gap-list" aria-live="polite"></div>
+    <div class="cloud-access" id="cloud-access">
+      <div><strong>יומן DynamoDB מאובטח</strong><p>כניסה אישית לקריאה בלבד. ללא סיסמאות AWS באתר וללא חשיפת הרשומות לכל גולש.</p></div>
+      <div id="cloud-status" class="inline-alert">ליצירת חיבור פרטי דרושה פריסת CloudFormation נפרדת.</div>
+      <button id="cloud-login" type="button" class="secondary-btn" disabled>התחברות מאובטחת ל־AWS</button>
+      <button id="cloud-load" type="button" class="secondary-btn" disabled>טעינת רשומות DynamoDB</button>
+      <div id="cloud-results" class="table-scroll" hidden></div>
+    </div>
+  </div>
   <div class="panel"><div class="section-title"><div><h2>היסטוריית שווי תיק</h2><p>התפתחות התיק המדומה לפי יום, ללא השלמת ימים בדיעבד</p></div><button id="export-paper" class="underlink">↓ הורדת יומן CSV</button></div><div class="table-scroll"><table><thead><tr><th>תאריך</th><th>שווי תיק</th><th>תשואה מצטברת</th><th>ירידה משיא</th></tr></thead><tbody id="paper-body"></tbody></table></div></div>
 </section>
 <section class="page" data-view="performance">
@@ -84,6 +98,19 @@
   </form><div class="inline-alert" id="sim-message" role="status">טוען מחירי ETF היסטוריים…</div></div>
   <div class="metrics-strip four"><div><small>שווי סופי StockLens</small><strong id="sim-strategy">—</strong></div><div><small>שווי סופי QQQ</small><strong id="sim-benchmark">—</strong></div><div><small>סך הפקדות</small><strong id="sim-paid">—</strong></div><div><small>ירידה מרבית</small><strong id="sim-dd">—</strong></div></div>
   <div class="panel"><div class="section-title"><div><h2>תוצאות הסימולציה</h2><p>שווי ההון לאורך השנים — ההפקדות כלולות ולכן אין להסיק ממנו CAGR ישירות</p></div></div><div class="legend"><span><i class="legend-sky"></i>StockLens</span><span><i class="legend-gold"></i>QQQ</span></div><div class="chart-area tall"><svg id="sim-chart" role="img" aria-label="גרף תוצאות סימולציה" viewBox="0 0 900 340" preserveAspectRatio="none"></svg><div class="chart-empty" id="sim-chart-empty" hidden></div></div><div class="chart-caption" id="sim-footnote"></div></div>
+  <div class="panel" id="scenario-comparison">
+    <div class="section-title"><div><h2>השוואת תרחישים A / B</h2><p>אותו טווח תאריכים ואותן החלטות מודל, אך סכומי הפקדות ועלויות שונים. זו בדיקת רגישות — לא תחזית.</p></div></div>
+    <form id="scenario-b-form" class="sim-controls scenario-controls">
+      <label>סכום התחלה — תרחיש B ($)<input id="scenario-b-initial" type="number" min="100" step="100" value="100000"></label>
+      <label>הפקדה חודשית — B ($)<input id="scenario-b-monthly" type="number" min="0" step="100" value="0"></label>
+      <label>החלקה — B (bps)<select id="scenario-b-slip"><option value="0">0</option><option value="5">5</option><option value="10">10</option><option value="20" selected>20</option><option value="50">50</option></select></label>
+      <button type="submit" class="secondary-btn">השווה תרחישים</button>
+    </form>
+    <div id="scenario-compare-status" class="inline-alert" role="status">הריצי סימולציה ראשונה כדי להשוות תרחישים.</div>
+    <div class="table-scroll"><table class="scenario-table"><thead><tr><th>מדד</th><th>תרחיש A</th><th>תרחיש B</th><th>הסבר</th></tr></thead><tbody id="scenario-compare-body"><tr><td colspan="4">ממתין לחישוב</td></tr></tbody></table></div>
+    <div class="chart-area"><svg id="scenario-compare-chart" role="img" aria-label="השוואת שווי תיק StockLens תחת שני תרחישים" viewBox="0 0 820 250" preserveAspectRatio="none"></svg><div id="scenario-compare-empty" class="chart-empty">ממתין לתרחישים תקינים.</div></div>
+    <p class="chart-caption" id="scenario-compare-note"></p>
+  </div>
   <div class="panel"><div class="section-title"><div><h2>דוגמאות לקנייה ומכירה בסימולציה</h2><p>אירועים שהמודל היה מבצע במסגרת ההנחות שנבחרו</p></div><button id="sim-download" class="underlink">↓ הורדת CSV</button></div><div class="table-scroll"><table><thead><tr><th>תאריך</th><th>נייר</th><th>פעולה</th><th>מספר מניות</th><th>מחיר מדומה</th><th>סיבה</th></tr></thead><tbody id="sim-events"></tbody></table></div></div>
 </section>
 <section class="page" data-view="research">
