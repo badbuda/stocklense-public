@@ -69,7 +69,7 @@ Resources:
           from zoneinfo import ZoneInfo
           def validate(obj, now):
               ny = now.astimezone(ZoneInfo("America/New_York"))
-              if ny.weekday() >= 5 or ny.time() < time(18,0):
+              if ny.weekday() not in (1,2,3,4,5) or not 4 <= ny.hour < 18:
                   raise RuntimeError("NOT_COMPLETED_US_MARKET_SESSION")
               if obj.get("mode") != "SHADOW_ONLY_NO_BROKER_ACTIONS":
                   raise ValueError("NOT_PAPER_SHADOW")
@@ -78,7 +78,7 @@ Resources:
               if obj.get("execution_plan", {}).get("broker_actions_enabled") is not False:
                   raise ValueError("BROKER_MUST_REMAIN_DISABLED")
               d = obj.get("latest", {})
-              if d.get("asof_date") != ny.date().isoformat():
+              if d.get("asof_date") != (ny.date()-timedelta(days=1)).isoformat():
                   raise RuntimeError("STALE_COMPLETED_SESSION")
               gen = datetime.fromisoformat(obj["generated_at_utc"].replace("Z","+00:00"))
               if gen.tzinfo is None or gen > now or now-gen > timedelta(hours=18):
@@ -235,8 +235,8 @@ Resources:
   PaperEvidenceSchedule:
     Type: AWS::Events::Rule
     Properties:
-      Description: '03:20 UTC Tue-Sat: archive current US-session modeled paper evidence only.'
-      ScheduleExpression: 'cron(20 3 ? * TUE-SAT *)'
+      Description: '09:20 UTC Tue-Sat: archive previous NY calendar trading session after completed GitHub publication.'
+      ScheduleExpression: 'cron(20 9 ? * TUE-SAT *)'
       State: ENABLED
       Targets:
         - {Id: PaperEvidence, Arn: !GetAtt PaperEvidenceLambda.Arn}
@@ -265,8 +265,8 @@ Resources:
   NightlyRule:
     Type: AWS::Events::Rule
     Properties:
-      Description: After 23:20 UTC GitHub nightly run, Tuesday-Saturday UTC.
-      ScheduleExpression: 'cron(10 3 ? * TUE-SAT *)'
+      Description: At 09:10 UTC Tue-Sat, archive prior NY business-day signal after GitHub publication (fail closed on market holidays).
+      ScheduleExpression: 'cron(10 9 ? * TUE-SAT *)'
       State: ENABLED
       Targets:
         - {Id: ShadowArchive, Arn: !GetAtt ShadowLambda.Arn}
