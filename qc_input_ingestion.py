@@ -36,6 +36,17 @@ def transition_hash(transitions):
     return hashlib.sha256(canonical.encode()).hexdigest()
 
 
+def original_daily_leverage_hash(rows):
+    """SHA256 all dated LEAN leverage decisions, not merely 67 transitions."""
+    payload = [[r["date"], float(r["leverage"])] for r in rows]
+    canonical = json.dumps(payload, separators=(",", ":"))
+    return hashlib.sha256(canonical.encode()).hexdigest()
+
+
+def original_session_dates_hash(dates):
+    return hashlib.sha256("\n".join(dates).encode()).hexdigest()
+
+
 def validate_export(path=DEFAULT, schema_path=SCHEMA, transitions_path=TRANSITIONS, state_path=STATE):
     schema = json.loads(Path(schema_path).read_text(encoding="utf-8"))
     source = Path(path)
@@ -55,7 +66,7 @@ def validate_export(path=DEFAULT, schema_path=SCHEMA, transitions_path=TRANSITIO
         return {"status": "INVALID", "path": str(source), "same_input_parity_ready": False,
                 "source_authenticity_proven": False, "errors": ["COLUMNS_MISSING"],
                 "missing_columns": missing}
-    dates, counts, transitions, previous, values = [], Counter(), [], None, []
+    dates, counts, transitions, previous, values, daily_states = [], Counter(), [], None, [], []
     for i, row in enumerate(rows):
         try:
             day = date.fromisoformat(row["date"])
@@ -76,6 +87,7 @@ def validate_export(path=DEFAULT, schema_path=SCHEMA, transitions_path=TRANSITIO
             if feature_values[0] <= 0 or feature_values[1] <= 0 or feature_values[2] <= 0 or feature_values[3] < 0:
                 raise ValueError("INVALID_FEATURE_RANGE")
             dates.append(day.isoformat())
+            daily_states.append({"date": day.isoformat(), "leverage": lev})
             counts[str(lev)] += 1
             values.append(",".join(str(row.get(k, "")) for k in required))
             if previous is None or lev != previous:
@@ -96,6 +108,15 @@ def validate_export(path=DEFAULT, schema_path=SCHEMA, transitions_path=TRANSITIO
     expected_counts = {str(float(k)): v for k, v in state["leverage_counts"].items()}
     if dict(counts) != expected_counts:
         errors.append("FROZEN_DAILY_LEVERAGE_COUNTS_DRIFT")
+    # Original chart-derived fingerprints lock EVERY dated level, even on
+    # sessions where no transition occurred. This detects a substituted holiday,
+    # a missing session and a fabricated duplicate (while transition SHA passes).
+    daily_sha = original_daily_leverage_hash(daily_states)
+    dates_sha = original_session_dates_hash(dates)
+    if daily_sha != state.get("daily_date_leverage_sha256"):
+        errors.append("FROZEN_DAILY_STATE_SHA_DRIFT")
+    if dates_sha != state.get("daily_session_dates_sha256"):
+        errors.append("FROZEN_SESSION_CALENDAR_SHA_DRIFT")
     checks = {
         "columns_complete": not missing,
         "session_count": len(rows) == schema["expected_sessions"] == state["sessions"],
@@ -105,6 +126,8 @@ def validate_export(path=DEFAULT, schema_path=SCHEMA, transitions_path=TRANSITIO
         "finite_valid_features_and_states": not any(x.startswith("INVALID_ROW") for x in errors),
         "frozen_transition_identity": transitions == golden["transitions"],
         "frozen_daily_leverage_distribution": dict(counts) == expected_counts,
+        "original_daily_state_sha_match": daily_sha == state.get("daily_date_leverage_sha256"),
+        "original_calendar_sha_match": dates_sha == state.get("daily_session_dates_sha256"),
     }
     valid = not errors and all(checks.values())
     return {
@@ -112,6 +135,8 @@ def validate_export(path=DEFAULT, schema_path=SCHEMA, transitions_path=TRANSITIO
         "rows": len(rows), "sha256": hashlib.sha256("\n".join(values).encode()).hexdigest(),
         "checks": checks, "errors": sorted(set(errors)), "missing_columns": [],
         "reference_transition_sha256": golden["transition_sha256"],
+        "daily_date_leverage_sha256": daily_sha,
+        "daily_session_dates_sha256": dates_sha,
         "source_authenticity_proven": False,
         "same_input_parity_ready": valid,
         "scope": "Structural and immutable original-LEAN state check only; original provenance still requires the native LEAN source artifact.",

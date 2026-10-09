@@ -64,3 +64,40 @@ Feature reconstruction from a different data vendor might be useful for **diagno
 - Original full run charts can be verified offline; avoid unnecessary QuantConnect reruns.
 - A fresh diagnostic QuantConnect run may differ from the original due to data revisions; require the resulting 3,774 daily leverage states and transitions to reproduce the locked original before drawing conclusions about identity.
 - Don't assume the chart-only evidence proves same-input parity, execution slippage parity or statistics.
+
+
+## Daily reference hardening (2026-10-09)
+
+Original saved LEAN `SL724` chart contains 3,774 **daily** date/exposure states. A transition-date hash and regime histogram cannot prove the intervening exchange session calendar: for example, a silent missing day within an unchanged 3x run preserves the 67 original regime transitions and all four exposure counts. This is now detected by **two independent pinned daily digests** computed from the owner's original extracted LEAN CSV:
+
+- `daily_date_leverage_sha256=caa10bea0a07f3c5f6f60fef49fa407844da4ce514fa552e5202d6d1d10cefb5`
+- `daily_session_dates_sha256=feacf22f410c9f7fcf129b30e91c03c9a924c80e7a2b88dd8839103547adcb08`
+
+The first is SHA256 of `json.dumps([[date, float(leverage)], ...], separators=(",", ":"))` in original dated order, with 3,774 rows. The second hashes the same 3,774 dates joined by a literal newline (no trailing newline). The 3,774-row source CSV was kept in the owner's private Library rather than added to the public GitHub repository. The private original JSON source itself remains pinned to SHA256 `65cb291e6552dc0f86b32106bc3fe3f7a7ed8a127b3d0d6f84a60a8f5800b6f7`.
+
+`qc_original_lean_chart_audit.py` now requires both daily hashes, while `qc_input_ingestion.py` requires any future *candidate LEAN feature export* to have the **exact dated original 3,774 daily exposure states**, in addition to its indicators, levels, defense, count, transition SHA and exposure histogram. The actual LEAN input features and independent native source identity **remain missing**.
+
+### What we already know from the original frozen LEAN charts
+
+These are descriptive historical facts, NOT strategy alpha:
+
+- Original daily exposures: 3x **3,037**, 2x **76**, 1.25x **387**, cash **274** (total **3,774**).
+- During 2014 the reference showed **252 / 252 days at 3x**.
+- During 2022 the reference showed **174 / 251 days in cash** and **14 / 251 days at 3x**.
+- The longest contiguous 3x interval was **664 sessions (2013-01-03 through 2015-08-21)**.
+- The longest contiguous cash interval was **212 sessions (2022-05-06 through 2023-03-10)**.
+
+A frequent 3x exposure combined with regime-sensitive de-risking makes daily exposure matching, timing offsets and benchmark risk comparison more important than an index-aligned transition match rate.
+
+### Repeat the cross-provider daily-level diagnostic privately
+
+```bash
+python qc_lean_yahoo_daily_exposure_audit.py \
+  --original "/private/Determined Red Orange Duck.json" \
+  --proxy docs/portal-history.json \
+  --out research/local/lean_yahoo_daily_exposure_diagnostic.json
+```
+
+This produces same-calendar-session agreement, a trading-session lag profile at ±2 sessions, year-by-year agreement, exposure-confusion counts and the longest mismatched episodes. **The Yahoo daily-open execution proxy's `l` is based on a prior-session signal**, whereas the LEAN reference chart marks its original decision session. A high raw same-day match will be inflated by both systems spending most of the time at 3x; a better match at +1 day is not a model fix or proof of equal inputs. No source-only change authorizes a new trading rule.
+
+Never report `FULL_SAME_INPUT_PARITY_PROVEN` until native LEAN features exist with 3,774 validated dates, model decisions match on identical original inputs, AND evidence provenance is independently attested. An unknown original data source is a blocker, not a green status.

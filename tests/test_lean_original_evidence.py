@@ -6,7 +6,8 @@ import json
 from datetime import datetime, timezone
 from pathlib import Path
 
-from qc_input_ingestion import validate_export, transition_hash
+from qc_input_ingestion import (validate_export, transition_hash,
+                                original_daily_leverage_hash, original_session_dates_hash)
 from qc_same_input_parity import compare
 from qc_original_lean_chart_audit import extract, compare_original_vs_execution_proxy
 
@@ -41,6 +42,9 @@ def fixture(tmp_path):
            "first_time_utc":"2009-09-01T20:01:00Z",
            "last_time_utc":"2009-09-03T20:01:00Z",
            "max_drawdown_pct":-3,"last_nav_multiple":1.10}
+    state["daily_date_leverage_sha256"]=original_daily_leverage_hash(
+        [{"date":r[0], "leverage":float(r[8])} for r in data])
+    state["daily_session_dates_sha256"]=original_session_dates_hash(dates)
     paths={}
     for k,rows in [("schema",schema),("golden",golden),("state",state)]:
         paths[k]=tmp_path/(k+".json")
@@ -87,6 +91,37 @@ def test_fake_states_or_bad_features_rejected(tmp_path):
     changed[1][6]="2"
     write(changed)
     assert "FROZEN_TRANSITION_DRIFT" in check(paths)["errors"]
+
+
+def test_calendar_swapping_is_rejected_even_when_transitions_and_counts_match(tmp_path):
+    paths, data, write = fixture(tmp_path)
+    # Three sequential state dates cannot be changed without a duplicate.
+    # Widen the interval while preserving first/last state and transition dates.
+    data[2][0] = "2009-09-08"
+    data[1][0] = "2009-09-03"
+    write(data)
+    state=json.loads(paths["state"].read_text())
+    state["daily_date_leverage_sha256"]=original_daily_leverage_hash(
+        [{"date":r[0], "leverage":float(r[8])} for r in data])
+    state["daily_session_dates_sha256"]=original_session_dates_hash([r[0] for r in data])
+    state["last_time_utc"]="2009-09-08T20:01:00Z"
+    paths["state"].write_text(json.dumps(state))
+    schema=json.loads(paths["schema"].read_text());schema["last_date"]="2009-09-08"
+    paths["schema"].write_text(json.dumps(schema))
+    golden=json.loads(paths["golden"].read_text())
+    golden["transitions"][-1][0]="2009-09-08"
+    golden["transition_sha256"]=transition_hash(golden["transitions"])
+    paths["golden"].write_text(json.dumps(golden))
+    assert check(paths)["status"]=="VALID"
+    # Shift a stable 3x day from Sept 3 to Sept 4. Counts, transition SHA,
+    # sorted/unique dates and boundaries all still pass. Full daily SHA must fail.
+    data[1][0]="2009-09-04"
+    write(data)
+    result=check(paths)
+    assert result["checks"]["frozen_transition_identity"] is True
+    assert result["checks"]["frozen_daily_leverage_distribution"] is True
+    assert "FROZEN_DAILY_STATE_SHA_DRIFT" in result["errors"]
+    assert "FROZEN_SESSION_CALENDAR_SHA_DRIFT" in result["errors"]
 
 
 def test_original_chart_extractor_and_rejection_of_fake_original(tmp_path):

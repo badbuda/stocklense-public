@@ -23,5 +23,8 @@
     "LEAN daily SMA200",
     "LEAN daily VOL20",
     "LEAN daily MOM12 or immutable equivalent daily feature state"
-  ]
+  ],
+  "daily_date_leverage_sha256": "caa10bea0a07f3c5f6f60fef49fa407844da4ce514fa552e5202d6d1d10cefb5",
+  "daily_session_dates_sha256": "feacf22f410c9f7fcf129b30e91c03c9a924c80e7a2b88dd8839103547adcb08",
+  "daily_state_sha256_semantics": "SHA256 of compact JSON [[YYYY-MM-DD,float(leverage)], ...] across all 3774 original chronological LEAN sessions; checked against owner's original chart CSV, no Yahoo backfill."
 }

@@ -13,7 +13,7 @@ from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
 
-from qc_input_ingestion import transition_hash
+from qc_input_ingestion import transition_hash, original_daily_leverage_hash, original_session_dates_hash
 
 ORIGINAL_SOURCE_SHA256 = "65cb291e6552dc0f86b32106bc3fe3f7a7ed8a127b3d0d6f84a60a8f5800b6f7"
 TRANSITIONS = Path("governance/qc_724_leverage_transitions.json")
@@ -62,6 +62,12 @@ def extract(original_json, *, expected_source_sha=ORIGINAL_SOURCE_SHA256,
         raise ValueError("SL724_ORIGINAL_TIME_BOUNDARY_MISMATCH")
     if transitions!=ref["transitions"] or transition_hash(transitions)!=ref["transition_sha256"]:
         raise ValueError("SL724_ORIGINAL_TRANSITIONS_DRIFT")
+    daily_sha = original_daily_leverage_hash(rows)
+    calendar_sha = original_session_dates_hash([r["date"] for r in rows])
+    if daily_sha != m.get("daily_date_leverage_sha256"):
+        raise ValueError("SL724_ORIGINAL_DAILY_STATE_FINGERPRINT_DRIFT")
+    if calendar_sha != m.get("daily_session_dates_sha256"):
+        raise ValueError("SL724_ORIGINAL_SESSION_CALENDAR_FINGERPRINT_DRIFT")
     expected={str(float(k)):v for k,v in m["leverage_counts"].items()}
     if dict(counts)!=expected:
         raise ValueError("SL724_ORIGINAL_LEVERAGE_DISTRIBUTION_DRIFT")
@@ -76,6 +82,8 @@ def extract(original_json, *, expected_source_sha=ORIGINAL_SOURCE_SHA256,
         "first_date":rows[0]["date"],"last_date":rows[-1]["date"],
         "transition_count":len(transitions),
         "transition_sha256":transition_hash(transitions),
+        "daily_date_leverage_sha256":daily_sha,
+        "daily_session_dates_sha256":calendar_sha,
         "leverage_counts":dict(counts),
         "final_nav_multiple":rows[-1]["nav_multiple"],
         "max_drawdown_pct":min(r["drawdown_pct"] for r in rows),
