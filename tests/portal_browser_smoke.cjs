@@ -27,7 +27,7 @@ try{
  await page.locator('button[data-page=research]').click();
  assert.ok(await page.locator('#experiments .experiment').count()>=1,'Research experiments populated');
  await page.locator('button[data-page=simulator]').click();
- await page.waitForFunction(()=>document.querySelector('#sim-strategy')?.textContent?.includes('
+ await page.waitForFunction(()=>document.querySelector('#sim-strategy')?.textContent?.includes(String.fromCharCode(36)),{timeout:15000});
  await page.locator('#sim-form button[type=submit]').click();
  const first=await page.locator('#sim-strategy').textContent();
  assert.match(first,/\$/);
