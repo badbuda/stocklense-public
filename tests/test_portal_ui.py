@@ -119,7 +119,7 @@ def test_published_snapshot_contains_separate_evidence_types():
     paper=data["paper"]
     capital=data["capital_readiness"]
     assert paper["sessions"] != capital["prospective_completed_sessions"]
-    assert paper["latest"]["cumulative_return"] < 0
+    assert float(paper["latest"]["cumulative_return"]) < 0
     assert not capital["technical_checks_pass"]
     assert not capital["full_lean_execution_parity"]
     assert not capital["automatic_trading_authorized"]
