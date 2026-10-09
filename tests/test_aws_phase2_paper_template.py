@@ -99,3 +99,11 @@ def test_github_audit_rejects_another_session(monkeypatch):
     import pytest
     with pytest.raises(SystemExit,match="AWS_PAPER_DATE_OR_SOURCE_MISMATCH"):
         _run_audit_paper(monkeypatch,session="2026-10-07")
+
+
+def test_aws_audit_result_is_visible_and_rechecks_on_workflow_change():
+    assert "issues: write" in W
+    assert "AWS_SIGNAL_AND_PAPER_AUDIT" in W
+    assert "github.event_name == 'push'" in W
+    assert "always()" in W
+    assert "gh issue comment 10" in W
