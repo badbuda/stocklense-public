@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "kind": "LEAN_SL724_ORIGINAL_VS_YAHOO_QQQ_TQQQ_PRIOR_SIGNAL_EXECUTION_EXPOSURE",
+  "status": "VERIFIED_CROSS_PROVIDER_EXPOSURE_ALIGNMENT_NOT_LEAN_INPUT_PARITY",
+  "asof_reference": "2024-08-29",
+  "overlap_period": {
+    "start": "2010-02-11",
+    "end": "2024-08-29"
+  },
+  "overlap_sessions": 3662,
+  "matching_exposures": 3655,
+  "different_exposures": 7,
+  "daily_exposure_match_rate": 0.9980884762424904,
+  "by_original_regime": {
+    "3x": {
+      "reference_days": 2925,
+      "matching_days": 2923,
+      "rate": 0.9993162393162394
+    },
+    "non_3x": {
+      "reference_days": 737,
+      "matching_days": 732,
+      "rate": 0.9932157394843962
+    },
+    "cash": {
+      "reference_days": 274,
+      "matching_days": 274,
+      "rate": 1
+    }
+  },
+  "provenance": {
+    "original_lean_results_filename": "Determined Red Orange Duck.json",
+    "original_lean_results_sha256": "65cb291e6552dc0f86b32106bc3fe3f7a7ed8a127b3d0d6f84a60a8f5800b6f7",
+    "original_daily_calendar_sha256": "feacf22f410c9f7fcf129b30e91c03c9a924c80e7a2b88dd8839103547adcb08",
+    "original_daily_date_leverage_sha256": "caa10bea0a07f3c5f6f60fef49fa407844da4ce514fa552e5202d6d1d10cefb5",
+    "original_transition_sha256": "5561588a3bcd8a416cc13320536d7d3ff51bdb6de418e4f2c31b85eaf2ac745b",
+    "yahoo_observed_etf_snapshot_sha256": "42732511d81bca12bdc533cc5eac912c69dc637f85c96137861f702be5adb89b",
+    "yahoo_portal_history_git_blob_sha": "e462198ab3a01a91e956562117e18b4def6165f7",
+    "data_lineage": "Private original LEAN saved chart CSV (daily calendar independently SHA verified) + public immutable LEAN transition schedule; separate Yahoo-adjusted QQQ replay_levels() decision stream, executed at next ETF session open, published by portal_feed.py.",
+    "computation_method": "Calendar-date join of genuine original LEAN chart dates with independently computed Yahoo daily-open execution proxy leverage; no missing data filled, no synthetic TQQQ.",
+    "source_files": [
+      "qc_original_lean_chart_audit.py",
+      "governance/qc_724_leverage_transitions.json",
+      "tradable_tqqq_execution_comparison.py",
+      "portal_feed.py",
+      "docs/portal-history.json"
+    ]
+  },
+  "full_same_input_parity_proven": false,
+  "original_lean_input_features_proven": false,
+  "broker_fills_proven": false,
+  "limitations": "Cross-provider daily exposure agreement only. Not matching original LEAN features, source identity, identical fills, alpha, or authorization to trade."
+}
