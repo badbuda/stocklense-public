@@ -52,36 +52,67 @@ def _num(value, name):
     return v
 
 
-def _pct_stats(rows, original):
-    out = {"observations": len(rows),
-           "first_session": rows[0]["date"],
-           "last_session": rows[-1]["date"],
-           "unrounded_native_feature_precision_proven":False,
-           "real_broker_execution_proven":False}
-    parsed = json.loads(Path(original).read_bytes())
-    end_equity = _num(str(parsed["statistics"]["End Equity"]).replace(",",""), "NATIVE_END_EQUITY")
-    ending = rows[-1]["equity"]
-    difference = abs(end_equity-ending)
-    if difference > max(1., abs(end_equity)*EQUITY_END_REL_TOL):
-        raise ValueError("LEAN_P1_END_EQUITY_NOT_ORIGINAL")
+def _pct_stats(rows, original, trailing=None):
+    """Keep original *chart end* distinct from last exchange trading session.
+
+    Original SL724 custom close chart ends 2024-08-29, but original QC run
+    endDate 2024-08-31 includes the 2024-08-30 XNYS session. Its final
+    account statistics may therefore refer to a DIFFERENT session than the
+    last SL724 chart point. Never label that discrepancy model drift.
+    """
+    import exchange_calendars as xcals
+    parsed=json.loads(Path(original).read_bytes())
+    config=parsed.get("algorithmConfiguration",{})
+    end_raw=config.get("endDate")
+    if not isinstance(end_raw,str) or len(end_raw)<10:
+        raise ValueError("LEAN_P1_RUN_END_DATE_UNAVAILABLE")
+    cal=xcals.get_calendar("XNYS")
+    end_session=str(cal.date_to_session(end_raw[:10],direction="previous").date())
+    terminal=trailing if trailing is not None else rows[-1]
+    native_last=terminal["date"]
+    end_equity=_num(str(parsed["statistics"]["End Equity"]).replace(",",""),
+                    "NATIVE_END_EQUITY")
+    out={"observations_aligned_to_original_SL724":len(rows),
+         "original_chart_last_session":rows[-1]["date"],
+         "native_portfolio_chart_last_session":native_last,
+         "run_end_last_XNYS_session":end_session,
+         "one_trailing_session_outside_original_SL724":trailing is not None,
+         "end_of_run_native_stats_equity":end_equity,
+         "ending_original_chart_equity":rows[-1]["equity"],
+         "ending_original_chart_cash":rows[-1]["cash"],
+         "ending_native_plot_equity":terminal["equity"],
+         "ending_native_plot_cash":terminal["cash"],
+         "native_chart_is_unrounded_portfolio_proof":False,
+         "real_broker_execution_proven":False}
     runtime=parsed.get("runtimeStatistics",{})
     holdings_raw=runtime.get("Holdings")
     if isinstance(holdings_raw,str) and holdings_raw:
-        holdings = _num(holdings_raw.replace("$","").replace(",",""),"ORIGINAL_END_HOLDINGS")
-        inferred=rows[-1]["holdings_value"]
+        holdings=_num(holdings_raw.replace("$","").replace(",",""),
+                      "ORIGINAL_END_HOLDINGS")
+        out["end_of_run_native_stats_holdings"]=holdings
+        out["end_of_run_native_stats_implied_cash"]=end_equity-holdings
+    if native_last != end_session:
+        # Chart and end-statistics legitimately refer to distinct sessions.
+        # A valid original chart proof remains possible without any terminal
+        # end-of-run equity reconciliation.
+        out["status"]="BLOCKED_CHART_END_BEFORE_RUN_END"
+        out["end_of_run_equity_match_proven"]=False
+        out["end_of_run_holdings_match_proven"]=False
+        return out
+    difference=abs(end_equity-terminal["equity"])
+    if difference>max(1.,abs(end_equity)*EQUITY_END_REL_TOL):
+        raise ValueError("LEAN_P1_END_EQUITY_NOT_ORIGINAL")
+    out["end_of_run_equity_match_proven"]=True
+    if "end_of_run_native_stats_holdings" in out:
+        holdings=out["end_of_run_native_stats_holdings"]
+        inferred=terminal["holdings_value"]
         if abs(holdings-inferred)>max(1.,abs(holdings)*CASH_END_REL_TOL):
             raise ValueError("LEAN_P1_END_HOLDINGS_NOT_ORIGINAL")
-        out["ending_original_runtime_holdings_value"]=holdings
-        out["inferred_ending_holdings_value"]=inferred
-        out["ending_inferred_cash_from_original_runtime"]=end_equity-holdings
-    out["ending_native_chart_equity"]=ending
-    out["ending_original_report_equity"]=end_equity
-    out["ending_native_chart_cash"]=rows[-1]["cash"]
-    out["ending_native_chart_units"]=rows[-1]["units"]
-    out["final_native_contributed_total"]=rows[-1]["contributed"]
-    out["observational_cash_plus_holdings_reconciled"]=True
+        out["end_of_run_holdings_match_proven"]=True
+    else:
+        out["end_of_run_holdings_match_proven"]=False
+    out["status"]="MATCHED_RUN_END_NATIVE_CHART_WITH_QUANTIZATION_TOLERANCE"
     return out
-
 
 def project(original_json, diagnostic_json):
     """All original sessions required; no chart padding, truncation, or proxies."""
@@ -99,11 +130,16 @@ def project(original_json, diagnostic_json):
         raise ValueError("LEAN_P1_MISSING_SERIES:"+",".join(missing))
     n=len(original)
     streams={}
+    lengths=set()
     for name in RAW_PLOTS:
         x=series[name].get("values")
-        if not isinstance(x,list) or len(x)!=n:
+        if not isinstance(x,list) or len(x) not in (n,n+1):
             raise ValueError("LEAN_P1_INCOMPLETE_EXACT_DAILY_SERIES:"+name)
+        lengths.add(len(x))
         streams[name]=x
+    if len(lengths)!=1:
+        raise ValueError("LEAN_P1_INCOMPLETE_EXACT_DAILY_SERIES:INCONSISTENT_LENGTHS")
+    extra=int(next(iter(lengths))==n+1)
     result=[]
     previous_contribution=None
     previous_units=None
@@ -166,13 +202,45 @@ def project(original_json, diagnostic_json):
         raise ValueError("LEAN_P1_NAV_UNITS_DO_NOT_RECONCILE_TO_ORIGINAL:"+str(first_mismatches[:2]))
     if deposits!=EXPECTED_DEPOSITS or abs(result[-1]["contributed"]-EXPECTED_CONTRIBUTED)>.5:
         raise ValueError("LEAN_P1_CASHFLOW_LIFECYCLE_MISMATCH")
-    endpoint=_pct_stats(result,original_json)
+    trailing=None
+    if extra:
+        import exchange_calendars as xcals
+        cal=xcals.get_calendar("XNYS")
+        expected_next=str(cal.next_session(cal.date_to_session(result[-1]["date"])).date())
+        extra_times=set()
+        trailing={"date":expected_next}
+        for name in RAW_PLOTS:
+            point=streams[name][n]
+            if not isinstance(point,(tuple,list)) or len(point)!=2:
+                raise ValueError("LEAN_P1_INVALID_TRAILING_POINT:"+name)
+            try:
+                timestamp=int(point[0])
+                actual_day=datetime.fromtimestamp(timestamp,timezone.utc).date().isoformat()
+            except (ValueError,TypeError,OverflowError,OSError) as exc:
+                raise ValueError("LEAN_P1_INVALID_TRAILING_TIMESTAMP:"+name) from exc
+            if actual_day!=expected_next:
+                raise ValueError("LEAN_P1_UNEXPECTED_TRAILING_SESSION:"+name)
+            extra_times.add(timestamp)
+            trailing[name]=_num(point[1],name)
+        if len(extra_times)!=1:
+            raise ValueError("LEAN_P1_UNSYNCED_TRAILING_SERIES")
+        if (trailing["equity"]<=0 or trailing["units"]<=0
+            or trailing["contributed"]<=0 or trailing["cash"]< -1):
+            raise ValueError("LEAN_P1_INVALID_TRAILING_ACCOUNT")
+        trailing["holdings_value"]=trailing["equity"]-trailing["cash"]
+        if (trailing["holdings_value"]< -1e-5
+            or abs(trailing["contributed"]-EXPECTED_CONTRIBUTED)>.5):
+            raise ValueError("LEAN_P1_TRAILING_CASHFLOW_OR_POSITION_DRIFT")
+    endpoint=_pct_stats(result,original_json,trailing=trailing)
     audit={
         "status":"ORIGINAL_LEAN_P1_OBSERVED_CHART_RECONCILED",
         "source_original_sha256":frozen["source_sha256"],
         "source_observer_sha256":hashlib.sha256(Path(diagnostic_json).read_bytes()).hexdigest(),
         "native_replay_invariants":rerun,
         "rows":len(result),
+        "native_p1_chart_sessions":n+extra,
+        "excluded_one_trailing_session":trailing["date"] if trailing else None,
+        "original_chart_sessions_reconciled":n,
         "fields":list(COLUMNS),
         "chart_p1_ledger_not_independent_broker_feed":True,
         "all_original_chart_timestamps_reconciled":True,
@@ -191,7 +259,7 @@ def project(original_json, diagnostic_json):
         "actual_broker_fills_proven":False,
         "capital_deployment_authorized":False,
         "no_user_private_raw_run_data_published":True,
-        "limit":"Validates 7 complete native LEAN end-of-day portfolio chart series, contribution lifecycle and originally locked metrics. Plot quantization prevents bit-level exact portfolio-path claims. Cross-provider Python NAV path remains a separate missing evidence layer."
+        "limit":"Validates all original 7-series daily portfolio observations, optionally records one precisely verified next-XNYS trailing session, the contribution lifecycle and correctly date-scoped original runtime metrics. Plot quantization prevents bit-level portfolio claims. A missing end-of-run session cannot be silently treated as a matched endpoint; Python independent portfolio parity is still blocked."
     }
     return result,audit
 
