@@ -9,6 +9,7 @@ from order_planner import desired_orders
 from order_state import make_order,save
 from broker_reconciliation import Position,reconcile
 from execution_scheduler import next_xnys_session,readiness_by_side
+from paper_rebalance_math import target_shares, weight_gap, within_band
 
 NY=ZoneInfo("America/New_York")
 
@@ -29,15 +30,15 @@ def build(plan_path="shadow_history/execution_plan.json",signal_path="output/lat
  f=sig["latest"]["features"]; qqq=float(f.get("close") or 0)
  tqqq=float(last.get("tqqq_close",0) or 0)
  prices={"QQQ":qqq,"TQQQ":tqqq}
- target={}
- for symbol,weight in (("QQQ",float(plan["target"]["qqq_weight"])),("TQQQ",float(plan["target"]["tqqq_weight"]))):
-  px=prices[symbol];target[symbol]=int((equity*weight)//px) if px>0 else current[symbol]
- # Paper applies the same 50-bp tolerance for unchanged signals.
- # This is a dry-run noise filter, not a broker authorization or execution parity.
+ # The cockpit has only the last published reference price, NOT next-session
+ # 09:31 / 09:32 observed opens. Common sizing/band math does not prove
+ # a same-execution-session decision or broker fill parity.
  if not all(math.isfinite(px) and px>0 for px in prices.values()):
   raise ValueError("COCKPIT_MISSING_VALID_REFERENCE_PRICES")
- gap=max(abs(current[s]*prices[s]/equity-float(plan["target"][s.lower()+"_weight"])) for s in ("QQQ","TQQQ"))
- hold_no_change=(sig.get("action")=="NO_CHANGE" and gap<=0.005)
+ weights={s:float(plan["target"][s.lower()+"_weight"]) for s in ("QQQ","TQQQ")}
+ target=target_shares(weights,equity,prices)
+ gap=weight_gap(current,weights,prices,equity)
+ hold_no_change=(sig.get("action")=="NO_CHANGE" and within_band(current,weights,prices,equity))
  if hold_no_change:
   target=dict(current)
  session=next_xnys_session(plan["signal_date"])
@@ -55,6 +56,7 @@ def build(plan_path="shadow_history/execution_plan.json",signal_path="output/lat
  "orders":[{**o.__dict__,"idempotency_key":o.idempotency_key,"status":"PLANNED","dry_run":True} for o in intents],
  "order_state":state,"target_gap":target_gap,"reconciliation":broker_rec,"execution_windows":windows,"execution_window":(next(iter(windows.values())) if len(windows)==1 else {"status":"MULTI_WINDOW" if windows else "NO_ORDERS","windows":windows}),
  "no_change_tolerance_applied":hold_no_change,"pretrade_target_weight_gap":gap,
+ "price_semantics":"INDICATIVE_LAST_PUBLISHED_REFERENCE_NOT_NEXT_SESSION_09_31_09_32",
  "note":"Dry-run plan only. No live broker order is submitted."}
  write_json_atomic(out,payload);return payload
 if __name__=="__main__":print(json.dumps(build(),indent=2))
