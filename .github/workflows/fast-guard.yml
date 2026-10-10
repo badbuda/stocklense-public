@@ -95,6 +95,25 @@ jobs:
             research/reports/observed_execution_crisis_forensics.md
           if-no-files-found: warn
           retention-days: 30
+      - name: Causal ML meta leverage monthly walk-forward validation on observed ETFs
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+          OPENBLAS_NUM_THREADS: "1"
+          OMP_NUM_THREADS: "1"
+        run: |
+          python observed_etf_causal_ml_meta_leverage.py
+          test -s research/results/ml_meta_leverage_walkforward.json
+          test -s research/reports/ml_meta_leverage_walkforward.md
+      - name: Archive isolated ML research without automatic production promotion
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stocklens-ml-meta-leverage-observed-walkforward
+          path: |
+            research/results/ml_meta_leverage_walkforward.json
+            research/reports/ml_meta_leverage_walkforward.md
+          if-no-files-found: warn
+          retention-days: 30
       - name: Static dashboard document integrity
         env:
           PYTHONPATH: ${{ github.workspace }}
