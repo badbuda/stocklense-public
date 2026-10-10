@@ -112,17 +112,92 @@ def project(original_json, diagnostic_json):
 
 
 
-def compare_original_rerun_invariants(original_json, diagnostic_json):
-    """Locked reference order/chart equality. Closed-trade GUIDs vary by run.
+def _compare_lean_orders_preserving_economics(reference_orders, rerun_orders):
+    """Compare all native order fields with narrow JSON float serialization tolerance.
 
-    Both the original and diagnostic full JSON must remain PRIVATE.
+    Original P1 results may round LEAN's binary floating-point price, total
+    value, and submission bid/ask/last from 16 to 15 decimal significant digits,
+    while having IDENTICAL economic executions. Require exactly the same order
+    IDs, status, direction, quantity, tags, timestamps, symbol, and structure.
+    Only five numeric quote/price/value paths may use 1e-12 relative OR
+    1e-13 absolute tolerance. This is far below a cent at normal order size,
+    and cannot mask any real execution change. Broker realism NOT proven.
+    """
+    float_tol_rel=1e-12
+    float_tol_abs=1e-13
+    result={"matched":False,"expected_order_count":len(reference_orders),
+            "observer_order_count":len(rerun_orders),
+            "tolerated_numeric_field_count":0,
+            "max_relative_difference_tolerated":0.,
+            "max_absolute_difference_tolerated":0.,
+            "all_discrete_order_attributes_identical":False,
+            "orders_byte_identical":reference_orders==rerun_orders}
+    if not isinstance(reference_orders,dict) or not isinstance(rerun_orders,dict):
+        raise ValueError("LEAN_DIAGNOSTIC_ORDER_FORMAT_INVALID")
+    if set(reference_orders)!=set(rerun_orders):
+        return result
+    permitted={"price","value"}
+    quotes={"bidPrice","askPrice","lastPrice"}
+    def equivalent_float(a,b):
+        if (type(a) not in (int,float) or type(b) not in (int,float)
+            or not (math.isfinite(a) and math.isfinite(b))):
+            return False
+        if not math.isclose(a,b,rel_tol=float_tol_rel,abs_tol=float_tol_abs):
+            return False
+        if a!=b:
+            result["tolerated_numeric_field_count"]+=1
+            result["max_absolute_difference_tolerated"]=max(
+                result["max_absolute_difference_tolerated"],abs(a-b))
+            result["max_relative_difference_tolerated"]=max(
+                result["max_relative_difference_tolerated"],
+                abs(a-b)/max(abs(a),abs(b),1e-100))
+        return True
+    for oid in reference_orders:
+        a,b=reference_orders[oid],rerun_orders[oid]
+        if not (isinstance(a,dict) and isinstance(b,dict)
+                and set(a)==set(b)):
+            return result
+        for name in a:
+            if name in permitted:
+                if not equivalent_float(a[name],b[name]):
+                    return result
+            elif name=="orderSubmissionData":
+                qa,qb=a[name],b[name]
+                if qa is None or qb is None:
+                    if qa!=qb:return result
+                    continue
+                if not (isinstance(qa,dict) and isinstance(qb,dict)
+                        and set(qa)==set(qb)):
+                    return result
+                for field in qa:
+                    if field in quotes:
+                        if not equivalent_float(qa[field],qb[field]):
+                            return result
+                    elif qa[field]!=qb[field]:
+                        return result
+            elif a[name]!=b[name]:
+                return result
+    result["matched"]=True
+    result["all_discrete_order_attributes_identical"]=True
+    return result
+
+
+def compare_original_rerun_invariants(original_json, diagnostic_json):
+    """Locked reference execution economics, with strict numeric transport tolerance.
+
+    Both private JSONs stay private. Rounded float JSON transport is not
+    evidence of a new fill when identical economically. Any discrete order,
+    trade, strategy chart or statistics mutation rejects the observer rerun.
     """
     reference=json.loads(Path(original_json).read_bytes())
     rerun=json.loads(Path(diagnostic_json).read_bytes())
     locked=("orders","statistics","runtimeStatistics","profitLoss","rollingWindow")
     if any(name not in reference or name not in rerun for name in locked):
         raise ValueError("LEAN_MISSING_ORIGINAL_RUN_INVARIANT_FIELD")
-    equal={name:reference[name]==rerun[name] for name in locked}
+    order_audit=_compare_lean_orders_preserving_economics(
+        reference["orders"],rerun["orders"])
+    equal={"orders":order_audit["matched"]}
+    equal.update({name:reference[name]==rerun[name] for name in locked if name!="orders"})
     equal["native_sl724_leverage_nav_drawdown"]=(
         reference.get("charts",{}).get("SL724",{}).get("series")==
         rerun.get("charts",{}).get("SL724",{}).get("series"))
@@ -143,9 +218,11 @@ def compare_original_rerun_invariants(original_json, diagnostic_json):
     return {"frozen_reference_order_count":len(reference["orders"]),
             "native_lean_closed_trades":len(original_trades),
             "unchanged_fields":equal,
+            "native_order_numeric_transport_audit":order_audit,
             "native_execution_behavior_unchanged":True,
             "original_run_source_code_hash_attested":False,
             "independent_broker_quotes_proven":False}
+
 
 
 def main():
