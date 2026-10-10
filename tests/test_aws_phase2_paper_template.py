@@ -5,8 +5,8 @@ SRC=Path("infra/aws/paper-evidence-handler.py").read_text()
 W=Path(".github/workflows/aws-shadow-journal-audit.yml").read_text()
 
 def test_inline_code_matches_python_and_compiles():
-    assert T.count("ZipFile: |")==2
-    extracted=T.split("ZipFile: |\n")[-1].split("\n  PaperEvidenceSchedule:")[0]
+    assert T.count("ZipFile: |")==3
+    extracted=T.split("  PaperEvidenceLambda:",1)[1].split("  PaperEvidenceSchedule:",1)[0].split("ZipFile: |\n",1)[1]
     inline="\n".join(s[10:] if s.startswith("          ") else s for s in extracted.splitlines()).strip()+"\n"
     assert inline==SRC.strip()+"\n"
     ast.parse(inline)
@@ -21,7 +21,7 @@ def test_real_qqq_tqqq_only_no_broker_orders():
     assert "DIVERGENT_PAPER_DUPLICATE" in SRC
 
 def test_two_isolated_scheduled_lambdas_and_no_secrets():
-    assert T.count("Type: AWS::Lambda::Function")==2
+    assert T.count("Type: AWS::Lambda::Function")==3
     assert "cron(20 9 ? * TUE-SAT *)" in T
     assert "cron(10 9 ? * TUE-SAT *)" in T
     assert "40 9 * * 2-6" in W
@@ -39,7 +39,7 @@ def test_aws_email_alarm_and_duplicate_guards():
     assert 'AWS::SNS::Subscription' in T
     assert T.count('ReturnValuesOnConditionCheckFailure')==2
     assert T.count('DIVERGENT_')>=2
-    assert T.count('RetentionInDays: 30')==2
+    assert T.count('RetentionInDays: 30')==3
 
 
 def _audit_paper_python():
