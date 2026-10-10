@@ -21,7 +21,7 @@ def test_real_qqq_tqqq_only_no_broker_orders():
     assert "DIVERGENT_PAPER_DUPLICATE" in SRC
 
 def test_two_isolated_scheduled_lambdas_and_no_secrets():
-    assert T.count("Type: AWS::Lambda::Function")==2
+    assert T.count("Type: AWS::Lambda::Function")==3
     assert "cron(20 9 ? * TUE-SAT *)" in T
     assert "cron(10 9 ? * TUE-SAT *)" in T
     assert "40 9 * * 2-6" in W
@@ -39,7 +39,7 @@ def test_aws_email_alarm_and_duplicate_guards():
     assert 'AWS::SNS::Subscription' in T
     assert T.count('ReturnValuesOnConditionCheckFailure')==2
     assert T.count('DIVERGENT_')>=2
-    assert T.count('RetentionInDays: 30')==2
+    assert T.count('RetentionInDays: 30')==3
 
 
 def _audit_paper_python():
