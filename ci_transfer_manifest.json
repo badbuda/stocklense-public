@@ -274,7 +274,7 @@
     "tests/test_aws_journal_export.py": "10118ab3c9ac2e674873da95a1346d4679f9ce35",
     "tests/test_aws_journal_session_guard.py": "5d39ca397242199da04b2006e6f3624a29f29994",
     "tests/test_aws_phase2_behavior.py": "8cbd5c6e8124c05d684b9220484a68b8718f05f0",
-    "tests/test_aws_phase2_paper_template.py": "45c823ff8455bf029b3091d504ac459d51875475",
+    "tests/test_aws_phase2_paper_template.py": "fbc8c215724aa92b72562ad6ea874e53ad01e23a",
     "tests/test_aws_readonly_deadman.py": "c695e2107b0cf8448f9b352231978d39c1173309",
     "tests/test_aws_schedule_watchdog.py": "7807f5bb68cf01803f60f63ae9603ab760e0c129",
     "tests/test_backtest_adversarial.py": "c99ca53e2211c2b765e17dfdd6d02d5047c30e58",

@@ -5,8 +5,8 @@ SRC=Path("infra/aws/paper-evidence-handler.py").read_text()
 W=Path(".github/workflows/aws-shadow-journal-audit.yml").read_text()
 
 def test_inline_code_matches_python_and_compiles():
-    assert T.count("ZipFile: |")==2
-    extracted=T.split("ZipFile: |\n")[-1].split("\n  PaperEvidenceSchedule:")[0]
+    assert T.count("ZipFile: |")==3
+    extracted=T.split("  PaperEvidenceLambda:",1)[1].split("  PaperEvidenceSchedule:",1)[0].split("ZipFile: |\n",1)[1]
     inline="\n".join(s[10:] if s.startswith("          ") else s for s in extracted.splitlines()).strip()+"\n"
     assert inline==SRC.strip()+"\n"
     ast.parse(inline)
