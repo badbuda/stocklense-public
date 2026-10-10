@@ -105,10 +105,26 @@ def _bar_open(df: pd.DataFrame, session: str, hour: int, minute: int, symbol: st
 
 
 def _eod_close(df: pd.DataFrame, session: str, symbol: str) -> float:
+    # No fabricated day-end close from a truncated intraday vendor response.
+    # XNYS close time handles real half-days (e.g., Thanksgiving Friday).
+    import exchange_calendars as xcals
     d = date.fromisoformat(session)
-    day = df[df.index.date == d]
-    if len(day) < 100:
-        raise PaperIntegrityError(f"TOO_FEW_MINUTE_BARS:{symbol}:{session}:{len(day)}")
+    cal = xcals.get_calendar("XNYS")
+    if not cal.is_session(session):
+        raise PaperIntegrityError(f"NON_XNYS_PAPER_SESSION:{symbol}:{session}")
+    expected_open = cal.session_open(session).tz_convert(NY_TZ)
+    expected_close = cal.session_close(session).tz_convert(NY_TZ)
+    expected_bars = int((expected_close - expected_open).total_seconds() // 60)
+    day = df[df.index.date == d].sort_index()
+    if day.index.has_duplicates:
+        raise PaperIntegrityError(f"DUPLICATE_MINUTE_BARS:{symbol}:{session}")
+    if len(day) < expected_bars - 5:
+        raise PaperIntegrityError(
+            f"TOO_FEW_MINUTE_BARS:{symbol}:{session}:{len(day)}:required={expected_bars-5}"
+        )
+    # Last regular minute opens at 15:59 ET on normal sessions, 12:59 on half-days.
+    if day.empty or day.index[-1] < expected_close - pd.Timedelta(minutes=2):
+        raise PaperIntegrityError(f"MISSING_NEAR_SESSION_CLOSE:{symbol}:{session}")
     value = float(day.iloc[-1]["Close"])
     if not _positive(value):
         raise PaperIntegrityError(f"INVALID_EOD_CLOSE:{symbol}:{session}")
