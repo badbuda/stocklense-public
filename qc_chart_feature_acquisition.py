@@ -57,13 +57,13 @@ def project(original_json, diagnostic_json):
     result=[]; first_errors=[]
     for i,expected in enumerate(original):
         observed=expected["date"]
-        feature_instants={key:int(series[key][i][0]) for key in FEATURES}
-        if len(set(feature_instants.values()))!=1:
-            raise ValueError("LEAN_DIAGNOSTIC_FEATURE_TIMESTAMPS_NOT_SYNCHRONIZED")
         for key in FEATURES:
             point=series[key][i]
             if day(point[0])!=observed:
                 raise ValueError("LEAN_DIAGNOSTIC_FEATURE_DATES_DO_NOT_MATCH_ORIGINAL:"+key+":"+observed)
+        feature_instants={key:int(series[key][i][0]) for key in FEATURES}
+        if len(set(feature_instants.values()))!=1:
+            raise ValueError("LEAN_DIAGNOSTIC_FEATURE_TIMESTAMPS_NOT_SYNCHRONIZED")
         if day(raw_leverage[i][0])!=observed:
             raise ValueError("LEAN_DIAGNOSTIC_LEVERAGE_DATES_DO_NOT_MATCH_ORIGINAL")
         lev=float(raw_leverage[i][1])
