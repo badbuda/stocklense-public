@@ -24,6 +24,7 @@ def event(oid="A", **kwargs):
         "archived_first_seen_verified":True,
         "first_seen_evidence_kind":"ARCHIVED_VENDOR_FIRST_SEEN",
         "first_seen_evidence_uri":"https://example.invalid/immutable/"+oid,
+        "first_seen_archival_receipt_sha256":hashlib.sha256(("receipt-"+oid).encode()).hexdigest(),
     }
     result.update(kwargs)
     return result
@@ -59,6 +60,15 @@ def test_true_surprise_only_with_archived_pre_release_consensus():
     a["expectation_snapshot_at_utc"]="2024-03-20T17:00:00Z"
     a["consensus_pit_verified"]=False
     assert clean_event(a)["first_seen_proven"] is False
+
+
+def test_verified_first_seen_requires_hash_fingerprinted_https_archival_receipt():
+    x=event(first_seen_archival_receipt_sha256="")
+    assert clean_event(x)["first_seen_proven"] is False
+    x=event(first_seen_evidence_uri="http://example.invalid/source/receipt")
+    assert clean_event(x)["first_seen_proven"] is False
+    x=event(first_seen_evidence_uri="https://user:pass@example.invalid/receipt")
+    assert clean_event(x)["first_seen_proven"] is False
 
 
 def test_first_seen_unverified_and_llm_rewritten_past_news_blocked():
