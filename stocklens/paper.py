@@ -8,6 +8,7 @@ from typing import Any
 from zoneinfo import ZoneInfo
 
 import pandas as pd
+from paper_rebalance_math import target_shares, weight_gap, within_band
 
 NY_TZ = ZoneInfo("America/New_York")
 SYMBOLS = ("QQQ", "TQQQ")
@@ -278,14 +279,13 @@ def rebalance_if_required(
     equity31 = _portfolio_value(state, market.prices_0931)
     if not math.isfinite(equity31) or equity31 <= 0:
         raise PaperIntegrityError("INVALID_PAPER_EQUITY_BEFORE_REBALANCE")
-    gap31 = max(abs(int(state["shares"][s]) * float(market.prices_0931[s]) / equity31 - weights[s])
-                for s in SYMBOLS)
-    # Avoid repeated whole-share churn when actual ETF weights are within 50bp.
-    if not bootstrap and signal_report.get("action") == "NO_CHANGE" and gap31 <= 0.005:
+    # Shared with cockpit; paper supplies executable-time modeled bar OPENs.
+    # 09:31 reductions and 09:32 additions always use separate point-in-time prices.
+    if not bootstrap and signal_report.get("action") == "NO_CHANGE" and within_band(
+        state["shares"], weights, market.prices_0931, equity31
+    ):
         return []
-    desired31 = {
-        s: int(math.floor(weights[s] * equity31 / market.prices_0931[s])) for s in SYMBOLS
-    }
+    desired31 = target_shares(weights, equity31, market.prices_0931)
     for s in SYMBOLS:
         excess = int(state["shares"][s]) - desired31[s]
         if excess > 0:
@@ -294,9 +294,7 @@ def rebalance_if_required(
                 trades.append(tr)
 
     equity32 = _portfolio_value(state, market.prices_0932)
-    desired32 = {
-        s: int(math.floor(weights[s] * equity32 / market.prices_0932[s])) for s in SYMBOLS
-    }
+    desired32 = target_shares(weights, equity32, market.prices_0932)
     for s in SYMBOLS:
         shortage = desired32[s] - int(state["shares"][s])
         if shortage > 0:
@@ -326,8 +324,7 @@ def mark_session(
     latest = signal_report["latest"]
     tracking_weights = {"QQQ": float(latest["qqq_weight"]), "TQQQ": float(latest["tqqq_weight"])}
     equity32 = _portfolio_value(state, market.prices_0932)
-    gap32 = max(abs(int(state["shares"][s]) * float(market.prices_0932[s]) / equity32 - tracking_weights[s])
-                for s in SYMBOLS)
+    gap32 = weight_gap(state["shares"], tracking_weights, market.prices_0932, equity32)
     one_share_band = max(float(x) for x in market.prices_0932.values()) / equity32
     if gap32 > max(0.01, one_share_band + 0.005):
         raise PaperIntegrityError(f"PAPER_POST_REBALANCE_TARGET_MISMATCH:{market.session_date}:{gap32:.8f}")
