@@ -44,6 +44,23 @@ jobs:
         env:
           PYTHONPATH: ${{ github.workspace }}
         run: python -m pytest -q
+      - name: Compute frozen-vs-risk-matched and volatility-drag falsification in one batch
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          python observed_etf_two_question_audit.py
+          test -s research/results/two_questions_risk_matched.json
+          test -s research/reports/two_questions_risk_matched.md
+      - name: Preserve two-question research evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stocklens-two-question-audit
+          path: |
+            research/results/two_questions_risk_matched.json
+            research/reports/two_questions_risk_matched.md
+          if-no-files-found: warn
+          retention-days: 30
       - name: Static dashboard document integrity
         env:
           PYTHONPATH: ${{ github.workspace }}
