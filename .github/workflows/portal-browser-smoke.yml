@@ -51,21 +51,38 @@ jobs:
         run: |
           # Amplify deploys asynchronously after GitHub main pushes.
           # Never compare a newly merged checkout to stale CDN HTML.
-          expected="$(sha256sum docs/portal.html | cut -d' ' -f1)"
+          # Matching HTML alone is insufficient: an older CDN JS or JSON feed
+          # can be served even if portal.html did not change between commits.
+          # Require the SAME main artifact bytes for UI, observed ETF history
+          # and all the dashboard's core production JSON inputs.
+          assets=(portal.html portal.js portal-insights.js data.json timeseries.json portal-history.json observed_tqqq_risk_audit.json)
           ready=0
           for attempt in $(seq 1 45); do
-            curl -fLsS --max-time 15 "$PORTAL_BASE_URL/portal.html?deploy_probe=$attempt" -o /tmp/stocklens-deployed.html || true
-            actual="$(sha256sum /tmp/stocklens-deployed.html 2>/dev/null | cut -d' ' -f1 || true)"
-            if test "$actual" = "$expected"; then
-              echo "AMPLIFY_DEPLOY_SHA_MATCH=PASS;attempt=$attempt;sha=$actual"
+            matched=1
+            for asset in "${assets[@]}"; do
+              expected="$(sha256sum "docs/$asset" | cut -d' ' -f1)"
+              rm -f /tmp/stocklens-deployed-asset
+              if ! curl -fLsS --max-time 15 "$PORTAL_BASE_URL/$asset?deploy_probe=$attempt" -o /tmp/stocklens-deployed-asset; then
+                matched=0
+                echo "AMPLIFY_ASSET_HTTP_FAILED:$asset attempt=$attempt"
+                break
+              fi
+              actual="$(sha256sum /tmp/stocklens-deployed-asset | cut -d' ' -f1)"
+              if test "$actual" != "$expected"; then
+                matched=0
+                echo "AMPLIFY_ASSET_SHA_MISMATCH:$asset attempt=$attempt expected=$expected got=$actual"
+                break
+              fi
+            done
+            if test "$matched" = 1; then
+              echo "AMPLIFY_ALL_SEVEN_ASSET_SHA_MATCH=PASS;attempt=$attempt"
               ready=1
               break
             fi
-            echo "Amplify is still publishing; remote=$actual source=$expected attempt=$attempt"
             sleep 8
           done
           if test "$ready" != 1; then
-            echo "::error::AWS Amplify did not publish the exact expected main HTML artifact"
+            echo "::error::AWS Amplify did not publish the exact matching HTML/JS/JSON feed set"
             exit 1
           fi
           node tests/portal_browser_smoke.cjs
