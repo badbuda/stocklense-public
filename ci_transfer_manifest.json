@@ -315,7 +315,7 @@
     "tests/test_qc_execution_quote_audit.py": "b9aaf8cf18568986107e54ae28fdf1e44d68fba3",
     "tests/test_real_tqqq_causality_adversarial.py": "ec3201c3cbc7017af0e9aca3b254685c6088888f",
     "tests/test_research_selection_inventory.py": "1e88681c7e8ea3aaab110ddefc553aa539570427",
-    "tests/test_shared_rebalance_math.py": "f4a49cc4f8efb1b4d28acdea2ae1f080533cc51c",
+    "tests/test_shared_rebalance_math.py": "413c98ecff9e1a400929f94f2ce08895e5a1698e",
     "tests/test_sma200_threshold_provenance.py": "eefea858907bc80aebdc6c3c3b979379c7521b98",
     "tests/test_tradable_tqqq_execution_comparison.py": "a4cc2e8720ca0cfacb6e9bc7914f56844ea5f23f",
     "tqqq_reality_check.py": "776f226d601406118ff47de8c9463b00bacefca7",
