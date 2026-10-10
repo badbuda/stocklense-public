@@ -95,6 +95,19 @@ def collect(prices, *, now=None, journal=JOURNAL):
     day = current.date().isoformat()
     status = "WAITING_FOR_COMPLETED_SESSION"
     if current.time() >= SAFE_AFTER:
+        import exchange_calendars as xcals
+        # An arbitrary supplied price dictionary must not manufacture a
+        # prospective session on weekends, exchange holidays or closures.
+        if not xcals.get_calendar("XNYS").is_session(day):
+            return {
+                "schema_version": 1, "status": "NO_XNYS_SESSION_NO_CAPTURE",
+                "source": "YFINANCE_OBSERVED_1MIN_RAW_OPEN",
+                "observed_completed_sessions": len(rows),
+                "journal_tail_sha256": verify(rows),
+                "session_under_review": day,
+                "bid_ask_quotes_observed": False, "broker_fills_observed": False,
+                "live_trading_authorized": False,
+            }
         last = rows[-1]["session_date"] if rows else None
         if last is not None and last >= day:
             if last != day:
