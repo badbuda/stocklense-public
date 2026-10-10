@@ -134,3 +134,32 @@ def test_optional_private_aws_api_is_explicitly_disabled_by_default():
     assert config.get("cognito_domain") is None
     assert config.get("client_id") is None
     assert not any("secret" in key.lower() for key in config)
+
+
+
+def test_site_exposes_latest_session_coherence_and_shadow_only_fallback():
+    js=JS.read_text(encoding="utf-8")
+    for code in ("paper.latest?.session_date", "updated_session", "state.risk?.period?.end",
+                 "sessionCoherent", "תאריך נתוני האתר", "observational_only===true",
+                 "fallbackMargin"):
+        assert code in js
+    # Never claim absent/lagged JSON is 'green'.
+    assert "sessionCoherent?'מאומת" in js
+    assert "פער תאריכים" in js
+
+
+def test_production_browser_gate_compares_exact_deployed_data_and_code_hashes():
+    workflow=Path(".github/workflows/portal-browser-smoke.yml").read_text()
+    for asset in ("portal.html", "portal.js", "portal-insights.js",
+                  "data.json", "timeseries.json", "portal-history.json",
+                  "observed_tqqq_risk_audit.json"):
+        assert asset in workflow
+    assert "AMPLIFY_ALL_SEVEN_ASSET_SHA_MATCH=PASS" in workflow
+    assert 'expected="$(sha256sum "docs/$asset"' in workflow
+    assert "AMPLIFY_ASSET_SHA_MISMATCH" in workflow
+    browser=Path("tests/portal_browser_smoke.cjs").read_text()
+    for field in ("signalSession", "paperSession", "historySession", "riskSession"):
+        assert field in browser
+    assert "Paper is stale versus published signal" in browser
+    assert "Historical ETF feed is stale" in browser
+    assert "Risk cohort is stale" in browser

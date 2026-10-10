@@ -148,13 +148,27 @@ function exposureEvidenceTag(){
 }
 function renderHealth(){
  const d=state.data,sig=d.signal||{},paper=d.paper||{},v=state.history;
- const quality=d.data_quality||{},margin=quality.sma200_upper_hysteresis_margin_bps;
+ const quality=d.data_quality||{},features=sig.features||{};
+ // A source-code deploy can precede the next scheduled Shadow JSON rebuild.
+ // Display the diagnostic from the frozen published signal until it is present
+ // as an explicit data_quality field; never change the frozen decision.
+ const fallbackMargin=Number(features.close)>0&&Number(features.sma200)>0?
+      10000*(Number(features.close)/(1.01*Number(features.sma200))-1):null;
+ const margin=quality.sma200_upper_hysteresis_margin_bps??fallbackMargin;
  const validMargin=margin!=null&&Number.isFinite(Number(margin));
- const near=quality.sma200_upper_threshold_within_10bps===true;
+ const near=validMargin&&Math.abs(Number(margin))<10;
+ const signalDay=sig.asof_date||'—',paperDay=paper.latest?.session_date||'—';
+ const historyDay=v?.updated_session||'—',riskDay=state.risk?.period?.end||'—';
+ // Every panel must have the same latest completed XNYS session.
+ const sessionCoherent=signalDay!=='—'&&paperDay===signalDay&&
+      historyDay===signalDay&&riskDay===signalDay;
  setHtml('health-list',[
   exposureEvidenceTag(),
+  tag('תאריך נתוני האתר','סיגנל, Paper, גרף היסטורי ודוח סיכון נדרשים להתייחס לאותו יום מסחר',
+      sessionCoherent?'מאומת · '+signalDay:'פער תאריכים · Signal '+signalDay+
+         ' / Paper '+paperDay+' / History '+historyDay+' / Risk '+riskDay,sessionCoherent),
   tag('מוכנות סיגנל בלבד','READY בצינור אותות איננו מוכנות להון או לברוקר',
-      d.readiness?.scope==='SHADOW_SIGNAL_PIPELINE_ONLY'?
+      d.readiness?.scope==='SHADOW_SIGNAL_PIPELINE_ONLY'||d.readiness?.observational_only===true?
           'SHADOW בלבד · מסחר חסום':'לא אומת · מסחר חסום',false),
   tag('מקור המחירים לדימוי עסקאות','Yahoo: פתיחות נרות דקה; לא bid/ask ולא מילויי ברוקר',
       '1m BAR OPEN · MODEL',false),
