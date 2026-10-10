@@ -87,8 +87,15 @@ def clean_event(x):
         raise ValueError("NEWS_PROCESSING_DELAY_NOT_DEFINED")
     firstseen_kind=x.get("first_seen_evidence_kind")
     witnessed=bool(x.get("archived_first_seen_verified") is True)
+    receipt_sha=x.get("first_seen_archival_receipt_sha256")
+    receipt_uri=x.get("first_seen_evidence_uri")
+    proof_url=urlsplit(receipt_uri) if isinstance(receipt_uri,str) else None
+    proof_acceptable=(proof_url is not None and proof_url.scheme=="https"
+                      and bool(proof_url.netloc) and not proof_url.username
+                      and not proof_url.password)
     verified=(witnessed and firstseen_kind in PIT_FIRST_SEEN_KINDS
-              and bool(x.get("first_seen_evidence_uri")))
+              and proof_acceptable and isinstance(receipt_sha,str)
+              and bool(SHA_PATTERN.fullmatch(receipt_sha)))
     if x.get("archived_first_seen_verified") not in (True,False):
         raise ValueError("NEWS_FIRST_SEEN_BOOLEAN_MISSING")
     if firstseen_kind is not None and (
@@ -142,6 +149,7 @@ def clean_event(x):
         "provider_available_at_utc":available.isoformat(),
         "signal_ready_at_utc":available_trade.isoformat(),
         "first_seen_evidence_kind":firstseen_kind,
+        "first_seen_archival_receipt_sha256":receipt_sha if proof_acceptable else None,
         "first_seen_proven":verified,
         "event_surprise_if_consensus_verified":surprise,
         "affected_tickers":sorted(set(tickers)),
