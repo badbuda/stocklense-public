@@ -114,6 +114,34 @@ jobs:
             research/reports/ml_meta_leverage_walkforward.md
           if-no-files-found: warn
           retention-days: 30
+      - name: Strict point-in-time news provenance and event study readiness
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          python news_event_study.py
+          test -s research/results/news_pit_event_study.json
+          test -s research/reports/news_pit_event_study.md
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('research/results/news_pit_event_study.json').read_text())
+          assert r['capital_deployment_authorized'] is False
+          assert r['automatic_model_promotion'] is False
+          assert r['original_8_0_changed'] is False
+          if not r['user_archival_journal_present']:
+              assert r['status']=='BLOCKED_NO_GENUINE_TIMESTAMPED_HISTORICAL_EVENT_COHORT'
+              assert r['actually_joined_eligible_market_events']==0
+          PY
+      - name: Preserve news provenance diagnostic, never fake historical alpha
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stocklens-news-point-in-time-readiness
+          path: |
+            research/results/news_pit_event_study.json
+            research/reports/news_pit_event_study.md
+          if-no-files-found: warn
+          retention-days: 30
       - name: Static dashboard document integrity
         env:
           PYTHONPATH: ${{ github.workspace }}
