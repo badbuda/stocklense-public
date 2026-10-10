@@ -120,7 +120,9 @@ def compare_original_rerun_invariants(original_json, diagnostic_json):
     reference=json.loads(Path(original_json).read_bytes())
     rerun=json.loads(Path(diagnostic_json).read_bytes())
     locked=("orders","statistics","runtimeStatistics","profitLoss","rollingWindow")
-    equal={name:reference.get(name)==rerun.get(name) for name in locked}
+    if any(name not in reference or name not in rerun for name in locked):
+        raise ValueError("LEAN_MISSING_ORIGINAL_RUN_INVARIANT_FIELD")
+    equal={name:reference[name]==rerun[name] for name in locked}
     equal["native_sl724_leverage_nav_drawdown"]=(
         reference.get("charts",{}).get("SL724",{}).get("series")==
         rerun.get("charts",{}).get("SL724",{}).get("series"))
