@@ -78,6 +78,23 @@ jobs:
             research/reports/vol60_ramped_reentry_observed_open.md
           if-no-files-found: warn
           retention-days: 30
+      - name: Complete offline crisis, overnight and modeled gap-cost research
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          python observed_etf_execution_forensics.py
+          test -s research/results/observed_execution_crisis_forensics.json
+          test -s research/reports/observed_execution_crisis_forensics.md
+      - name: Preserve one-batch crisis execution forensic evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stocklens-crisis-execution-forensics
+          path: |
+            research/results/observed_execution_crisis_forensics.json
+            research/reports/observed_execution_crisis_forensics.md
+          if-no-files-found: warn
+          retention-days: 30
       - name: Static dashboard document integrity
         env:
           PYTHONPATH: ${{ github.workspace }}
