@@ -56,8 +56,10 @@ def test_seven_complete_daily_accounts_cashflow_and_nav_prove_only_observed_char
     assert report["status"]=="ORIGINAL_LEAN_P1_OBSERVED_CHART_RECONCILED"
     assert report["rows"]==3
     assert report["contribution_count"]==1
-    assert report["endpoint_reconciliation"]["ending_inferred_cash_from_original_runtime"]==3000.
-    assert report["endpoint_reconciliation"]["observational_cash_plus_holdings_reconciled"] is True
+    assert report["endpoint_reconciliation"]["end_of_run_native_stats_implied_cash"]==3000.
+    assert report["endpoint_reconciliation"]["status"]=="MATCHED_RUN_END_NATIVE_CHART_WITH_QUANTIZATION_TOLERANCE"
+    assert report["endpoint_reconciliation"]["end_of_run_equity_match_proven"] is True
+    assert report["endpoint_reconciliation"]["end_of_run_holdings_match_proven"] is True
     assert report["full_portfolio_path_PARITY_proven"] is False
     assert report["independently_reconstructed_Python_same_start_portfolio_path"] is False
     assert report["native_plot_values_bit_exact_unrounded"] is False
