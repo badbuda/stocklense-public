@@ -1,4 +1,4 @@
-"""Append-only prospective observed QQQ/TQQQ 09:30/09:31/09:32 quotes.
+"""Append-only prospective QQQ/TQQQ 09:30/09:31/09:32 minute-bar OPEN prices.
 
 No synthetic quotes. No historical backfill or reconstructed broker fills.
 The first observation is created only for the session that just completed
@@ -49,7 +49,7 @@ def verify(rows):
             raise ValueError("DUPLICATE_OR_UNSORTED_SESSION")
         last = day
         if row.get("source") != "YFINANCE_OBSERVED_1MIN_RAW_OPEN":
-            raise ValueError("NOT_OBSERVED_VENDOR_QUOTES")
+            raise ValueError("NOT_OBSERVED_YAHOO_MINUTE_OPEN")
         capture = datetime.fromisoformat(row["captured_at_utc"].replace("Z", "+00:00"))
         if capture.tzinfo is None:
             raise ValueError("NAIVE_CAPTURE_TIMESTAMP")
@@ -58,8 +58,18 @@ def verify(rows):
             raise ValueError("LATE_BACKFILL_OR_INCOMPLETE_SESSION")
         if row.get("prior_row_sha256") != prev_hash:
             raise ValueError("JOURNAL_HASH_CHAIN_BROKEN")
+        # Preserve old rows byte-for-byte: "quotes" was a misleading legacy
+        # key for Yahoo minute-bar OPENs. New rows use an accurate field name.
+        if "minute_open_prices" in row:
+            if "quotes" in row or row.get("price_semantics") != "YAHOO_1MIN_BAR_OPEN_NOT_BID_ASK":
+                raise ValueError("INVALID_MINUTE_OPEN_PROVENANCE")
+            samples_by_symbol = row["minute_open_prices"]
+        else:
+            if "quotes" not in row or "price_semantics" in row:
+                raise ValueError("UNKNOWN_LEGACY_PRICE_SEMANTICS")
+            samples_by_symbol = row["quotes"]
         for symbol in SYMBOLS:
-            samples = row.get("quotes", {}).get(symbol, {})
+            samples = samples_by_symbol.get(symbol, {})
             if set(samples) != set(CLOCK_KEYS):
                 raise ValueError("MISSING_OBSERVED_MINUTE:" + symbol)
             if not all(isinstance(v, (float, int)) and math.isfinite(v) and v > 0
@@ -107,7 +117,8 @@ def collect(prices, *, now=None, journal=JOURNAL):
                     "session_date": day,
                     "captured_at_utc": current.astimezone(timezone.utc).isoformat(),
                     "source": "YFINANCE_OBSERVED_1MIN_RAW_OPEN",
-                    "quotes": quotes,
+                    "minute_open_prices": quotes,
+                    "price_semantics": "YAHOO_1MIN_BAR_OPEN_NOT_BID_ASK",
                     "prior_row_sha256": verify(rows),
                     "synthetic_quotes_used": False,
                     "broker_fills_observed": False,
@@ -130,11 +141,14 @@ def collect(prices, *, now=None, journal=JOURNAL):
         "last_session": rows[-1]["session_date"] if rows else None,
         "journal_tail_sha256": verify(rows),
         "session_under_review": day,
-        "daily_0931_0932_quotes_observed": bool(rows),
+        "daily_0931_0932_quotes_observed": bool(rows),  # deprecated compatibility field
+        "daily_0931_0932_minute_open_observed": bool(rows),
+        "bid_ask_quotes_observed": False,
+        "legacy_quote_field_rows": sum("quotes" in row for row in rows),
         "broker_fills_observed": False,
         "synthetic_quotes_used": False,
         "live_trading_authorized": False,
-        "note": "Prospective same-day-after-close observed 1-minute ETF quotes only. Never inferred broker fills or reconstructed old missing bars.",
+        "note": "YFinance 1-minute BAR OPEN prices, never NBBO bid/ask quotes or broker fills. Old hash-chain rows retain the legacy quotes key; no retroactive rewrite.",
     }
 
 
