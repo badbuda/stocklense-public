@@ -32,7 +32,16 @@ def numeric(value):
 
 
 def transition_hash(transitions):
-    canonical = json.dumps(transitions, separators=(",", ":"))
+    """Canonicalize leverage numerics to float, matching pinned original SHA.
+
+    Original golden transitions contain integer-valued levels as JSON numbers,
+    but its SHA was generated using their LEAN floating-point representation
+    (3.0, 2.0, 0.0). This avoids false evidence rejection for equal levels.
+    Never changes golden transitions, dates, or the locked reference digest.
+    """
+    canonical = json.dumps(
+        [[str(day), float(leverage)] for day, leverage in transitions],
+        separators=(",", ":"))
     return hashlib.sha256(canonical.encode()).hexdigest()
 
 

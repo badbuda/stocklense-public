@@ -132,3 +132,79 @@ python qc_lean_yahoo_daily_exposure_audit.py \
 If `docs/portal-history.json` has refreshed after the pinned 2026-10-08 snapshot, results may include additional future days beyond the fixed historical overlap but **the original overlap through 2024-08-29 must remain reproducible**. Verify the SHA before comparing a current run to the frozen dated report. This diagnostic does **not** prove native LEAN `close/sma50/sma200/vol20/mom12` input series are identical. That is still blocked until original-chart-derived feature export is obtained. Same model source identity and real broker execution remain unverified.
 
 These results justify moving the original 7.25% index-transition figure out of any "daily model accuracy" dashboard claim; they do NOT justify automated model promotion, real trading or claims of statistically significant alpha.
+
+## 2026-10-10 — Original 7.24 observer rerun recovered and reconciled
+
+**New evidence:** Owner supplied the original-source observer rerun Download Results
+`Adaptable Yellow Green Gaur.json`. SHA256 of diagnostic JSON:
+`748d260c55c2ae1a4b937e6a46888c695ba091a068e32224e7c8af6614d6274e`.
+
+The locked earlier original remains `Determined Red Orange Duck.json`,
+SHA256 `65cb291e6552dc0f86b32106bc3fe3f7a7ed8a127b3d0d6f84a60a8f5800b6f7`.
+The full files and the new 3,774-row native chart-feature CSV were handled
+**privately** and not copied into public GitHub.
+
+**Execution invariants PASS on actual files, verified locally:**
+- All **345 order objects** exactly equal.
+- All **3,774 original SL724 Leverage, NAV, Drawdown chart points** exactly equal
+  (including timestamps, levels and chart values).
+- Complete `statistics`, `runtimeStatistics`, `profitLoss` and
+  `rollingWindow` structures exactly equal.
+- All **301 closed-trade economic records** match after excluding independently
+  regenerated UUID `id` fields; platform run names and system timestamps
+  are expected to differ and are not evidence of strategy drift.
+- Historical original reported CAGR **47.373%**, ending equity
+  **$34,817,008.35**, reported drawdown **48.600%** — unchanged.
+
+**Chart acquisition correction:** each of the **7 P0 native observational
+feature series** contains **3,775** unique daily points:
+2009-09-01 to **2024-08-30**. Original SL724 reference ends 2024-08-29
+after **3,774** sessions. The additional observation is the **next actual
+NYSE trading session**, and occurs only after all the original rows. The
+importer now accepts **exactly one independently calendar-verified trailing
+observation** after all 3,774 original decision sessions; the extra is
+recorded by date in the audit report and excluded only from the derived
+**private** feature CSV. Any inserted, missing, modified, misaligned,
+duplicated, non-XNYS or second trailing observation fails closed.
+
+**Native-feature decision replay:** on the 3,774 aligned chart rows, running
+the unchanged Python 8.0 `next_level` and `defense_active` with the LEAN
+charted `close/sma50/sma200/vol20/mom12` and its actual prior level yields
+**3,774 / 3,774 identical** level, defense and effective-leverage
+decisions, **zero mismatches**. Every dated LEAN leverage state, NYSE session
+calendar and transition digest matched the immutably pinned reference.
+This is much stronger than Yahoo cross-provider exposure agreement.
+
+**Separate latent bug fixed:** the pinned 67-transition SHA was originally
+computed using float-coded `3.0/2.0/0.0`, whereas
+`qc_original_lean_chart_audit` normalized integer-valued levels to
+`3/2/0` *before hashing*. Without canonicalizing to float, a genuine
+original input was falsely rejected. `qc_input_ingestion.transition_hash`
+now hashes every numeric leverage as float, reproducing the **unchanged**
+golden digest `5561588a3bcd8a416cc13320536d7d3ff51bdb6de418e4f2c31b85eaf2ac745b`.
+Regression tests guard changed dates and genuine transitions.
+
+**Claim boundary remains:** this is a perfect **mathematical match on
+observer-chart-rounded native feature values**, and an exact behavior match
+between the two saved QuantConnect *simulated* runs. It does **not** prove
+bit-exact unrounded original indicator values, independent native input
+provenance/code-build hash for the 2009–2024 original run, source-adjustment
+identity, real 09:31/09:32 NBBO or broker fills. The strict
+`source_authenticity_proven` flag remains `false` until independently
+attested. No automatic trading or capital authorization.
+
+**Repeat privately:**
+
+```bash
+python qc_chart_feature_acquisition.py \
+  --original "/private/Determined Red Orange Duck.json" \
+  --diagnostic "/private/Adaptable Yellow Green Gaur.json" \
+  --out governance/qc_lean_daily_features.csv \
+  --audit research/local/lean_chart_transport_audit.json
+
+python qc_same_input_parity.py
+python qc_parity_dossier.py
+```
+
+The CSV is *private evidence*; do not commit to the public GitHub repository.
+The historical strategy is frozen and all future-paper safeguards stay in force.

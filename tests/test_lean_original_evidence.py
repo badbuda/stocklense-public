@@ -176,3 +176,17 @@ def test_dossier_does_not_promote_spoofed_matching_state(tmp_path, monkeypatch):
     assert report["same_input_evidence"]["mathematical_state_match"] is True
     assert report["same_input_evidence"]["proven"] is False
     assert any("authenticity" in x.lower() for x in report["blockers"])
+
+
+def test_pinned_67_original_transition_sha_uses_numeric_float_canonicalization():
+    # Immutable golden SHA was produced with 3.0/2.0/0.0 as floating-point
+    # leverage values, even though the checked-in JSON prints them as 3/2/0.
+    # Before this regression, EVERY genuine original LEAN audit would fail.
+    golden=json.loads(Path("governance/qc_724_leverage_transitions.json").read_text())
+    original=golden["transitions"]
+    assert len(original)==67
+    assert transition_hash(original)==golden["transition_sha256"]
+    assert transition_hash([[day,float(lev)] for day,lev in original])==golden["transition_sha256"]
+    altered=[list(row) for row in original]
+    altered[7][0]="2010-08-12"
+    assert transition_hash(altered)!=golden["transition_sha256"]
