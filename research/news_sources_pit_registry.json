@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "kind": "NEWS_POINT_IN_TIME_PROVIDER_REGISTRY",
+  "status": "SOURCES_IDENTIFIED_HISTORICAL_EVENT_FEED_NOT_YET_ACQUIRED",
+  "frozen_baseline": "StockLens 8.0",
+  "sources": [
+    {
+      "id": "GDELT_2_0_GKG",
+      "provider": "GDELT Project",
+      "url": "https://gdeltproject.org/data.html",
+      "start": "2015-02-19",
+      "update_frequency": "15-minute worldwide article and theme observations",
+      "release_precision": "monitored batch time not independently measured executable headline-first-seen",
+      "historical_2009_coverage": false,
+      "actual_news_surprise_available": false,
+      "point_in_time_trade_readiness": false,
+      "verified_ingestion": false
+    },
+    {
+      "id": "FED_FOMC_OFFICIAL",
+      "provider": "Federal Reserve FOMC",
+      "url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
+      "update_frequency": "approximately eight scheduled meetings per year plus unscheduled",
+      "release_precision": "individual official press releases may give clock time (2pm ET is common; verify each year)",
+      "historical_2009_coverage": true,
+      "actual_news_surprise_available": false,
+      "point_in_time_trade_readiness": false,
+      "verified_ingestion": false
+    },
+    {
+      "id": "BLS_RELEASE_CALENDAR",
+      "provider": "U.S. Bureau of Labor Statistics",
+      "url": "https://www.bls.gov/schedule/news_release/cpi.htm",
+      "update_frequency": "monthly and other scheduled releases",
+      "release_precision": "schedule provides original release ET clock times, but scheduled future CPI RESULT cannot be known before release",
+      "historical_2009_coverage": true,
+      "actual_news_surprise_available": false,
+      "point_in_time_trade_readiness": false,
+      "verified_ingestion": false
+    },
+    {
+      "id": "ALFRED_REALTIME_VINTAGES",
+      "provider": "St. Louis Federal Reserve ALFRED",
+      "url": "https://alfred.stlouisfed.org/help/downloaddata",
+      "update_frequency": "economic release/revision vintages",
+      "release_precision": "vintage DATE prevents hindsight revisions but intraday release availability requires another timestamp source",
+      "historical_2009_coverage": true,
+      "actual_news_surprise_available": false,
+      "point_in_time_trade_readiness": false,
+      "verified_ingestion": false
+    },
+    {
+      "id": "SEC_EDGAR",
+      "provider": "SEC EDGAR public submissions",
+      "url": "https://www.sec.gov/search-filings/edgar-application-programming-interfaces",
+      "update_frequency": "as corporate filings appear",
+      "release_precision": "acceptanceDateTime requires confirming timezone/API first delivery; form type does not prove M&A or earnings semantics",
+      "historical_2009_coverage": true,
+      "actual_news_surprise_available": false,
+      "point_in_time_trade_readiness": false,
+      "verified_ingestion": false
+    }
+  ],
+  "excluded_inputs": {
+    "contemporary_gpt_commentary_retroactively_classified_as_2015_live_news": true,
+    "event_occurrence_date_used_as_publication_date": true,
+    "revised_macro_series_as_first_release": true,
+    "present_day_index_membership_used_in_past_stock_universe": true,
+    "unverified_ticker_CIK_historical_mapping": true,
+    "unlicensed_bulk_article_content_in_public_repo": true,
+    "syndicated_articles_double_counted": true,
+    "calendar_known_scheduled_event_treated_as_result": true
+  },
+  "next_inputs": [
+    "Archived complete GDELT 2.0 GKG/Mentions batches with raw file fingerprints and verified provider batch first-delivery time",
+    "Point-in-time U.S. 2015+ FOMC statement release clock time and separately frozen futures-implied rate expectations",
+    "Point-in-time original CPI/jobs release values and archived pre-release consensus with timestamps",
+    "Corporate 8-K/10-Q announcement time and historical company CIK ticker mapping, including delistings"
+  ],
+  "capital_deployment_authorized": false,
+  "automatically_replace_stocklens_8": false
+}
