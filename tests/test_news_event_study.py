@@ -5,7 +5,7 @@ import hashlib
 import exchange_calendars as xcals
 import pytest
 
-from news_event_pit import ingest_records
+from news_event_pit import ingest_records, clean_event
 from news_event_study import eligible_market_open, study
 
 
@@ -26,7 +26,8 @@ def event(event_id="NEWS-A",*,published="2024-03-20T18:00:00Z",
         "processing_delay_minutes":2,
         "archived_first_seen_verified":evidence,
         "first_seen_evidence_kind":"ARCHIVED_VENDOR_FIRST_SEEN",
-        "first_seen_evidence_uri":"https://example.invalid/firstseen/"+event_id
+        "first_seen_evidence_uri":"https://example.invalid/firstseen/"+event_id,
+        "first_seen_archival_receipt_sha256":hashlib.sha256(("receipt-"+event_id).encode()).hexdigest()
     }
 
 
@@ -88,8 +89,8 @@ def test_unverifiable_event_does_not_synthesize_backtested_alpha():
 
 def test_calendar_schedule_cannot_be_future_actual_policy_signal():
     with pytest.raises(ValueError,match="NEWS_NO_VERIFIED_POINT_IN_TIME_FIRST_SEEN"):
-        eventobj=ingest_records([event(kind="SCHEDULE_ANNOUNCED")])
-        eligible_market_open(eventobj["verified_distinct_events"][0])
+        eventobj=clean_event(event(kind="SCHEDULE_ANNOUNCED"))
+        eligible_market_open(eventobj)
 
 
 def test_no_price_session_cannot_silently_use_next_available_price():
