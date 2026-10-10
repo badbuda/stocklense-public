@@ -92,7 +92,10 @@ def test_legacy_journal_sha_retained_then_new_row_chained(tmp_path):
     assert read_rows(journal)[-1]["row_sha256"]==first_hash
     last=old[-1]["session_date"]
     from datetime import date, timedelta
-    next_day=(date.fromisoformat(last)+timedelta(days=1)).isoformat()
+    next_date=date.fromisoformat(last)+timedelta(days=1)
+    while next_date.weekday()>=5:
+        next_date+=timedelta(days=1)
+    next_day=next_date.isoformat()
     data={s:{next_day:PRICES[s][SESSION]} for s in ("QQQ","TQQQ")}
     at=datetime.combine(date.fromisoformat(next_day),datetime.min.time(),tzinfo=NY).replace(hour=18,minute=1)
     result=collect(data,now=at,journal=journal)
