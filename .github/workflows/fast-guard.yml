@@ -61,6 +61,23 @@ jobs:
             research/reports/two_questions_risk_matched.md
           if-no-files-found: warn
           retention-days: 30
+      - name: Vol60 continuous-risk and ramped re-entry batch on observed ETF next-opens
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          python observed_etf_vol60_reentry_audit.py
+          test -s research/results/vol60_ramped_reentry_observed_open.json
+          test -s research/reports/vol60_ramped_reentry_observed_open.md
+      - name: Preserve Vol60 ramped re-entry research outputs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stocklens-vol60-ramped-reentry
+          path: |
+            research/results/vol60_ramped_reentry_observed_open.json
+            research/reports/vol60_ramped_reentry_observed_open.md
+          if-no-files-found: warn
+          retention-days: 30
       - name: Static dashboard document integrity
         env:
           PYTHONPATH: ${{ github.workspace }}
