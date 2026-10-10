@@ -13,7 +13,8 @@ def build_data_quality():
               and abs(evidence.get("daily_exposure_match_rate",-1)-evidence.get("matching_exposures",0)/evidence["overlap_sessions"])<1e-9)
     return {"status":"PASS" if h.get("status")!="RED" and x.get("asof_date") else "FAIL",
       "signal_date":x.get("asof_date"),"source":s.get("source_audit",{}).get("source") or s.get("source"),
-      "health":h.get("status","PENDING"),"qc_cross_provider_diagnostic":p.get("status","PENDING"),
+      "health":h.get("status","PENDING"),"qc_cross_provider_diagnostic":("EXPOSURE_ALIGNMENT_ONLY_NOT_LEAN_INPUT_PARITY" if verified else p.get("status","PENDING")),
+      "qc_original_transition_diagnostic":p.get("status","PENDING"),
       "qc_transition_index_alignment_diagnostic":p.get("transition_match_rate"),
       "lean_yahoo_daily_exposure_match_rate":evidence.get("daily_exposure_match_rate") if verified else None,
       "lean_yahoo_exposure_matched_days":evidence.get("matching_exposures") if verified else None,

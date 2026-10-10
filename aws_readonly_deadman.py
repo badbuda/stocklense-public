@@ -3,6 +3,7 @@ import argparse
 import json
 import subprocess
 from datetime import datetime, timezone, timedelta
+from zoneinfo import ZoneInfo
 
 
 def aws(*args):
@@ -11,11 +12,12 @@ def aws(*args):
     return json.loads(result.stdout)
 
 
-def inspect(rule_names, function_names, now=None, client=aws):
+def inspect(rule_names, function_names, now=None, client=aws, *, check_invocations=False, calendar=None):
     now = now or datetime.now(timezone.utc)
     if now.tzinfo is None:
         raise ValueError("aware UTC clock required")
     evidence = {"checked_at_utc": now.isoformat(), "rules": [], "lambdas": [],
+                "invocation_window_checked": False, "expected_xnys_session": None,
                 "sns_delivery_proven": False, "broker_trading_authorized": False}
     errors = []
     for name in rule_names:
@@ -37,6 +39,33 @@ def inspect(rule_names, function_names, now=None, client=aws):
                 errors.append("INACTIVE_LAMBDA:" + name)
         except Exception as exc:
             errors.append("LAMBDA_INSPECTION_FAILED:" + name + ":" + type(exc).__name__)
+    if check_invocations:
+        # Check a completed XNYS session only; metrics may lag the cron.
+        try:
+            import exchange_calendars as xcals
+            prior = (now.astimezone(ZoneInfo("America/New_York")).date() - timedelta(days=1)).isoformat()
+            cal = calendar if calendar is not None else xcals.get_calendar("XNYS")
+            expected = bool(cal.is_session(prior))
+            evidence["expected_xnys_session"] = expected
+            evidence["session_checked"] = prior
+            utc_now = now.astimezone(timezone.utc)
+            start = utc_now.replace(hour=9, minute=0, second=0, microsecond=0)
+            if expected and utc_now < start + timedelta(minutes=40):
+                errors.append("AUDIT_BEFORE_INVOCATION_METRICS_SETTLED")
+            elif expected:
+                evidence["invocation_window_checked"] = True
+                for name in function_names:
+                    try:
+                        r = client("cloudwatch", "get-metric-statistics", "--namespace", "AWS/Lambda",
+                                   "--metric-name", "Invocations", "--dimensions", "Name=FunctionName,Value=" + name,
+                                   "--start-time", start.isoformat(), "--end-time", utc_now.isoformat(),
+                                   "--period", "60", "--statistics", "Sum")
+                        if sum(float(x["Sum"]) for x in r.get("Datapoints", [])) < 1:
+                            errors.append("MISSED_INVOCATION:" + name)
+                    except Exception as exc:
+                        errors.append("INVOCATION_CHECK_FAILED:" + name + ":" + type(exc).__name__)
+        except Exception as exc:
+            errors.append("XNYS_CALENDAR_CHECK_FAILED:" + type(exc).__name__)
     evidence["errors"] = errors
     evidence["status"] = "PASS_READ_ONLY_CONFIGURATION" if not errors else "FAIL_CLOSED"
     evidence["invocation_delivery_proven"] = False
@@ -47,8 +76,9 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--rule", action="append", required=True)
     parser.add_argument("--function", action="append", required=True)
+    parser.add_argument("--check-invocations", action="store_true")
     args = parser.parse_args()
-    result = inspect(args.rule, args.function)
+    result = inspect(args.rule, args.function, check_invocations=args.check_invocations)
     print(json.dumps(result, sort_keys=True))
     if result["errors"]:
         raise SystemExit(2)

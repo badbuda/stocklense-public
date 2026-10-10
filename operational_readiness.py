@@ -25,6 +25,8 @@ def build_readiness(out_path="shadow_history/readiness.json"):
     action=signal.get("action","UNKNOWN")
     result={
         "status":"READY" if ready else "BLOCKED","checks":checks,"failed_checks":failed_checks,
+        "scope":"SHADOW_SIGNAL_PIPELINE_ONLY","capital_deployment_ready":False,
+        "broker_execution_ready":False,"readiness_label":"SHADOW_SIGNAL_READY_NOT_LIVE" if ready else "SHADOW_PIPELINE_BLOCKED",
         "health_status":health.get("status","MISSING"),"anomaly_status":anomaly.get("status","MISSING"),
         "artifact_integrity_status":integrity.get("status","PENDING"),
         "integrity_evidence_phase":"POST_READINESS_VALIDATION",

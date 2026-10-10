@@ -48,3 +48,43 @@ def test_inactive_lambda_fails_closed():
             return {"State": "Inactive"}
         return healthy(*args)
     assert inspect(["nightly"], ["shadow"], client=client)["status"] == "FAIL_CLOSED"
+
+def test_expected_session_detects_missing_invocation():
+    from datetime import datetime, timezone
+    class Cal:
+        def is_session(self, day): return True
+    def fake(*args):
+        if args[:2] == ("cloudwatch", "get-metric-statistics"): return {"Datapoints": []}
+        return healthy(*args)
+    r = inspect(["nightly"], ["shadow"], now=datetime(2026, 10, 10, 9, 45, tzinfo=timezone.utc),
+                client=fake, check_invocations=True, calendar=Cal())
+    assert "MISSED_INVOCATION:shadow" in r["errors"]
+
+def test_expected_session_observed_invocation_does_not_prove_alert():
+    from datetime import datetime, timezone
+    class Cal:
+        def is_session(self, day): return True
+    def fake(*args):
+        if args[:2] == ("cloudwatch", "get-metric-statistics"): return {"Datapoints": [{"Sum": 1.0}]}
+        return healthy(*args)
+    r = inspect(["nightly"], ["shadow"], now=datetime(2026, 10, 10, 9, 45, tzinfo=timezone.utc),
+                client=fake, check_invocations=True, calendar=Cal())
+    assert r["status"] == "PASS_READ_ONLY_CONFIGURATION"
+    assert r["invocation_window_checked"] and not r["sns_delivery_proven"]
+
+def test_holiday_skips_metric_requirement_but_checks_configuration():
+    from datetime import datetime, timezone
+    class Cal:
+        def is_session(self, day): return False
+    r = inspect(["nightly"], ["shadow"], now=datetime(2026, 10, 10, 9, 45, tzinfo=timezone.utc),
+                client=healthy, check_invocations=True, calendar=Cal())
+    assert r["expected_xnys_session"] is False
+    assert r["status"] == "PASS_READ_ONLY_CONFIGURATION"
+
+def test_metrics_before_settle_window_fail_closed():
+    from datetime import datetime, timezone
+    class Cal:
+        def is_session(self, day): return True
+    r = inspect(["nightly"], ["shadow"], now=datetime(2026, 10, 10, 9, 30, tzinfo=timezone.utc),
+                client=healthy, check_invocations=True, calendar=Cal())
+    assert "AUDIT_BEFORE_INVOCATION_METRICS_SETTLED" in r["errors"]
