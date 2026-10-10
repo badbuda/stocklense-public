@@ -64,7 +64,7 @@ def gdelt_2_gkg_row_to_event(row, *, archival_batch_available_at_utc=None):
         "category":"WAR_CONFLICT" if any(
             t in fields[7].split(";") for t in (
                 "ARMEDCONFLICT","MILITARY","KILL","TERROR")
-        ) else "REGULATION",
+        ) else "UNCLASSIFIED_NEWS",
         "scope":"MARKET",
         "event_kind":"OUTCOME_RELEASED",
         "source_url":url,
