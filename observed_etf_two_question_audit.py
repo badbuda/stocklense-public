@@ -100,19 +100,16 @@ def _hac_alpha(y, x, lag=21):
     for k in range(min(lag,n-1)+1):
         w=1. if k==0 else 1.-k/(min(lag,n-1)+1.)
         for t in range(k,n):
-            u=residuals[t]*residuals[t-k]
-            z0=1.
-            z1=x[t]
-            a0=1.
-            a1=x[t-k]
-            factor=w*(1 if k==0 else 1)
-            s00+=factor*u*z0*a0
-            s01+=factor*u*z0*a1
-            s11+=factor*u*z1*a1
+            uu=w*residuals[t]*residuals[t-k]
             if k:
-                s01+=factor*u*z1*a0
-                s11+=factor*u*z1*a1
-                s00+=factor*u*z0*a0
+                # S(k)+S(k)' symmetry for the two regression-score axes.
+                s00+=2*uu
+                s01+=uu*(x[t]+x[t-k])
+                s11+=2*uu*x[t]*x[t-k]
+            else:
+                s00+=uu
+                s01+=uu*x[t]
+                s11+=uu*x[t]*x[t]
     det=n*sum(t*t for t in x)-sum(x)**2
     inverse00=sum(t*t for t in x)/det
     inverse01=-sum(x)/det
@@ -254,8 +251,8 @@ def _calibrate(rows):
 
 def _regimes(rows):
     groups={}
+    c=[float(r["qc"]) for r in rows]
     for i in range(201,len(rows)):
-        c=[float(r["qc"]) for r in rows]
         # All conditioning uses COMPLETED observations before the return date.
         previous=i-1
         r20=[math.log(c[j]/c[j-1]) for j in range(previous-19,previous+1)]
@@ -285,10 +282,6 @@ def _regimes(rows):
 
 def _bootstrap_pair(a,b,rep=250,seed=8010):
     """Descriptive paired block resampling, explicitly NOT a significance test."""
-    delta=[math.log(x/y) for x,y in zip(_daily_returns(a,START_CAPITAL),
-                                         _daily_returns(b,START_CAPITAL))]
-    # Above log(x/y) uses gross RETURN ratios only if both are >0; fix to
-    # actual log(1+return) ratio using the next expression.
     delta=[math.log1p(x)-math.log1p(y)
            for x,y in zip(_daily_returns(a,START_CAPITAL),
                           _daily_returns(b,START_CAPITAL))]
