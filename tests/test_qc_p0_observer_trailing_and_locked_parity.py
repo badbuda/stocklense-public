@@ -92,3 +92,64 @@ def test_native_orders_and_charts_strict_identity_ignore_only_closedtrade_guid(t
     b.write_text(json.dumps(copied))
     with pytest.raises(ValueError,match="LEAN_DIAGNOSTIC_CHANGED_ORIGINAL_RUN"):
         compare_original_rerun_invariants(a,b)
+
+
+def test_order_decimal_serialization_noise_passes_but_economic_fields_stay_locked(tmp_path):
+    original={
+      "charts":{"SL724":{"series":{"Leverage":{"values":[[1,3]]},
+        "NAV":{"values":[[1,1]]},"Drawdown":{"values":[[1,0]]}}}},
+      "orders":{"1":{"id":1,"status":3,"direction":0,"quantity":1200,
+        "symbol":{"value":"QQQ"},"price":31.250000000000014,
+        "value":37500.000000000015,
+        "time":"2024-08-29T13:32:00Z","tag":"SL724_ADD_OPEN2",
+        "orderSubmissionData":{"bidPrice":31.240000000000002,
+            "askPrice":31.250000000000014,"lastPrice":31.249999999999996}}},
+      "statistics":{"End Equity":"34817008.35"},
+      "runtimeStatistics":{"Holdings":"$34,293,303.99"},
+      "profitLoss":{},"rollingWindow":{},
+      "totalPerformance":{"closedTrades":[{"id":"run-original-uuid",
+        "profitLoss":"250.00","orderIds":[1]}]}}
+    observer=json.loads(json.dumps(original))
+    observer["orders"]["1"]["price"]=31.25
+    observer["orders"]["1"]["value"]=37500.
+    observer["orders"]["1"]["orderSubmissionData"]["askPrice"]=31.25
+    observer["orders"]["1"]["orderSubmissionData"]["lastPrice"]=31.25
+    observer["totalPerformance"]["closedTrades"][0]["id"]="observer-run-uuid"
+    a=tmp_path/"original.json"; b=tmp_path/"observer.json"
+    a.write_text(json.dumps(original));b.write_text(json.dumps(observer))
+    accepted=compare_original_rerun_invariants(a,b)
+    assert accepted["native_execution_behavior_unchanged"] is True
+    assert accepted["native_order_numeric_transport_audit"]["matched"] is True
+    assert accepted["native_order_numeric_transport_audit"]["orders_byte_identical"] is False
+    assert accepted["native_order_numeric_transport_audit"]["tolerated_numeric_field_count"]>=2
+    assert accepted["native_order_numeric_transport_audit"]["max_relative_difference_tolerated"]<1e-12
+
+    mutation_paths=[
+      lambda v:v["orders"]["1"].__setitem__("price",31.26),
+      lambda v:v["orders"]["1"].__setitem__("quantity",1199),
+      lambda v:v["orders"]["1"].__setitem__("status",2),
+      lambda v:v["orders"]["1"].__setitem__("time","2024-08-30T13:32:00Z"),
+      lambda v:v["orders"]["1"]["orderSubmissionData"].__setitem__("bidPrice",31.25),
+      lambda v:v["orders"]["1"]["symbol"].__setitem__("value","TQQQ"),
+      lambda v:v["totalPerformance"]["closedTrades"][0].__setitem__("profitLoss","249.99"),
+      lambda v:v["charts"]["SL724"]["series"]["NAV"]["values"][0].__setitem__(1,1.01),
+    ]
+    for mutation in mutation_paths:
+        changed=json.loads(json.dumps(observer))
+        mutation(changed)
+        b.write_text(json.dumps(changed))
+        with pytest.raises(ValueError,match="LEAN_DIAGNOSTIC_CHANGED_ORIGINAL_RUN"):
+            compare_original_rerun_invariants(a,b)
+
+
+def test_native_order_float_guard_rejects_nonfinite_and_structure_mutations():
+    from qc_chart_feature_acquisition import _compare_lean_orders_preserving_economics
+    a={"1":{"id":1,"price":12.,"value":12.,
+             "quantity":1,"orderSubmissionData":{"bidPrice":11.,"askPrice":12.,"lastPrice":11.5}}}
+    assert _compare_lean_orders_preserving_economics(a,a)["matched"] is True
+    b=json.loads(json.dumps(a));b["1"]["orderSubmissionData"]["askPrice"]=float("nan")
+    assert _compare_lean_orders_preserving_economics(a,b)["matched"] is False
+    b=json.loads(json.dumps(a));b["1"]["price"]=12.00001
+    assert _compare_lean_orders_preserving_economics(a,b)["matched"] is False
+    b=json.loads(json.dumps(a));del b["1"]["orderSubmissionData"]["lastPrice"]
+    assert _compare_lean_orders_preserving_economics(a,b)["matched"] is False
