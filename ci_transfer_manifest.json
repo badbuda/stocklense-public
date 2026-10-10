@@ -296,7 +296,7 @@
     "tests/test_lean_daily_exposure_audit.py": "ae10159cc3784aeec1424ab1a0203fbf1ae608fb",
     "tests/test_lean_original_evidence.py": "27dabdba78de2534abe0d19d31cbf5063b3391b7",
     "tests/test_model_readiness_audit.py": "6492e91bfa25f57f1bd678de6271e9757e47ff1a",
-    "tests/test_observed_etf_execution_forensics.py": "398bb0311a5bcf9ede0d654cad7e58cd14713375",
+    "tests/test_observed_etf_execution_forensics.py": "6c7dc7ac291716f3828b25a1ed73f600307a1a3d",
     "tests/test_observed_etf_market_calendar_audit.py": "407858a1bf07cbc4977a51adb1fadd0acd3abdaf",
     "tests/test_observed_etf_statistical_robustness.py": "84f4f6fb98adb1853dc20c511d3c5cf88bd298e6",
     "tests/test_observed_etf_two_question_audit.py": "7f2fd4740ebcafeff64d126cca8bcaaa511cfe1b",

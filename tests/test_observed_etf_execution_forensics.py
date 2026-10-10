@@ -117,9 +117,9 @@ def test_replay_rejects_posthoc_tuned_stress_parameters():
 
 
 def test_distinct_drawdown_recovery_censoring_and_log_conservation():
-    p=[110.,80.,90.,115.,100.,95.]
+    p=[110000.,80000.,90000.,115000.,100000.,95000.]
     rows=[]
-    prev=100.
+    prev=100000.
     for i,nav in enumerate(p):
         c=math.log(nav/prev)
         rows.append({"date":f"2025-01-{i+2:02d}","nav":nav,
