@@ -104,3 +104,13 @@ def test_legacy_journal_sha_retained_then_new_row_chained(tmp_path):
     assert rows[-1]["prior_row_sha256"]==first_hash
     assert "quotes" in rows[0] and "minute_open_prices" in rows[-1]
     assert verify(rows)==rows[-1]["row_sha256"]
+
+
+def test_weekend_minute_dict_never_creates_forward_session(tmp_path):
+    journal=tmp_path/"journal.jsonl"
+    weekend="2026-10-10"
+    fabricated={symbol:{weekend:PRICES[symbol][SESSION]} for symbol in ("QQQ","TQQQ")}
+    result=collect(fabricated,now=datetime(2026,10,10,18,5,tzinfo=NY),journal=journal)
+    assert result["status"]=="NO_XNYS_SESSION_NO_CAPTURE"
+    assert result["broker_fills_observed"] is False
+    assert not journal.exists()
