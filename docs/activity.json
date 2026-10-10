@@ -2,196 +2,196 @@
   "schema_version": 1,
   "items": [
     {
-      "short_sha": "a72dfbc",
-      "date": "2026-10-09T07:16:53+03:00",
-      "title": "ci: trigger one Shadow run after sealed source handoff repair",
+      "short_sha": "d652ec1",
+      "date": "2026-10-09T23:46:25+03:00",
+      "title": "AWS journal audit: use actual XNYS sessions, not weekdays, for missed-archive checks (#39)",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "fd86b35",
+      "date": "2026-10-09T23:37:58+03:00",
+      "title": "QC order forensics: correct false slippage claim and flag 5 historical quote outliers (#38)",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "708bd01",
+      "date": "2026-10-09T23:20:15+03:00",
+      "title": "QC: strict same-input observer audit for 7.33 feature export (no false provenance promotion) (#37)",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "1f95339",
+      "date": "2026-10-09T23:04:37+03:00",
+      "title": "P0: suppress spurious cockpit dry-run rebalance inside Paper 50bp band (#36)",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "07032cd",
+      "date": "2026-10-09T23:02:52+03:00",
+      "title": "P0: publish verified daily LEAN exposure alignment with explicit parity limits (#35)",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "a548891",
+      "date": "2026-10-09T22:56:42+03:00",
+      "title": "P0: correct inception paper returns and reject inconsistent ledgers (#34)",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "fbdaf29",
+      "date": "2026-10-09T22:43:09+03:00",
+      "title": "p0: independently confirm 99.81% LEAN vs Yahoo cross-provider daily exposure alignment",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "34cd4bc",
+      "date": "2026-10-09T17:59:47+03:00",
+      "title": "p0: fingerprint every original LEAN daily state and audit Yahoo exposure lag",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "048cc79",
+      "date": "2026-10-09T17:36:28+03:00",
+      "title": "p0: enable free QuantConnect native-feature chart evidence extraction without changing model",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "d543af6",
+      "date": "2026-10-09T17:31:17+03:00",
+      "title": "p0: require original LEAN evidence and block forged partial same-input parity",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "9af9553",
+      "date": "2026-10-09T15:33:32+03:00",
+      "title": "ci: await exact AWS Amplify release revision before real browser gate",
       "kind": "FIX",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "99b8b4b",
-      "date": "2026-10-09T07:16:43+03:00",
-      "title": "ci: restore sealed Shadow handoff and prevent source drift",
+      "short_sha": "2049b43",
+      "date": "2026-10-09T15:29:35+03:00",
+      "title": "fix: show honest -2.57% inception return, separate research/Paper and block false READY labels",
       "kind": "FIX",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "cc710cb",
-      "date": "2026-10-09T00:38:18+03:00",
-      "title": "fix: atomic bounded paper receipt for AWS archive (B6)",
-      "kind": "FIX",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "302182f",
-      "date": "2026-10-09T00:24:25+03:00",
-      "title": "paper: recoverable evidence transaction and fail-closed crash tests",
-      "kind": "PROJECT",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "fac1cba",
-      "date": "2026-10-09T00:17:16+03:00",
-      "title": "fix: reject invalid 8.0 AWS levels and reconcile actual paper positions",
-      "kind": "FIX",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "24792f3",
-      "date": "2026-10-09T00:10:09+03:00",
-      "title": "audit: fix contribution-neutral generic replay and stop divergent AWS evidence",
-      "kind": "PROJECT",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "aab0811",
-      "date": "2026-10-08T23:55:47+03:00",
-      "title": "aws: integrate immutable prospective paper evidence journal and read-only audit",
-      "kind": "PROJECT",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "bf2d3e3",
-      "date": "2026-10-08T23:35:34+03:00",
-      "title": "paper: enforce independent prospective accounting and observed QQQ/TQQQ provenance",
-      "kind": "PROJECT",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "3047b11",
-      "date": "2026-10-08T23:20:07+03:00",
-      "title": "infra: AWS paper-only signal journal with fail-closed OIDC preflight",
-      "kind": "PROJECT",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "7c91fb7",
-      "date": "2026-10-08T16:09:16Z",
-      "title": "shadow: record prospective evidence 2026-10-07",
-      "kind": "PROJECT",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "1881a80",
-      "date": "2026-10-08T18:50:18+03:00",
-      "title": "ci: validate prospective observed ETF minute journal in one complete batch",
-      "kind": "FIX",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "9eca263",
-      "date": "2026-10-08T18:49:41+03:00",
-      "title": "research: accumulate immutable prospective observed ETF minute quotes and keep live gate closed",
-      "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     }
   ],
   "high_signal_items": [
     {
-      "short_sha": "a72dfbc",
-      "date": "2026-10-09T07:16:53+03:00",
-      "title": "ci: trigger one Shadow run after sealed source handoff repair",
+      "short_sha": "d652ec1",
+      "date": "2026-10-09T23:46:25+03:00",
+      "title": "AWS journal audit: use actual XNYS sessions, not weekdays, for missed-archive checks (#39)",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "fd86b35",
+      "date": "2026-10-09T23:37:58+03:00",
+      "title": "QC order forensics: correct false slippage claim and flag 5 historical quote outliers (#38)",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "708bd01",
+      "date": "2026-10-09T23:20:15+03:00",
+      "title": "QC: strict same-input observer audit for 7.33 feature export (no false provenance promotion) (#37)",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "1f95339",
+      "date": "2026-10-09T23:04:37+03:00",
+      "title": "P0: suppress spurious cockpit dry-run rebalance inside Paper 50bp band (#36)",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "07032cd",
+      "date": "2026-10-09T23:02:52+03:00",
+      "title": "P0: publish verified daily LEAN exposure alignment with explicit parity limits (#35)",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "a548891",
+      "date": "2026-10-09T22:56:42+03:00",
+      "title": "P0: correct inception paper returns and reject inconsistent ledgers (#34)",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "fbdaf29",
+      "date": "2026-10-09T22:43:09+03:00",
+      "title": "p0: independently confirm 99.81% LEAN vs Yahoo cross-provider daily exposure alignment",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "34cd4bc",
+      "date": "2026-10-09T17:59:47+03:00",
+      "title": "p0: fingerprint every original LEAN daily state and audit Yahoo exposure lag",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "048cc79",
+      "date": "2026-10-09T17:36:28+03:00",
+      "title": "p0: enable free QuantConnect native-feature chart evidence extraction without changing model",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "d543af6",
+      "date": "2026-10-09T17:31:17+03:00",
+      "title": "p0: require original LEAN evidence and block forged partial same-input parity",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "9af9553",
+      "date": "2026-10-09T15:33:32+03:00",
+      "title": "ci: await exact AWS Amplify release revision before real browser gate",
       "kind": "FIX",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "99b8b4b",
-      "date": "2026-10-09T07:16:43+03:00",
-      "title": "ci: restore sealed Shadow handoff and prevent source drift",
+      "short_sha": "2049b43",
+      "date": "2026-10-09T15:29:35+03:00",
+      "title": "fix: show honest -2.57% inception return, separate research/Paper and block false READY labels",
       "kind": "FIX",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "cc710cb",
-      "date": "2026-10-09T00:38:18+03:00",
-      "title": "fix: atomic bounded paper receipt for AWS archive (B6)",
-      "kind": "FIX",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "302182f",
-      "date": "2026-10-09T00:24:25+03:00",
-      "title": "paper: recoverable evidence transaction and fail-closed crash tests",
-      "kind": "PROJECT",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "fac1cba",
-      "date": "2026-10-09T00:17:16+03:00",
-      "title": "fix: reject invalid 8.0 AWS levels and reconcile actual paper positions",
-      "kind": "FIX",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "24792f3",
-      "date": "2026-10-09T00:10:09+03:00",
-      "title": "audit: fix contribution-neutral generic replay and stop divergent AWS evidence",
-      "kind": "PROJECT",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "aab0811",
-      "date": "2026-10-08T23:55:47+03:00",
-      "title": "aws: integrate immutable prospective paper evidence journal and read-only audit",
-      "kind": "PROJECT",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "bf2d3e3",
-      "date": "2026-10-08T23:35:34+03:00",
-      "title": "paper: enforce independent prospective accounting and observed QQQ/TQQQ provenance",
-      "kind": "PROJECT",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "3047b11",
-      "date": "2026-10-08T23:20:07+03:00",
-      "title": "infra: AWS paper-only signal journal with fail-closed OIDC preflight",
-      "kind": "PROJECT",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "7c91fb7",
-      "date": "2026-10-08T16:09:16Z",
-      "title": "shadow: record prospective evidence 2026-10-07",
-      "kind": "PROJECT",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "1881a80",
-      "date": "2026-10-08T18:50:18+03:00",
-      "title": "ci: validate prospective observed ETF minute journal in one complete batch",
-      "kind": "FIX",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "9eca263",
-      "date": "2026-10-08T18:49:41+03:00",
-      "title": "research: accumulate immutable prospective observed ETF minute quotes and keep live gate closed",
-      "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     }
   ],
   "recent_summary": [
     {
-      "short_sha": "a72dfbc",
-      "date": "2026-10-09T07:16:53+03:00",
-      "title": "ci: trigger one Shadow run after sealed source handoff repair",
-      "kind": "FIX",
+      "short_sha": "d652ec1",
+      "date": "2026-10-09T23:46:25+03:00",
+      "title": "AWS journal audit: use actual XNYS sessions, not weekdays, for missed-archive checks (#39)",
+      "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "99b8b4b",
-      "date": "2026-10-09T07:16:43+03:00",
-      "title": "ci: restore sealed Shadow handoff and prevent source drift",
-      "kind": "FIX",
+      "short_sha": "fd86b35",
+      "date": "2026-10-09T23:37:58+03:00",
+      "title": "QC order forensics: correct false slippage claim and flag 5 historical quote outliers (#38)",
+      "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "cc710cb",
-      "date": "2026-10-09T00:38:18+03:00",
-      "title": "fix: atomic bounded paper receipt for AWS archive (B6)",
-      "kind": "FIX",
+      "short_sha": "708bd01",
+      "date": "2026-10-09T23:20:15+03:00",
+      "title": "QC: strict same-input observer audit for 7.33 feature export (no false provenance promotion) (#37)",
+      "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     }
   ]

@@ -1,14 +1,14 @@
 {
   "schema_version": 1,
   "kind": "STOCKLENS_WORKBENCH_CANONICAL_EVIDENCE_BUNDLE",
-  "generated_at_utc": "2026-10-09T04:36:22.967351+00:00",
+  "generated_at_utc": "2026-10-10T02:32:09.475751+00:00",
   "model": "StockLens 8.0 FROZEN",
   "self_check": {
     "status": "PASS",
     "errors": [],
     "replay_sessions": 252,
     "transition_count": 67,
-    "manifest_sha256": "15fcf2571d474194c00259f7cd945bd933c7cf86bf11619caaa517cb65c441c5",
+    "manifest_sha256": "160e3b8e95b35943c39d2060f80d517f85ba90d5e76447027c734094a30842e4",
     "automatic_model_change": false
   },
   "evidence_manifest": {
@@ -18,10 +18,10 @@
     "automatic_model_change": false,
     "automatic_promotion": false,
     "artifacts": {
-      "historical_replay/daily_states.csv": "c601739ec082e12b4bd5c44972df153187432e81c6cee41e3db6d038ec92728d",
+      "historical_replay/daily_states.csv": "134426ee68412fcd39fa4b88d1f8556a0f0db7c73ad75cc974141f6bc334a74f",
       "governance/qc_724_leverage_transitions.json": "e2d5851aed6688ae27cb6590a9adfac3ece449818d7ca923d7d011147b3a553e",
       "governance/qc_724_order_golden_master.json": "153edd0a5c8ebeed408b5d3b7d6a79af508c6f3f5ee8ed1868a3a65fc0fe17fb",
-      "governance/qc_724_daily_state_manifest.json": "0b928664b58b26d23000d4e0d1c921c1a91ea5d12f999374a5d4c5d9ab8c1cd9",
+      "governance/qc_724_daily_state_manifest.json": "4a7e0757834866b90ccc14c53bf42123da2e530b01cca8d827f2144d5c5b6256",
       "dashboard_workbench.py": "ca9e12e4cbe5fa6e553d31a4aaa117d7c88f812a91bc50abcbb70975dc1fd078",
       "docs/workbench.html": "fadc3bfb7b6e10a3689a9d18bf244a2c29efc5389fca9527ef55602915516c69"
     },
@@ -31,17 +31,17 @@
       "lean_daily_state": "VERIFIED_FINGERPRINT_RAW_ROWS_MISSING",
       "prospective": "IMMATURE_FUTURE_ONLY"
     },
-    "manifest_sha256": "15fcf2571d474194c00259f7cd945bd933c7cf86bf11619caaa517cb65c441c5"
+    "manifest_sha256": "160e3b8e95b35943c39d2060f80d517f85ba90d5e76447027c734094a30842e4"
   },
   "live": {
-    "asof_date": "2026-10-07",
+    "asof_date": "2026-10-08",
     "action": "NO_CHANGE",
     "level": 3,
     "target_leverage": 3.0
   },
   "replay": {
-    "start": "2025-10-07",
-    "end": "2026-10-07",
+    "start": "2025-10-08",
+    "end": "2026-10-08",
     "sessions": 252,
     "dataset_sha256": "db0889da31af43b1b75e005c1f4ab2cad421dfb55a6c55a77a223e0623950d95"
   },

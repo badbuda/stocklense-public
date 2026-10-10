@@ -1,11 +1,11 @@
 {
-  "status": "WAITING_FOR_RETURN_PATH",
-  "sessions": 1,
-  "stocklens_return": null,
-  "qqq_price_return": null,
-  "excess_return": null,
-  "stocklens_max_drawdown": null,
-  "qqq_max_drawdown": null,
+  "status": "ACTIVE",
+  "sessions": 2,
+  "stocklens_return": 0.013023130490189994,
+  "qqq_price_return": 0.004909216359939572,
+  "excess_return": 0.008113914130250421,
+  "stocklens_max_drawdown": 0.0,
+  "qqq_max_drawdown": 0.0,
   "points": [
     {
       "session_date": "2026-10-08",
@@ -14,6 +14,14 @@
       "daily_excess_return": null,
       "stocklens_index": 1.0,
       "qqq_index": 1.0
+    },
+    {
+      "session_date": "2026-10-09",
+      "stocklens_daily_return": 0.013023130490189994,
+      "qqq_daily_return": 0.004909216359939572,
+      "daily_excess_return": 0.008113914130250421,
+      "stocklens_index": 1.01302313049019,
+      "qqq_index": 1.0049092163599396
     }
   ],
   "benchmark_note": "QQQ close-to-close price return from the paper ledger; dividends are not included."

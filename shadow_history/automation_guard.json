@@ -1,6 +1,6 @@
 {
   "status": "SAFE_PAPER_AUTOMATION",
-  "generated_at_utc": "2026-10-09T04:36:22.339877+00:00",
+  "generated_at_utc": "2026-10-10T02:32:09.066697+00:00",
   "broker_mode": "PAPER",
   "live_trading_enabled": false,
   "checks": {
@@ -11,7 +11,7 @@
     "broker_not_authorized": true
   },
   "execution_required": false,
-  "signal_date": "2026-10-08",
+  "signal_date": "2026-10-09",
   "policy": {
     "reductions": "09:31 ET reference open",
     "additions": "09:32 ET reference open",
@@ -19,7 +19,7 @@
     "slippage_bps": 10.0,
     "whole_shares": true
   },
-  "execution_policy_status": "PAPER_PLAN_READY",
+  "execution_policy_status": "NO_ACTION_REQUIRED",
   "next_action": "PAPER_RECONCILE_ONLY",
   "automatic_catchup": false,
   "claim_boundary": "Operational watchdog only. It cannot authorize live orders or chase missed windows."

@@ -1,5 +1,14 @@
 {
   "status": "BLOCKED_MISSING_IDENTICAL_INPUT_EXPORT",
   "same_input_parity_proven": false,
-  "compared_sessions": 0
+  "same_input_state_match": false,
+  "compared_sessions": 0,
+  "input_validation": {
+    "status": "MISSING",
+    "path": "governance/qc_lean_daily_features.csv",
+    "same_input_parity_ready": false,
+    "source_authenticity_proven": false,
+    "missing": "ORIGINAL LEAN daily feature export"
+  },
+  "claim_boundary": "No partial or malformed input may establish parity."
 }

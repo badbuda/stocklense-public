@@ -1,6 +1,14 @@
 {
-  "status": "WAITING_FOR_RETURN_PATH",
-  "sessions": 1,
-  "by_target_level": {},
+  "status": "ACTIVE",
+  "sessions": 2,
+  "by_target_level": {
+    "3": {
+      "return_sessions": 1,
+      "compounded_return": 0.013023130490189994,
+      "average_daily_return": 0.013023130490189994,
+      "positive_sessions": 1,
+      "negative_sessions": 0
+    }
+  },
   "method": "session equity returns attributed to target_level active for that ledger session; prospective only"
 }

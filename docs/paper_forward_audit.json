@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
   "status": "PROSPECTIVE_PAPER_ACTIVE",
-  "current_signal_date": "2026-10-08",
-  "persisted_signal_date": "2026-10-07",
-  "paper_sessions": 1,
+  "current_signal_date": "2026-10-09",
+  "persisted_signal_date": "2026-10-08",
+  "paper_sessions": 2,
   "explicit_missed_sessions": 0,
   "errors": [],
   "live_trading_authorized": false,

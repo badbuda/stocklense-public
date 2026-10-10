@@ -1,6 +1,6 @@
 {
-  "status": "NO_DATA",
-  "sessions": 1,
+  "status": "DESCRIPTIVE_ONLY",
+  "sessions": 2,
   "performance_comparison_allowed": false,
   "risk_comparison_allowed": false,
   "strong_live_claims_allowed": false,

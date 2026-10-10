@@ -8,8 +8,8 @@
   "paper_status": "ACTIVE",
   "drift": {
     "qqq_weight": 0.0,
-    "tqqq_weight": 0.0005829717253172939,
-    "max_abs_weight_drift": 0.0005829717253172939
+    "tqqq_weight": 0.0007683128442422804,
+    "max_abs_weight_drift": 0.0007683128442422804
   },
   "rebalance_required": false
 }

@@ -1,6 +1,6 @@
 {
   "status": "ACTIVE_VERIFIED",
-  "sessions": 1,
+  "sessions": 2,
   "trade_count": 1,
   "execution_audit_status": "PASS",
   "costs_reconciled_to_trades": true,

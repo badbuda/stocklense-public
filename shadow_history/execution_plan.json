@@ -1,6 +1,6 @@
 {
   "status": "PLAN_READY",
-  "signal_date": "2026-10-08",
+  "signal_date": "2026-10-09",
   "signal_action": "NO_CHANGE",
   "bootstrap": false,
   "execution_required": false,
@@ -11,7 +11,7 @@
     "qqq_weight": 0.0,
     "tqqq_weight": 0.985
   },
-  "prior_paper_session": "2026-10-08",
+  "prior_paper_session": "2026-10-09",
   "policy": {
     "reductions": "09:31 ET reference open",
     "additions": "09:32 ET reference open",

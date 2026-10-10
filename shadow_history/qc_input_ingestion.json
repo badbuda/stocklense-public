@@ -2,5 +2,6 @@
   "status": "MISSING",
   "path": "governance/qc_lean_daily_features.csv",
   "same_input_parity_ready": false,
-  "missing": "LEAN daily feature export"
+  "source_authenticity_proven": false,
+  "missing": "ORIGINAL LEAN daily feature export"
 }

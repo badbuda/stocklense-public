@@ -1,9 +1,9 @@
 {
   "status": "PASS",
-  "observed_sessions": 4190,
-  "expected_exchange_sessions": 4190,
+  "observed_sessions": 4191,
+  "expected_exchange_sessions": 4191,
   "first_date": "2010-02-11",
-  "last_date": "2026-10-08",
+  "last_date": "2026-10-09",
   "missing_sessions": [],
   "unexpected_sessions": [],
   "bad_rows": [],
@@ -15,13 +15,13 @@
   "broker_fills_verified": false,
   "schema_version": 1,
   "kind": "OBSERVED_ETF_XNYS_CALENDAR_AND_PRICE_COHORT",
-  "source_sha256": "c38e34ecca72a5e9d36a8526122299c44a883687371f78ce8d2a9fb09f229229",
+  "source_sha256": "42e5313f4b8452f05dfb9dfe27be53742c3e8a8ed1b01d59c8368bd2bf6965d1",
   "period": {
     "start": "2010-02-11",
-    "end": "2026-10-08",
-    "sessions": 4190
+    "end": "2026-10-09",
+    "sessions": 4191
   },
   "source": "DERIVED_YAHOO_ADJUSTED_DAILY_ETF_PRICE_SNAPSHOT",
-  "audited_at_utc": "2026-10-09T04:18:09.156079+00:00",
+  "audited_at_utc": "2026-10-10T02:22:08.296202+00:00",
   "warning": "Cohort completeness and format only. Independent provider, true point-in-time availability, corporate actions, 09:31/09:32 fills and broker order reconciliation remain unverified."
 }

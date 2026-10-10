@@ -1,12 +1,12 @@
 {
   "status": "ACTIVE",
-  "sessions": 1,
+  "sessions": 2,
   "current_leverage": 3.0,
   "average_target_leverage": 3.0,
   "max_observed_target_leverage": 3.0,
   "max_drawdown": -0.02572036839184133,
-  "current_drawdown": -0.02572036839184133,
-  "sessions_at_3x": 1,
+  "current_drawdown": -0.01303219761547414,
+  "sessions_at_3x": 2,
   "sessions_at_2x": 0,
   "sessions_below_2x": 0
 }

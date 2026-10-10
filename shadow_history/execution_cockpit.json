@@ -9,53 +9,22 @@
   },
   "target_positions": {
     "QQQ": 0,
-    "TQQQ": 1196
+    "TQQQ": 1197
   },
   "reference_prices": {
-    "QQQ": 747.5800170898438,
-    "TQQQ": 80.22000122070312
+    "QQQ": 751.27001953125,
+    "TQQQ": 81.27999877929688
   },
-  "orders": [
-    {
-      "session": "2026-10-09",
-      "symbol": "TQQQ",
-      "side": "SELL",
-      "quantity": 1,
-      "reason": "TARGET_REBALANCE",
-      "target_leverage": 3.0,
-      "idempotency_key": "2e0a50bdb4fcef5166a28a4d04c4f8b909ce2a3a8b13fedb9b35e35050c32a72",
-      "status": "PLANNED",
-      "dry_run": true
-    }
-  ],
+  "orders": [],
   "order_state": {
     "schema_version": 1,
-    "status": "ACTIVE",
+    "status": "NO_ORDERS",
     "live_submission_authorized": false,
-    "orders": [
-      {
-        "order_id": "38879405ddaca59d6eed",
-        "idempotency_key": "2e0a50bdb4fcef5166a28a4d04c4f8b909ce2a3a8b13fedb9b35e35050c32a72",
-        "session": "2026-10-09",
-        "symbol": "TQQQ",
-        "side": "SELL",
-        "quantity": 1,
-        "status": "PLANNED",
-        "broker_order_id": null,
-        "filled_quantity": 0
-      }
-    ]
+    "orders": []
   },
   "target_gap": {
-    "status": "MISMATCH",
-    "differences": [
-      {
-        "symbol": "TQQQ",
-        "expected": 1196,
-        "actual": 1197,
-        "delta": 1
-      }
-    ],
+    "status": "MATCH",
+    "differences": [],
     "live_gate_eligible": false,
     "semantics": "PRE_EXECUTION_TARGET_GAP_NOT_BROKER_RECONCILIATION"
   },
@@ -65,27 +34,12 @@
     "differences": [],
     "live_gate_eligible": false
   },
-  "execution_windows": {
-    "sell": {
-      "status": "UPCOMING",
-      "seconds_to_window": 32077,
-      "session": "2026-10-09",
-      "side": "SELL",
-      "time_et": "2026-10-09T09:31:00-04:00",
-      "time_utc": "2026-10-09T13:31:00+00:00",
-      "market_timezone": "America/New_York",
-      "calendar": "XNYS"
-    }
-  },
+  "execution_windows": {},
   "execution_window": {
-    "status": "UPCOMING",
-    "seconds_to_window": 32077,
-    "session": "2026-10-09",
-    "side": "SELL",
-    "time_et": "2026-10-09T09:31:00-04:00",
-    "time_utc": "2026-10-09T13:31:00+00:00",
-    "market_timezone": "America/New_York",
-    "calendar": "XNYS"
+    "status": "NO_ORDERS",
+    "windows": {}
   },
+  "no_change_tolerance_applied": true,
+  "pretrade_target_weight_gap": 0.0007683128442422804,
   "note": "Dry-run plan only. No live broker order is submitted."
 }

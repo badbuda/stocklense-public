@@ -1,18 +1,19 @@
 {
   "status": "ACTIVE",
-  "sessions": 1,
-  "start_equity": 97427.96316081587,
-  "current_equity": 97427.96316081587,
-  "cumulative_return": 0.0,
-  "peak_equity": 97427.96316081587,
+  "sessions": 2,
+  "start_equity": 100000.0,
+  "current_equity": 98696.78023845259,
+  "cumulative_return": -0.01303219761547414,
+  "peak_equity": 100000.0,
   "max_drawdown": -0.02572036839184133,
   "annualized_volatility": null,
   "cumulative_fees": 19.715132633546446,
   "cumulative_slippage_cost": 98.47718598174681,
   "trade_count": 1,
-  "total_return_pct": 0.0,
+  "total_return_pct": -1.303219761547414,
   "max_drawdown_pct": -2.572036839184133,
   "annualized_volatility_pct": null,
-  "fee_drag_pct": 0.020235599712789223,
-  "slippage_drag_pct": 0.10107692164230005
+  "fee_drag_pct": 0.019715132633546448,
+  "slippage_drag_pct": 0.0984771859817468,
+  "return_basis": "PAPER_STATE_INITIAL_EQUITY"
 }

@@ -14,7 +14,7 @@
   "anomaly_status": "CLEAR",
   "artifact_integrity_status": "PASS",
   "integrity_evidence_phase": "POST_READINESS_VALIDATION",
-  "signal_date": "2026-10-08",
+  "signal_date": "2026-10-09",
   "action": "NO_CHANGE",
   "execution_required": false,
   "execution_note": "No exposure change required.",

@@ -7,31 +7,13 @@
     "TQQQ"
   ],
   "market_dates": [
-    "2026-10-02",
     "2026-10-05",
     "2026-10-06",
     "2026-10-07",
     "2026-10-08"
   ],
-  "sessions": 5,
+  "sessions": 4,
   "samples": [
-    {
-      "date": "2026-10-02",
-      "QQQ": {
-        "minute_0930_open": 751.3099975585938,
-        "minute_0931_open": 750.010009765625,
-        "minute_0932_open": 749.239990234375,
-        "sell_0931_minus_0930_bps": -17.30294814647926,
-        "buy_0932_minus_0930_bps": -27.55197363199402
-      },
-      "TQQQ": {
-        "minute_0930_open": 81.61119842529297,
-        "minute_0931_open": 81.17870330810547,
-        "minute_0932_open": 80.91999816894531,
-        "sell_0931_minus_0930_bps": -52.994579853328226,
-        "buy_0932_minus_0930_bps": -84.69429069594914
-      }
-    },
     {
       "date": "2026-10-05",
       "QQQ": {
@@ -101,37 +83,42 @@
       }
     }
   ],
-  "excluded": [],
+  "excluded": [
+    {
+      "date": "2026-10-09",
+      "reason": "CURRENT_OR_FUTURE_SESSION_UNVERIFIED"
+    }
+  ],
   "statistics": {
     "QQQ": {
       "sell_0931_minus_0930_bps": {
-        "count": 5,
-        "mean_bps": -0.916112852993534,
-        "worst_absolute_bps": 17.30294814647926,
-        "min_bps": -17.30294814647926,
+        "count": 4,
+        "mean_bps": 3.1805959703778974,
+        "worst_absolute_bps": 11.834018461422957,
+        "min_bps": -2.295065988611178,
         "max_bps": 11.834018461422957
       },
       "buy_0932_minus_0930_bps": {
-        "count": 5,
-        "mean_bps": -1.5320517700558867,
-        "worst_absolute_bps": 27.55197363199402,
-        "min_bps": -27.55197363199402,
+        "count": 4,
+        "mean_bps": 4.972928695428647,
+        "worst_absolute_bps": 17.500751597250286,
+        "min_bps": -3.2871381810650746,
         "max_bps": 17.500751597250286
       }
     },
     "TQQQ": {
       "sell_0931_minus_0930_bps": {
-        "count": 5,
-        "mean_bps": 0.6033501408944101,
-        "worst_absolute_bps": 52.994579853328226,
-        "min_bps": -52.994579853328226,
+        "count": 4,
+        "mean_bps": 14.00283263945007,
+        "worst_absolute_bps": 39.03499260479393,
+        "min_bps": -5.465918082402377,
         "max_bps": 39.03499260479393
       },
       "buy_0932_minus_0930_bps": {
-        "count": 5,
-        "mean_bps": -4.823499959967225,
-        "worst_absolute_bps": 84.69429069594914,
-        "min_bps": -84.69429069594914,
+        "count": 4,
+        "mean_bps": 15.144197724028253,
+        "worst_absolute_bps": 50.02764129905968,
+        "min_bps": -8.280067904679056,
         "max_bps": 50.02764129905968
       }
     }

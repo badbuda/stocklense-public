@@ -1,7 +1,7 @@
 {
   "status": "ACTIVE",
-  "current_drawdown": -0.02572036839184133,
+  "current_drawdown": -0.01303219761547414,
   "worst_drawdown": -0.02572036839184133,
-  "distance_to_frozen_qc_maxdd": 0.4711796316081587,
+  "distance_to_frozen_qc_maxdd": 0.48386780238452587,
   "qc_historical_max_drawdown": -0.4969
 }

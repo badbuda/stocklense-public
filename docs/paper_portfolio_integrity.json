@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
   "status": "PASS_MODELLED_PAPER_ACCOUNTING_NOT_BROKER_FILLS",
-  "verified_paper_sessions": 1,
-  "latest_session": "2026-10-08",
+  "verified_paper_sessions": 2,
+  "latest_session": "2026-10-09",
   "modeled_trades": 1,
-  "equity": 97427.96316081587,
+  "equity": 98696.78023845259,
   "errors": [],
   "data_source": "YFINANCE_1M_RAW",
   "broker_fills_observed": false,
