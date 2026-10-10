@@ -142,6 +142,37 @@ jobs:
             research/reports/news_pit_event_study.md
           if-no-files-found: warn
           retention-days: 30
+      - name: One registered batch — five observed ETF risk challengers and cash sensitivity
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          python observed_etf_four_challengers_batch.py
+          test -s research/results/four_challengers_cash_and_event_samples.json
+          test -s research/reports/four_challengers_cash_and_event_samples.md
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          o=json.loads(Path('research/results/four_challengers_cash_and_event_samples.json').read_text())
+          assert o['frozen_daily_ledger_parity'] is True
+          assert o['predeclared_multiplicity'] == 5
+          assert o['capital_deployment_authorized'] is False
+          assert o['frozen_stocklens8_changed'] is False
+          assert o['synthetic_TQQQ_returns_used'] is False
+          assert o['automatic_promotion'] is False
+          s=json.loads(Path('research/samples/official_release_2022_not_pit.json').read_text())
+          assert s['eligible_historical_events'] == 0
+          assert all(e['first_seen_proven'] is False for e in s['samples'])
+          PY
+      - name: Preserve multi-challenger batch research without promotion
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stocklens-fixed-challengers-and-cash
+          path: |
+            research/results/four_challengers_cash_and_event_samples.json
+            research/reports/four_challengers_cash_and_event_samples.md
+          if-no-files-found: warn
+          retention-days: 30
       - name: Static dashboard document integrity
         env:
           PYTHONPATH: ${{ github.workspace }}
