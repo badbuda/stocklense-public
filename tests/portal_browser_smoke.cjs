@@ -29,10 +29,22 @@ try{
  assert.match(await page.locator('#kpi-nav').textContent(),/^\$/);
  assert.match(await page.locator('#readiness-clarity').textContent(),/אין אישור למסחר אמיתי/);
  const governance=await page.evaluate(async()=>{
-   const d=await (await fetch('data.json')).json();
+   const [d,h,r]=await Promise.all([
+     fetch('data.json',{cache:'no-store'}).then(x=>x.json()),
+     fetch('portal-history.json',{cache:'no-store'}).then(x=>x.json()),
+     fetch('observed_tqqq_risk_audit.json',{cache:'no-store'}).then(x=>x.json())
+   ]);
    return {paper:d.paper.sessions,research:d.capital_readiness.prospective_completed_sessions,
-     cum:d.paper.latest.cumulative_return,technical:d.capital_readiness.technical_checks_pass};
+     cum:d.paper.latest.cumulative_return,technical:d.capital_readiness.technical_checks_pass,
+     signalSession:d.signal.asof_date,paperSession:d.paper.latest.session_date,
+     historySession:h.updated_session,riskSession:r.period.end};
  });
+ assert.ok(governance.signalSession,'No published signal session');
+ assert.equal(governance.paperSession,governance.signalSession,'Paper is stale versus published signal');
+ assert.equal(governance.historySession,governance.signalSession,'Historical ETF feed is stale');
+ assert.equal(governance.riskSession,governance.signalSession,'Risk cohort is stale');
+ assert.match(await page.locator('#health-list').textContent(),/תאריך נתוני האתר/);
+ assert.match(await page.locator('#health-list').textContent(),/מאומת · /);
  assert.equal((await page.locator('#real-paper-sessions').textContent()).trim(),
    new Intl.NumberFormat('en-US').format(governance.paper));
  assert.equal((await page.locator('#research-session-count').textContent()).trim(),
