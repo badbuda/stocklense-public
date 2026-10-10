@@ -106,7 +106,8 @@ def test_original_execution_changed_would_block_all_portfolio_provenance(case,mo
 def test_trailing_portfolio_observation_never_silently_truncated(case):
     original,rerun,chart=case
     for field in m.RAW_PLOTS:
-        chart["charts"][m.CHART]["series"][field]["values"].append([ts("2009-10-05"),1.])
+        chart["charts"][m.CHART]["series"][field]["values"].extend(
+            [[ts("2009-10-05"),1.],[ts("2009-10-06"),1.]])
     rerun.write_text(json.dumps(chart))
     with pytest.raises(ValueError,match="LEAN_P1_INCOMPLETE_EXACT_DAILY_SERIES"):
         m.project(original,rerun)
