@@ -67,3 +67,37 @@ def test_session_sequence_and_chain(tmp_path):
     assert len(rows) == 2
     assert rows[1]["prior_row_sha256"] == rows[0]["row_sha256"]
     assert verify(rows) == rows[-1]["row_sha256"]
+
+
+def test_new_rows_correctly_mark_minute_open_not_bid_ask(tmp_path):
+    journal=tmp_path/"journal.jsonl"
+    result=collect(PRICES, now=datetime(2026, 10, 8, 18, 1, tzinfo=NY), journal=journal)
+    row=read_rows(journal)[0]
+    assert set(row["minute_open_prices"])=={"QQQ","TQQQ"}
+    assert row["price_semantics"]=="YAHOO_1MIN_BAR_OPEN_NOT_BID_ASK"
+    assert "quotes" not in row
+    assert result["bid_ask_quotes_observed"] is False
+    assert result["legacy_quote_field_rows"]==0
+
+
+def test_legacy_journal_sha_retained_then_new_row_chained(tmp_path):
+    from pathlib import Path
+    source=Path("research/prospective/observed_intraday_etf_journal.jsonl")
+    old=read_rows(source)
+    assert len(old)>=1
+    assert "quotes" in old[0] and "minute_open_prices" not in old[0]
+    journal=tmp_path/"journal.jsonl"
+    journal.write_bytes(source.read_bytes())
+    first_hash=old[-1]["row_sha256"]
+    assert read_rows(journal)[-1]["row_sha256"]==first_hash
+    last=old[-1]["session_date"]
+    from datetime import date, timedelta
+    next_day=(date.fromisoformat(last)+timedelta(days=1)).isoformat()
+    data={s:{next_day:PRICES[s][SESSION]} for s in ("QQQ","TQQQ")}
+    at=datetime.combine(date.fromisoformat(next_day),datetime.min.time(),tzinfo=NY).replace(hour=18,minute=1)
+    result=collect(data,now=at,journal=journal)
+    rows=read_rows(journal)
+    assert result["status"]=="CAPTURED_NEW_VERIFIED_SESSION"
+    assert rows[-1]["prior_row_sha256"]==first_hash
+    assert "quotes" in rows[0] and "minute_open_prices" in rows[-1]
+    assert verify(rows)==rows[-1]["row_sha256"]
