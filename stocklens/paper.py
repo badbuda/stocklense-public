@@ -8,6 +8,7 @@ from typing import Any
 from zoneinfo import ZoneInfo
 
 import pandas as pd
+from paper_rebalance_math import target_shares, weight_gap, within_band
 
 NY_TZ = ZoneInfo("America/New_York")
 SYMBOLS = ("QQQ", "TQQQ")
@@ -104,10 +105,26 @@ def _bar_open(df: pd.DataFrame, session: str, hour: int, minute: int, symbol: st
 
 
 def _eod_close(df: pd.DataFrame, session: str, symbol: str) -> float:
+    # No fabricated day-end close from a truncated intraday vendor response.
+    # XNYS close time handles real half-days (e.g., Thanksgiving Friday).
+    import exchange_calendars as xcals
     d = date.fromisoformat(session)
-    day = df[df.index.date == d]
-    if len(day) < 100:
-        raise PaperIntegrityError(f"TOO_FEW_MINUTE_BARS:{symbol}:{session}:{len(day)}")
+    cal = xcals.get_calendar("XNYS")
+    if not cal.is_session(session):
+        raise PaperIntegrityError(f"NON_XNYS_PAPER_SESSION:{symbol}:{session}")
+    expected_open = cal.session_open(session).tz_convert(NY_TZ)
+    expected_close = cal.session_close(session).tz_convert(NY_TZ)
+    expected_bars = int((expected_close - expected_open).total_seconds() // 60)
+    day = df[df.index.date == d].sort_index()
+    if day.index.has_duplicates:
+        raise PaperIntegrityError(f"DUPLICATE_MINUTE_BARS:{symbol}:{session}")
+    if len(day) < expected_bars - 5:
+        raise PaperIntegrityError(
+            f"TOO_FEW_MINUTE_BARS:{symbol}:{session}:{len(day)}:required={expected_bars-5}"
+        )
+    # Last regular minute opens at 15:59 ET on normal sessions, 12:59 on half-days.
+    if day.empty or day.index[-1] < expected_close - pd.Timedelta(minutes=2):
+        raise PaperIntegrityError(f"MISSING_NEAR_SESSION_CLOSE:{symbol}:{session}")
     value = float(day.iloc[-1]["Close"])
     if not _positive(value):
         raise PaperIntegrityError(f"INVALID_EOD_CLOSE:{symbol}:{session}")
@@ -278,14 +295,13 @@ def rebalance_if_required(
     equity31 = _portfolio_value(state, market.prices_0931)
     if not math.isfinite(equity31) or equity31 <= 0:
         raise PaperIntegrityError("INVALID_PAPER_EQUITY_BEFORE_REBALANCE")
-    gap31 = max(abs(int(state["shares"][s]) * float(market.prices_0931[s]) / equity31 - weights[s])
-                for s in SYMBOLS)
-    # Avoid repeated whole-share churn when actual ETF weights are within 50bp.
-    if not bootstrap and signal_report.get("action") == "NO_CHANGE" and gap31 <= 0.005:
+    # Shared with cockpit; paper supplies executable-time modeled bar OPENs.
+    # 09:31 reductions and 09:32 additions always use separate point-in-time prices.
+    if not bootstrap and signal_report.get("action") == "NO_CHANGE" and within_band(
+        state["shares"], weights, market.prices_0931, equity31
+    ):
         return []
-    desired31 = {
-        s: int(math.floor(weights[s] * equity31 / market.prices_0931[s])) for s in SYMBOLS
-    }
+    desired31 = target_shares(weights, equity31, market.prices_0931)
     for s in SYMBOLS:
         excess = int(state["shares"][s]) - desired31[s]
         if excess > 0:
@@ -294,9 +310,7 @@ def rebalance_if_required(
                 trades.append(tr)
 
     equity32 = _portfolio_value(state, market.prices_0932)
-    desired32 = {
-        s: int(math.floor(weights[s] * equity32 / market.prices_0932[s])) for s in SYMBOLS
-    }
+    desired32 = target_shares(weights, equity32, market.prices_0932)
     for s in SYMBOLS:
         shortage = desired32[s] - int(state["shares"][s])
         if shortage > 0:
@@ -326,8 +340,7 @@ def mark_session(
     latest = signal_report["latest"]
     tracking_weights = {"QQQ": float(latest["qqq_weight"]), "TQQQ": float(latest["tqqq_weight"])}
     equity32 = _portfolio_value(state, market.prices_0932)
-    gap32 = max(abs(int(state["shares"][s]) * float(market.prices_0932[s]) / equity32 - tracking_weights[s])
-                for s in SYMBOLS)
+    gap32 = weight_gap(state["shares"], tracking_weights, market.prices_0932, equity32)
     one_share_band = max(float(x) for x in market.prices_0932.values()) / equity32
     if gap32 > max(0.01, one_share_band + 0.005):
         raise PaperIntegrityError(f"PAPER_POST_REBALANCE_TARGET_MISMATCH:{market.session_date}:{gap32:.8f}")

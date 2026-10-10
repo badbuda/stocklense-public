@@ -53,3 +53,44 @@ def test_second_session_cash_conservation():
     assert evaluate([a,nxt],[b],{**SNAP,"2026-10-08":s})["status"]=="PASS_MODELLED_PAPER_ACCOUNTING_NOT_BROKER_FILLS"
     nxt["cash"]=str(float(nxt["cash"])+50)
     assert "CASH_CONSERVATION_INVALID:2026-10-09" in evaluate([a,nxt],[b],{**SNAP,"2026-10-08":s})["errors"]
+
+
+def test_inception_cash_mutation_detected_even_when_nav_self_consistent():
+    row, trade=sample()
+    row["cash"]=str(float(row["cash"])+1000)
+    row["equity"]=str(float(row["equity"])+1000)
+    row["cumulative_return"]=str(float(row["equity"])/100000-1)
+    out=evaluate([row],[trade],SNAP)
+    assert "INCEPTION_CASH_INVALID:"+DAY in out["errors"]
+    assert out["status"]=="FAIL"
+
+
+def test_fabricated_inception_inventory_detected_even_when_nav_self_consistent():
+    row, trade=sample()
+    row["qqq_shares"]="1"
+    row["equity"]=str(float(row["equity"])+700)
+    row["cumulative_return"]=str(float(row["equity"])/100000-1)
+    out=evaluate([row],[trade],SNAP)
+    assert "INCEPTION_SHARES_INVALID:"+DAY in out["errors"]
+
+
+def test_ledger_accounting_pass_does_not_imply_independent_vendor_prices():
+    row,trade=sample()
+    out=evaluate([row],[trade],SNAP)
+    assert out["inception_cash_and_holdings_replayed"] is True
+    assert out["quote_bid_ask_proven"] is False
+    assert out["independent_vendor_close_proven"] is False
+
+
+def test_second_session_unmatched_inventory_fails():
+    row,trade=sample()
+    signal={"generated_at_utc":"2026-10-09T00:00:00+00:00",
+            "mode":"SHADOW_ONLY_NO_BROKER_ACTIONS",
+            "latest":{"asof_date":"2026-10-08","qqq_weight":0.,
+                      "tqqq_weight":.985,"target_leverage":3.}}
+    next_row={**row,"session_date":"2026-10-09","signal_date":"2026-10-08",
+              "trade_count_session":"0","turnover_notional":"0","tqqq_shares":"986"}
+    next_row["equity"]=str(float(next_row["cash"])+986*float(next_row["tqqq_close"]))
+    next_row["cumulative_return"]=str(float(next_row["equity"])/100000-1)
+    out=evaluate([row,next_row],[trade],{**SNAP,"2026-10-08":signal})
+    assert "SHARES_CONSERVATION_INVALID:2026-10-09" in out["errors"]

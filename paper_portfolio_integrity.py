@@ -32,6 +32,10 @@ def evaluate(ledger,trades,snapshots):
         if day not in by_date: errors.append("ORPHAN_TRADE:"+day)
         else: by_date[day].append(trade)
     cumulative_fees=cumulative_slip=0.
+    # Independently reconstruct the full paper account from 100k inception,
+    # not merely compare closing NAV against the reported holdings.
+    replay_cash=100000.0
+    replay_shares={symbol:0 for symbol in SYMBOLS}
     prior=None
     equity=None
     for row in ledger:
@@ -85,7 +89,21 @@ def evaluate(ledger,trades,snapshots):
                     errors.append("INVALID_TRADE_FEE_NOTIONAL:"+day)
                 if not near(model_slip,abs(fill-ref)*qty,1e-6):
                     errors.append("INVALID_TRADE_SLIPPAGE:"+day)
+                # Independently replay cash, trade fees and whole-share inventory.
+                if side=="BUY":
+                    replay_cash-=gross+fee
+                    replay_shares[symbol]+=qty
+                else:
+                    if qty>replay_shares[symbol]:
+                        errors.append("REPLAY_SELL_EXCEEDS_HOLDINGS:"+day)
+                    replay_cash+=gross-fee
+                    replay_shares[symbol]-=qty
                 turnover+=gross;fees+=fee;slip+=model_slip
+            replay_cash+=numeric(row,"dividends_credited_session")
+            if not near(replay_cash,cash):
+                errors.append(("CASH_CONSERVATION_INVALID:" if prior else "INCEPTION_CASH_INVALID:")+day)
+            if replay_shares!=shares:
+                errors.append(("SHARES_CONSERVATION_INVALID:" if prior else "INCEPTION_SHARES_INVALID:")+day)
             if len(by_date[day])!=int(row["trade_count_session"]): errors.append("TRADE_COUNT_INVALID:"+day)
             if not near(turnover,numeric(row,"turnover_notional")):
                 errors.append("TURNOVER_INVALID:"+day)
@@ -110,7 +128,10 @@ def evaluate(ledger,trades,snapshots):
             "equity":equity if not errors else None,"errors":sorted(set(errors)),
             "data_source":"YFINANCE_1M_RAW",
             "broker_fills_observed":False,"live_trading_authorized":False,
-            "note":"Observed QQQ/TQQQ 1m ETF opens with modeled fees/slippage. NOT actual broker execution."}
+            "inception_cash_and_holdings_replayed":bool(ledger) and not errors,
+            "quote_bid_ask_proven":False,
+            "independent_vendor_close_proven":False,
+            "note":"Cash and share inventory replayed independently from modeled receipts, including inception. Yahoo minute opens are not independently verified broker fills or bid/ask quotes."}
 
 def build(out="docs/paper_portfolio_integrity.json"):
     ledger=csv_rows("paper_portfolio/ledger.csv");trades=csv_rows("paper_portfolio/trades.csv")

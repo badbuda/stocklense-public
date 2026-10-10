@@ -148,8 +148,19 @@ function exposureEvidenceTag(){
 }
 function renderHealth(){
  const d=state.data,sig=d.signal||{},paper=d.paper||{},v=state.history;
+ const quality=d.data_quality||{},margin=quality.sma200_upper_hysteresis_margin_bps;
+ const validMargin=margin!=null&&Number.isFinite(Number(margin));
+ const near=quality.sma200_upper_threshold_within_10bps===true;
  setHtml('health-list',[
   exposureEvidenceTag(),
+  tag('מוכנות סיגנל בלבד','READY בצינור אותות איננו מוכנות להון או לברוקר',
+      d.readiness?.scope==='SHADOW_SIGNAL_PIPELINE_ONLY'?
+          'SHADOW בלבד · מסחר חסום':'לא אומת · מסחר חסום',false),
+  tag('מקור המחירים לדימוי עסקאות','Yahoo: פתיחות נרות דקה; לא bid/ask ולא מילויי ברוקר',
+      '1m BAR OPEN · MODEL',false),
+  tag('קרבה לסף SMA200 העליון','פער מהסף 1.01 × SMA200; פחות מ־10 נקודות בסיס עלול להיות רגיש לספק',
+      validMargin?Number(margin).toFixed(2)+' bps'+(near?' · אזהרה':''):'חסרים נתוני סף',
+      validMargin&&!near),
  tag('סיגנל יומי', 'מבוסס על סגירת QQQ האחרונה שהושלמה',sig.asof_date||'חסר',!!sig.asof_date),
  tag('תיק Paper', 'מספר ימי מסחר שנרשמו ביומן המודל',String(paper.sessions??'אין'),(paper.sessions||0)>0),
  tag('Yahoo / TQQQ היסטורי', 'עדכון לפי ביצוע משוער בשער פתיחה יומי',v?.updated_session||'עדיין לא נבנה תקציר',!!v?.daily?.length),
