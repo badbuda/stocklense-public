@@ -444,3 +444,36 @@ jobs:
             research/reports/SL9-020_20261011_GIT_FIRST_APPEARANCE.md
           if-no-files-found: warn
           retention-days: 30
+
+      - name: One fixed real Cboe VIX3M implied-volatility slope study
+        if: ${{ github.head_ref == 'research/sl9-021-cboe-vix3m-term-structure-20261011' }}
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          python observed_vix3m_term_structure_study.py
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('research/results/sl9_021_vix3m_term_structure.json').read_text())
+          assert r['capital_deployment_authorized'] is False
+          assert r['automatic_promotion'] is False
+          assert r['source_historical_first_seen_proven'] is False
+          if r['status']=='OBSERVED_INDEX_PAST_CLOSE_RESEARCH_ONLY':
+              assert r['frozen_nav_parity_all_cases'] is True
+              assert r['observed_vix3m_prior_sessions']==4190
+              assert r['historical_qqq_tqqq_actual_etf_bars_not_synthetic'] is True
+          else:
+              assert r['status']=='BLOCKED_MISSING_OR_INVALID_OFFICIAL_CBOE_INDEX_DATA'
+              assert 'candidate' not in r
+          PY
+      - name: Archive observed Cboe VIX3M source and research results
+        if: ${{ always() && github.head_ref == 'research/sl9-021-cboe-vix3m-term-structure-20261011' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: stocklens-official-vix3m-one-fixed-term-structure
+          path: |
+            research/private/sl9_021_cboe_vix_vix3m_snapshot.json
+            research/results/sl9_021_vix3m_term_structure.json
+            research/reports/sl9_021_vix3m_term_structure.md
+          if-no-files-found: warn
+          retention-days: 30

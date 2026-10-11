@@ -7,7 +7,7 @@
   "files": {
     ".github/workflows/aws-journal-export.yml": "f5a19164d85c48d9ce6adf243d1907085f2d6ffe",
     ".github/workflows/aws-shadow-journal-audit.yml": "126a216d5a18c5f2bb30bde806007f7c38a36ff8",
-    ".github/workflows/fast-guard.yml": "f7887078315cd68336cff02e9dd5c5a1ac54e990",
+    ".github/workflows/fast-guard.yml": "68553bc46e3806cd39768379004a6537afbe3898",
     ".github/workflows/portal-browser-smoke.yml": "68a5bcbd7d5f790edc611dd4b3fa24f6848458c2",
     ".github/workflows/portal-history-build.yml": "2d731559dde6f3116cc349379190e74417a1ece9",
     ".github/workflows/shadow.yml": "b4db9958876eaa47bbe3f183aa815feb15ab10c0",
@@ -406,6 +406,9 @@
     "prospective_git_capture_forensics.py": "7ec5c6cecf43fe5e9f51eb397234839261d70330",
     "tests/test_prospective_git_capture_forensics.py": "5004f2878a98f3001714d30e83bd67a1e376eb90",
     "research/evidence/SL9-020-GIT-APPEARANCE.json": "cfba600d33e854c27d3bb4735ffdd1e5e83d5c92",
-    "research/predeclarations/SL9-020-FORWARD-GIT-FIRST-VISIBLE.md": "7e092c1141a28cbb3298c6d8ffb9916c4c873226"
+    "research/predeclarations/SL9-020-FORWARD-GIT-FIRST-VISIBLE.md": "7e092c1141a28cbb3298c6d8ffb9916c4c873226",
+    "observed_vix3m_term_structure_study.py": "51a9fce0a3c69b71d1bfb7a3ce3c94f4e4c5c799",
+    "tests/test_observed_vix3m_term_structure_study.py": "056b06aa98a1e64682c21619f994e71e59160a4d",
+    "research/predeclarations/SL9-021-REAL-VIX3M-ONE-FIXED-TERM-STRUCTURE.md": "8c208a45bee23dec768131ec1d2458a43075a81f"
   }
 }
