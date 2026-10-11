@@ -208,7 +208,7 @@
     "prospective_gate.py": "dab3c6df1092e3fd35d2cbbe68a876b8c5f7f7fe",
     "prospective_intraday_price_journal.py": "157f93fe2a6622e6937f968334cef832d173f904",
     "prospective_lineage.py": "00d3179e76a531db8454550507e128c6eb656215",
-    "prospective_maturity.py": "02ffa25c6f3cb6fcb821199143159a2fad9741da",
+    "prospective_maturity.py": "66637019e2f297de03119d468db7e9e271ddb51b",
     "prospective_source_build.py": "343245c208c859a6043f4a015a5b402555de8c3b",
     "prove_or_break.py": "94582aaa5bc2da99d24f0b1dc0db7e6204ba2c57",
     "public_dashboard_feeds.py": "9c6bf0c6a1115c26e48b3d2472439c3881c3a4c2",
@@ -397,6 +397,8 @@
     "tests/test_observed_vix_prior_session_study.py": "1c9409c1489648cdefb9a9d4a4a4310f1ccf927a",
     "research/predeclarations/SL9-016-CBOE-PRIOR-VIX-GUARDS.md": "a3bdd5f4f7a83082f349580ddfbfbbd1b462b4d7",
     "tests/test_prospective_lineage_freshness_guard.py": "87f478622a5fb12ae9bd599c47633f6ea0795504",
-    "research/predeclarations/SL9-017-PROSPECTIVE-LINEAGE-GATE.md": "bb3deabeab5d24aca096c5d83615c8638af2d475"
+    "research/predeclarations/SL9-017-PROSPECTIVE-LINEAGE-GATE.md": "bb3deabeab5d24aca096c5d83615c8638af2d475",
+    "tests/test_prospective_maturity_evidence_guard.py": "86886078bf795151196c1c16f659009e718fde2c",
+    "research/predeclarations/SL9-018-FORWARD-MATURITY-GATE.md": "437d2dc423024c587d09aed4f164220e150e6506"
   }
 }

@@ -14,7 +14,8 @@ def build(registry='research/prospective/registry.json',out='docs/prospective_ma
         source_available=a.get('source_status')=='AVAILABLE'
         definition_current=a.get('definition_matches_registration') is True
         evidence_fingerprint_current=a.get('fingerprint_matches_registration') is True
-        schema_complete=producer_current and source_available and definition_current and accepted_raw is not None and persisted_raw is not None and a.get('gate')==GATE
+        evidence_audit_present=type(a.get('fingerprint_matches_registration')) is bool
+        schema_complete=producer_current and source_available and definition_current and evidence_audit_present and accepted_raw is not None and persisted_raw is not None and a.get('gate')==GATE
         accepted=int(accepted_raw or 0);persisted=int(persisted_raw or 0)
         consistent=schema_complete and accepted==persisted
         audit_fields_present=accepted_raw is not None and persisted_raw is not None and a.get('gate')==GATE
@@ -23,13 +24,14 @@ def build(registry='research/prospective/registry.json',out='docs/prospective_ma
         elif not definition_current:evidence_state='BLOCKED_EXPERIMENT_DEFINITION_DRIFT'
         elif not schema_complete:evidence_state='BLOCKED_INCOMPLETE_INGESTION_AUDIT'
         elif not consistent:evidence_state='BLOCKED_PERSISTENCE_MISMATCH'
+        elif not evidence_fingerprint_current:evidence_state='ATTENTION_PROSPECTIVE_EVIDENCE_FINGERPRINT_DRIFT'
         elif persisted==0:evidence_state='WAITING_FOR_POST_INCEPTION_COMPLETED_XNYS'
         else:evidence_state='ACCUMULATING_FORWARD_EVIDENCE'
         rows.append({'experiment_id':candidate['experiment_id'],'status':candidate['status'],'inception_date':candidate['inception_date'],
           'accepted_completed_xnys_sessions':accepted_raw,'persisted_prospective_sessions':persisted_raw,
-          'definition_current':definition_current,'registered_definition_fingerprint':a.get('registered_definition_fingerprint'),'current_definition_fingerprint':a.get('current_definition_fingerprint'),'evidence_fingerprint_current':evidence_fingerprint_current,'registered_fingerprint':a.get('registered_fingerprint'),'queue_fingerprint':a.get('queue_fingerprint'),'source_status':a.get('source_status','MISSING_AUDIT'),'returns_csv':a.get('returns_csv'),'audit_schema_complete':schema_complete,'persistence_consistent':consistent,'evidence_state':evidence_state,
+          'definition_current':definition_current,'registered_definition_fingerprint':a.get('registered_definition_fingerprint'),'current_definition_fingerprint':a.get('current_definition_fingerprint'),'evidence_fingerprint_current':evidence_fingerprint_current,'evidence_fingerprint_audited':evidence_audit_present,'source_fingerprint_review_required':evidence_audit_present and not evidence_fingerprint_current,'registered_fingerprint':a.get('registered_fingerprint'),'queue_fingerprint':a.get('queue_fingerprint'),'source_status':a.get('source_status','MISSING_AUDIT'),'returns_csv':a.get('returns_csv'),'audit_schema_complete':schema_complete,'persistence_consistent':consistent,'evidence_state':evidence_state,
           'zero_backfill_enforced':a.get('gate')==GATE,'automatic_promotion':False,'threshold_status':'NO_MATURITY_THRESHOLD_INVENTED'})
-    x={'schema_version':5,'producer_git_sha':producer_sha,'current_git_sha':git_sha,'producer_current':producer_current,'registry_updated_at_utc':r.get('updated_at_utc'),'status':'BLOCKED' if any(not row['persistence_consistent'] for row in rows) else 'PASS','experiments':rows,
-       'semantics':'Forward evidence only. Definition lineage is immutable while evidence fingerprints may refresh. Missing ingestion audit fields fail closed; no pre-inception backfill and no maturity threshold is invented by this report.'}
+    x={'schema_version':6,'producer_git_sha':producer_sha,'current_git_sha':git_sha,'producer_current':producer_current,'registry_updated_at_utc':r.get('updated_at_utc'),'status':('BLOCKED' if any(str(row['evidence_state']).startswith('BLOCKED_') for row in rows) else ('ATTENTION' if any(str(row['evidence_state']).startswith('ATTENTION_') for row in rows) else 'PASS')),'experiments':rows,
+       'semantics':'Forward evidence only. Definition lineage is immutable while evidence fingerprints may refresh. Missing audit fields fail closed; unreviewed evidence fingerprints never count as clean prospective maturity. Session date later than inception is not independent proof of original same-day capture. No historical first-seen or forward return edge is claimed.'}
     Path(out).parent.mkdir(parents=True,exist_ok=True);Path(out).write_text(json.dumps(x,indent=2)+'\n');return x
 if __name__=='__main__': print(json.dumps(build(),indent=2))
