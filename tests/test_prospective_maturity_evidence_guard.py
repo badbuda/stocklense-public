@@ -10,7 +10,7 @@ def fixture(tmp_path, monkeypatch, *, same=True, defn=True, evidence_key=True,
             accepted=10, persisted=10):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("GITHUB_SHA", "a" * 40)
-    Path("research/prospective").mkdir(parents=True)
+    Path("research/prospective").mkdir(parents=True,exist_ok=True)
     x={"experiment_id":"SL9-007-UPSHIFT-CONFIRMATION",
        "source_status":"AVAILABLE",
        "accepted_completed_xnys_rows":accepted,

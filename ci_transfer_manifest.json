@@ -398,7 +398,7 @@
     "research/predeclarations/SL9-016-CBOE-PRIOR-VIX-GUARDS.md": "a3bdd5f4f7a83082f349580ddfbfbbd1b462b4d7",
     "tests/test_prospective_lineage_freshness_guard.py": "87f478622a5fb12ae9bd599c47633f6ea0795504",
     "research/predeclarations/SL9-017-PROSPECTIVE-LINEAGE-GATE.md": "bb3deabeab5d24aca096c5d83615c8638af2d475",
-    "tests/test_prospective_maturity_evidence_guard.py": "86886078bf795151196c1c16f659009e718fde2c",
+    "tests/test_prospective_maturity_evidence_guard.py": "820cde6b6245269bc665e7170411d74206a100e7",
     "research/predeclarations/SL9-018-FORWARD-MATURITY-GATE.md": "437d2dc423024c587d09aed4f164220e150e6506"
   }
 }
