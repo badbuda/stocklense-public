@@ -244,7 +244,7 @@
     "recovery_plan.py": "4c632018f09c6b12deb9d339f2e16843c55b0caf",
     "regime_analytics.py": "f7da5bbfc19262a5ee87237b9f4fef29fecb71da",
     "requirements.txt": "7b247aedb5f970730272cfd94d4c7f524eca1b17",
-    "research_data_adapter.py": "26cce468386c02c8250cbb3ed5f5856b7fb0775b",
+    "research_data_adapter.py": "b0f760964f34a45554529e0395ac7eb6263c3837",
     "research_dataset_validate.py": "dd0f86799b90165a2e5f80049494ec6fd26e51f7",
     "research_dataset.py": "afd0fca1ad8e44d9fd7de60ebc124957e6acaad3",
     "research_decision_gate.py": "3686f5779c651e01976caceb3f18d5322ee2a814",
