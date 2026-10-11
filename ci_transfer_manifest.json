@@ -7,7 +7,7 @@
   "files": {
     ".github/workflows/aws-journal-export.yml": "f5a19164d85c48d9ce6adf243d1907085f2d6ffe",
     ".github/workflows/aws-shadow-journal-audit.yml": "126a216d5a18c5f2bb30bde806007f7c38a36ff8",
-    ".github/workflows/fast-guard.yml": "b855db04fcfcb35556aad5e3d18256bb801cd9a4",
+    ".github/workflows/fast-guard.yml": "0e922c876b2e18365e533369deb51ebe3b0309ed",
     ".github/workflows/portal-browser-smoke.yml": "68a5bcbd7d5f790edc611dd4b3fa24f6848458c2",
     ".github/workflows/portal-history-build.yml": "2d731559dde6f3116cc349379190e74417a1ece9",
     ".github/workflows/shadow.yml": "b4db9958876eaa47bbe3f183aa815feb15ab10c0",
@@ -373,6 +373,11 @@
     "workbench_selfcheck.py": "4f17be6d56ac7d3cc3637e1ef2b2af3ed9d880a8",
     "yahoo_eod_scorecard.py": "137465f3ff4d9a2b8c164bf4321480c0ea0869fd",
     "yahoo_long_history.py": "e7e51b5c2f5697da5d583316638b98ec13e6114c",
-    "research/SL9-010_PIT_CAUSAL_CALENDAR_BLOCKERS.md": "b33e6de46b1e9c8a2b71573ff34fc1aad823b346"
+    "research/SL9-010_PIT_CAUSAL_CALENDAR_BLOCKERS.md": "b33e6de46b1e9c8a2b71573ff34fc1aad823b346",
+    "research_cash_rate_broker_proxy.py": "1776047ba678bff2aa05db544989f40f86f9e463",
+    "research_diversified_sleeve_contract.py": "56726ce76f76e1e6b683e816508b4859883e8955",
+    "tests/test_research_cash_rate_broker_proxy.py": "0492dbf350c3ac3e628d00858e5827e79c6a354a",
+    "tests/test_research_diversified_sleeve_contract.py": "0ddcaa52348bb4d36b5761030d3a8163ef1e7308",
+    "research/predeclarations/SL9-011-CASH-RATE-AND-NONNASDAQ-INPUTS.md": "0a57881e7a32a913e1ea71fc03f4990b94ec61b1"
   }
 }

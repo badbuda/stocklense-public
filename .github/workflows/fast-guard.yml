@@ -185,3 +185,33 @@ jobs:
           assert s.count("</html>")==1
           assert s.rstrip().endswith("</html>")
           PY
+
+      - name: Two new distinct economic input gates — historical cash as-of and non-Nasdaq price readiness
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          python research_cash_rate_broker_proxy.py
+          python research_diversified_sleeve_contract.py
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          a=json.loads(Path('research/results/cash_rate_asof_readiness.json').read_text())
+          b=json.loads(Path('research/results/non_nasdaq_sleeve_readiness.json').read_text())
+          assert a['status']=='BLOCKED_NO_HISTORICAL_ASOF_RATE_INPUT'
+          assert b['status']=='BLOCKED_NO_OBSERVED_GLD_TLT_SOURCE'
+          assert a['cash_alpha_proven'] is False and not a['capital_deployment_authorized']
+          assert b['historical_diversification_alpha_proven'] is False
+          assert not b['capital_deployment_authorized']
+          PY
+      - name: Archive independent economic data gates (blocked is an honest result)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stocklens-cash-rate-and-nonnasdaq-readiness
+          path: |
+            research/results/cash_rate_asof_readiness.json
+            research/reports/cash_rate_asof_readiness.md
+            research/results/non_nasdaq_sleeve_readiness.json
+            research/reports/non_nasdaq_sleeve_readiness.md
+          if-no-files-found: warn
+          retention-days: 30
