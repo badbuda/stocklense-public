@@ -7,7 +7,7 @@
   "files": {
     ".github/workflows/aws-journal-export.yml": "f5a19164d85c48d9ce6adf243d1907085f2d6ffe",
     ".github/workflows/aws-shadow-journal-audit.yml": "126a216d5a18c5f2bb30bde806007f7c38a36ff8",
-    ".github/workflows/fast-guard.yml": "dc4cd6ebc932fba563d2f4d3ef522e258e4e553d",
+    ".github/workflows/fast-guard.yml": "ce84d4f4cccbd5268a42deb5d27ed151395022c6",
     ".github/workflows/portal-browser-smoke.yml": "68a5bcbd7d5f790edc611dd4b3fa24f6848458c2",
     ".github/workflows/portal-history-build.yml": "2d731559dde6f3116cc349379190e74417a1ece9",
     ".github/workflows/shadow.yml": "b4db9958876eaa47bbe3f183aa815feb15ab10c0",
@@ -381,6 +381,9 @@
     "research/predeclarations/SL9-011-CASH-RATE-AND-NONNASDAQ-INPUTS.md": "0a57881e7a32a913e1ea71fc03f4990b94ec61b1",
     "observed_source_acquisition.py": "a2ab844765cc433fd02131fa32b98d3c668d483c",
     "tests/test_observed_source_acquisition.py": "7f83266543e236293a7edcac56c1db3f99767aed",
-    "research/predeclarations/SL9-012-OBSERVED-SOURCE-ACQUISITION.md": "04369dc560f92580a1c730cf69fef181cd3044aa"
+    "research/predeclarations/SL9-012-OBSERVED-SOURCE-ACQUISITION.md": "04369dc560f92580a1c730cf69fef181cd3044aa",
+    "observed_nonnasdaq_sleeve_study.py": "1dbd232356d6de276767cc91491431618ec5bcb6",
+    "tests/test_observed_nonnasdaq_sleeve_study.py": "a0e3e853f91d7fef4d9c5ed7950848e39f11f194",
+    "research/predeclarations/SL9-013-FIXED-NONNASDAQ-SLEEVES.md": "5ec9979cc6127c38f4752c21b2b2ddf306d2b5e4"
   }
 }
