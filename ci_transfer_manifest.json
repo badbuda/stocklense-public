@@ -100,7 +100,7 @@
     "drawdown_loss_timing.py": "a919acb7c24adcfec1556af2b49256f91ea79b29",
     "dynamic_overlay_tail_validation.py": "c6da23ecd0ed5810f5233c51d5f9d895391e9523",
     "event_journal.py": "41cdb001bba326e1012f52b9336c39141ce5829f",
-    "evidence_maturity.py": "8d3ab0de8e711d9473ec202af2fac057cff1cb28",
+    "evidence_maturity.py": "b7ee14470a9ec6a98a0d01224f6dfa2b71852441",
     "evidence_retention.py": "3325a9280b184137ada2a439399bb83a87e0a680",
     "evidence_snapshot.py": "f54017937d5d17f09d99838e346f8d2d7ee0eb4d",
     "execution_audit.py": "efb025431db74c4b62e50dcc63e7a660a3c4f7b2",
@@ -119,7 +119,7 @@
     "final_publication_manifest.py": "f5d1ab4e626563957d181aaf43feae0bf7af675d",
     "financed_1_25x_reality_check.py": "9634998c11142d04968fc84df36a6a5ac6e0241d",
     "forward_path.py": "662e0b38a80a8075df3248f48ed7a9149fe4c7c2",
-    "forward_quality.py": "89bfa934c759ae0f2fa60f6e89b0466dd31347de",
+    "forward_quality.py": "0aec6c30aa917b71bd301ad0b7d87c22116f2580",
     "frozen_decision_parity_gate.py": "cc475cb57955788d958eb899e798c2347cdf139e",
     "frozen8_parameter_start_sensitivity.py": "a91fb54ab7e07d535d96e491e91eb08d656d38fd",
     "frozen8_sensitivity.py": "44500a958451f00167d6885dbc1c7fcb05a48a56",
@@ -417,6 +417,8 @@
     "research/predeclarations/SL9-023-STALE-PR-PORT.md": "04296e27afa70a8e6fc6f53fa49711030594c0d1",
     "frozen_forward_evidence_contract.py": "a90508dca6f62b6724380a082c2f50ed3ede6a67",
     "tests/test_frozen_forward_evidence_contract.py": "3a7c22378ab34685b9cb197799aa585f6ab4e841",
-    "research/predeclarations/SL9-024-FORWARD-RECEIPT-CONTRACT.md": "9a50536b24de40ebe197747221a318bbfbec98d7"
+    "research/predeclarations/SL9-024-FORWARD-RECEIPT-CONTRACT.md": "9a50536b24de40ebe197747221a318bbfbec98d7",
+    "tests/test_sl9_025_forward_count_claims.py": "0b06de14944127a35f74ba3aa14d4180f0c4c1c6",
+    "research/predeclarations/SL9-025-ROW-COUNT-NOT-LIVE-PROOF.md": "114976764be18d74c4ad98dd5db7aa69f230a657"
   }
 }

@@ -10,9 +10,9 @@ def build_evidence_maturity(out="shadow_history/evidence_maturity.json"):
     if n<20: stage="BOOTSTRAP"
     elif n<63: stage="EARLY"
     elif n<252: stage="FORMING"
-    else: stage="MATURE"
+    else: stage="ROW_COUNT_252_UNQUALIFIED"
     r={"stage":stage,"prospective_sessions":n,"prospective_signal_sessions":len(signals),"prospective_transitions":transitions,
-       "performance_interpretation_allowed":n>=63,"strong_live_claims_allowed":n>=252,
+       "performance_interpretation_allowed":False,"strong_live_claims_allowed":False,"independently_qualified_frozen8_sessions":0,"legacy_proxy_not_etf":True,
        "warning":"Do not infer live performance quality from a short prospective sample." if n<63 else None,"experiment_id":"SL9-007-UPSHIFT-CONFIRMATION","inception_date":inception.isoformat(),"rejected_pre_inception_or_invalid":len(rejected),"gate":GATE}
     p=Path(out);p.parent.mkdir(parents=True,exist_ok=True);p.write_text(json.dumps(r,indent=2)+"\n");return r
 if __name__=="__main__":print(json.dumps(build_evidence_maturity(),indent=2))
