@@ -52,7 +52,7 @@ def test_self_attested_capture_rejected():
 def test_approximation_source_change_rejected():
     a,e,r=fixture()
     with pytest.raises(ValueError,match="FORWARD_APPROXIMATE_QQQ_LEVERAGE_BASIS_CHANGED"):
-        evaluate(a,e,r,"actual ETF fills","real 3x","yes")
+        evaluate(a,e,r,"actual ETF fills","real 3x")
 
 def test_definition_drift_rejected():
     a,e,r=fixture();r["last_ingestion_audit"][0]["definition_matches_registration"]=False

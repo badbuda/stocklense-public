@@ -404,7 +404,7 @@
     "tests/test_observed_etf_inverse_variance_drag_study.py": "dd7e4f15989ef43439e9ff9b09fea7f4dc6a605d",
     "research/predeclarations/SL9-019-TRUE-INVERSE-VARIANCE-AND-DOWNSIDE.md": "be339dc78f8ad3ae29d706d4cf888a720059a55e",
     "prospective_git_capture_forensics.py": "7ec5c6cecf43fe5e9f51eb397234839261d70330",
-    "tests/test_prospective_git_capture_forensics.py": "eb655605bc04ae5d61c326ea9a1c71d5fe0e9bbe",
+    "tests/test_prospective_git_capture_forensics.py": "5004f2878a98f3001714d30e83bd67a1e376eb90",
     "research/evidence/SL9-020-GIT-APPEARANCE.json": "cfba600d33e854c27d3bb4735ffdd1e5e83d5c92",
     "research/predeclarations/SL9-020-FORWARD-GIT-FIRST-VISIBLE.md": "7e092c1141a28cbb3298c6d8ffb9916c4c873226"
   }
