@@ -325,3 +325,35 @@ jobs:
             research/reports/fixed_sleeve_crisis_diagnostics.md
           if-no-files-found: warn
           retention-days: 30
+
+      - name: Preregistered observed QLD substitution vs immutable frozen 8.0
+        if: ${{ github.head_ref == 'research/sl9-015-qld-real-etf-instrument-substitution-20261011' }}
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          python observed_qld_instrument_substitution.py
+          test -s research/results/qld_instrument_substitution.json
+          test -s research/reports/qld_instrument_substitution.md
+          test -s research/private/observed_qld_2010_2026.json
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          x=json.loads(Path('research/results/qld_instrument_substitution.json').read_text())
+          assert x['parity_all_four_fee_lag_cases'] is True
+          assert x['actual_observed_qld_sessions']==4191
+          assert x['observed_real_qqq_qld_tqqq'] is True
+          assert x['synthetic_tqqq_returns_used'] is False
+          assert x['frozen_8_0_changed'] is False
+          assert x['automatic_promotion'] is False and x['capital_deployment_authorized'] is False
+          PY
+      - name: Archive original observed QLD snapshot and fixed test reports (30 days)
+        if: ${{ always() && github.head_ref == 'research/sl9-015-qld-real-etf-instrument-substitution-20261011' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: stocklens-real-qld-physical-instrument-test
+          path: |
+            research/private/observed_qld_2010_2026.json
+            research/results/qld_instrument_substitution.json
+            research/reports/qld_instrument_substitution.md
+          if-no-files-found: warn
+          retention-days: 30
