@@ -58,12 +58,17 @@ def _run_audit_paper(monkeypatch, *, wrong_key=False, tampered=False, session="2
     monkeypatch.setenv("SESSION",session)
     row={"session_date":"2026-10-08",
          "execution_source":"YFINANCE_1M_RAW",
-         "trade_count_session":1}
-    trades=[{"execution_session":"2026-10-08","symbol":"TQQQ","side":"BUY"}]
+         "trade_count_session":1,
+         "cash":1800.0,"equity":100000.0,
+         "qqq_shares":0,"tqqq_shares":100}
+    trades=[{"execution_session":"2026-10-08","symbol":"TQQQ",
+             "side":"BUY","qty":100,"modeled_fill_price":82.0,
+             "signal_date":"2026-10-07"}]
     # Match the archived Lambda's exact payload schema, including its trs key.
     payload={"row":row,("trades" if wrong_key else "trs"):trades}
     body=json.dumps(payload,sort_keys=True,separators=(",",":"))
-    entry={"broker_orders_authorized":{"BOOL":False},
+    entry={"session_date":{"S":session+"#PAPER"},
+           "broker_orders_authorized":{"BOOL":False},
            "broker_fills_observed":{"BOOL":False},
            "paper_evidence_json":{"S":body},
            "paper_sha256":{"S":hashlib.sha256(body.encode()).hexdigest()}}
@@ -78,26 +83,26 @@ def _run_audit_paper(monkeypatch, *, wrong_key=False, tampered=False, session="2
 
 def test_github_audit_reads_exact_lambda_paper_schema(monkeypatch):
     assert '"trs":mt' in SRC
-    assert 'paper.get("trs")' in W
+    assert 'from aws_journal_export import decode_paper' in W
     assert 'paper["trades"]' not in W
     assert "AWS_PROSPECTIVE_PAPER=PASS_MODELED_ONLY;session=2026-10-08" in _run_audit_paper(monkeypatch)
 
 
 def test_github_audit_rejects_original_trades_key_bug(monkeypatch):
     import pytest
-    with pytest.raises(SystemExit,match="AWS_PAPER_TRADE_COUNT_MISMATCH"):
+    with pytest.raises(SystemExit,match="INVALID_PAPER_TRADE_COUNT"):
         _run_audit_paper(monkeypatch,wrong_key=True)
 
 
 def test_github_audit_rejects_tampered_archive(monkeypatch):
     import pytest
-    with pytest.raises(SystemExit,match="AWS_PAPER_EVIDENCE_TAMPERED"):
+    with pytest.raises(SystemExit,match="PAPER_SHA256_MISMATCH"):
         _run_audit_paper(monkeypatch,tampered=True)
 
 
 def test_github_audit_rejects_another_session(monkeypatch):
     import pytest
-    with pytest.raises(SystemExit,match="AWS_PAPER_DATE_OR_SOURCE_MISMATCH"):
+    with pytest.raises(SystemExit,match="INVALID_PAPER_SESSION_OR_SOURCE"):
         _run_audit_paper(monkeypatch,session="2026-10-07")
 
 
