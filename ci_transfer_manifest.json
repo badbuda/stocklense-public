@@ -415,8 +415,8 @@
     "aws_shadow_journal_verify.py": "8129b4d97622467d139f746fc8e87119fd3ff991",
     "tests/test_aws_shadow_journal_verify.py": "277ad25de75a9785c71ec9250e132dd408435175",
     "research/predeclarations/SL9-023-STALE-PR-PORT.md": "04296e27afa70a8e6fc6f53fa49711030594c0d1",
-    "forward_capture_63_contract.py": "80775d842e07a9c722546722de0011b711b4a4df",
-    "tests/test_forward_capture_63_contract.py": "ddf5866bae0c36c6777246f43aaa95e29efaa925",
+    "forward_capture_63_contract.py": "1474202bbbc9aea5386b472ba36bf2adb1ddee80",
+    "tests/test_forward_capture_63_contract.py": "7e47bfad7286117024ccdd7b9d6d194141cb207c",
     "research/predeclarations/SL9-024-FROZEN8-63-PILOT.json": "0f67b699c8e9c34f1f3ffd1aae37da047fa7789d",
     "research/predeclarations/SL9-024-EXTERNAL-RECEIPT-BOUNDARY.md": "7063c7671bdba336094d0bd0279efa21c1f318db"
   }

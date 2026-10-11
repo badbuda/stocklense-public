@@ -61,9 +61,9 @@ def check(records, prereg, *, expected_through=None):
             raise ValueError("FORWARD_UNDECLARED_SESSION_STATUS")
         if record.get("prior_record_sha256")!=prev:
             raise ValueError("FORWARD_HASH_CHAIN_BROKEN")
-        if any(record.get(k) is True for k in ("broker_orders_authorized","broker_fills_observed","synthetic_etf_prices_used","independent_vendor_receipt_proven")):
+        if any(record.get(k) is not False for k in ("broker_orders_authorized","broker_fills_observed","synthetic_etf_prices_used","independent_vendor_receipt_proven")):
             raise ValueError("FORWARD_UNSUPPORTED_EXTERNAL_EVIDENCE_CLAIM")
-        _clock(record.get("recorded_at_utc"))
+        recorded_at = _clock(record.get("recorded_at_utc"))
         if state=="COMPLETE":
             signal=record.get("signal")
             market=record.get("market")
@@ -74,7 +74,10 @@ def check(records, prereg, *, expected_through=None):
             if signal.get("asof_date","")>=day:
                 raise ValueError("FORWARD_SIGNAL_LOOKAHEAD")
             open_ny=datetime.combine(parsed,time(9,30),tzinfo=NY).astimezone(timezone.utc)
-            if _clock(signal.get("created_at_utc"))>=open_ny:
+            generated_at = _clock(signal.get("created_at_utc"))
+            if generated_at>recorded_at:
+                raise ValueError("FORWARD_RECORD_PREDATES_SIGNAL")
+            if generated_at>=open_ny:
                 raise ValueError("FORWARD_SIGNAL_AFTER_MARKET_OPEN")
             if market.get("source_kind")!="OBSERVED_ACTUAL_QQQ_TQQQ_ETF" or market.get("synthetic_etf") is not False:
                 raise ValueError("FORWARD_NOT_REAL_ETF_PRICE_PATH")
@@ -87,7 +90,7 @@ def check(records, prereg, *, expected_through=None):
                 raise ValueError("FORWARD_NAV_INVALID")
             complete+=1
         else:
-            if record.get("signal") is not None or record.get("nav_usd") is not None:
+            if record.get("signal") is not None or record.get("nav_usd") is not None or record.get("market") is not None:
                 raise ValueError("FORWARD_MISSED_SESSION_CANNOT_HAVE_FILL_OR_NAV")
             if not isinstance(record.get("miss_reason"),str) or not record["miss_reason"]:
                 raise ValueError("FORWARD_MISSED_REASON_REQUIRED")
@@ -125,7 +128,7 @@ def build():
     p=json.loads(PREREG.read_text())
     result=check([],p)
     OUT.parent.mkdir(parents=True,exist_ok=True)
-    OUT.write_text(json.dumps(result,indent=2,sort_keys=True)+"\\n")
+    OUT.write_text(json.dumps(result,indent=2,sort_keys=True)+"\n")
     print("STOCKLENS_FROZEN8_FORWARD_CONTRACT="+json.dumps(result,sort_keys=True))
     return result
 

@@ -72,3 +72,18 @@ def test_forged_independent_receipt_flag_refused():
     r["record_sha256"]=sha256({k:v for k,v in r.items() if k!="record_sha256"})
     with pytest.raises(ValueError,match="FORWARD_UNSUPPORTED_EXTERNAL_EVIDENCE_CLAIM"):
         check([r],prereg())
+
+def test_missing_security_flags_are_not_assumed_false():
+    row=first()
+    del row["independent_vendor_receipt_proven"]
+    row["record_sha256"]=sha256({k:v for k,v in row.items() if k!="record_sha256"})
+    with pytest.raises(ValueError,match="FORWARD_UNSUPPORTED_EXTERNAL_EVIDENCE_CLAIM"):
+        check([row],prereg())
+
+
+def test_cannot_timestamp_a_record_before_signal():
+    row=first()
+    row["recorded_at_utc"]="2026-10-12T11:00:00Z"
+    row["record_sha256"]=sha256({k:v for k,v in row.items() if k!="record_sha256"})
+    with pytest.raises(ValueError,match="FORWARD_RECORD_PREDATES_SIGNAL"):
+        check([row],prereg())
