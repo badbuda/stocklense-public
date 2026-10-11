@@ -387,3 +387,31 @@ jobs:
             research/reports/observed_vix_fixed_guard_results.md
           if-no-files-found: warn
           retention-days: 30
+
+      - name: SL9-019 two fixed inverse-variance and downside-semivariance real ETF tests
+        if: ${{ github.head_ref == 'research/sl9-019-inverse-variance-and-downside-drag-20261011' }}
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          python observed_etf_inverse_variance_drag_study.py
+          test -s research/results/inverse_variance_downside_drag_observed_etfs.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          x=json.loads(Path('research/results/inverse_variance_downside_drag_observed_etfs.json').read_text())
+          assert x['frozen_day_by_day_parity'] is True
+          assert x['sessions']==4191
+          assert x['no_synthetic_TQQQ_returns'] is True
+          assert x['capital_deployment_authorized'] is False if 'capital_deployment_authorized' in x else not x['live_broker_orders_authorized']
+          assert x['automatic_promotion'] is False
+          PY
+      - name: Archive preregistered inverse variance and downside real ETF outcomes
+        if: ${{ always() && github.head_ref == 'research/sl9-019-inverse-variance-and-downside-drag-20261011' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: stocklens-inverse-variance-downside-real-etf-falsification
+          path: |
+            research/results/inverse_variance_downside_drag_observed_etfs.json
+            research/reports/inverse_variance_downside_drag_observed_etfs.md
+          if-no-files-found: warn
+          retention-days: 30
