@@ -7,7 +7,7 @@
   "files": {
     ".github/workflows/aws-journal-export.yml": "f5a19164d85c48d9ce6adf243d1907085f2d6ffe",
     ".github/workflows/aws-shadow-journal-audit.yml": "126a216d5a18c5f2bb30bde806007f7c38a36ff8",
-    ".github/workflows/fast-guard.yml": "0e922c876b2e18365e533369deb51ebe3b0309ed",
+    ".github/workflows/fast-guard.yml": "dc4cd6ebc932fba563d2f4d3ef522e258e4e553d",
     ".github/workflows/portal-browser-smoke.yml": "68a5bcbd7d5f790edc611dd4b3fa24f6848458c2",
     ".github/workflows/portal-history-build.yml": "2d731559dde6f3116cc349379190e74417a1ece9",
     ".github/workflows/shadow.yml": "b4db9958876eaa47bbe3f183aa815feb15ab10c0",
@@ -378,6 +378,9 @@
     "research_diversified_sleeve_contract.py": "56726ce76f76e1e6b683e816508b4859883e8955",
     "tests/test_research_cash_rate_broker_proxy.py": "be4363b1fdea89c629b1391df6cefe72fe894f52",
     "tests/test_research_diversified_sleeve_contract.py": "0ddcaa52348bb4d36b5761030d3a8163ef1e7308",
-    "research/predeclarations/SL9-011-CASH-RATE-AND-NONNASDAQ-INPUTS.md": "0a57881e7a32a913e1ea71fc03f4990b94ec61b1"
+    "research/predeclarations/SL9-011-CASH-RATE-AND-NONNASDAQ-INPUTS.md": "0a57881e7a32a913e1ea71fc03f4990b94ec61b1",
+    "observed_source_acquisition.py": "a2ab844765cc433fd02131fa32b98d3c668d483c",
+    "tests/test_observed_source_acquisition.py": "7f83266543e236293a7edcac56c1db3f99767aed",
+    "research/predeclarations/SL9-012-OBSERVED-SOURCE-ACQUISITION.md": "04369dc560f92580a1c730cf69fef181cd3044aa"
   }
 }

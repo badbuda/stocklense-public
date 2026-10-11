@@ -215,3 +215,29 @@ jobs:
             research/reports/non_nasdaq_sleeve_readiness.md
           if-no-files-found: warn
           retention-days: 30
+
+      - name: Bounded observed GLD/TLT and official EFFR acquisition — optional and never trading evidence
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          python observed_source_acquisition.py
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          s=json.loads(Path("research/results/observed_external_data_intake.json").read_text())
+          assert s["capital_deployment_authorized"] is False
+          assert s["strategy_returns_computed"] is False
+          assert s["synthetic_etf_prices_used"] is False
+          assert not s["historical_provider_first_seen_proven"]
+          PY
+      - name: Archive observed external prices and rate effective-dates with audit warnings
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stocklens-observed-external-source-intake
+          path: |
+            research/results/observed_external_data_intake.json
+            research/private/non_nasdaq_observed_etfs.json
+            research/private/effr_effective_dates_without_publication_clock.json
+          if-no-files-found: warn
+          retention-days: 30
