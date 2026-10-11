@@ -1,0 +1,10 @@
+# SL9-011 — Observed non-Nasdaq satellite and time-aware cash benchmark
+2026-10-11. RESEARCH ONLY. Frozen StockLens 8.0, all production weights, broker orders and original prices are immutable.
+
+## Separate economic mechanisms (not another EWMA/Kelly sweep)
+- Cash yield: benchmark EFFR/SOFR may be observable after next-business-day publication. Test only under a separately verified rate vintage, as-of prior close, and a separately documented broker sweep rate/terms. No self-attested timestamp or source URL is independent proof. Do not mislabel DTB3 discount rate or public overnight interbank rate as retail broker yield. Conditional NAV changes from a hypothetical rate feed are **not** achieved performance.
+- Non-Nasdaq sleeve: GLD and TLT are candidate distinct observed ETFs. Require complete calendar-aligned REAL open/close histories from original inception-compatible sources, distribution adjustment, data origin digest, and independent source audit. The initial deliverable is a readiness contract only; no fabricated correlations, backfilled ETF prices, returns or optimized allocations. No public price input exists in the current repo for these symbols.
+- Inputs live only under optional `research/private/` files, never checked in; CI must output BLOCKED absent verified data, without asking the user for secrets.
+- Quality gates: rates published before prior XNYS close; missing/stale rates fail, not quietly substitute zero; reject fabricated history, future labels, duplicate observations, non-HTTPS source claims and missing ETF sessions. Even a passing structural feed stays unverified until independent attestation.
+- Any actual multi-asset strategy study requires fixed pre-declared weights, same whole-share fees / slippage, contribution/account convention, 0/1 decision lag, 10/20bps stress, comparison to frozen and QQQ, no tuning on the reused 2010–2026 sample, and a NEW time-forward paper sample before promotion consideration.
+- Both new modules are OFFLINE RESEARCH diagnostics; never touch core, shadow, live brokerage or auto-promotion. A green CI proves code semantics, NOT market alpha.
