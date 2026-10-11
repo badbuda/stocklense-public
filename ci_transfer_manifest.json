@@ -376,7 +376,7 @@
     "research/SL9-010_PIT_CAUSAL_CALENDAR_BLOCKERS.md": "b33e6de46b1e9c8a2b71573ff34fc1aad823b346",
     "research_cash_rate_broker_proxy.py": "1776047ba678bff2aa05db544989f40f86f9e463",
     "research_diversified_sleeve_contract.py": "56726ce76f76e1e6b683e816508b4859883e8955",
-    "tests/test_research_cash_rate_broker_proxy.py": "0492dbf350c3ac3e628d00858e5827e79c6a354a",
+    "tests/test_research_cash_rate_broker_proxy.py": "5c3cf4e5771e255dd3786442f2481efb63d5e827",
     "tests/test_research_diversified_sleeve_contract.py": "0ddcaa52348bb4d36b5761030d3a8163ef1e7308",
     "research/predeclarations/SL9-011-CASH-RATE-AND-NONNASDAQ-INPUTS.md": "0a57881e7a32a913e1ea71fc03f4990b94ec61b1"
   }
