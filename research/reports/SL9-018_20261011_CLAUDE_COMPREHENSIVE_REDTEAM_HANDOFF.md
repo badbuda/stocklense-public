@@ -3,6 +3,27 @@
 
 **To Claude:** Review the actual StockLens evidence below as an independent adversarial quant and systems reviewer. Challenge arithmetic, look-ahead, causal information timing, realistic execution, data provenance and multiple-testing. Do **not** optimize dozens of parameters against the reused sample or treat CI green as economic alpha. Suggest at most three non-redundant, preregistrable mechanisms with explicit data prerequisites, falsification tests and practical cash/execution costs. Do not authorize capital, connect broker order submission, or promote a model.
 
+## Addendum — verified after the original handoff, 11 October 2026
+
+**PR #65:** [real-Q/T inverse-variance and downside-semivariance trial](https://github.com/badbuda/stocklense-public/pull/65) **merged**, [CI #38112459649](https://github.com/badbuda/stocklense-public/actions/runs/38112459649) **538 pytest passed**. Fixed rules on actual observed QQQ/TQQQ daily adjusted opens, historical reused 4,191 sessions; no synthetic TQQQ, no real broker fill or fresh holdout. Results from actual CI job log:
+
+| Preregistered mode | CAGR | MaxDD | ΔCAGR vs 8.0 | MaxDD improvement | Modeled trades | Passing stress gates |
+|---|---:|---:|---:|---:|---:|---:|
+| Frozen 8.0 | 40.0263% | −49.0756% | — | — | 147 in earlier baseline | baseline |
+| Inverse variance, prior 20 sessions | **39.8642%** | **−49.0756%** | **−0.1621 pp** | **0.0000 pp** | **177** | **0/4** |
+| Downside semivariance, prior 20 sessions | **37.3498%** | **−47.7857%** | **−2.6765 pp** | **+1.2899 pp** | **1,010** | **0/4** |
+
+Thus the earlier handoff row calling *inverse variance* directly "UNTESTED" is superseded for these two fixed implementations only. **Neither passes**. Inverse-variance risk gating remains not a proven general impossibility, and Kelly / macro/news variants are not validated. **Do not retune variance lookback or fraction on the reused sample to chase a winner.**
+
+**PR #63** (forward evidence mismatch visibility) and **PR #64** (maturity requires fingerprint consistency) are now **both merged** with their terminal green CI [#38111961760](https://github.com/badbuda/stocklense-public/actions/runs/38111961760) **528 passed** and [#38112178833](https://github.com/badbuda/stocklense-public/actions/runs/38112178833) **533 passed** respectively. The SL9-007 queue/registered evidence digest mismatch remains **unreconciled**, while its experiment-definition digest matches; implementation prevents falsely labelling drifted prospective data "CURRENT"/mature. Two historical simulated paper ledger sessions remain insufficient to establish live execution quality. The initial failed CI for #63 was followed by a genuine green run; it is **not** currently an open failing PR.
+
+### Claude: questions that matter next
+1. Verify *independently* whether fingerprint drift is a benign refresh or material replacement: immutable producer commits, original daily market-data bytes, acquisition times, and each archive SHA; do not reset the registration. Give an explicit forensic proof chain or say **UNRESOLVED**.
+2. Audit actual stocklens8 broker-executable Open/VWAP assumptions with observed 09:31/09:32 NBBO and bid/ask, fee/margin/FX and dividend/split accounting. Current one-minute Yahoo **bar OPEN** sample is neither bid/ask nor an actual broker fill.
+3. Choose at most **three** new orthogonal, ex-ante plausible hypotheses from remaining BLOCKED/UNTESTED sectors (e.g., independently vintage-certified credit/yield/futures term structure, survivorship-safe breadth, genuine PIT corporate/macro surprises). For each demand archival source availability first, no implied event first-seen, exact lag/cost, self-attestation rejection, frozen-8 match, untouched forward evidence. Do not propose more 20-day RV threshold tweaks after failed #65.
+
+---
+
 ## Executive finding
 
 **No new candidate has met the preregistered continuation requirements. StockLens 8.0 remains the reference and the highest historical-CAGR result among the selected tested alternative families.** This is not proof of market-beating *selection-corrected* alpha, broker-realizable returns or future performance.
