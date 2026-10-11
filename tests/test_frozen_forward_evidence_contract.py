@@ -61,3 +61,30 @@ def test_mutation_of_old_record_detected():
 
 def test_weekend_rejected():
     with pytest.raises(ValueError,match="NOT_XNYS"):build_record(missed("2026-10-10"))
+
+def test_complete_receipt_must_be_after_actual_session_close():
+    x=good()
+    x["external_server_receipt"]["received_at_utc"]="2026-10-09T14:15:00Z"
+    with pytest.raises(ValueError,match="PRE_SESSION_CLOSE"):
+        build_record(x)
+
+
+@pytest.mark.parametrize("bad_asof,code", [
+    (None,"INVALID_SIGNAL_ASOF"),
+    ("garbage","INVALID_SIGNAL_ASOF"),
+    ("2026-10-09","FUTURE_SIGNAL"),
+    ("2026-10-07","NOT_PREVIOUS_XNYS_SESSION"),
+])
+def test_complete_signal_must_be_from_prior_completed_xnys_session(bad_asof,code):
+    x=good()
+    x["signal"]["signal_asof_date"]=bad_asof
+    with pytest.raises(ValueError,match=code):
+        build_record(x)
+
+
+def test_actual_dst_session_open_is_used_not_fixed_utc_offset():
+    x=good()
+    # 13:31 UTC on a summer DST session is after the 09:30 ET open.
+    x["signal"]["external_preopen_received_utc"]="2026-10-09T13:31:00Z"
+    with pytest.raises(ValueError,match="AFTER_OPEN"):
+        build_record(x)

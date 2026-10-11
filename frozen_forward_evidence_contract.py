@@ -80,7 +80,11 @@ def validate(record,previous=None):
         if not isinstance(receipt.get("signed_proof_id"),str) or not receipt["signed_proof_id"].strip():
             raise ValueError("FORWARD_MISSING_SIGNED_RECEIPT")
         server_time=utc(receipt.get("received_at_utc"))
-        if server_time.date()<d:raise ValueError("FORWARD_RECEIPT_PRE_SESSION")
+        # COMPLETE refers to a completed XNYS session. A receipt from the
+        # morning cannot attest that the full session's prices were archived.
+        exchange_close=xcals.get_calendar("XNYS").session_close(day).to_pydatetime().astimezone(timezone.utc)
+        if server_time<exchange_close:
+            raise ValueError("FORWARD_RECEIPT_PRE_SESSION_CLOSE")
         src=record["market_source"]
         if src.get("qqq_kind")!="OBSERVED_REAL_ETF" or src.get("tqqq_kind")!="OBSERVED_REAL_ETF":
             raise ValueError("FORWARD_SYNTHETIC_PRICE_REJECTED")
@@ -92,15 +96,24 @@ def validate(record,previous=None):
         hexdigest(sig.get("core_sha256"),"CORE")
         hexdigest(sig.get("prior_input_sha256"),"INPUT")
         hexdigest(sig.get("signal_sha256"),"SIGNAL")
-        if utc(sig.get("external_preopen_received_utc"))>=datetime.fromisoformat(day+"T09:30:00-04:00").astimezone(timezone.utc):
-            # Do not hardcode DST from this illustrative cutoff: further check below.
-            pass
         import zoneinfo
-        market_open=datetime.combine(d,datetime.min.time().replace(hour=9,minute=30),tzinfo=zoneinfo.ZoneInfo("America/New_York")).astimezone(timezone.utc)
-        if utc(sig["external_preopen_received_utc"])>=market_open:
+        market_open=datetime.combine(
+            d,datetime.min.time().replace(hour=9,minute=30),
+            tzinfo=zoneinfo.ZoneInfo("America/New_York")).astimezone(timezone.utc)
+        if utc(sig.get("external_preopen_received_utc"))>=market_open:
             raise ValueError("FORWARD_SIGNAL_RECEIVED_AFTER_OPEN")
-        if sig.get("signal_asof_date")>=day:
+        asof=sig.get("signal_asof_date")
+        try:
+            prior=date.fromisoformat(asof)
+            if asof!=prior.isoformat():
+                raise ValueError()
+        except (TypeError,ValueError,OverflowError) as exc:
+            raise ValueError("FORWARD_INVALID_SIGNAL_ASOF") from exc
+        if prior>=d:
             raise ValueError("FORWARD_FUTURE_SIGNAL")
+        expected_prior=xcals.get_calendar("XNYS").previous_session(day).date().isoformat()
+        if asof!=expected_prior:
+            raise ValueError("FORWARD_SIGNAL_NOT_PREVIOUS_XNYS_SESSION")
     payload={k:v for k,v in record.items() if k!="record_sha256"}
     hexdigest(record.get("record_sha256"),"RECORD")
     if digest(payload)!=record["record_sha256"]:
