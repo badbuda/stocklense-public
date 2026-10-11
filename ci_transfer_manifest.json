@@ -7,7 +7,7 @@
   "files": {
     ".github/workflows/aws-journal-export.yml": "f5a19164d85c48d9ce6adf243d1907085f2d6ffe",
     ".github/workflows/aws-shadow-journal-audit.yml": "449011c89ccbb76e859d33fc43498aead2a46adb",
-    ".github/workflows/fast-guard.yml": "435df7c2096ea7192a0b5d7ad504fefe0cf63770",
+    ".github/workflows/fast-guard.yml": "2ea8617fb8effef1cff9a9ec0eb1b82d252eadc3",
     ".github/workflows/portal-browser-smoke.yml": "68a5bcbd7d5f790edc611dd4b3fa24f6848458c2",
     ".github/workflows/portal-history-build.yml": "2d731559dde6f3116cc349379190e74417a1ece9",
     ".github/workflows/shadow.yml": "b4db9958876eaa47bbe3f183aa815feb15ab10c0",
@@ -419,6 +419,9 @@
     "tests/test_frozen_forward_evidence_contract.py": "3a7c22378ab34685b9cb197799aa585f6ab4e841",
     "research/predeclarations/SL9-024-FORWARD-RECEIPT-CONTRACT.md": "9a50536b24de40ebe197747221a318bbfbec98d7",
     "tests/test_forward_maturity_unverified_proxy.py": "a555b91965b42cae9ee02e9cc889da7bd60d29f3",
-    "research/predeclarations/SL9-025-FORWARD-RECEIPT-DEDUPE.md": "4eb4b5d8fd92265eb8bb88c707243feb5890d2fd"
+    "research/predeclarations/SL9-025-FORWARD-RECEIPT-DEDUPE.md": "4eb4b5d8fd92265eb8bb88c707243feb5890d2fd",
+    "observed_vix3m_2day_placebo_study.py": "f1602c7d97c71681060b0240325d8e821d9caf18",
+    "tests/test_observed_vix3m_2day_placebo_study.py": "b965484f544d4603e5c7f5ad26e8b84775594b37",
+    "research/predeclarations/SL9-026-CBOE-2DAY-DUTY-PLACEBO.md": "339786137b4ae2d9a89bc22e91bff081dd90e87c"
   }
 }

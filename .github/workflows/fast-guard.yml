@@ -488,3 +488,41 @@ jobs:
             research/private/sl9_022_archived_prior_ci/*.zip
           if-no-files-found: warn
           retention-days: 30
+
+      - name: Restore exact SL9-021 original official Cboe VIX-VIX3M source
+        if: ${{ github.head_ref == 'research/sl9-026-two-consecutive-vix3m-matched-placebo-20261011' }}
+        uses: actions/download-artifact@v4
+        with:
+          name: stocklens-official-vix3m-one-fixed-term-structure
+          run-id: 38118290769
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: research
+      - name: Predeclared two-day VIX inversion and one thousand exact-duty gross return placebos
+        if: ${{ github.head_ref == 'research/sl9-026-two-consecutive-vix3m-matched-placebo-20261011' }}
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          test -s research/private/sl9_021_cboe_vix_vix3m_snapshot.json
+          python observed_vix3m_2day_placebo_study.py
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          x=json.loads(Path('research/results/sl9_026_vix3m_two_day_placebo.json').read_text())
+          assert x['frozen_nav_parity_all_cases'] is True
+          assert x['placebo']['n_randomizations']==1000
+          assert x['placebo']['exact_matched_intervention_days']==x['candidate']['intervention_days']
+          assert x['placebo']['turnover_or_episode_structure_matched'] is False
+          assert x['source_historical_first_seen_proven'] is False
+          assert x['historical_holdout_pristine'] is False
+          assert x['automatic_promotion'] is False
+          PY
+      - name: Archive preregistered real VIX-VIX3M two-day falsification and placebo
+        if: ${{ always() && github.head_ref == 'research/sl9-026-two-consecutive-vix3m-matched-placebo-20261011' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: stocklens-two-day-vix3m-exact-duty-placebo-1000
+          path: |
+            research/results/sl9_026_vix3m_two_day_placebo.json
+            research/reports/sl9_026_vix3m_two_day_placebo.md
+          if-no-files-found: warn
+          retention-days: 30
