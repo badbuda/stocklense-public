@@ -4,6 +4,7 @@ on:
   pull_request:
 permissions:
   contents: read
+  actions: read
 
 concurrency:
   group: stocklens-fast-${{ github.ref }}
@@ -217,6 +218,7 @@ jobs:
           retention-days: 30
 
       - name: Bounded observed GLD/TLT and official EFFR acquisition — optional and never trading evidence
+        if: ${{ github.head_ref == 'research/sl9-012-observed-source-acquisition-20261011' }}
         env:
           PYTHONPATH: ${{ github.workspace }}
         run: |
@@ -231,6 +233,7 @@ jobs:
           assert not s["historical_provider_first_seen_proven"]
           PY
       - name: Archive observed external prices and rate effective-dates with audit warnings
+        if: ${{ github.head_ref == 'research/sl9-012-observed-source-acquisition-20261011' }}
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -239,5 +242,41 @@ jobs:
             research/results/observed_external_data_intake.json
             research/private/non_nasdaq_observed_etfs.json
             research/private/effr_effective_dates_without_publication_clock.json
+          if-no-files-found: warn
+          retention-days: 30
+
+      - name: Restore locked actual observed GLD/TLT from previous verified CI
+        uses: actions/download-artifact@v4
+        with:
+          name: stocklens-observed-external-source-intake
+          run-id: 38108795287
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: research
+      - name: Run SL9-013 real ETF sleeves using locked original market data
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          test -s research/private/non_nasdaq_observed_etfs.json
+          python observed_nonnasdaq_sleeve_study.py
+          test -s research/results/observed_nonnasdaq_fixed_sleeves.json
+          test -s research/reports/observed_nonnasdaq_fixed_sleeves.md
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('research/results/observed_nonnasdaq_fixed_sleeves.json').read_text())
+          assert r['baseline_day_by_day_parity'] is True
+          assert r['source_data_sha256']=='2f680455c1ba81eb2e859eb9520efb2c1139d2e2861ba715c697712004ee2210'
+          assert r['capital_deployment_authorized'] is False
+          assert r['automatic_promotion'] is False
+          assert r['no_synthetic_etf_returns'] is True
+          PY
+      - name: Archive fixed REAL observed non-Nasdaq sleeve outcomes (research only)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stocklens-fixed-observed-nonnasdaq-sleeves
+          path: |
+            research/results/observed_nonnasdaq_fixed_sleeves.json
+            research/reports/observed_nonnasdaq_fixed_sleeves.md
           if-no-files-found: warn
           retention-days: 30
