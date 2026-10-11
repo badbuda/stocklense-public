@@ -18,12 +18,17 @@ def ddb(text, field):
 
 
 def good_items():
-    signal={"mode":"SHADOW_ONLY_NO_BROKER_ACTIONS",
+    signal={"version":"8.0.2-shadow-completed-session-guard",
+            "mode":"SHADOW_ONLY_NO_BROKER_ACTIONS",
+            "signal_source":"QQQ_ADJUSTED_DAILY_CLOSE",
+            "generated_at_utc":"2026-10-08T23:25:00+00:00",
+            "execution_plan":{"broker_actions_enabled":False},
             "action":"NO_CHANGE",
             "latest":{"asof_date":DAY,"level":3,"target_leverage":3.0,
                       "defense_active":False,"qqq_weight":0,"tqqq_weight":.985}}
     signal_raw=json.dumps(signal)
-    sig={"signal_json":ddb(signal_raw,"S"),
+    sig={"session_date":ddb(DAY,"S"),
+         "signal_json":ddb(signal_raw,"S"),
          "signal_sha256":ddb(hashlib.sha256(signal_raw.encode()).hexdigest(),"S"),
          "broker_orders_authorized":{"BOOL":False},
          "recorded_at_utc":ddb("2026-10-09T09:10:30+00:00","S")}
@@ -39,7 +44,8 @@ def good_items():
                 "time_et":"09:32","modeled_fill_price":82.35}],
     }
     raw=json.dumps(paper,sort_keys=True,separators=(",",":"))
-    receipt={"paper_evidence_json":ddb(raw,"S"),
+    receipt={"session_date":ddb(DAY+"#PAPER","S"),
+             "paper_evidence_json":ddb(raw,"S"),
              "paper_sha256":ddb(hashlib.sha256(raw.encode()).hexdigest(),"S"),
              "broker_orders_authorized":{"BOOL":False},
              "broker_fills_observed":{"BOOL":False}}
@@ -73,7 +79,7 @@ def test_missing_sessions_are_explicit_not_synthesized(signal,paper,status):
 def test_signal_tampering_fails_closed():
     sig,_=good_items()
     sig["signal_sha256"]["S"]="0"*64
-    with pytest.raises(ValueError,match="SIGNAL_SHA256_MISMATCH"):
+    with pytest.raises(ValueError,match="SIGNAL_ARCHIVE_SHA256_MISMATCH"):
         decode_signal(sig,DAY)
 
 
@@ -137,3 +143,90 @@ def test_export_invalid_record_never_claims_pass(tmp_path):
 def test_exchange_calendar_excludes_weekends():
     sessions=exchange_sessions(FIRST_FORWARD_DATE,"2026-10-12",10)
     assert sessions==["2026-10-08","2026-10-09","2026-10-12"]
+
+def test_export_rejects_rehashed_wrong_signal_source():
+    sig,_=good_items()
+    obj=json.loads(sig["signal_json"]["S"])
+    obj["signal_source"]="TQQQ_SYNTHETIC"
+    raw=json.dumps(obj)
+    sig["signal_json"]["S"]=raw
+    sig["signal_sha256"]["S"]=hashlib.sha256(raw.encode()).hexdigest()
+    with pytest.raises(ValueError, match="INVALID_SIGNAL_SOURCE"):
+        decode_signal(sig, DAY)
+
+
+def test_export_rejects_rehashed_live_broker_flag():
+    sig,_=good_items()
+    obj=json.loads(sig["signal_json"]["S"])
+    obj["execution_plan"]["broker_actions_enabled"]=True
+    raw=json.dumps(obj)
+    sig["signal_json"]["S"]=raw
+    sig["signal_sha256"]["S"]=hashlib.sha256(raw.encode()).hexdigest()
+    with pytest.raises(ValueError, match="SIGNAL_BROKER_FLAG_NOT_DISABLED"):
+        decode_signal(sig, DAY)
+
+
+@pytest.mark.parametrize("mutation,code", [
+    (lambda x: x["session_date"].update(S="2026-10-09#PAPER"), "PAPER_PRIMARY_KEY_MISMATCH"),
+    (lambda x: x["broker_fills_observed"].update(BOOL=True), "FALSE_OBSERVED_BROKER_FILLS"),
+])
+def test_export_rejects_fake_paper_identity_and_fills(mutation,code):
+    _,paper=good_items()
+    mutation(paper)
+    with pytest.raises(ValueError, match=code):
+        decode_paper(paper, DAY)
+
+
+@pytest.mark.parametrize("field,value", [
+    ("qty", 0), ("qty", -1), ("symbol", "FAKE"),
+    ("side", "LIVE"), ("modeled_fill_price", float("nan")),
+    ("modeled_fill_price", -5), ("signal_date", DAY),
+])
+def test_export_rejects_rehashed_impossible_paper_fills(field,value):
+    _,paper=good_items()
+    obj=json.loads(paper["paper_evidence_json"]["S"])
+    obj["trs"][0][field]=value
+    raw=json.dumps(obj)
+    paper["paper_evidence_json"]["S"]=raw
+    paper["paper_sha256"]["S"]=hashlib.sha256(raw.encode()).hexdigest()
+    with pytest.raises(ValueError, match="INVALID_MODELED_TRADE"):
+        decode_paper(paper, DAY)
+
+
+@pytest.mark.parametrize("field,value", [
+    ("cash", -100), ("equity", float("inf")),
+    ("qqq_shares", -1), ("tqqq_shares", 2.5),
+])
+def test_export_rejects_impossible_paper_ledger(field,value):
+    _,paper=good_items()
+    obj=json.loads(paper["paper_evidence_json"]["S"])
+    obj["row"][field]=value
+    raw=json.dumps(obj)
+    paper["paper_evidence_json"]["S"]=raw
+    paper["paper_sha256"]["S"]=hashlib.sha256(raw.encode()).hexdigest()
+    with pytest.raises(ValueError, match="INVALID_PAPER_"):
+        decode_paper(paper, DAY)
+
+
+def test_export_rejects_duplicate_or_out_of_order_sessions(tmp_path):
+    with pytest.raises(ValueError, match="DUPLICATED_OR_UNORDERED_EXPORT_SESSIONS"):
+        export("test", tmp_path, [DAY, DAY], fetch=lambda *_: None)
+    with pytest.raises(ValueError, match="DUPLICATED_OR_UNORDERED_EXPORT_SESSIONS"):
+        export("test", tmp_path, ["2026-10-09", DAY], fetch=lambda *_: None)
+
+
+def test_csv_digests_cover_written_bytes(tmp_path):
+    sig,paper=good_items()
+    def fetch(_table,key): return {DAY:sig, DAY+"#PAPER":paper}.get(key)
+    result=export("test", tmp_path, [DAY], fetch=fetch)
+    assert result["all_sessions_pass"] is True
+    assert result["export_hash_scope"].startswith("LOCAL_BYTES_ONLY")
+    for name,digest in result["export_file_sha256"].items():
+        assert hashlib.sha256((tmp_path/name).read_bytes()).hexdigest()==digest
+    assert result["broker_fills_observed"] is False
+
+
+def test_scheduled_read_only_audit_uses_same_paper_validator():
+    from pathlib import Path
+    workflow=Path(".github/workflows/aws-shadow-journal-audit.yml").read_text()
+    assert "from aws_journal_export import decode_paper" in workflow
