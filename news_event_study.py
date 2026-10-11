@@ -61,6 +61,12 @@ def _safe_ohlc(row):
 def _returns(rows, start_i, horizon):
     end_i=start_i+horizon-1
     if end_i>=len(rows):return None
+    # Reject gaps: row counts are not exchange-session counts.
+    cal=xcals.get_calendar("XNYS")
+    window=rows[start_i:end_i+1]
+    sessions=cal.sessions_in_range(window[0]["date"],window[-1]["date"])
+    if len(sessions)!=horizon or [str(d.date()) for d in sessions]!=[x["date"] for x in window]:
+        return None
     start,end=rows[start_i],rows[end_i]
     for row in (start,end):_safe_ohlc(row)
     return {

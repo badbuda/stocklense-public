@@ -139,3 +139,11 @@ def test_compromised_ohlc_never_produces_fake_price_study():
     a[10]["to"]=-1
     with pytest.raises(ValueError,match="NEWS_OBSERVED_ETF_PRICES_INVALID"):
         study(a,ingest_records([event()]))
+
+
+def test_missing_middle_session_blocks_incorrect_horizon():
+    a=[x for x in rows() if x["date"]!="2024-03-22"]
+    e=study(a,ingest_records([event("GAP")]))["event_cases"][0]
+    assert "observed_horizon_1" in e
+    assert "observed_horizon_5" not in e
+    assert "observed_horizon_21" not in e

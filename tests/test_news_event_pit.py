@@ -160,3 +160,13 @@ def test_repeated_event_jsonl_is_an_error_not_silent_retrospective_revision(tmp_
     p.write_text(json.dumps(event())+"\n"+json.dumps(event())+"\n",encoding="utf-8")
     with pytest.raises(ValueError,match="NEWS_DUPLICATE_EVENT_RECORD_ID"):
         load_journal(p)
+
+
+def test_disk_jsonl_cannot_self_certify_vendor_first_seen(tmp_path):
+    import json
+    p=tmp_path/"untrusted.jsonl"
+    p.write_text(json.dumps(event())+chr(10),encoding="utf-8")
+    result=load_journal(p)
+    assert result["raw_event_records"]==1
+    assert result["source_verified_records"]==0
+    assert result["status"]=="DATA_BLOCKED_NO_PIT_VERIFIED_EVENTS"

@@ -206,7 +206,12 @@ def load_journal(path=DEFAULT_JOURNAL):
     rows=[]
     for number,line in enumerate(p.read_text(encoding="utf-8").splitlines(),1):
         if line.strip():
-            try:rows.append(json.loads(line))
+            try:record=json.loads(line)
             except ValueError as exc:raise ValueError(
                 "NEWS_INVALID_JSONL_LINE:"+str(number)) from exc
+            # Untrusted disk JSONL cannot independently attest historical
+            # vendor first-seen. An HTTPS URL and hash are not a receipt check.
+            if isinstance(record,dict):
+                record={**record,"archived_first_seen_verified":False}
+            rows.append(record)
     return ingest_records(rows)
