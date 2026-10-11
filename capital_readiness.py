@@ -47,6 +47,10 @@ def build(out="docs/capital_readiness.json"):
   "prospective_producer_git_matches_publication":maturity.get("producer_git_sha")==pub.get("git_sha"),
   "prospective_source_available":source_available,
   "prospective_definition_current":definition_current,
+  "prospective_evidence_fingerprint_current":evidence_fingerprint_current,
+  # Original SL9-007 generated QQQ*leverage rows do not count as
+  # independently receipted actual QQQ/TQQQ paper trading evidence.
+  "prospective_original_proxy_not_qualified_forward":False,
   "prospective_audit_schema_complete":audit_schema_complete,
   "prospective_ingestion_gate_valid":prospective_gate_ok,
   "prospective_persistence_consistent":persistence_consistent,
@@ -58,7 +62,7 @@ def build(out="docs/capital_readiness.json"):
  if pilot: stage="LIMITED_EXECUTION_OBSERVATION_ELIGIBLE"
  if extended: stage="PROSPECTIVE_EVIDENCE_BUILDING"
  result={
-  "schema_version":2,"publication_identity":pub,"stage":stage,"prospective_completed_sessions":prospective,
+  "schema_version":2,"publication_identity":pub,"stage":stage,"prospective_completed_sessions":prospective,"qualified_forward_paired_sessions":0,"original_rows_proxy_not_etf":True,
   "prospective_evidence":{"definition_current":definition_current,"registered_definition_fingerprint":target_audit.get("registered_definition_fingerprint"),"current_definition_fingerprint":target_audit.get("current_definition_fingerprint"),"evidence_fingerprint_current":evidence_fingerprint_current,"registered_fingerprint":target_audit.get("registered_fingerprint"),"queue_fingerprint":target_audit.get("queue_fingerprint"),"source_status":target_audit.get("source_status","MISSING_AUDIT"),"returns_csv":target_audit.get("returns_csv"),"producer_current":maturity.get("producer_current"),"producer_git_sha":maturity.get("producer_git_sha"),"registry_updated_at_utc":maturity.get("registry_updated_at_utc"),"maturity_status":maturity.get("status","MISSING"),"experiment_id":"SL9-007-UPSHIFT-CONFIRMATION","accepted_completed_xnys_rows":accepted_raw,"persisted_prospective_rows":prospective_raw,"audit_schema_complete":audit_schema_complete,"persistence_consistent":persistence_consistent,"gate":target_audit.get("gate"),"strict_gate_valid":prospective_gate_ok},
   "thresholds":{"limited_execution_observation":EXECUTION_OBSERVATION_MIN_PROSPECTIVE_SESSIONS,"extended_prospective_evidence":EXTENDED_EVIDENCE_MIN_SESSIONS},
   "checks":checks,"technical_checks_pass":technical,

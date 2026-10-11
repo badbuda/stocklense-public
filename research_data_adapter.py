@@ -27,7 +27,7 @@ def build_baseline_dataset(csv_path=None,out="research/data/stocklens8_daily.csv
     p=Path(out);p.parent.mkdir(parents=True,exist_ok=True)
     with p.open("w",encoding="utf-8",newline="") as f:
         w=csv.DictWriter(f,fieldnames=list(rows[0]));w.writeheader();w.writerows(rows)
-    manifest={"schema_version":SCHEMA_VERSION,"kind":"RESEARCH_DATASET_NOT_QC_PARITY",
+    manifest={"schema_version":SCHEMA_VERSION,"kind":"RESEARCH_DATASET_NOT_QC_PARITY",\n              "return_basis":"PROXY_NOT_ETF",\n              "actual_tqqq_fund_daily_returns_used":False,
               "source_audit":audit,"rows":len(rows),"first_date":rows[0]["date"],
               "last_date":rows[-1]["date"],"sha256":_sha(rows),
               "timing":"prior completed-session signal applied to next-session close-to-close return",
