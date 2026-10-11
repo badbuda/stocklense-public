@@ -82,6 +82,16 @@ The [source receipt history](https://github.com/badbuda/stocklense-public/blob/m
 
 ---
 
+## Verified closure after Claude's Oct-11 critique — SL9-022
+
+Read **[full forensic resolution and outstanding blockers](https://github.com/badbuda/stocklense-public/blob/main/research/reports/SL9-022_20261011_CLAUDE_REDTEAM_RESOLUTION.md)** before relying on original forward labels. The exact **10 legacy SL9-007 rows have 0 economically distinguishing sessions (max return delta ~2.01e-16), 3x identical exposure, and 0 authenticated actual-TQQQ forward observations**. Their source calculation is `QQQ_return*leverage`: **PROXY_NOT_ETF**; the historical rows/fingerprints were not rewritten. PR #68 CI **554 green tests**; extra capital readiness gate blocks original proxy-based technical progression.
+
+**Four exact Oct 8–10 Shadow CI ZIPs were downloaded and preserved separately in the user's ChatGPT Files Library** as `StockLens_Claude_RedTeam_Evidence_2026-10-11.zip` with hashes and observed QQQ/TQQQ price-source changes. Note that archive contents are available via that file, **not** directly from this GitHub markdown page. The Oct 8→9 observed QQQ adjusted CLOSE changed exactly in **3,220 of 4,189 overlapping market sessions**, and Oct 9→10 **3,246 of 4,190**; changes typically ~1e-7 relative, plus one new market date per file. This makes retrospective adjustment drift plausible but **DOES NOT rederive the original 4,292-row registry fingerprint**. Original `ffd63bf6...` vs queue `995ffc17...` **UNRESOLVED**. GH Events API succeeded for 3 pages, found **0 matching original target commit IDs** in its bounded current window; 186 push events in the scanned pages. No market-vendor first-seen proof. The four original ZIP downloads from the CI runner itself were HTTP 401, so the small CI artifact is NOT the original archive; preservation happened through the GitHub connector + Files Library instead.
+
+**Next stage:** prospective original frozen **8.0-only** actual ETF/account ledger, external immutable server receive timestamps, all XNYS sessions COMPLETE/MISSED without backfill, licensed NBBO/auction quotes and verified broker fees. The 63-session milestone is an operational capture audit, **not** a clean alpha certification. No live trading.
+
+---
+
 ## Executive finding
 
 **No new candidate has met the preregistered continuation requirements. StockLens 8.0 remains the reference and the highest historical-CAGR result among the selected tested alternative families.** This is not proof of market-beating *selection-corrected* alpha, broker-realizable returns or future performance.
