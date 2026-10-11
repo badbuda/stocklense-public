@@ -8,7 +8,8 @@ from stocklens.core import replay_levels
 SCHEMA_VERSION=1
 
 def _sha(rows):
-    payload="\n".join(",".join(str(r[k]) for k in ("date","close","qqq_return","baseline_leverage")) for r in rows)
+    payload="
+".join(",".join(str(r[k]) for k in ("date","close","qqq_return","baseline_leverage")) for r in rows)
     return hashlib.sha256(payload.encode()).hexdigest()
 
 def build_baseline_dataset(csv_path=None,out="research/data/stocklens8_daily.csv"):
@@ -27,13 +28,16 @@ def build_baseline_dataset(csv_path=None,out="research/data/stocklens8_daily.csv
     p=Path(out);p.parent.mkdir(parents=True,exist_ok=True)
     with p.open("w",encoding="utf-8",newline="") as f:
         w=csv.DictWriter(f,fieldnames=list(rows[0]));w.writeheader();w.writerows(rows)
-    manifest={"schema_version":SCHEMA_VERSION,"kind":"RESEARCH_DATASET_NOT_QC_PARITY",\n              "return_basis":"PROXY_NOT_ETF",\n              "actual_tqqq_fund_daily_returns_used":False,
+    manifest={"schema_version":SCHEMA_VERSION,"kind":"RESEARCH_DATASET_NOT_QC_PARITY",
+              "return_basis":"PROXY_NOT_ETF",
+              "actual_tqqq_fund_daily_returns_used":False,
               "source_audit":audit,"rows":len(rows),"first_date":rows[0]["date"],
               "last_date":rows[-1]["date"],"sha256":_sha(rows),
               "timing":"prior completed-session signal applied to next-session close-to-close return",
               "limitations":["Yahoo adjusted QQQ is research data, not identical QuantConnect/LEAN input evidence",
                              "leveraged return is a research approximation and does not model TQQQ path, fees, slippage or intraday execution"]}
-    Path(str(p)+".manifest.json").write_text(json.dumps(manifest,indent=2)+"\n")
+    Path(str(p)+".manifest.json").write_text(json.dumps(manifest,indent=2)+"
+")
     return manifest
 
 if __name__=="__main__":print(json.dumps(build_baseline_dataset(),indent=2))
