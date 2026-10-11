@@ -425,10 +425,10 @@
     "research/predeclarations/SL9-026-CBOE-2DAY-DUTY-PLACEBO.md": "339786137b4ae2d9a89bc22e91bff081dd90e87c",
     "aws_paper_pairing.py": "5318d0659a8799db1424668c3914b7ce4b2c4b5d",
     "tests/test_aws_paper_pairing.py": "1fec22d46a24dfc3b67eede67bd95c43c329eaae",
-    "research_pit_credit_gate.py": "ae69829f61b4b1ec01fd7c3fa9971b98dfe28617",
+    "research_pit_credit_gate.py": "2fc5d403b53bb7cfe2a67541ff01ff4967680d88",
     "research_pit_event_gate.py": "f0239b4e14dcb712ad5ca71e73bada43e458c957",
     "research_pit_quote_gate.py": "1e318eddcb55de1ebfb297889f633b5a9ac13e45",
-    "tests/test_research_pit_credit_event_gate.py": "b72f9d7cc68b66757fa2e124f8ba4bb3d590c0f0",
+    "tests/test_research_pit_credit_event_gate.py": "0cceaab66c896000da99a62eb18f42c4b0aa16e5",
     "tests/test_research_pit_quote_gate.py": "7bb947c0f6e7972ec49756083ff6c46e56967746",
     "research/predeclarations/SL9-029-INDEPENDENT-PIT-SOURCE-FEASIBILITY.md": "227e154df49ae206b8a4e4f245ea20961854b28a"
   }

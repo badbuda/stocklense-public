@@ -75,3 +75,16 @@ def test_duplicate_and_future_result_leak():
     with pytest.raises(ValueError,match="duplicate event"):events(b([event(),event()]))
     x=event("FOMC_SCHEDULE");x["actual_value"]=0.25
     with pytest.raises(ValueError,match="calendar leaked outcome"):events(b([x]))
+
+def test_native_fred_json_must_be_wrapped_with_pinned_series():
+    x=series()
+    native={k:v for k,v in x.items() if k!="series_id"}
+    wrapped={"series_id":"BAMLH0A0HYM2","response":native}
+    assert fred(b(wrapped))["distinct_vintage_starts"]==2
+    with pytest.raises(ValueError,match="series not pinned"):
+        fred(b(native))
+
+def test_boolean_value_cannot_masquerade_as_numeric_spread():
+    x=series();x["observations"][0]["value"]=True
+    with pytest.raises(ValueError,match="spread invalid"):
+        fred(b(x))

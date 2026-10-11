@@ -65,3 +65,12 @@ EDGAR/GDELT archived delivery plus pre-release consensus; genuine SIP
 NBBO with conditions and broker execution receipts; independent WORM
 forward source/time receipts. Never replace the predeclared H1 series
 with a different macro series under the same hypothesis label.
+
+### ALFRED intake envelope contract
+
+Native FRED `fred/series/observations` JSON has no `series_id` field.
+The offline parser therefore requires a local envelope of the form
+`{"series_id":"BAMLH0A0HYM2","response":<unmodified API response>}`.
+The envelope's ID is caller asserted and is **not** proof of the
+underlying provider, original vendor publication clock or license.
+The raw envelope SHA256 is an integrity checksum, not a signed receipt.
