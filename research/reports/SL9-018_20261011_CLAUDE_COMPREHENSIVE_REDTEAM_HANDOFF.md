@@ -92,6 +92,16 @@ Read **[full forensic resolution and outstanding blockers](https://github.com/ba
 
 ---
 
+## SL9-027 final owner-side closeout and Claude H2 falsification — 2026-10-11
+
+**Current authoritative ledger:** [SL9-027 — completed owner tasks versus external evidence blockers](https://github.com/badbuda/stocklense-public/blob/main/research/reports/SL9-027_20261011_OWNER_CLOSEOUT_AND_SOURCE_DEPENDENCIES.md). After the earlier red-team handoff, main received [PR #69](https://github.com/badbuda/stocklense-public/pull/69) (monthly cashflow-neutral drawdown, joint cost/lag grid, read-only AWS archive checks; **569 green tests**), [PR #70](https://github.com/badbuda/stocklense-public/pull/70) (frozen8-only forward schema), and [PR #73](https://github.com/badbuda/stocklense-public/pull/73) (legacy row counts can never self-certify independent forward execution or authorize capital; **579 green tests**). Overlapping PRs #71/#72 and old PRs #2/#5 closed as safely superseded, not force-merged.
+
+**Claude H2 now tested directly and REJECTED:** [PR #74](https://github.com/badbuda/stocklense-public/pull/74) / [green CI 38122519599](https://github.com/badbuda/stocklense-public/actions/runs/38122519599) **585 passing tests**. Exact saved Cboe VIX and VIX3M daily close sources; both two prior completed sessions VIX/VIX3M >1 then 2x ceiling. Frozen historical whole-share actual QQQ/TQQQ proxy annual CAGR **40.0263%**, MaxDD **−49.0756%**, versus two-day overlay CAGR **38.2065%**, MaxDD **−48.7504%**, **74 intervention sessions, 251 modeled trades, 0/4 cost/lag continuation gates**. Exploratory 1,000 same-duty-cycle placebo draw CAGR tail fraction **0.936064**; placebo episodes and turnover were **not matched**, so not a valid causal significance test, and all history is reused. No promotion.
+
+**Claude H1 and H3 remain source-dependent, not code leftovers.** H1 ICE BofA HY spread on public FRED/ALFRED is currently limited to ~3 years, not independently vintage-certified 2010–26, and proprietary-license constrained. H3 needs licensed historical NBBO/official auction data plus documented broker MOO routing before executable comparisons. Genuine frozen-8-only external WORM/server capture and prospective XNYS complete/MISSED 63 sessions are **not deployed**; independently attested real ETF forward trading sessions are still **zero**. The original SL9-007 fingerprint mismatch remains unresolved without exact input bytes. The user is separately obtaining broker fee/FX/cash terms from Excellence. **No broker trading, no automatic capital release and no altered frozen 8.0.**
+
+---
+
 ## Executive finding
 
 **No new candidate has met the preregistered continuation requirements. StockLens 8.0 remains the reference and the highest historical-CAGR result among the selected tested alternative families.** This is not proof of market-beating *selection-corrected* alpha, broker-realizable returns or future performance.
