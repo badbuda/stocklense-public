@@ -39,6 +39,10 @@ def hexdigest(value,field):
 def validate(record,previous=None):
     if not isinstance(record,dict) or record.get("schema_version")!=SCHEMA:
         raise ValueError("FORWARD_BAD_SCHEMA")
+    if any(record.get(key) is True for key in
+           ("capital_authorized","live_broker_trading_authorized",
+            "independently_qualified_forward","model_automatically_promoted")):
+        raise ValueError("FORWARD_LOCAL_RECORD_CANNOT_AUTHORIZE_CAPITAL_OR_PROVE_EXTERNAL_RECEIPT")
     if record.get("model")!="STOCKLENS_8_0_FROZEN" or record.get("broker_orders_authorized") is not False:
         raise ValueError("FORWARD_MODEL_OR_BROKER_UNSAFE")
     day=record.get("session_date")
