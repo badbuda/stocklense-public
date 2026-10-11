@@ -415,3 +415,32 @@ jobs:
             research/reports/inverse_variance_downside_drag_observed_etfs.md
           if-no-files-found: warn
           retention-days: 30
+
+      - name: Provenance forensic SL9-020 archived Git appearance of forward rows
+        if: ${{ github.head_ref == 'research/sl9-020-forward-commit-capture-forensics-20261011' }}
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          python prospective_git_capture_forensics.py
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          x=json.loads(Path('research/results/sl9_020_forward_git_audit.json').read_text())
+          assert x['original_modelled_rows_retained']==10
+          assert x['rows_in_first_repository_snapshot']==8
+          assert x['git_author_timing_late_rows']==7
+          assert x['git_author_timing_plausible_rows_NOT_PROVEN']==3
+          assert x['independently_verified_forward_trading_rows']==0
+          assert x['real_tqqq_used_in_source_return_calculation'] is False
+          assert x['capital_deployment_authorized'] is False
+          PY
+      - name: Archive original SL9-007 Git first visible forward audit
+        if: ${{ always() && github.head_ref == 'research/sl9-020-forward-commit-capture-forensics-20261011' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: stocklens-sl9-020-git-appearance-forensics
+          path: |
+            research/results/sl9_020_forward_git_audit.json
+            research/reports/SL9-020_20261011_GIT_FIRST_APPEARANCE.md
+          if-no-files-found: warn
+          retention-days: 30
