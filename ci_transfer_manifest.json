@@ -388,7 +388,7 @@
     "research_actual_effr_cash_sensitivity.py": "6ab5f1ea3d1f45f73d7bf83a0ad50e090c376e95",
     "observed_sleeve_crisis_diagnostics.py": "7765e9a8ffad76c932e4a4a92094f849d7b59193",
     "research/predeclarations/SL9-014-EFFR-CASH-AND-CRISIS-DIAGNOSTICS.md": "5915241809f6356ab73df7289468bda939e76720",
-    "tests/test_research_actual_effr_cash_sensitivity.py": "7166ecfd3dd026002c4aa772d8678389c2fe9391",
+    "tests/test_research_actual_effr_cash_sensitivity.py": "d331af74d66565a8903fc25e4668672a85905bce",
     "tests/test_observed_sleeve_crisis_diagnostics.py": "0ecb5b6ca3d1d325b212c9cbfb9a9cc216bddfb1"
   }
 }

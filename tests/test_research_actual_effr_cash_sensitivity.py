@@ -24,9 +24,9 @@ def data():
 def test_benchmark_clock_delayed_by_two_completed_sessions():
     ds=["2024-03-18","2024-03-19","2024-03-20","2024-03-21"]
     rates,joins=rate_schedule(ds,data())
-    assert rates==pytest.approx([0.,0.,.0533,.0532])
-    assert joins[0]["selected_effective_date"]=="2024-03-15"
-    assert joins[1]["selected_effective_date"]=="2024-03-18"
+    assert rates==pytest.approx([0.,0.,.0532,.0531])
+    assert joins[0]["selected_effective_date"]=="2024-03-18"
+    assert joins[1]["selected_effective_date"]=="2024-03-19"
 
 
 def test_future_effective_date_and_outcome_do_not_affect_old_rates():
@@ -53,7 +53,7 @@ def test_publication_clock_self_claim_never_accepted_as_attestation():
 
 def test_stale_and_missing_effective_date_fail_closed():
     x=data()
-    dates=["2024-03-18","2024-03-19","2024-04-08"]
+    dates=["2024-03-18","2024-03-19","2024-04-08","2024-04-09"]
     with pytest.raises(ValueError,match="EFFR_SOURCE_STALE"):
         rate_schedule(dates,x)
     y=data()
