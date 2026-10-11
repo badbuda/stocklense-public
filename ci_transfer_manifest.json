@@ -7,7 +7,7 @@
   "files": {
     ".github/workflows/aws-journal-export.yml": "f5a19164d85c48d9ce6adf243d1907085f2d6ffe",
     ".github/workflows/aws-shadow-journal-audit.yml": "126a216d5a18c5f2bb30bde806007f7c38a36ff8",
-    ".github/workflows/fast-guard.yml": "0dcf1a1246733d460705d215293cce92066741e0",
+    ".github/workflows/fast-guard.yml": "d941f7d41950bd6e733d149b264af39589838b3c",
     ".github/workflows/portal-browser-smoke.yml": "68a5bcbd7d5f790edc611dd4b3fa24f6848458c2",
     ".github/workflows/portal-history-build.yml": "2d731559dde6f3116cc349379190e74417a1ece9",
     ".github/workflows/shadow.yml": "b4db9958876eaa47bbe3f183aa815feb15ab10c0",
@@ -392,6 +392,9 @@
     "tests/test_observed_sleeve_crisis_diagnostics.py": "0ecb5b6ca3d1d325b212c9cbfb9a9cc216bddfb1",
     "observed_qld_instrument_substitution.py": "42592fc46d64129ede40d115d0ee6daaa42f8b29",
     "tests/test_observed_qld_instrument_substitution.py": "1f0e595695c8821d892674db59b5078c375bbd04",
-    "research/predeclarations/SL9-015-CLAUDE-HYPOTHESIS-REGISTER.md": "c13dcf601bdfed2ca7dc7b7de8027e2f7278f7ee"
+    "research/predeclarations/SL9-015-CLAUDE-HYPOTHESIS-REGISTER.md": "c13dcf601bdfed2ca7dc7b7de8027e2f7278f7ee",
+    "observed_vix_prior_session_study.py": "eb8c4534a0ecb94c0c22046992c9222a2f319579",
+    "tests/test_observed_vix_prior_session_study.py": "1c9409c1489648cdefb9a9d4a4a4310f1ccf927a",
+    "research/predeclarations/SL9-016-CBOE-PRIOR-VIX-GUARDS.md": "a3bdd5f4f7a83082f349580ddfbfbbd1b462b4d7"
   }
 }

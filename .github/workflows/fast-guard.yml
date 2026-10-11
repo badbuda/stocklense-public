@@ -357,3 +357,33 @@ jobs:
             research/reports/qld_instrument_substitution.md
           if-no-files-found: warn
           retention-days: 30
+
+      - name: Fixed official Cboe VIX prior-close risk batch (no model promotion)
+        if: ${{ github.head_ref == 'research/sl9-016-actual-vix-prior-session-fixed-risk-20261011' }}
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          python observed_vix_prior_session_study.py
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=json.loads(Path('research/results/observed_vix_fixed_guard_results.json').read_text())
+          assert p['frozen_baseline_nav_parity'] is True
+          assert p['source_provider_first_seen_verified'] is False
+          assert p['vix_daily_close_prior_session_only'] is True
+          assert p['matched_prior_vix_sessions'] == 4190
+          assert p['real_qqq_tqqq_no_synthetic'] is True
+          assert p['automatic_promotion'] is False
+          assert p['capital_deployment_authorized'] is False
+          PY
+      - name: Archive real Cboe VIX source and fixed historical falsification
+        if: ${{ always() && github.head_ref == 'research/sl9-016-actual-vix-prior-session-fixed-risk-20261011' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: stocklens-cboe-vix-fixed-risk-study
+          path: |
+            research/private/vix_official_history_as_observed_20261011.json
+            research/results/observed_vix_fixed_guard_results.json
+            research/reports/observed_vix_fixed_guard_results.md
+          if-no-files-found: warn
+          retention-days: 30
