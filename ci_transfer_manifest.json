@@ -414,7 +414,6 @@
     "research/predeclarations/SL9-022-CLAUDE-FORWARD-PROXY-AND-SERVER-RECEIPTS.md": "551fcfd01f8038184ff5694bc04eabd6e82f3496",
     "aws_shadow_journal_verify.py": "8129b4d97622467d139f746fc8e87119fd3ff991",
     "tests/test_aws_shadow_journal_verify.py": "277ad25de75a9785c71ec9250e132dd408435175",
-    "docs/TQQQ_GO_NO_GO_PROTOCOL.md": "6cd8f8cdbb36547e31ae7ec18266937782e391db",
     "research/predeclarations/SL9-023-STALE-PR-PORT.md": "04296e27afa70a8e6fc6f53fa49711030594c0d1"
   }
 }
