@@ -2,7 +2,7 @@
 import copy
 import pytest
 
-from research_actual_effr_cash_sensitivity import normalize, rate_schedule
+from research_actual_effr_cash_sensitivity import normalize, rate_schedule, era
 
 
 def data():
@@ -71,3 +71,11 @@ def test_percent_units_and_duplicate_history_rejected():
     x["observations"].append(dict(x["observations"][0]))
     with pytest.raises(ValueError,match="EFFR_DUPLICATE"):
         normalize(x)
+
+def test_cash_era_needs_explicit_valid_market_dates():
+    path={"navs":[100.,110.,99.]}
+    days=["2024-03-18","2024-03-19","2024-03-20"]
+    r=era(path,days,days[1],days[2])
+    assert r["max_drawdown"] == pytest.approx(-.1)
+    with pytest.raises(ValueError,match="EFFR_MARKET_DATES_AND_LEDGER_MISMATCH"):
+        era(path,days[:-1],days[1],days[2])

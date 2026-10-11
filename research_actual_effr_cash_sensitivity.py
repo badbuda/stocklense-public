@@ -86,20 +86,24 @@ def rate_schedule(dates, source):
     return result, rate_used
 
 
-def era(path, start, end):
-    a=[i for i,d in enumerate(path["dates"]) if start<=d<=end]
+def era(path, days, start, end):
+    # The cash ledger owns NAVs; exchange dates are carried by the market source.
+    if len(path["navs"]) != len(days) or days != sorted(set(days)):
+        raise ValueError("EFFR_MARKET_DATES_AND_LEDGER_MISMATCH")
+    a=[i for i,d in enumerate(days) if start<=d<=end]
     if not a:
         raise ValueError("EFFR_MISSING_ERA")
     first,last=a[0],a[-1]
     prev=START_CAPITAL if first==0 else path["navs"][first-1]
-    return _metrics(path["navs"][first:last+1],path["dates"][first:last+1],first=prev)
+    return _metrics(path["navs"][first:last+1],days[first:last+1],first=prev)
 
 
 def evaluate(market, source):
     rows=market["daily"]
     if market.get("snapshot_sha256") != "bd2e53c6bbaa4d47247cc0b9c80094c268bb8354c1873c53901030f4b4011129":
         raise ValueError("EFFR_BASELINE_PRICE_SOURCE_CHANGED")
-    schedule, joins = rate_schedule([r["date"] for r in rows],source)
+    days = [r["date"] for r in rows]
+    schedule, joins = rate_schedule(days,source)
     baseline = credit_simulate(rows,[0.0]*len(rows))
     ref = frozen_reference(rows,mode="frozen",lag=0,slippage_bps=10.,annual_cash_yield=0.)
     if any(abs(a-b)>1e-5 for a,b in zip(baseline["navs"],ref["navs"])):
@@ -116,8 +120,8 @@ def evaluate(market, source):
             "cagr_delta_pp":100*(stats["cagr"]-baseline["stats"]["cagr"]),
             "modeled_gross_interest_dollars":test["cash_interest_dollars"],
             "eras":{k:{
-                "cagr_delta_pp":100*(era(test,a,b)["cagr"]-era(baseline,a,b)["cagr"]),
-                "maxdd_delta_pp":100*(era(test,a,b)["max_drawdown"]-era(baseline,a,b)["max_drawdown"])
+                "cagr_delta_pp":100*(era(test,days,a,b)["cagr"]-era(baseline,days,a,b)["cagr"]),
+                "maxdd_delta_pp":100*(era(test,days,a,b)["max_drawdown"]-era(baseline,days,a,b)["max_drawdown"])
             } for k,(a,b) in SPLITS.items()},
             "broker_credit_observed":False,
         }

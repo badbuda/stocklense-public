@@ -385,10 +385,10 @@
     "observed_nonnasdaq_sleeve_study.py": "1dbd232356d6de276767cc91491431618ec5bcb6",
     "tests/test_observed_nonnasdaq_sleeve_study.py": "a0e3e853f91d7fef4d9c5ed7950848e39f11f194",
     "research/predeclarations/SL9-013-FIXED-NONNASDAQ-SLEEVES.md": "5ec9979cc6127c38f4752c21b2b2ddf306d2b5e4",
-    "research_actual_effr_cash_sensitivity.py": "6ab5f1ea3d1f45f73d7bf83a0ad50e090c376e95",
+    "research_actual_effr_cash_sensitivity.py": "55a49939324747c570f1dd544fd01316c8b0a1b7",
     "observed_sleeve_crisis_diagnostics.py": "7765e9a8ffad76c932e4a4a92094f849d7b59193",
     "research/predeclarations/SL9-014-EFFR-CASH-AND-CRISIS-DIAGNOSTICS.md": "5915241809f6356ab73df7289468bda939e76720",
-    "tests/test_research_actual_effr_cash_sensitivity.py": "d331af74d66565a8903fc25e4668672a85905bce",
+    "tests/test_research_actual_effr_cash_sensitivity.py": "7eaadca3cc9a10fc1b946e17b592c5ca9e45259f",
     "tests/test_observed_sleeve_crisis_diagnostics.py": "0ecb5b6ca3d1d325b212c9cbfb9a9cc216bddfb1"
   }
 }
