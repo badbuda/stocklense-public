@@ -204,7 +204,7 @@
     "preflight.py": "eb93cc99be889099267da78bcfcb0040fc9f95d9",
     "prospective_benchmark.py": "567002d2246babab25d3ae90382ed928b020bf0a",
     "prospective_catchup.py": "f5d86035cc1e1716508984d60abe7c8ded37e5d3",
-    "prospective_freshness.py": "5359adbc63ad661e926bb10fcfc65ea461e66b29",
+    "prospective_freshness.py": "0750f34f67d8638e5e6df9929a41ccded4fb9933",
     "prospective_gate.py": "dab3c6df1092e3fd35d2cbbe68a876b8c5f7f7fe",
     "prospective_intraday_price_journal.py": "157f93fe2a6622e6937f968334cef832d173f904",
     "prospective_lineage.py": "00d3179e76a531db8454550507e128c6eb656215",
@@ -395,6 +395,8 @@
     "research/predeclarations/SL9-015-CLAUDE-HYPOTHESIS-REGISTER.md": "c13dcf601bdfed2ca7dc7b7de8027e2f7278f7ee",
     "observed_vix_prior_session_study.py": "eb8c4534a0ecb94c0c22046992c9222a2f319579",
     "tests/test_observed_vix_prior_session_study.py": "1c9409c1489648cdefb9a9d4a4a4310f1ccf927a",
-    "research/predeclarations/SL9-016-CBOE-PRIOR-VIX-GUARDS.md": "a3bdd5f4f7a83082f349580ddfbfbbd1b462b4d7"
+    "research/predeclarations/SL9-016-CBOE-PRIOR-VIX-GUARDS.md": "a3bdd5f4f7a83082f349580ddfbfbbd1b462b4d7",
+    "tests/test_prospective_lineage_freshness_guard.py": "87f478622a5fb12ae9bd599c47633f6ea0795504",
+    "research/predeclarations/SL9-017-PROSPECTIVE-LINEAGE-GATE.md": "bb3deabeab5d24aca096c5d83615c8638af2d475"
   }
 }

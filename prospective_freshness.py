@@ -13,14 +13,18 @@ def audit(registry='research/prospective/registry.json', workbench='docs/workben
     rows=[];audits={x['experiment_id']:x for x in r.get('last_ingestion_audit',[])}
     for c in r.get('candidates',[]):
         inception=c.get('inception_date');audit=audits.get(c['experiment_id'],{});accepted=int(audit.get('accepted_completed_xnys_rows',0) or 0);persisted=int(audit.get('persisted_prospective_rows',0) or 0);persistence_consistent=persisted==accepted
+        definition_matches=audit.get('definition_matches_registration') is True
+        evidence_matches=audit.get('fingerprint_matches_registration') is True
         post=bool(source_consistent and inception and date.fromisoformat(provenance_asof)>date.fromisoformat(inception))
         if not source_consistent:status='BLOCKED_CANONICAL_SOURCE_INCONSISTENT'
         elif not post:status='ATTENTION_CANONICAL_MARKET_DATA_NOT_POST_INCEPTION'
+        elif not definition_matches:status='BLOCKED_PROSPECTIVE_DEFINITION_MISMATCH'
+        elif not evidence_matches:status='ATTENTION_PROSPECTIVE_EVIDENCE_FINGERPRINT_DRIFT'
         elif accepted==0:status='ATTENTION_INGESTION_LAG'
         elif not persistence_consistent:status='BLOCKED_PROSPECTIVE_PERSISTENCE_MISMATCH'
         else:status='CURRENT'
-        rows.append({'experiment_id':c['experiment_id'],'inception_date':inception,'canonical_market_data_asof':provenance_asof,'workbench_signal_asof':workbench_asof,'canonical_source_consistent':source_consistent,'accepted_completed_xnys_sessions':accepted,'persisted_prospective_sessions':persisted,'persistence_consistent':persistence_consistent,'canonical_source_has_post_inception_session':post,'status':status})
+        rows.append({'experiment_id':c['experiment_id'],'inception_date':inception,'canonical_market_data_asof':provenance_asof,'workbench_signal_asof':workbench_asof,'canonical_source_consistent':source_consistent,'accepted_completed_xnys_sessions':accepted,'persisted_prospective_sessions':persisted,'persistence_consistent':persistence_consistent,'definition_matches_registration':definition_matches,'evidence_fingerprint_matches_registration':evidence_matches,'canonical_source_has_post_inception_session':post,'status':status})
     status='PASS' if rows and all(x['status']=='CURRENT' for x in rows) else ('BLOCKED' if (not source_consistent or any(str(x['status']).startswith('BLOCKED_') for x in rows)) else 'ATTENTION')
-    return {'schema_version':2,'publication_identity':identity(workbench),'status':status,'canonical_source':{'artifact':data,'field':'data_provenance.last_completed_date','provenance_status':provenance_status,'last_completed_date':provenance_asof,'workbench_signal_asof':workbench_asof,'consistent':source_consistent},'experiments':rows,'semantics':'Forward freshness is anchored to explicit canonical market-data provenance. Workbench signal_asof is a consistency check, not the freshness source. No web prices or retrospective prospective backfill.'}
+    return {'schema_version':2,'publication_identity':identity(workbench),'status':status,'canonical_source':{'artifact':data,'field':'data_provenance.last_completed_date','provenance_status':provenance_status,'last_completed_date':provenance_asof,'workbench_signal_asof':workbench_asof,'consistent':source_consistent},'experiments':rows,'semantics':'Forward freshness is anchored to explicit canonical market-data provenance. Workbench signal_asof is a consistency check, not the freshness source. An evidence fingerprint drift is flagged for review and never silently CURRENT; definition mismatch blocks. No web prices or retrospective prospective backfill.'}
 if __name__=='__main__':
     x=audit();Path('docs/prospective_freshness.json').write_text(json.dumps(x,indent=2)+'\n');print(json.dumps(x,indent=2))
