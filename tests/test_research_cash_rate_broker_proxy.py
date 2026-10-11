@@ -37,7 +37,8 @@ def test_outcome_mutation_after_last_prior_close_has_no_effect():
 
 def test_late_published_observation_not_available_at_open():
     a = data()
-    a["observations"] = a["observations"][:1]\n    a["observations"][0]["claimed_published_at_utc"] = "2024-03-19T16:00:00Z"
+    a["observations"] = a["observations"][:1]
+    a["observations"][0]["claimed_published_at_utc"] = "2024-03-19T16:00:00Z"
     with pytest.raises(ValueError, match="RATE_NO_ASOF_QUOTE"):
         asof_open_rates(prices(), a)
 
