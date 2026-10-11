@@ -396,7 +396,7 @@
     "observed_vix_prior_session_study.py": "eb8c4534a0ecb94c0c22046992c9222a2f319579",
     "tests/test_observed_vix_prior_session_study.py": "1c9409c1489648cdefb9a9d4a4a4310f1ccf927a",
     "research/predeclarations/SL9-016-CBOE-PRIOR-VIX-GUARDS.md": "a3bdd5f4f7a83082f349580ddfbfbbd1b462b4d7",
-    "tests/test_prospective_lineage_freshness_guard.py": "4c78aef1f93de12f201655b184b1aedbb9341dc3",
+    "tests/test_prospective_lineage_freshness_guard.py": "87f478622a5fb12ae9bd599c47633f6ea0795504",
     "research/predeclarations/SL9-017-PROSPECTIVE-LINEAGE-GATE.md": "bb3deabeab5d24aca096c5d83615c8638af2d475"
   }
 }
