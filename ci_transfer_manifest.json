@@ -171,8 +171,8 @@
     "mobile_validate.py": "15e9c8f3dd63f9e1efcc0b8b37f8f15a7c5fb25f",
     "model_readiness_audit.py": "478727a6efe9e77d863e0d6cec526afe673167b1",
     "news_archive_intake.py": "cecd4a4a1eaf1be7e6c9321a149bc36bd637ba0d",
-    "news_event_pit.py": "b9a0c27cb2663b66fb437cc5a17527769d4c4e50",
-    "news_event_study.py": "8a819d53300c5f1ecdcf5f20b29536201da5c99c",
+    "news_event_pit.py": "ccb86f0a77048407241e3cabf5dd71c6fe955581",
+    "news_event_study.py": "d077a701fac1aad0c1f373851e08a17140145880",
     "news_provider_adapters.py": "80beb71de6194d0e41ccbb130655e960371b1530",
     "next_frontier_multidirection_megabatch.py": "c3428ba8a9c77384c5f058274b7b734f226f6599",
     "observed_etf_causal_ml_meta_leverage.py": "5f38fadcf57d3a317192940747b9d4834a29afac",
@@ -316,8 +316,8 @@
     "tests/test_lean_parity_ladder_serialization.py": "a9164b52a605de4728ac8aeaa8fa906e13a19b7e",
     "tests/test_model_readiness_audit.py": "6492e91bfa25f57f1bd678de6271e9757e47ff1a",
     "tests/test_news_archive_intake.py": "d7dea5a4cc31dd01fe1088eb6ac8eb0925711515",
-    "tests/test_news_event_pit.py": "7c58a55f4aa4ab96833caa3de5ef2e67c92e9345",
-    "tests/test_news_event_study.py": "4d45ba1dce82211dff0dfc7771d0bbbf32916bde",
+    "tests/test_news_event_pit.py": "13a331a9f1df5b4088bbf12a80ab195cff97a826",
+    "tests/test_news_event_study.py": "48ce152827967e5c9fc8ff569f1c887204c6e791",
     "tests/test_observed_etf_causal_ml_meta_leverage.py": "8af22e3c3ed3188f4c78b200f5b43cbea603c3f2",
     "tests/test_observed_etf_execution_forensics.py": "6c7dc7ac291716f3828b25a1ed73f600307a1a3d",
     "tests/test_observed_etf_four_challengers_batch.py": "7e624abbf69a6025f1e2e5452f3a85ddf3bcd91a",
@@ -372,6 +372,7 @@
     "workbench_evidence_manifest.py": "7e290add5dcb861b0d4bdbed81cc7e4308ff4683",
     "workbench_selfcheck.py": "4f17be6d56ac7d3cc3637e1ef2b2af3ed9d880a8",
     "yahoo_eod_scorecard.py": "137465f3ff4d9a2b8c164bf4321480c0ea0869fd",
-    "yahoo_long_history.py": "e7e51b5c2f5697da5d583316638b98ec13e6114c"
+    "yahoo_long_history.py": "e7e51b5c2f5697da5d583316638b98ec13e6114c",
+    "research/SL9-010_PIT_CAUSAL_CALENDAR_BLOCKERS.md": "b33e6de46b1e9c8a2b71573ff34fc1aad823b346"
   }
 }
