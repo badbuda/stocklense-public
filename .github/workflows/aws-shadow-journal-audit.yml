@@ -97,6 +97,25 @@ jobs:
           print("AWS_PROSPECTIVE_PAPER=PASS_MODELED_ONLY;session="+session+
                 ";trade_count="+str(len(verified["value"]["trs"])))
           PY
+      - name: Cross-check previous archived shadow with next-session modeled paper
+        if: ${{ (github.event_name == 'schedule' || github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.verify_session)) && steps.market_calendar.outputs.required == 'true' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          session="${{ steps.market_calendar.outputs.session }}"
+          prior="$(SESSION="$session" python3 - <<'PY'
+          import os
+          from aws_paper_pairing import previous_session
+          print(previous_session(os.environ["SESSION"]))
+          PY
+          )"
+          aws dynamodb get-item --table-name "$TABLE" \
+            --key "{\"session_date\":{\"S\":\"$prior\"}}" \
+            --consistent-read --output json > /tmp/prior-signal.json
+          python3 aws_paper_pairing.py --session "$session" \
+            --prior-signal /tmp/prior-signal.json --paper /tmp/paper.json
+          echo "AWS_SIGNAL_PAPER_PAIRING=PASS_MODELED_ONLY_NOT_BROKER_FILLS"
+
       - name: Record daily AWS journal audit outcome on project issue
         if: ${{ always() && (github.event_name == 'schedule' || github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.verify_session)) }}
         shell: bash

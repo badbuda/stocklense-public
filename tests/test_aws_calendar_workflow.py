@@ -4,8 +4,11 @@ from pathlib import Path
 W=Path(".github/workflows/aws-shadow-journal-audit.yml").read_text()
 
 
-def test_previous_xnys_session_gate_applies_to_both_journal_reads():
-    assert W.count("steps.market_calendar.outputs.required == 'true'") == 2
+def test_previous_xnys_session_gate_applies_to_all_three_archive_checks():
+    # The read-only audit must gate signal, modeled paper and prior-signal pairing.
+    assert W.count("steps.market_calendar.outputs.required == 'true'") == 3
+    assert "Cross-check previous archived shadow with next-session modeled paper" in W
+    assert "python3 aws_paper_pairing.py --session" in W
     assert "python aws_journal_session_guard.py --github-output" in W
     assert "exchange-calendars==4.13.2" in W
     assert "id: market_calendar" in W
