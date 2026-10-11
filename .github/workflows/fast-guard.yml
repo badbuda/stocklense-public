@@ -281,3 +281,47 @@ jobs:
             research/reports/observed_nonnasdaq_fixed_sleeves.md
           if-no-files-found: warn
           retention-days: 30
+
+      - name: Restore previously verified observed GLD TLT and NY Fed EFFR effective dates for SL9-014
+        if: ${{ github.head_ref == 'research/sl9-014-economic-input-audit-and-crisis-attribution-20261011' }}
+        uses: actions/download-artifact@v4
+        with:
+          name: stocklens-observed-external-source-intake
+          run-id: 38108795287
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: research
+      - name: One deterministic EFFR cash accounting and downside attribution diagnostic batch
+        if: ${{ github.head_ref == 'research/sl9-014-economic-input-audit-and-crisis-attribution-20261011' }}
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          test -s research/private/non_nasdaq_observed_etfs.json
+          test -s research/private/effr_effective_dates_without_publication_clock.json
+          python research_actual_effr_cash_sensitivity.py
+          python observed_sleeve_crisis_diagnostics.py
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('research/results/effr_effective_date_cash_sensitivity.json').read_text())
+          v=json.loads(Path('research/results/fixed_sleeve_crisis_diagnostics.json').read_text())
+          assert r['frozen_daily_nav_parity'] is True
+          assert r['independently_verified_historical_publication_times'] is False
+          assert r['interest_paid_by_real_broker_proven'] is False
+          assert r['automatic_promotion'] is False
+          assert r['synthetic_tqqq_used'] is False
+          assert v['no_new_hypothesis_tuning'] is True
+          assert v['capital_deployment_authorized'] is False
+          assert v['real_prices_no_synthetic_etf'] is True
+          PY
+      - name: Archive conditioned cash and frozen nonNasdaq drawdown diagnostics
+        if: ${{ always() && github.head_ref == 'research/sl9-014-economic-input-audit-and-crisis-attribution-20261011' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: stocklens-effr-cash-and-fixed-sleeve-crisis-audit
+          path: |
+            research/results/effr_effective_date_cash_sensitivity.json
+            research/reports/effr_effective_date_cash_sensitivity.md
+            research/results/fixed_sleeve_crisis_diagnostics.json
+            research/reports/fixed_sleeve_crisis_diagnostics.md
+          if-no-files-found: warn
+          retention-days: 30

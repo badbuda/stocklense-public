@@ -7,7 +7,7 @@
   "files": {
     ".github/workflows/aws-journal-export.yml": "f5a19164d85c48d9ce6adf243d1907085f2d6ffe",
     ".github/workflows/aws-shadow-journal-audit.yml": "126a216d5a18c5f2bb30bde806007f7c38a36ff8",
-    ".github/workflows/fast-guard.yml": "ce84d4f4cccbd5268a42deb5d27ed151395022c6",
+    ".github/workflows/fast-guard.yml": "267e656ea64f41107fb4392bcbbff52e3c83833b",
     ".github/workflows/portal-browser-smoke.yml": "68a5bcbd7d5f790edc611dd4b3fa24f6848458c2",
     ".github/workflows/portal-history-build.yml": "2d731559dde6f3116cc349379190e74417a1ece9",
     ".github/workflows/shadow.yml": "b4db9958876eaa47bbe3f183aa815feb15ab10c0",
@@ -384,6 +384,11 @@
     "research/predeclarations/SL9-012-OBSERVED-SOURCE-ACQUISITION.md": "04369dc560f92580a1c730cf69fef181cd3044aa",
     "observed_nonnasdaq_sleeve_study.py": "1dbd232356d6de276767cc91491431618ec5bcb6",
     "tests/test_observed_nonnasdaq_sleeve_study.py": "a0e3e853f91d7fef4d9c5ed7950848e39f11f194",
-    "research/predeclarations/SL9-013-FIXED-NONNASDAQ-SLEEVES.md": "5ec9979cc6127c38f4752c21b2b2ddf306d2b5e4"
+    "research/predeclarations/SL9-013-FIXED-NONNASDAQ-SLEEVES.md": "5ec9979cc6127c38f4752c21b2b2ddf306d2b5e4",
+    "research_actual_effr_cash_sensitivity.py": "55a49939324747c570f1dd544fd01316c8b0a1b7",
+    "observed_sleeve_crisis_diagnostics.py": "7765e9a8ffad76c932e4a4a92094f849d7b59193",
+    "research/predeclarations/SL9-014-EFFR-CASH-AND-CRISIS-DIAGNOSTICS.md": "5915241809f6356ab73df7289468bda939e76720",
+    "tests/test_research_actual_effr_cash_sensitivity.py": "7eaadca3cc9a10fc1b946e17b592c5ca9e45259f",
+    "tests/test_observed_sleeve_crisis_diagnostics.py": "0ecb5b6ca3d1d325b212c9cbfb9a9cc216bddfb1"
   }
 }
