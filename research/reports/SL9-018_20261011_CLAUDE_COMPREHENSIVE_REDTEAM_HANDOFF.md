@@ -24,6 +24,21 @@ Thus the earlier handoff row calling *inverse variance* directly "UNTESTED" is s
 
 ---
 
+## SL9-020 verified forward provenance audit — important correction (11 Oct 2026)
+
+**[PR #66](https://github.com/badbuda/stocklense-public/pull/66) was merged after [green CI #38115590992](https://github.com/badbuda/stocklense-public/actions/runs/38115590992): 545 tests passed, research artifact archived.** Do not characterize this as a new strategy return result. It is an independent-evidence readiness audit, and the headline is **0 independently qualified forward trading rows**.
+
+- Registered SL9-007 rows preserved, total **10**; **8** already appear together in the first accessible Git snapshot, with no individually certified original observation times.
+- Of all ten rows, **3 have plausible Git author-time windows** between the session close and next open, and **7 do not**; *even the three are not proven real-time captures*. Git author timestamps are client-supplied and are not independent server receipt times.
+- Original `research_data_adapter.py` and `research_upshift_confirmation.py` compute **QQQ daily close-to-close return × selected leverage**, NOT real observed TQQQ portfolio returns and NOT broker fills. This is appropriate as a limited research proxy but insufficient to qualify as prospective observed leveraged-ETF performance.
+- Evidence fingerprint drift persists; the experiment definition fingerprint is stable. The earlier #63/#64 fail-closed flags must stay in place. Do not reset fingerprints or backfill.
+- Different from the *two* original frozen portfolio Paper ledger entries (Oct 8/9) and the single Oct 9 prospective Yahoo one-minute BAR OPEN journal, these ten research rows are not independent execution receipts.
+- Evidence artifact and explicit failure reason: [SL9-020 Git first-appearance audit](https://github.com/badbuda/stocklense-public/blob/main/research/reports/SL9-020_20261011_GIT_FIRST_APPEARANCE.md), output `research/results/sl9_020_forward_git_audit.json` archived in CI. The audit specifically states `BLOCKED_INDEPENDENT_FORWARD_CAPTURE_NOT_PROVEN`.
+
+**Claude red-team ask:** propose an exact append-only design that atomically binds a prior-close signal digest, next-open real observed TQQQ price/quote evidence, captured-at SERVER timestamp, provider receipt, market calendar, full fees and post-trade NAV. Distinguish one-minute OHLC opens from executable NBBO, real broker fills, and revised price feeds. Preregister next 63 XNYS sessions with a 252-session checkpoint; do not mine the existing 2010–2026 proxy sample.
+
+---
+
 ## Executive finding
 
 **No new candidate has met the preregistered continuation requirements. StockLens 8.0 remains the reference and the highest historical-CAGR result among the selected tested alternative families.** This is not proof of market-beating *selection-corrected* alpha, broker-realizable returns or future performance.
