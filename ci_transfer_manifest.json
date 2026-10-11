@@ -6,7 +6,7 @@
   "frozen_stocklens8_untouched": true,
   "files": {
     ".github/workflows/aws-journal-export.yml": "f5a19164d85c48d9ce6adf243d1907085f2d6ffe",
-    ".github/workflows/aws-shadow-journal-audit.yml": "d3133e2ff2d57a69e53612af2c6ee40f64daff16",
+    ".github/workflows/aws-shadow-journal-audit.yml": "5dd4640f79fa1f7887374cd84ac8b66c0d65d479",
     ".github/workflows/fast-guard.yml": "2ea8617fb8effef1cff9a9ec0eb1b82d252eadc3",
     ".github/workflows/portal-browser-smoke.yml": "68a5bcbd7d5f790edc611dd4b3fa24f6848458c2",
     ".github/workflows/portal-history-build.yml": "2d731559dde6f3116cc349379190e74417a1ece9",
@@ -422,6 +422,8 @@
     "research/predeclarations/SL9-025-FORWARD-RECEIPT-DEDUPE.md": "4eb4b5d8fd92265eb8bb88c707243feb5890d2fd",
     "observed_vix3m_2day_placebo_study.py": "f1602c7d97c71681060b0240325d8e821d9caf18",
     "tests/test_observed_vix3m_2day_placebo_study.py": "b965484f544d4603e5c7f5ad26e8b84775594b37",
-    "research/predeclarations/SL9-026-CBOE-2DAY-DUTY-PLACEBO.md": "339786137b4ae2d9a89bc22e91bff081dd90e87c"
+    "research/predeclarations/SL9-026-CBOE-2DAY-DUTY-PLACEBO.md": "339786137b4ae2d9a89bc22e91bff081dd90e87c",
+    "aws_paper_pairing.py": "5318d0659a8799db1424668c3914b7ce4b2c4b5d",
+    "tests/test_aws_paper_pairing.py": "1fec22d46a24dfc3b67eede67bd95c43c329eaae"
   }
 }
