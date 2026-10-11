@@ -7,7 +7,7 @@
   "files": {
     ".github/workflows/aws-journal-export.yml": "f5a19164d85c48d9ce6adf243d1907085f2d6ffe",
     ".github/workflows/aws-shadow-journal-audit.yml": "126a216d5a18c5f2bb30bde806007f7c38a36ff8",
-    ".github/workflows/fast-guard.yml": "f7887078315cd68336cff02e9dd5c5a1ac54e990",
+    ".github/workflows/fast-guard.yml": "435df7c2096ea7192a0b5d7ad504fefe0cf63770",
     ".github/workflows/portal-browser-smoke.yml": "68a5bcbd7d5f790edc611dd4b3fa24f6848458c2",
     ".github/workflows/portal-history-build.yml": "2d731559dde6f3116cc349379190e74417a1ece9",
     ".github/workflows/shadow.yml": "b4db9958876eaa47bbe3f183aa815feb15ab10c0",
@@ -62,7 +62,7 @@
     "broker_adapter.py": "cf188190c6f2ca2eb5fb6fdaa33df26a5d1e2bce",
     "broker_failure_harness.py": "79dc80444386cfaa8c2ca6b36765f0f4305c352f",
     "broker_reconciliation.py": "f9f70bd2ceef21e8de6c318157ea3a6e00051edf",
-    "capital_readiness.py": "ca240e09e6bbcac234103e17a427431d29810843",
+    "capital_readiness.py": "78ed35792e5d9012330431251a5851de971eed1c",
     "change_digest.py": "2791b3b5b6688b2f1a0f11343cad07a6414de337",
     "ci_quota_efficiency.py": "a440c243b4b63ca898a91f44e01f21dafacc4d4f",
     "ci_transfer_guard.py": "7f4f897751297479351aa6f7834e685c14039638",
@@ -244,7 +244,7 @@
     "recovery_plan.py": "4c632018f09c6b12deb9d339f2e16843c55b0caf",
     "regime_analytics.py": "f7da5bbfc19262a5ee87237b9f4fef29fecb71da",
     "requirements.txt": "7b247aedb5f970730272cfd94d4c7f524eca1b17",
-    "research_data_adapter.py": "292a9f3b38490eeaa18af4513d0e1c55c792471a",
+    "research_data_adapter.py": "b0f760964f34a45554529e0395ac7eb6263c3837",
     "research_dataset_validate.py": "dd0f86799b90165a2e5f80049494ec6fd26e51f7",
     "research_dataset.py": "afd0fca1ad8e44d9fd7de60ebc124957e6acaad3",
     "research_decision_gate.py": "3686f5779c651e01976caceb3f18d5322ee2a814",
@@ -254,7 +254,7 @@
     "research_prospective_registry.py": "c8963dfffca6820d0400a3872fc2da8242b28a46",
     "research_provenance.py": "0402e1d6c86d49b2e57ac9a7539df77d3e80fb8a",
     "research_selection_inventory.py": "d420428ec6d25857493f0c4b8e49ec26f1bbdf00",
-    "research_upshift_confirmation.py": "05766cae6e666adc50939c039aae4b4e3b7001ea",
+    "research_upshift_confirmation.py": "6262b2ae538f5579cd4e7d52ad0816475f2f5093",
     "research/AUTONOMY_STATE.json": "43c89b260a87dd5781b116827bb4eb567ab867b2",
     "research/golden_evidence/qc_68920881.json": "d0d31a13251e00cb13c7caac7213c65580351f1f",
     "research/lean_yahoo_cross_provider_20261009.json": "918c1dd94c8f4ef138c5e2f37e5f27f3fb92c94e",
@@ -406,6 +406,11 @@
     "prospective_git_capture_forensics.py": "7ec5c6cecf43fe5e9f51eb397234839261d70330",
     "tests/test_prospective_git_capture_forensics.py": "5004f2878a98f3001714d30e83bd67a1e376eb90",
     "research/evidence/SL9-020-GIT-APPEARANCE.json": "cfba600d33e854c27d3bb4735ffdd1e5e83d5c92",
-    "research/predeclarations/SL9-020-FORWARD-GIT-FIRST-VISIBLE.md": "7e092c1141a28cbb3298c6d8ffb9916c4c873226"
+    "research/predeclarations/SL9-020-FORWARD-GIT-FIRST-VISIBLE.md": "7e092c1141a28cbb3298c6d8ffb9916c4c873226",
+    "sl9_022_original_forward_qualification.py": "ab8e68518cdd42aad1e8a8fa992541e67c7b0df5",
+    "github_server_receipts_capture.py": "1cb767de344741726a71e33970101e697353e6a1",
+    "tests/test_sl9_022_original_forward_qualification.py": "44991bf7a0520316622fb937078371ca93bb2ee0",
+    "tests/test_github_server_receipts_capture.py": "3954a7d966de6db2ee3f3c1db749cf86a35ae70a",
+    "research/predeclarations/SL9-022-CLAUDE-FORWARD-PROXY-AND-SERVER-RECEIPTS.md": "551fcfd01f8038184ff5694bc04eabd6e82f3496"
   }
 }
