@@ -293,7 +293,7 @@
     "tests/portal_browser_smoke.cjs": "2a6490d3ad947b7093c54f5c41d9ddc112bbd5ea",
     "tests/portal_insights_unit.cjs": "96615eaa8d0cba7b0c7ceb51665172287d0ff414",
     "tests/test_aws_b6_bounded_receipt.py": "c1153e49e87df1cd30e5ce882800cc5b1d7c0c8f",
-    "tests/test_aws_calendar_workflow.py": "9a0926952f7b880331173cbb2d55842064f649ba",
+    "tests/test_aws_calendar_workflow.py": "93878060f3ea1002e1397ef91fe547c4bb95cbe6",
     "tests/test_aws_journal_export.py": "60833c59988e0f2755073ed4bac80dbeb8c5ea2b",
     "tests/test_aws_journal_session_guard.py": "5d39ca397242199da04b2006e6f3624a29f29994",
     "tests/test_aws_phase2_behavior.py": "8cbd5c6e8124c05d684b9220484a68b8718f05f0",
