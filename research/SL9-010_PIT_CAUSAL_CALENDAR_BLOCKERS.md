@@ -1,0 +1,3 @@
+# PIT calendar research blockers
+
+Historical official FOMC/CPI release dates do not establish when a calendar announcement was first publicly known. GDELT archive timestamps and SEC acceptance times do not establish vendor first-seen. A JSONL boolean and SHA256 string are self-assertions, not independent proof. Before research event sampling, archive schedule announcement vintages, prior-release consensus, provider arrival receipts, exchange sessions and observed QQQ/TQQQ prices. Never infer tradable news alpha from two already inspected 2022 events; never modify frozen StockLens 8.0 or authorize trades.
