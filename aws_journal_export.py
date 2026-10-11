@@ -10,10 +10,12 @@ import argparse
 import csv
 import hashlib
 import json
+import math
 import subprocess
 from datetime import datetime, timedelta
 from pathlib import Path
 from zoneinfo import ZoneInfo
+from aws_shadow_journal_verify import verify_journal_response
 
 FIRST_FORWARD_DATE = "2026-10-08"
 FIELDS = [
@@ -54,6 +56,10 @@ def get_item(table: str, key: str) -> dict | None:
 def decode_signal(item: dict | None, day: str) -> dict | None:
     if item is None:
         return None
+    # The CSV export must apply the *same* source, version, exposure,
+    # freshness, time and broker-off validation as the independent AWS audit.
+    # A matching JSON SHA alone never qualifies the signal as verified.
+    verify_journal_response({"Item": item}, day)
     if item.get("broker_orders_authorized", {}).get("BOOL") is not False:
         raise ValueError(f"{day}: UNSAFE_SIGNAL_BROKER_FLAG")
     raw = item["signal_json"]["S"]
@@ -72,6 +78,8 @@ def decode_signal(item: dict | None, day: str) -> dict | None:
 def decode_paper(item: dict | None, day: str) -> dict | None:
     if item is None:
         return None
+    if item.get("session_date", {}).get("S") != day + "#PAPER":
+        raise ValueError(f"{day}: PAPER_PRIMARY_KEY_MISMATCH")
     if item.get("broker_orders_authorized", {}).get("BOOL") is not False:
         raise ValueError(f"{day}: UNSAFE_PAPER_BROKER_FLAG")
     if item.get("broker_fills_observed", {}).get("BOOL") is not False:
@@ -87,8 +95,30 @@ def decode_paper(item: dict | None, day: str) -> dict | None:
         raise ValueError(f"{day}: INVALID_PAPER_SESSION_OR_SOURCE")
     if not isinstance(trades, list) or len(trades) != int(row["trade_count_session"]):
         raise ValueError(f"{day}: INVALID_PAPER_TRADE_COUNT")
-    if any(tr.get("execution_session") != day for tr in trades):
+    if any(not isinstance(tr, dict) or tr.get("execution_session") != day for tr in trades):
         raise ValueError(f"{day}: INVALID_PAPER_TRADE_SESSION")
+    # Reject impossible fills even when the producer has recomputed the hash.
+    # These are modeled orders, not independent quotes or broker fills.
+    for tr in trades:
+        qty, px = tr.get("qty"), tr.get("modeled_fill_price")
+        signal_date = tr.get("signal_date")
+        if (tr.get("symbol") not in ("QQQ", "TQQQ")
+                or tr.get("side") not in ("BUY", "SELL")
+                or type(qty) is not int or qty <= 0
+                or isinstance(px, bool) or not isinstance(px, (int, float))
+                or not math.isfinite(px) or not 0 < px < 1e9
+                or not isinstance(signal_date, str)
+                or len(signal_date) != 10 or signal_date >= day):
+            raise ValueError(f"{day}: INVALID_MODELED_TRADE")
+    for field in ("cash", "equity"):
+        value = row.get(field)
+        if (isinstance(value, bool) or not isinstance(value, (int, float))
+                or not math.isfinite(value) or value < -1e-6):
+            raise ValueError(f"{day}: INVALID_PAPER_LEDGER_{field.upper()}")
+    for field in ("qqq_shares", "tqqq_shares"):
+        value = row.get(field)
+        if type(value) is not int or value < 0:
+            raise ValueError(f"{day}: INVALID_PAPER_HOLDINGS_{field.upper()}")
     return {"value": data, "sha": sha,
             "recorded_at": item.get("recorded_at_utc", {}).get("S", "")}
 
@@ -157,6 +187,8 @@ def write_csv(path: Path, headers: list[str], rows: list[dict]) -> None:
 
 def export(table: str, output_dir: Path, sessions: list[str],
            fetch=get_item) -> dict:
+    if sessions != sorted(set(sessions)):
+        raise ValueError("DUPLICATED_OR_UNORDERED_EXPORT_SESSIONS")
     output_dir.mkdir(parents=True, exist_ok=True)
     records, trades, failures = [], [], []
     for day in sessions:
@@ -172,6 +204,10 @@ def export(table: str, output_dir: Path, sessions: list[str],
         trades.extend(session_trades)
     write_csv(output_dir / "sessions.csv", FIELDS, records)
     write_csv(output_dir / "trades.csv", TRADE_FIELDS, trades)
+    csv_sha256 = {
+        name: hashlib.sha256((output_dir / name).read_bytes()).hexdigest()
+        for name in ("sessions.csv", "trades.csv")
+    }
     counts = {label: sum(row["status"] == label for row in records)
               for label in ["PASS", "MISSING_SIGNAL", "MISSING_PAPER",
                             "MISSING_BOTH", "INVALID_EVIDENCE"]}
@@ -182,7 +218,9 @@ def export(table: str, output_dir: Path, sessions: list[str],
         "last_session": sessions[-1] if sessions else None,
         "market_sessions_checked": len(records), "trade_receipts": len(trades),
         "statuses": counts, "errors": failures,
-        "all_sessions_pass": bool(records) and counts["PASS"] == len(records),
+        "export_file_sha256": csv_sha256,
+        "export_hash_scope": "LOCAL_BYTES_ONLY_NOT_EXTERNAL_WORM_OR_SIGNED_RECEIPT",
+        "all_sessions_pass": bool(records) and not failures and counts["PASS"] == len(records),
         "broker_fills_observed": False, "live_trading_authorized": False,
         "note": "Paper execution uses modeled minute-bar opens, NOT actual broker fills. Missing sessions are not backfilled.",
     }
