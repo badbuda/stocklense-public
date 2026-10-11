@@ -13,6 +13,7 @@ on:
       - main
     paths:
       - '.github/workflows/aws-shadow-journal-audit.yml'
+      - 'aws_shadow_journal_verify.py'
   schedule:
     - cron: '40 9 * * 2-6'
 
@@ -71,27 +72,7 @@ jobs:
             --key "{\"session_date\":{\"S\":\"$session\"}}" \
             --consistent-read \
             --output json > /tmp/aws-journal.json
-          SESSION="$session" python3 - <<'PY'
-          import json
-          import hashlib
-          import os
-          import sys
-          item = json.load(open("/tmp/aws-journal.json")).get("Item")
-          session = os.environ["SESSION"]
-          if not item:
-              sys.exit("AWS_SHADOW_JOURNAL_MISSING_COMPLETED_SESSION:" + session)
-          if item.get("broker_orders_authorized", {}).get("BOOL") is not False:
-              sys.exit("AWS_SHADOW_JOURNAL_UNSAFE_BROKER_FLAG")
-          body = item["signal_json"]["S"]
-          if hashlib.sha256(body.encode()).hexdigest() != item["signal_sha256"]["S"]:
-              sys.exit("AWS_SHADOW_JOURNAL_TAMPERED")
-          signal = json.loads(body)
-          if signal.get("mode") != "SHADOW_ONLY_NO_BROKER_ACTIONS":
-              sys.exit("AWS_SHADOW_JOURNAL_UNEXPECTED_MODE")
-          if signal.get("latest", {}).get("asof_date") != session:
-              sys.exit("AWS_SHADOW_JOURNAL_SIGNAL_DATE_MISMATCH")
-          print("AWS_SHADOW_JOURNAL=PASS;asof=" + session + ";broker_execution=false")
-          PY
+          python3 aws_shadow_journal_verify.py /tmp/aws-journal.json "$session"
 
       - name: Validate separate modeled paper record in AWS; never broker fills
         if: ${{ (github.event_name == 'schedule' || github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.verify_session)) && steps.market_calendar.outputs.required == 'true' }}

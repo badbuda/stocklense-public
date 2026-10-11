@@ -6,7 +6,7 @@
   "frozen_stocklens8_untouched": true,
   "files": {
     ".github/workflows/aws-journal-export.yml": "f5a19164d85c48d9ce6adf243d1907085f2d6ffe",
-    ".github/workflows/aws-shadow-journal-audit.yml": "126a216d5a18c5f2bb30bde806007f7c38a36ff8",
+    ".github/workflows/aws-shadow-journal-audit.yml": "449011c89ccbb76e859d33fc43498aead2a46adb",
     ".github/workflows/fast-guard.yml": "435df7c2096ea7192a0b5d7ad504fefe0cf63770",
     ".github/workflows/portal-browser-smoke.yml": "68a5bcbd7d5f790edc611dd4b3fa24f6848458c2",
     ".github/workflows/portal-history-build.yml": "2d731559dde6f3116cc349379190e74417a1ece9",
@@ -352,11 +352,11 @@
     "tests/test_research_selection_inventory.py": "1e88681c7e8ea3aaab110ddefc553aa539570427",
     "tests/test_shared_rebalance_math.py": "413c98ecff9e1a400929f94f2ce08895e5a1698e",
     "tests/test_sma200_threshold_provenance.py": "eefea858907bc80aebdc6c3c3b979379c7521b98",
-    "tests/test_tradable_tqqq_execution_comparison.py": "a4cc2e8720ca0cfacb6e9bc7914f56844ea5f23f",
+    "tests/test_tradable_tqqq_execution_comparison.py": "3051648a0b051f60e0b038e986a98d954bc84d27",
     "tqqq_reality_check.py": "776f226d601406118ff47de8c9463b00bacefca7",
     "tradable_blend_challenger.py": "77289af3e9134befb6876100bd48704ef38205bd",
-    "tradable_tqqq_execution_comparison.py": "c272cc3ea120261388833ee8c1f19d836c37186e",
-    "tradable_tqqq_execution_validate.py": "6d7e1e273ec1a29f2d42e7da09d80661eacad38e",
+    "tradable_tqqq_execution_comparison.py": "b97bf544280707c357a295ee3be0614f6018ebf3",
+    "tradable_tqqq_execution_validate.py": "bfeedc02a0767239891f92e7d397864f949edab9",
     "trade_receipts.py": "d535976552a5f9d2a6cbf63d25b73eab43592465",
     "transition_explainer.py": "01fb39ab704f3f5c4670dfa61f77d2a7d0b41b00",
     "two_of_three_cap20_independent_redteam.py": "42badc990f2eaf43f6758f6547f1befea30e5fe7",
@@ -411,6 +411,9 @@
     "github_server_receipts_capture.py": "1cb767de344741726a71e33970101e697353e6a1",
     "tests/test_sl9_022_original_forward_qualification.py": "44991bf7a0520316622fb937078371ca93bb2ee0",
     "tests/test_github_server_receipts_capture.py": "3954a7d966de6db2ee3f3c1db749cf86a35ae70a",
-    "research/predeclarations/SL9-022-CLAUDE-FORWARD-PROXY-AND-SERVER-RECEIPTS.md": "551fcfd01f8038184ff5694bc04eabd6e82f3496"
+    "research/predeclarations/SL9-022-CLAUDE-FORWARD-PROXY-AND-SERVER-RECEIPTS.md": "551fcfd01f8038184ff5694bc04eabd6e82f3496",
+    "aws_shadow_journal_verify.py": "8129b4d97622467d139f746fc8e87119fd3ff991",
+    "tests/test_aws_shadow_journal_verify.py": "277ad25de75a9785c71ec9250e132dd408435175",
+    "research/predeclarations/SL9-023-STALE-PR-PORT.md": "04296e27afa70a8e6fc6f53fa49711030594c0d1"
   }
 }
