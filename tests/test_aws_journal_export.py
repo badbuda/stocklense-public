@@ -93,7 +93,7 @@ def test_paper_tampering_fails_closed():
 def test_broker_flags_cannot_be_claimed():
     sig,paper=good_items()
     sig["broker_orders_authorized"]["BOOL"]=True
-    with pytest.raises(ValueError,match="UNSAFE_SIGNAL_BROKER_FLAG"):
+    with pytest.raises(ValueError,match="BROKER_EXECUTION_MUST_REMAIN_DISABLED"):
         inspect_session(DAY,sig,paper)
     sig,paper=good_items()
     paper["broker_fills_observed"]["BOOL"]=True
