@@ -103,3 +103,13 @@ Important current registry discrepancy: registered SL9-007 evidence fingerprint 
 - Track immutable paper evidence; missing days are gaps, never retroactive filled trades.
 
 Latest related action plan: [Issue #61](https://github.com/badbuda/stocklense-public/issues/61) and [live readiness Issue #3](https://github.com/badbuda/stocklense-public/issues/3), [forward external-audit Issue #10](https://github.com/badbuda/stocklense-public/issues/10).
+
+
+## Additional directly tested Claude mechanisms — SL9-019 (completed after first handoff draft)
+
+- [PR #65 — true observed ETF inverse-variance vs downside semivariance](https://github.com/badbuda/stocklense-public/pull/65), merged after [CI #38112459649](https://github.com/badbuda/stocklense-public/actions/runs/38112459649) **538 passing pytest tests and 8 artifacts**. [Original result artifact](https://github.com/badbuda/stocklense-public/actions/runs/38112459649/artifacts/11691663638).
+- Physical real QQQ/TQQQ bar source unchanged, frozen portfolio NAV day-by-day parity. Two direct fixed rules with prior completed QQQ 20-session realized log-return sigma:
+  - Inverse variance: cap leverage to `clip((0.60/sigma20)^2,1,3)`, at most frozen 8.0 leverage. CAGR **39.8642%**, MaxDD **-49.0756%**, **-0.1621pp CAGR**, **0pp MaxDD benefit**, **177** modeled trades, **0/4** continuation checks passed.
+  - Downside semivariance: cap `clip(0.60/sqrt(2*252*mean(min(r,0)^2)),1,3)`. CAGR **37.3498%**, MaxDD **-47.7857%**, **-2.6765pp CAGR**, **+1.2899pp MaxDD**, **1,010** trades, **0/4** checks passed.
+- Therefore the **specific inverse-variance20 and downside-semivariance20 variants are now TESTED/REJECTED**, rather than UNTESTED. This does **not** constitute a test of full forward drift estimation, Kelly-optimal dynamic leverage or all tail-hedge families.
+- After PR #65, frozen 8.0 remains the highest-CAGR among these tested historical candidates. No live-fills, separate clean OOS, new alpha, or capital authorization. Follow-up should target new source information and forward execution realism, not ex-post optimizing 20-session window or 60% target.
