@@ -39,6 +39,17 @@ Thus the earlier handoff row calling *inverse variance* directly "UNTESTED" is s
 
 ---
 
+### SL9-020b — numeric real TQQQ reconciliation, same 10 dates
+
+After the Git-capture lineage audit, an additional descriptive check matched each of the ten CSV sessions to the **real observed TQQQ** adjusted daily close in the original frozen market source (same Yahoo-derived provider). [Permanent row-by-row source and calculation](https://github.com/badbuda/stocklense-public/blob/main/research/reports/SL9-020B_20261011_REAL_TQQQ_VS_FORWARD_QQQ_PROXY.md).
+
+- Every SL9-007 baseline modeled return in these ten sessions equals **3 × the QQQ adjusted close-to-close return** to within 1e-8.
+- Compared to genuine observed TQQQ daily adjusted close-to-close return, the **mean absolute difference is 4.976 basis points/day** and the maximum is **17.205 basis points** (October 9).
+- Ten-session compounded model return **+2.5831%** vs real ETF TQQQ close-to-close **+2.1106%**; the model overstates compounded ending wealth by **47.255 basis points** of starting account value in this specific ten-day window.
+- This is **not** actual next-open fill slippage or independent market-data verification; observed ETF close-to-close has its own adjusted-price limitations and these ten dates were not pristine first-seen collected data. **Never reinterpret this as StockLens 8.0's total historical CAGR error**, since the frozen 8.0 benchmark uses separate real TQQQ price paths. Historical research sample tiny, no forecasting inference.
+
+**Claude:** reconcile the exact source-level economic distinction, and implement future qualified paper using observed real ETF execution-price/fill paths rather than `QQQ×leverage` shortcut.
+
 ## Addendum — SL9-020 verified Git first-appearance forensic (11 October 2026)
 
 **IMPORTANT CORRECTION: the 10 existing SL9-007 prospective candidate CSV rows do not establish 10 genuine forward real-TQQQ sessions.** Research [PR #66](https://github.com/badbuda/stocklense-public/pull/66) was merged after [CI #38115590992](https://github.com/badbuda/stocklense-public/actions/runs/38115590992) completed **545 tests successfully**. [Detailed permanent findings](https://github.com/badbuda/stocklense-public/blob/main/research/reports/SL9-020_20261011_VERIFIED_GIT_CAPTURE_FINDINGS.md).
