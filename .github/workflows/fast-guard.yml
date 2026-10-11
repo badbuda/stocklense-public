@@ -488,3 +488,27 @@ jobs:
             research/private/sl9_022_archived_prior_ci/*.zip
           if-no-files-found: warn
           retention-days: 30
+
+      - name: Verify frozen8-only forward 63 schema cannot claim 10 old proxy rows
+        if: ${{ github.head_ref == 'research/sl9-024-frozen8-63-evidence-contract-20261011' }}
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          python forward_capture_63_contract.py
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          v=json.loads(Path('research/results/sl9_024_forward_63_readiness.json').read_text())
+          assert v['independently_attested_forward_sessions']==0
+          assert v['original_legacy_007_rows_counted']==0
+          assert v['63_session_capture_gate_passed'] is False
+          assert v['capital_deployment_authorized'] is False
+          PY
+      - name: Preserve frozen8-only prospective contract readiness
+        if: ${{ always() && github.head_ref == 'research/sl9-024-frozen8-63-evidence-contract-20261011' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: stocklens-frozen8-external-receipt-contract-only
+          path: research/results/sl9_024_forward_63_readiness.json
+          if-no-files-found: warn
+          retention-days: 30

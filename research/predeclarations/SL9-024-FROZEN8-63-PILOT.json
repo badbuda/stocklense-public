@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "experiment_id": "SL9-024-FROZEN8-ONLY-63-SESSION-RECEIPTS",
+  "registered_at_date": "2026-10-11",
+  "earliest_capture_session": "2026-10-12",
+  "candidate": "StockLens 8.0 FROZEN",
+  "frozen_core_git_blob_sha": "258c6918ea10456754bcd26f782af77545a56b2b",
+  "asset_universe": [
+    "QQQ",
+    "TQQQ"
+  ],
+  "no_synthetic_etf": true,
+  "external_cashflows_accounted": true,
+  "signal_must_be_received_before_open": true,
+  "all_sessions_complete_or_missed": true,
+  "no_retroactive_backfill": true,
+  "retention_requirement": "SEPARATE_IMMUTABLE_RECEIPT_WITH_INDEPENDENT_SERVER_TIMESTAMP",
+  "deployment_status": "NOT_DEPLOYED",
+  "external_attestor_proven": false,
+  "broker_order_execution_authorized": false,
+  "auto_model_promotion": false,
+  "review_floors": {
+    "operational_capture_sessions": 63,
+    "extended_descriptive_sessions": 252
+  },
+  "alpha_significance_proven_by_thresholds": false,
+  "parameters_fixed_before_first_qualifying_session": true
+}
