@@ -98,3 +98,23 @@ def test_non_frozen_exposure_rejected(synthetic_market):
     rogue[next(d for d in q if d >= "2010-02-08")] = 2.5
     with pytest.raises(ValueError, match="FROZEN_EXPOSURE_NOT_RECOGNIZED"):
         run_execution(q, t, rogue)
+
+def test_cashflow_neutral_monthly_and_overlapping_actual_nav(synthetic_market):
+    q,t,signals=synthetic_market
+    a=run_execution(q,t,signals)
+    b=run_execution(q,t,signals,monthly=3500.)
+    for name in ("stocklens","qqq_buy_hold"):
+        assert a[name]["max_drawdown"]==pytest.approx(a[name]["raw_equity_max_drawdown"])
+        assert b[name]["max_drawdown"]==pytest.approx(b[name]["cashflow_adjusted_max_drawdown"])
+        assert b[name]["max_drawdown_method"]=="CHAINED_NAV_EXCLUDING_START_OF_SESSION_EXTERNAL_CASHFLOWS"
+        assert -1. <= b[name]["max_drawdown"] <= 0.
+    assert set(a["rolling_observed_etf_windows"])=={"21","63","252","756","1260"}
+    assert a["rolling_observed_etf_windows"]["1260"]["window_count"]>100
+    assert b["rolling_observed_etf_windows"] is None
+
+
+def test_cash_only_external_deposits_no_investment_drawdown(synthetic_market):
+    q,t,_=synthetic_market
+    x=run_execution(q,t,{d:0. for d in q},monthly=3500.)
+    assert x["stocklens"]["cashflow_adjusted_max_drawdown"]==pytest.approx(0.)
+    assert x["stocklens"]["profit_loss"]==pytest.approx(0.)
