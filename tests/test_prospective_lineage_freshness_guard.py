@@ -5,6 +5,7 @@ from prospective_freshness import audit
 
 def _setup(tmp_path,monkeypatch,*,definition=True,evidence=True,rows=2):
     monkeypatch.chdir(tmp_path)
+    monkeypatch.setenv('GITHUB_SHA','b'*40)
     Path("research/prospective").mkdir(parents=True)
     Path("docs").mkdir()
     Path("research/prospective/registry.json").write_text(json.dumps({
@@ -18,7 +19,9 @@ def _setup(tmp_path,monkeypatch,*,definition=True,evidence=True,rows=2):
     Path("docs/data.json").write_text(json.dumps({"data_provenance":{
         "last_completed_date":"2026-10-09","status":"COMPLETE"}}))
     Path("docs/workbench.json").write_text(json.dumps({
-        "publication":{"signal_asof":"2026-10-09"}}))
+        "publication":{"signal_asof":"2026-10-09"},
+        "replay":{"rows":[{"date":"2026-10-09"}],"dataset_sha256":"unit-test-fixture-digest"},
+        "simulator_contract":{"version":1}}))
     return audit("research/prospective/registry.json","docs/workbench.json","docs/data.json")
 
 
