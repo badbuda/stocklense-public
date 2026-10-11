@@ -64,6 +64,24 @@ After the Git-capture lineage audit, an additional descriptive check matched eac
 
 ---
 
+## Critical addendum — SL9-020 forward evidence audit (11 October 2026)
+
+**PR #66 merged:** [Git first-visible source forensic audit](https://github.com/badbuda/stocklense-public/pull/66). **Green CI [#38115590992](https://github.com/badbuda/stocklense-public/actions/runs/38115590992), 545 tests passed**. The verified CI log, NOT an inferred metric, reports:
+
+| Fixed, unaltered SL9-007 observational rows | Result |
+|---|---:|
+| Original simulated rows retained | **10** |
+| Rows already present in earliest accessible Git source blob | **8** |
+| Rows appearing late under Git author-date comparison | **7** |
+| Additional rows whose Git author-date appears plausibly timely, **not independently validated** | **3** |
+| Independently verified prospective real-market tradable observations | **0** |
+
+The [source receipt history](https://github.com/badbuda/stocklense-public/blob/main/research/evidence/SL9-020-GIT-APPEARANCE.json) contains immutable Git commit and blob digests. **Git author timestamps are writable metadata, not independent real-time archival receipt timestamps**; these results do not prove historical market-time data capture even for three plausibly timed rows. The ten SL9-007 simulated rows must not be called ten verified forward trading observations. The original SL9-007 return builder uses exposure multiplied by QQQ daily returns, NOT verified actual TQQQ historical trade returns; do not accidentally present it as an observed real-TQQQ forward strategy edge. The prior fingerprint mismatch remains unresolved.
+
+**High-priority instruction to Claude:** independently reconstruct the earliest *externally received* immutable archive receipts and data vintage for each of the 10 rows; reject Git author time and dataset date labels as proof. Specify a prospective append-only pipeline with trusted server receive timestamps, source receipt digests, prior-session signals, NYSE completed-session checks, actual observed QQQ/TQQQ bar provenance, non-retroactive missing-session evidence and broker executable quote/fill separation. **Preserve source evidence; do not backfill or rewrite registration.** Frozen StockLens 8.0 remains unchanged and does not inherit an asserted 10-session forward edge.
+
+---
+
 ## Executive finding
 
 **No new candidate has met the preregistered continuation requirements. StockLens 8.0 remains the reference and the highest historical-CAGR result among the selected tested alternative families.** This is not proof of market-beating *selection-corrected* alpha, broker-realizable returns or future performance.
