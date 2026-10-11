@@ -39,6 +39,20 @@ Thus the earlier handoff row calling *inverse variance* directly "UNTESTED" is s
 
 ---
 
+## Addendum — SL9-020 verified Git first-appearance forensic (11 October 2026)
+
+**IMPORTANT CORRECTION: the 10 existing SL9-007 prospective candidate CSV rows do not establish 10 genuine forward real-TQQQ sessions.** Research [PR #66](https://github.com/badbuda/stocklense-public/pull/66) was merged after [CI #38115590992](https://github.com/badbuda/stocklense-public/actions/runs/38115590992) completed **545 tests successfully**. [Detailed permanent findings](https://github.com/badbuda/stocklense-public/blob/main/research/reports/SL9-020_20261011_VERIFIED_GIT_CAPTURE_FINDINGS.md).
+
+- The earliest accessible original CSV Git version ([d54464f, 2026-10-08](https://github.com/badbuda/stocklense-public/commit/d54464f854c90eeddd7a008c65c1314dff2ac41e)) **already had 8 rows** representing market sessions 2026-09-28 through 2026-10-07. The subsequent Oct 9/10 Git versions have 9/10 rows. Exact current original ledger Git blob is pinned in the evidence.
+- Using *Git author dates*, 7 rows look late relative to their next market opening and 3 look plausible. Neither number is original externally independently certified capture evidence; Git author timestamp is client-controlled and not a provider/broker first-seen receipt.
+- **Independently qualified forward physically observed real-TQQQ trade/ETF return rows in this source: 0.** The source code explicitly models `qqq_return * baseline_leverage` and `qqq_return * challenger_exposure`. This is separate from StockLens 8.0's actual-TQQQ 2010–2026 daily open backtest. Do NOT label modeled SL9-007 returns as real-TQQQ paper or live fills.
+- The **experiment definition fingerprint matches**, while registered evidence fingerprint `ffd63bf6...` and queue fingerprint `995ffc17...` differ. The discrepancy was already present in the Oct 6 snapshot restored to GitHub Oct 8, not conclusively caused by a newer strategy edit. The reason remains **unresolved**, not clean OOS.
+- Earlier count of *10 post-inception modeled date rows* is still technically true; reclassify those as retrospective/reconstructed research rows until **immutable original independent capture** and real-ETF pricing prove otherwise. PRs #63/#64 forbid silent maturity despite a superficially complete count.
+
+**Claude's priority #1 red-team task:** find producer-side original archived signed receipts and per-session as-of SHA, not just a Github file committed after the day; independently reconcile both evidence fingerprints against the actual market-data bytes. Rank genuine forward paired sessions as 0 unless proven otherwise. The source-source proof problem is more fundamental than squeezing 0.1pp CAGR from a reused historical model. Do not retroactively populate fills.
+
+---
+
 ## Executive finding
 
 **No new candidate has met the preregistered continuation requirements. StockLens 8.0 remains the reference and the highest historical-CAGR result among the selected tested alternative families.** This is not proof of market-beating *selection-corrected* alpha, broker-realizable returns or future performance.
