@@ -414,6 +414,9 @@
     "research/predeclarations/SL9-022-CLAUDE-FORWARD-PROXY-AND-SERVER-RECEIPTS.md": "551fcfd01f8038184ff5694bc04eabd6e82f3496",
     "aws_shadow_journal_verify.py": "8129b4d97622467d139f746fc8e87119fd3ff991",
     "tests/test_aws_shadow_journal_verify.py": "277ad25de75a9785c71ec9250e132dd408435175",
-    "research/predeclarations/SL9-023-STALE-PR-PORT.md": "04296e27afa70a8e6fc6f53fa49711030594c0d1"
+    "research/predeclarations/SL9-023-STALE-PR-PORT.md": "04296e27afa70a8e6fc6f53fa49711030594c0d1",
+    "frozen_forward_evidence_contract.py": "a90508dca6f62b6724380a082c2f50ed3ede6a67",
+    "tests/test_frozen_forward_evidence_contract.py": "3a7c22378ab34685b9cb197799aa585f6ab4e841",
+    "research/predeclarations/SL9-024-FORWARD-RECEIPT-CONTRACT.md": "9a50536b24de40ebe197747221a318bbfbec98d7"
   }
 }
