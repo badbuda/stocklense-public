@@ -40,8 +40,44 @@ EXISTING_STATUS="$(aws cloudformation describe-stacks --region "$REGION" \
   --stack-name "$STACK" --query 'Stacks[0].StackStatus' \
   --output text 2>/dev/null || true)"
 case "$EXISTING_STATUS" in
-  ROLLBACK_COMPLETE|ROLLBACK_FAILED|CREATE_FAILED|UPDATE_ROLLBACK_FAILED|DELETE_FAILED)
-    echo "BLOCKED: staging stack is $EXISTING_STATUS. Diagnose first; no automatic delete." >&2
+  ROLLBACK_COMPLETE)
+    echo "A previous CREATE rolled back. The stack cannot be updated in place." >&2
+    if [[ "${STOCKLENS_RECREATE_ROLLED_BACK_STAGING:-0}" != "1" ]]; then
+      show_staging_events
+      echo "To RECREATE ONLY this isolated FAILED staging stack, explicitly set" >&2
+      echo "STOCKLENS_RECREATE_ROLLED_BACK_STAGING=1 when running this script." >&2
+      exit 3
+    fi
+    # Destruction is opt-in and targets only our exact failed candidate stack.
+    # Guard both AWS identity and the original immutable template description.
+    ACCOUNT_ID="$(aws sts get-caller-identity --query Account --output text)"
+    CURRENT_DESCRIPTION="$(aws cloudformation describe-stacks --region "$REGION" \
+      --stack-name "$STACK" --query 'Stacks[0].Description' --output text)"
+    CURRENT_STACK_ID="$(aws cloudformation describe-stacks --region "$REGION" \
+      --stack-name "$STACK" --query 'Stacks[0].StackId' --output text)"
+    EXPECTED_DESCRIPTION="StockLens 8.0 AWS-only candidate; isolated, manual-invoke, shadow-only; never replaces stocklens-paper"
+    EXPECTED_STACK_PREFIX="arn:aws:cloudformation:${REGION}:${ACCOUNT_ID}:stack/${STACK}/"
+    if [[ "$CURRENT_DESCRIPTION" != "$EXPECTED_DESCRIPTION" \
+       || "$CURRENT_STACK_ID" != "$EXPECTED_STACK_PREFIX"* \
+       || ! "$ACCOUNT_ID" =~ ^[0-9]{12}$ ]]; then
+      show_staging_events
+      echo "REFUSING DELETION: failed stack identity/description do not match." >&2
+      exit 3
+    fi
+    echo "Explicitly authorized cleanup of ROLLBACK_COMPLETE isolated stack: $STACK" >&2
+    echo "Retained CandidateData S3 buckets are NOT deleted by CloudFormation." >&2
+    aws cloudformation delete-stack --region "$REGION" --stack-name "$STACK"
+    if ! aws cloudformation wait stack-delete-complete --region "$REGION" --stack-name "$STACK"; then
+      show_staging_events
+      echo "FAILED TO DELETE: no new deployment attempted." >&2
+      exit 3
+    fi
+    echo "Old failed staging stack deleted. Proceeding with clean staging create." >&2
+    ;;
+  ""|None|CREATE_COMPLETE|UPDATE_COMPLETE|UPDATE_ROLLBACK_COMPLETE)
+    ;;
+  *)
+    echo "BLOCKED: staging stack status $EXISTING_STATUS; no unsafe overwrite or delete." >&2
     show_staging_events
     exit 3
     ;;

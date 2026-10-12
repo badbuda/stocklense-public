@@ -46,6 +46,31 @@ def test_cloudformation_failure_prints_exact_stack_events_and_does_not_delete():
     assert 'ROLLBACK_COMPLETE' in source
     assert 'if ! aws cloudformation deploy' in source
     assert 'show_staging_events\n  echo "STOP:' in source
-    assert 'aws cloudformation delete-stack' not in source
+    assert 'aws cloudformation delete-stack' in source
+    assert 'STOCKLENS_RECREATE_ROLLED_BACK_STAGING' in source
+    assert 'EXPECTED_STACK_PREFIX' in source
+    assert 'EXPECTED_DESCRIPTION' in source
+    assert 'stack-delete-complete' in source
+    assert 'CURRENT_STACK_ID' in source
+    assert 'REFUSING DELETION' in source
+    assert 'ROLLBACK_COMPLETE' in source
     assert 'aws cloudformation continue-update-rollback' not in source
 
+
+
+def test_low_quota_account_can_create_lambdas_without_reserved_concurrency():
+    template = Path("infra/aws/independent-staging.yaml").read_text(encoding="utf-8")
+    assert template.count("Type: AWS::Lambda::Function") == 3
+    assert "ReservedConcurrentExecutions" not in template
+    assert "State: DISABLED" in template
+    assert "stocklens-paper" in template  # explicitly documents original as untouched
+
+
+def test_rollback_recreation_is_strictly_opt_in_and_scoped():
+    source = SCRIPT.read_text(encoding="utf-8")
+    assert 'STOCKLENS_RECREATE_ROLLED_BACK_STAGING:-0' in source
+    assert 'if [[ "$CURRENT_DESCRIPTION" != "$EXPECTED_DESCRIPTION"' in source
+    assert '|| "$CURRENT_STACK_ID" != "$EXPECTED_STACK_PREFIX"*' in source
+    assert 'aws cloudformation delete-stack --region "$REGION" --stack-name "$STACK"' in source
+    assert "aws s3 rb" not in source
+    assert 'stack-name stocklens-paper' not in source

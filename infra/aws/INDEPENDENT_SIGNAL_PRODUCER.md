@@ -94,3 +94,38 @@ still trigger a fatal divergence instead of silently rewriting receipts.
 An earlier deployment script exited with `Python 3.12 is required to package the candidate's native wheels` after cloning the repository. That was a **packaging-tool prerequisite error**, not a failure of either candidate Lambda or AWS itself. The updated branch builds Lambda-compatible CPython 3.12 wheels using the installed `python3`, validates package size and extension ABI, validates CloudFormation, and only then creates or updates isolated staging resources. After `git pull --ff-only` from the branch clone, rerun `bash infra/aws/deploy_independent_staging.sh`. Never install a random Python binary or change the Lambda runtime to match CloudShell just to satisfy the former script.
 
 A partially started earlier invocation may have created a private S3 artifact bucket before aborting; the new script reuses that bucket safely, without touching the existing `stocklens-paper` deployment. AWS costs and IAM rights still apply. If a platform-specific wheel does not exist, the new binary-only resolver **fails closed** rather than building a possibly incompatible CloudShell native binary.
+
+
+### October 12 CloudFormation quota fix (isolated staging only)
+
+Observed staging deployment failure: `CandidateLambda` and `CandidatePaperLambda` returned
+`Specified ReservedConcurrentExecutions for function decreases account's UnreservedConcurrentExecution below its minimum value of [10]`.
+No defect in the frozen trading model was established by this CloudFormation failure.
+
+This branch now removes `ReservedConcurrentExecutions: 1` from **all three candidate Lambdas**.
+The account-wide AWS concurrency limit remains in effect and the candidate EventBridge schedule is **DISABLED**.
+No concurrency quota increase, reserved allocation, broker privileges or `stocklens-paper` changes are requested.
+Warning: lack of reserved concurrency also means the Lambdas share normal unreserved concurrency,
+so the enabled schedule and automatic retries must NOT be approved before operational safeguards.
+
+A failed first-time CloudFormation creation usually ends in `ROLLBACK_COMPLETE`;
+such a stack cannot be updated. To avoid asking for multiple manual commands, the staging
+script supports **explicit one-time cleanup of only the exact isolated, rolled-back staging stack**:
+
+```bash
+git pull --ff-only &&
+STOCKLENS_RECREATE_ROLLED_BACK_STAGING=1 bash infra/aws/deploy_independent_staging.sh
+```
+
+The opt-in deletion is permitted only when the AWS-reported stack status is exactly
+`ROLLBACK_COMPLETE`, the CloudFormation description equals this candidate template's description
+and the stack ARN matches the current account, region and fixed staging name. No other
+CloudFormation status or stack may be deleted. No deletion is attempted without the opt-in flag.
+If the delete fails, the script stops and prints the CloudFormation event reasons.
+The existing production `stocklens-paper` stack is untouched.
+
+**Retained S3 note:** `CandidateData` has `DeletionPolicy: Retain`. If the first
+failed creation got far enough to make this bucket, the old bucket may remain after
+the stack is deleted and could incur charges. This opt-in path intentionally does not
+automatically delete any S3 objects/buckets; inspect and clean up only with explicit
+authorization after determining whether it contains evidence.

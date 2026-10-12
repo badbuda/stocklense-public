@@ -75,7 +75,6 @@ Resources:
         S3Key: !Ref ArtifactKey
       Timeout: 120
       MemorySize: 512
-      ReservedConcurrentExecutions: 1
       Environment:
         Variables:
           STOCKLENS_DATA_BUCKET: !Ref CandidateData
@@ -133,7 +132,6 @@ Resources:
         S3Key: !Ref ArtifactKey
       Timeout: 240
       MemorySize: 1536
-      ReservedConcurrentExecutions: 1
       Environment:
         Variables:
           STOCKLENS_DATA_BUCKET: !Ref CandidateData
@@ -182,7 +180,6 @@ Resources:
         S3Key: !Ref ArtifactKey
       Timeout: 480
       MemorySize: 256
-      ReservedConcurrentExecutions: 1
       Environment:
         Variables:
           SIGNAL_FUNCTION: !Ref CandidateLambda
