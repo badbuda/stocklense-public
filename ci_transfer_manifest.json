@@ -152,14 +152,14 @@
     "hybrid_return_concentration.py": "b629a020fee9bb9db3068a1bbf6d66a8a8b5cc2e",
     "hybrid_rolling_distribution.py": "1d5b0c8ad6836407b5394261afa7836cbebc5cec",
     "incident_state.py": "2e38de1c4b0076f9186f1815b11bd8aa2995df79",
-    "infra/aws/deploy_independent_staging.sh": "fb8d9cc14e7026fc0be3c1eb215840a8edeed8a8",
+    "infra/aws/deploy_independent_staging.sh": "1169a4435585801faa15004828b88298d7627d1b",
     "infra/aws/independent_market_ingest.py": "6d77f675a6c0584eba1b73bb509be25b4385073b",
     "infra/aws/independent_paper.py": "28e9b169d61cfccd55c8a0cce4e865170ca1d334",
-    "infra/aws/independent_pipeline.py": "2f958826bcf92f86a513bf9ae92557db102240b3",
+    "infra/aws/independent_pipeline.py": "26022ec743b9432715ac33e102247b333a3d896c",
     "infra/aws/INDEPENDENT_RUNTIME_HANDOFF.md": "6aff228eca13bd52ace2ffd36b1bf13cc3c2bb76",
-    "infra/aws/INDEPENDENT_SIGNAL_PRODUCER.md": "0fe729ca5ee5dec24a495c5f9f6e35ad4685ddf6",
+    "infra/aws/INDEPENDENT_SIGNAL_PRODUCER.md": "cf31e16439d5bc340f4767bdf5c13049a89f5d91",
     "infra/aws/independent_signal_producer.py": "42a697fad422bb997447bf2dfcc234de70404ab0",
-    "infra/aws/independent-staging.yaml": "a5b94be61f5bb277c9fdc458eeda1691992af697",
+    "infra/aws/independent-staging.yaml": "866fb651f8c56a7eebe4242a293d7c218c757e82",
     "infra/aws/paper-evidence-handler.py": "0a967783e199fe6b0135deb974062e93982477c7",
     "infra/aws/paper-signal-journal.yaml": "b99b0db90504cf0dbff0276ab3e0fedae16a9075",
     "infra/aws/PHASE2_UPDATE.md": "b0e5d0afbc86d8b711561835bce316bd3e62f511",
@@ -340,7 +340,7 @@
     "tests/test_aws_calendar_workflow.py": "93878060f3ea1002e1397ef91fe547c4bb95cbe6",
     "tests/test_aws_independent_paper_verifier.py": "abfc34a4fcef085eccd57cf16585cf1c612e324b",
     "tests/test_aws_independent_paper.py": "8dbf4d99ef0e095580bb13cb1574b35e12cb2db8",
-    "tests/test_aws_independent_pipeline.py": "f3a3fa92b459148b2fc7c2ce0bdb5384e9c1f492",
+    "tests/test_aws_independent_pipeline.py": "1573b728a2f152f488ea6f9037e720062fda1b4f",
     "tests/test_aws_independent_signal_producer.py": "6e87a8d3f90bf7840dc6992e82e70b447aab8211",
     "tests/test_aws_journal_export.py": "60833c59988e0f2755073ed4bac80dbeb8c5ea2b",
     "tests/test_aws_journal_session_guard.py": "5d39ca397242199da04b2006e6f3624a29f29994",
@@ -439,6 +439,8 @@
     "workbench_evidence_manifest.py": "7e290add5dcb861b0d4bdbed81cc7e4308ff4683",
     "workbench_selfcheck.py": "4f17be6d56ac7d3cc3637e1ef2b2af3ed9d880a8",
     "yahoo_eod_scorecard.py": "137465f3ff4d9a2b8c164bf4321480c0ea0869fd",
-    "yahoo_long_history.py": "e7e51b5c2f5697da5d583316638b98ec13e6114c"
+    "yahoo_long_history.py": "e7e51b5c2f5697da5d583316638b98ec13e6114c",
+    "infra/aws/independent_orchestrator.py": "2f1fa087572759b4c1467f0ffdd242126d2480bb",
+    "tests/test_aws_independent_orchestrator.py": "64796bf208c97104afbac7361d4d63d7f9a8cd2f"
   }
 }

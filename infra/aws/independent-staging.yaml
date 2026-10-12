@@ -138,6 +138,73 @@ Resources:
         Variables:
           STOCKLENS_DATA_BUCKET: !Ref CandidateData
 
+  CandidateOrchestratorLogs:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/aws/lambda/${AWS::StackName}-orchestrator-candidate'
+      RetentionInDays: 14
+  CandidateOrchestratorRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: InvokeStagingCandidatesOnly
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: lambda:InvokeFunction
+                Resource:
+                  - !GetAtt CandidateLambda.Arn
+                  - !GetAtt CandidatePaperLambda.Arn
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: !GetAtt CandidateOrchestratorLogs.Arn
+  CandidateOrchestratorLambda:
+    Type: AWS::Lambda::Function
+    DependsOn: CandidateOrchestratorLogs
+    Properties:
+      FunctionName: !Sub '${AWS::StackName}-orchestrator-candidate'
+      Runtime: python3.12
+      Architectures: [x86_64]
+      Handler: infra.aws.independent_orchestrator.handler
+      Role: !GetAtt CandidateOrchestratorRole.Arn
+      Code:
+        S3Bucket: !Ref ArtifactBucket
+        S3Key: !Ref ArtifactKey
+      Timeout: 480
+      MemorySize: 256
+      ReservedConcurrentExecutions: 1
+      Environment:
+        Variables:
+          SIGNAL_FUNCTION: !Ref CandidateLambda
+          PAPER_FUNCTION: !Ref CandidatePaperLambda
+  CandidateOrchestratorSchedule:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: 'STAGING ONLY. Tue-Sat 00:10 UTC after prior NY close; DISABLED pending manual bootstrap, parity, and AWS owner approval.'
+      ScheduleExpression: 'cron(10 0 ? * TUE-SAT *)'
+      State: DISABLED
+      Targets:
+        - Id: StagingOrchestratorOnly
+          Arn: !GetAtt CandidateOrchestratorLambda.Arn
+          Input: '{"mode":"STAGING_ORCHESTRATOR_ONLY"}'
+  CandidateOrchestratorSchedulePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref CandidateOrchestratorLambda
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt CandidateOrchestratorSchedule.Arn
+
 Outputs:
   CandidateFunctionName:
     Value: !Ref CandidateLambda
@@ -149,3 +216,7 @@ Outputs:
     Value: !Ref CandidatePaperLambda
   CandidatePaperLogGroup:
     Value: !Ref CandidatePaperLogs
+  CandidateOrchestratorFunctionName:
+    Value: !Ref CandidateOrchestratorLambda
+  CandidateOrchestratorRuleName:
+    Value: !Ref CandidateOrchestratorSchedule

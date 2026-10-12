@@ -65,3 +65,25 @@ On *subsequent* completed XNYS sessions, produce each Signal and Paper with `boo
 5. **Controlled runtime test:** new signals **and** modeled paper receipts for multiple prospective sessions with GitHub Actions intentionally off, independently verified S3 and no broker privileges; rollback plan and alerts tested.
 
 Until those gates are green the existing `stocklens-paper` Lambdas must remain untouched, and the new PR stays Draft.
+
+
+### Disabled automatic orchestration (code staged, NOT activated)
+
+A third AWS candidate Lambda `independent_orchestrator.py` is included. Its
+EventBridge rule is intentionally `State: DISABLED`. If later approved,
+the rule is scheduled at `00:10 UTC Tue-Sat`, which is after **18:00 ET**
+on the preceding US market date across daylight saving changes. The
+orchestrator independently checks the NYSE XNYS session calendar, skips
+exchange holidays, and synchronously invokes Signal **before** Paper. It
+never bootstraps a portfolio, never issues broker orders, and fails closed
+when a candidate Lambda fails or reports an invalid receipt.
+
+Do **NOT** enable this rule until the model, market-data source and Paper
+continuity gates above are proven for multiple completed real sessions
+and a human has approved the separate staging book. The existing production
+archive schedule continues to read GitHub and is not modified by this PR.
+
+Retries for unchanged QQQ prices now reuse the **original manifest retrieval
+timestamp**, preserve the first signal's timestamp and S3 object version,
+and verify the immutable bytes. Real changes in historical adjusted prices
+still trigger a fatal divergence instead of silently rewriting receipts.

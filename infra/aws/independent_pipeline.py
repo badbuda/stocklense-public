@@ -41,6 +41,28 @@ def _immutable_put(s3, bucket: str, key: str, body: bytes, content_type: str) ->
         return version_id
 
 
+def _existing_object(s3, bucket: str, key: str, limit: int = 2_000_000):
+    """Read an existing immutable object, or None only on actual NotFound."""
+    try:
+        obj = s3.get_object(Bucket=bucket, Key=key)
+    except KeyError:
+        return None  # Allows strict in-memory S3 test doubles.
+    except Exception as exc:
+        response = getattr(exc, "response", {})
+        if isinstance(response, dict) and response.get("Error", {}).get("Code") in (
+            "NoSuchKey", "404", "NotFound"
+        ):
+            return None
+        raise
+    version = obj.get("VersionId")
+    if not version or version == "null":
+        raise RuntimeError("S3_VERSIONING_REQUIRED:" + key)
+    data = obj["Body"].read(limit + 1)
+    if len(data) > limit:
+        raise RuntimeError("EXISTING_OBJECT_TOO_LARGE:" + key)
+    return data, version
+
+
 def run(*, expected_session: str, now: datetime, s3, bucket: str,
         ingest_fn=ingest) -> dict:
     if now.tzinfo is None:
@@ -52,10 +74,61 @@ def run(*, expected_session: str, now: datetime, s3, bucket: str,
     if audit["provider"] != "YAHOO_CHART_PUBLIC_ENDPOINT":
         raise RuntimeError("UNKNOWN_INGEST_PROVIDER")
 
-    # Build the entire signal from the vendor payload *before* any write.
-    # Frozen core replay semantics are imported, never rewritten.
+    input_key = f"market/qqq/{expected_session}.csv"
+    manifest_key = f"manifests/qqq/{expected_session}.json"
+    signal_key = f"signals/{expected_session}.json"
+
+    # Re-ingest on retry to detect real price revisions; allow unchanged
+    # normalized prices even if vendor transport metadata changed.
+    previous_market = _existing_object(s3, bucket, input_key)
+    if previous_market is not None:
+        prior_raw, _ = previous_market
+        if hashlib.sha256(prior_raw).hexdigest() != source_digest:
+            raise RuntimeError("DIVERGENT_IMMUTABLE_MARKET_REVISION")
+    previous_manifest = _existing_object(s3, bucket, manifest_key)
+    previous_signal = _existing_object(s3, bucket, signal_key)
+    if (previous_manifest or previous_signal) and previous_market is None:
+        raise RuntimeError("BROKEN_MARKET_ARCHIVE_CHAIN")
+    if previous_signal and not previous_manifest:
+        raise RuntimeError("SIGNAL_EXISTS_WITHOUT_MANIFEST")
+
+    input_version = _immutable_put(s3, bucket, input_key, raw, "text/csv")
+    if previous_manifest is not None:
+        manifest = json.loads(previous_manifest[0])
+        if not (
+            manifest.get("input_key") == input_key
+            and manifest.get("input_version_id") == input_version
+            and manifest.get("sha256") == source_digest
+            and manifest.get("status") == "VERIFIED"
+            and manifest.get("provider") == audit["provider"]
+            and manifest.get("data_type") == "QQQ_ADJUSTED_DAILY"
+        ):
+            raise RuntimeError("PREVIOUS_MARKET_MANIFEST_DIVERGENCE")
+        previous_retrieval = manifest["audit"]["retrieved_at_utc"]
+        frozen_generation_time = datetime.fromisoformat(
+            previous_retrieval.replace("Z", "+00:00")
+        )
+        if frozen_generation_time.tzinfo is None or frozen_generation_time > now:
+            raise RuntimeError("INVALID_PREVIOUS_MARKET_RECEIPT_TIMESTAMP")
+    else:
+        manifest = {
+            "status": "VERIFIED",
+            "note": "Checks vendor schema and exact completed session only; not independent vendor parity.",
+            "data_type": "QQQ_ADJUSTED_DAILY",
+            "provider": audit["provider"],
+            "input_key": input_key,
+            "input_version_id": input_version,
+            "sha256": source_digest,
+            "audit": audit,
+        }
+        frozen_generation_time = now
+
+    # Reconstruct identical frozen decisions and the same first-generation
+    # timestamp. An exact retry is idempotent; a revised QQQ price is not.
     report = build_signal(
-        raw, now, source="YAHOO_CHART_ADJUSTED_QQQ", source_sha256=source_digest
+        raw, frozen_generation_time,
+        source="YAHOO_CHART_ADJUSTED_QQQ",
+        source_sha256=source_digest,
     )
     if report["latest"]["asof_date"] != expected_session:
         raise RuntimeError("FROZEN_SIGNAL_SESSION_MISMATCH")
@@ -64,27 +137,19 @@ def run(*, expected_session: str, now: datetime, s3, bucket: str,
     if report["execution_plan"]["broker_actions_enabled"] is not False:
         raise RuntimeError("BROKER_FORBIDDEN")
 
-    input_key = f"market/qqq/{expected_session}.csv"
-    input_version = _immutable_put(s3, bucket, input_key, raw, "text/csv")
-    manifest = {
-        "status": "VERIFIED",
-        "note": "Checks vendor schema and exact completed session only; not independent vendor parity.",
-        "data_type": "QQQ_ADJUSTED_DAILY",
-        "provider": audit["provider"],
-        "input_key": input_key,
-        "input_version_id": input_version,
-        "sha256": source_digest,
-        "audit": audit,
-    }
-    # The first immutable receipt wins. Timestamped vendor receipt may differ
-    # on retries, which is intentional fail-closed rather than silent revision.
-    manifest_key = f"manifests/qqq/{expected_session}.json"
-    manifest_version = _immutable_put(s3, bucket, manifest_key, canonical(manifest), "application/json")
-
+    manifest_version = _immutable_put(
+        s3, bucket, manifest_key, canonical(manifest), "application/json"
+    )
     signal_body = canonical(report)
     signal_digest = hashlib.sha256(signal_body).hexdigest()
-    signal_key = f"signals/{expected_session}.json"
-    signal_version = _immutable_put(s3, bucket, signal_key, signal_body, "application/json")
+    signal_version = _immutable_put(
+        s3, bucket, signal_key, signal_body, "application/json"
+    )
+    if previous_signal is not None and (
+        hashlib.sha256(previous_signal[0]).hexdigest() != signal_digest
+        or previous_signal[1] != signal_version
+    ):
+        raise RuntimeError("STORED_FROZEN_SIGNAL_DIVERGENCE")
     return {
         "status": "STAGED_SIGNAL_ARCHIVED",
         "session": expected_session,
@@ -99,7 +164,6 @@ def run(*, expected_session: str, now: datetime, s3, bucket: str,
         "broker_actions": False,
         "vendor_parity_proven": False,
     }
-
 
 def handler(event, context):
     import boto3

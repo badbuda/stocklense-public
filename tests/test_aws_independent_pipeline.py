@@ -137,5 +137,23 @@ def test_detects_divergent_immutable_vendor_revision():
     def ingest_b(session, *, now):
         return altered, changed_audit
 
-    with pytest.raises(RuntimeError, match="DIVERGENT_IMMUTABLE_S3_OBJECT"):
+    with pytest.raises(RuntimeError, match="DIVERGENT_IMMUTABLE_MARKET_REVISION"):
         run(expected_session=day, now=clock, s3=s3, bucket="test", ingest_fn=ingest_b)
+
+
+def test_retry_after_new_retrieval_timestamp_preserves_original_signal_receipt():
+    from datetime import timedelta
+    payload, day, clock = daily_fixture()
+    raw, audit = extract_adjusted_qqq(payload, now=clock, expected_session=day)
+    s3 = InMemoryVersionedS3()
+    def first(session, *, now):
+        return raw, audit
+    original = run(expected_session=day, now=clock, s3=s3,
+                   bucket="test", ingest_fn=first)
+    def later(session, *, now):
+        fresh_audit = dict(audit, retrieved_at_utc=now.isoformat())
+        return raw, fresh_audit
+    retry = run(expected_session=day, now=clock + timedelta(minutes=25),
+                s3=s3, bucket="test", ingest_fn=later)
+    assert retry == original
+    assert len(s3.data) == 3

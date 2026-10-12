@@ -61,6 +61,7 @@ from pathlib import Path
 paths = [
     "infra/aws/independent_market_ingest.py",
     "infra/aws/independent_pipeline.py",
+    "infra/aws/independent_orchestrator.py",
     "infra/aws/independent_signal_producer.py",
     "infra/aws/independent_paper.py",
     "stocklens/core.py",
@@ -103,8 +104,8 @@ aws cloudformation validate-template \
   --template-body file://infra/aws/independent-staging.yaml >/dev/null
 
 echo "STAGING ONLY: ${STACK}; source commit ${COMMIT}; ZIP sha256 ${DIGEST}"
-echo "This creates one private bucket, TWO isolated candidate Lambdas and"
-echo "two scoped IAM roles. No schedule, broker or stocklens-paper change."
+echo "This creates a private bucket, THREE candidate Lambdas and an"
+echo "EventBridge rule that is DISABLED. No broker or stocklens-paper change."
 aws cloudformation deploy \
   --region "$REGION" \
   --stack-name "$STACK" \
