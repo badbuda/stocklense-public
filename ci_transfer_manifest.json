@@ -357,7 +357,7 @@
     "tests/test_aws_readonly_deadman.py": "c695e2107b0cf8448f9b352231978d39c1173309",
     "tests/test_aws_schedule_watchdog.py": "7807f5bb68cf01803f60f63ae9603ab760e0c129",
     "tests/test_aws_shadow_journal_verify.py": "277ad25de75a9785c71ec9250e132dd408435175",
-    "tests/test_aws_source_parity.py": "a438e1384aa9a607e003e5679866ed04cfa80f59",
+    "tests/test_aws_source_parity.py": "3d554ba254c1a32c2568d0bcfe50f982aa807de6",
     "tests/test_aws_staging_import_smoke.py": "401aeb069922faa96e8add2f9d4d529bc78ece74",
     "tests/test_backtest_adversarial.py": "c99ca53e2211c2b765e17dfdd6d02d5047c30e58",
     "tests/test_backtest_calendar_year_fragility.py": "220ad8dd6e2157dc54ed7bc2f180ab37e842c0f0",

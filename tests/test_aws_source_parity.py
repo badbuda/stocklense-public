@@ -118,7 +118,9 @@ def test_historical_policy_flip_is_reported_even_with_equal_latest_fingerprint()
     _, session, clock, csv_bytes, df = history()
     # A large one-day historic dislocation in 2009/2010 should change the
     # frozen day's level/defense independently of the current feature window.
-    df.loc[500, "Close"] *= 0.15
+    # Row 450 is after Sep-2009 trading start yet strictly before the
+    # final 253-session window (740 - 253 = 487).
+    df.loc[450, "Close"] *= 0.15
     report = compare_completed_histories(
         vendor_raw=csv_bytes, reference_df=df,
         expected_session=session, now=clock,
