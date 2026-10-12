@@ -36,3 +36,16 @@ def test_validation_and_local_package_precede_aws_resource_mutations():
     assert source.index('Package contents:') < source.index('aws s3api create-bucket')
     assert 'stocklens-independent-staging' in source
     assert '--no-fail-on-empty-changeset' in source
+
+
+def test_cloudformation_failure_prints_exact_stack_events_and_does_not_delete():
+    source = SCRIPT.read_text(encoding="utf-8")
+    assert 'show_staging_events()' in source
+    assert 'describe-stack-events' in source
+    assert 'contains(ResourceStatus' in source
+    assert 'ROLLBACK_COMPLETE' in source
+    assert 'if ! aws cloudformation deploy' in source
+    assert 'show_staging_events\n  echo "STOP:' in source
+    assert 'aws cloudformation delete-stack' not in source
+    assert 'aws cloudformation continue-update-rollback' not in source
+

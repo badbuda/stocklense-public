@@ -152,7 +152,7 @@
     "hybrid_return_concentration.py": "b629a020fee9bb9db3068a1bbf6d66a8a8b5cc2e",
     "hybrid_rolling_distribution.py": "1d5b0c8ad6836407b5394261afa7836cbebc5cec",
     "incident_state.py": "2e38de1c4b0076f9186f1815b11bd8aa2995df79",
-    "infra/aws/deploy_independent_staging.sh": "fba582c9d3a122512a1681c16758b7a463b15f1f",
+    "infra/aws/deploy_independent_staging.sh": "934988a84df0a15dba8d7cde91c1e9a30cc87c17",
     "infra/aws/independent_market_ingest.py": "6d77f675a6c0584eba1b73bb509be25b4385073b",
     "infra/aws/independent_paper.py": "28e9b169d61cfccd55c8a0cce4e865170ca1d334",
     "infra/aws/independent_pipeline.py": "26022ec743b9432715ac33e102247b333a3d896c",
@@ -442,6 +442,6 @@
     "yahoo_long_history.py": "e7e51b5c2f5697da5d583316638b98ec13e6114c",
     "infra/aws/independent_orchestrator.py": "2f1fa087572759b4c1467f0ffdd242126d2480bb",
     "tests/test_aws_independent_orchestrator.py": "64796bf208c97104afbac7361d4d63d7f9a8cd2f",
-    "tests/test_aws_cloudshell_packaging.py": "126d8e4cd102b67d715b1492424d5337164d63c8"
+    "tests/test_aws_cloudshell_packaging.py": "5c8a45272c49ebd5417d818bd9946a0b731ec935"
   }
 }

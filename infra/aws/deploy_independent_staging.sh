@@ -20,6 +20,32 @@ fi
 if [[ -n "$(git status --porcelain)" ]]; then
   echo "Uncommitted or untracked repository changes: refusing non-reproducible package" >&2; exit 2
 fi
+
+# Diagnose CloudFormation failures without guessing or deleting resources.
+# The account owner must decide whether to clean up a rolled-back stack.
+show_staging_events() {
+  echo "=== CloudFormation failing events (read-only) ===" >&2
+  aws cloudformation describe-stack-events --region "$REGION" \
+    --stack-name "$STACK" \
+    --query "StackEvents[?contains(ResourceStatus, 'FAILED')].[Timestamp,LogicalResourceId,ResourceStatus,ResourceStatusReason]" \
+    --output table >&2 || true
+  echo "=== CloudFormation stack status (read-only) ===" >&2
+  aws cloudformation describe-stacks --region "$REGION" \
+    --stack-name "$STACK" \
+    --query 'Stacks[0].[StackName,StackStatus,StackStatusReason]' \
+    --output table >&2 || true
+}
+
+EXISTING_STATUS="$(aws cloudformation describe-stacks --region "$REGION" \
+  --stack-name "$STACK" --query 'Stacks[0].StackStatus' \
+  --output text 2>/dev/null || true)"
+case "$EXISTING_STATUS" in
+  ROLLBACK_COMPLETE|ROLLBACK_FAILED|CREATE_FAILED|UPDATE_ROLLBACK_FAILED|DELETE_FAILED)
+    echo "BLOCKED: staging stack is $EXISTING_STATUS. Diagnose first; no automatic delete." >&2
+    show_staging_events
+    exit 3
+    ;;
+esac
 COMMIT="$(git rev-parse HEAD)"
 TEMP_DIR="$(mktemp -d)"
 trap 'rm -rf "$TEMP_DIR"' EXIT
@@ -126,13 +152,17 @@ fi
 echo "STAGING ONLY: ${STACK}; source commit ${COMMIT}; ZIP sha256 ${DIGEST}"
 echo "This creates a private bucket, THREE candidate Lambdas and an"
 echo "EventBridge rule that is DISABLED. No broker or stocklens-paper change."
-aws cloudformation deploy \
+if ! aws cloudformation deploy \
   --region "$REGION" \
   --stack-name "$STACK" \
   --template-file infra/aws/independent-staging.yaml \
   --parameter-overrides "ArtifactBucket=$ARTIFACT_BUCKET" "ArtifactKey=$ARTIFACT_KEY" \
   --capabilities CAPABILITY_IAM \
-  --no-fail-on-empty-changeset
+  --no-fail-on-empty-changeset; then
+  show_staging_events
+  echo "STOP: failed staging stack was NOT automatically deleted or retried." >&2
+  exit 4
+fi
 aws cloudformation describe-stacks --stack-name "$STACK" \
   --query 'Stacks[0].{Status:StackStatus,Outputs:Outputs}' --output json
 echo "DEPLOYED_STAGING_ONLY: no live stocklens-paper resources modified."
