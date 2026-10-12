@@ -75,9 +75,21 @@ expected_status = {
     "parity": "STAGING_SAME_VENDOR_PATH_PARITY_PASS",
     "signal": "STAGED_SIGNAL_ARCHIVED",
 }[mode]
-if mode == "parity" and result.get("status") != expected_status:
-    print("SAME_VENDOR_PRICE_PARITY_FAILED:" + json.dumps(result, sort_keys=True)[:3000])
-    sys.exit(1)
+if mode == "parity":
+    print("PARITY_DIAGNOSTICS:" +
+          f"rows={result.get('vendor_rows')}:" +
+          f"calendar_equal={result.get('calendar_equal')}:" +
+          f"exact_price_mismatches={result.get('mismatch_count')}:" +
+          f"max_binary32_ulps={result.get('max_binary32_ulp_distance')}:" +
+          f"outside_8_ulps={result.get('outside_binary32_precision_count')}:" +
+          f"full_history_policy_mismatches={result.get('policy_mismatch_count')}:" +
+          f"decisions_checked={result.get('decisions_compared_count')}:" +
+          f"latest_policy_equal={result.get('latest_policy_equal')}:" +
+          f"feature_hash_equal={result.get('feature_fingerprints_equal')}")
+    if result.get("status") != expected_status:
+        print("SAME_VENDOR_PRICE_PARITY_FAILED:" +
+              json.dumps(result, sort_keys=True)[:4500])
+        sys.exit(1)
 if result.get("status") != expected_status or result.get("broker_actions") is not False:
     print("UNEXPECTED_STAGING_RESULT:" + str(result)[:1000])
     sys.exit(1)
@@ -98,7 +110,12 @@ elif mode == "parity":
     print("SAME_YAHOO_TWO_PATH_PARITY_PASS:" +
           f"completed_session={result['expected_completed_session']}:" +
           f"rows={result['vendor_rows']}:" +
+          f"price_precision_class={result['price_precision_classification']}:" +
+          f"numeric_exact_mismatch_count={result['mismatch_count']}:" +
+          f"policy_mismatch_count={result['policy_mismatch_count']}:" +
           f"dropped_current_partial={result['dropped_incomplete_vendor_current_session']}")
+    if result["mismatch_count"]:
+        print("NOTE:PRICES_ARE_NOT_IDENTICAL; ONLY_BOUND_AND_POLICY_PARITY_ESTABLISHED")
     print("NOT_PROVEN:SECOND_PROVIDER_INDEPENDENCE_OR_BROKER_FILLS")
 else:
     if result.get("session") != session:

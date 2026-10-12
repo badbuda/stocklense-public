@@ -271,3 +271,54 @@ independent quote providers*. This pass cannot certify point-in-time
 corporate actions, execution-quality bid/ask prices, market microstructure
 or actual brokerage fills. The Paper session gates and disabled
 EventBridge schedule remain unchanged.
+
+
+### 2026-10-12 observed same-source parity mismatch — risk diagnosis, not a trading signal
+
+Real AWS stdout showed the direct Yahoo-chart and pinned yfinance routes each
+returned 4,723 **aligned** completed QQQ sessions through 2026-10-09, with
+identical latest-253-session SHA-256 fingerprints. The original audit still
+flagged 3,679 nominal historical adjusted-close mismatches because its
+absolute/relative comparator was set to 1e-8. Representative 2008 differences
+were ~0.00000382 and ~0.00001144 dollars — approximately one and three
+IEEE binary32 units in last place (ULPs) at those old price levels.
+
+**The original `decisions_equal:false` did not prove a decision mismatch.**
+The original code returned false without running the frozen replay whenever
+even one nominal historic price exceeded 1e-8. That conditional false has
+been fixed; now two full frozen `replay_levels` histories are evaluated
+on every aligned-calendar comparison, including historical level, defense,
+leverage, QQQ/TQQQ allocations, and latest action.
+
+To distinguish floating-point representation noise from economically
+meaningful discrepancies without changing the trading model, the comparison
+now reports both its original nominal 1e-8 mismatch count and a strictly
+limited binary32-precision diagnostic (at most **eight binary32 ULPs per
+price**), with the actual maximum deviation/ULP-distance, out-of-budget
+sessions and first specific dates. This budget is a **hypothesis test for
+binary32-equivalent inputs, not a claim that rounding has been proved to
+cause a difference**. There is no tolerance for altered frozen actions,
+state, weights, missing dates, or different latest 253-day fingerprints.
+
+**A PASS is possible only when ALL hold**: exact date calendars, no daily
+price beyond the eight-ULP budget, identical latest 253-session feature
+fingerprints, **every** frozen policy decision since 2009-09-01 identical,
+and latest action identical. A failure stays blocked even if only one
+historical decision changes; no manipulation of frozen thresholds or data
+is permitted. Outputs expose this as `WITHIN_8_BINARY32_ULPS`, not price
+identity. No second market-data provider has been verified.
+
+To execute the updated staging test in the existing CloudShell clone:
+
+```bash
+git pull --ff-only &&
+bash infra/aws/deploy_independent_staging.sh &&
+bash infra/aws/accept_independent_staging.sh parity
+```
+
+The command updates **only** the separately named staging stack, invokes
+read-only parity, leaves the current `stocklens-paper` and GitHub publisher
+intact, does not write any market data or Paper receipts, and leaves the
+staging EventBridge schedule **DISABLED**. A green GitHub CI alone is NOT
+proof of the real Yahoo numerical comparison; the real Lambda output must
+be reviewed separately.

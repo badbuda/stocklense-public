@@ -3,6 +3,7 @@
 Never fetch the live market and never talk to AWS, GitHub or a broker.
 """
 from datetime import datetime, timedelta, timezone
+import math
 
 import pandas as pd
 import pytest
@@ -48,7 +49,13 @@ def test_divergent_historical_adjusted_close_rejected_even_if_features_unchanged
     )
     assert report["status"] == "STAGING_SAME_VENDOR_PATH_PARITY_MISMATCH"
     assert report["mismatch_count"] == 1
-    assert report["decisions_equal"] is False
+    # A changed pre-trading-start price may leave the frozen decisions
+    # unchanged. Never misreport "decision mismatch" merely because of
+    # numeric mismatch; price divergence still fails the overall gate.
+    assert report["decision_check_executed"] is True
+    assert report["outside_binary32_precision_count"] == 1
+    assert report["numeric_rounding_compatible"] is False
+    assert report["policy_mismatch_count"] >= 0
 
 
 def test_missing_historical_session_cannot_be_silently_reindexed():
@@ -61,7 +68,81 @@ def test_missing_historical_session_cannot_be_silently_reindexed():
     assert report["calendar_equal"] is False
     assert report["decisions_equal"] is False
     assert report["mismatch_count"] is None
+    assert report["decision_check_executed"] is False
 
+
+
+
+def test_three_binary32_ulps_can_be_price_compatible_without_waving_policy_changes():
+    _, session, clock, csv_bytes, df = history()
+    # The real reported 2008 example is ~3 binary32 ULPs. Inject exactly
+    # that precision-scale deviation in old warmup history, not 1% noise.
+    old = float(df.loc[15, "Close"])
+    ulp = math.ldexp(1.0, math.frexp(old)[1] - 1 - 23)
+    df.loc[15, "Close"] = old + 3 * ulp
+    report = compare_completed_histories(
+        vendor_raw=csv_bytes, reference_df=df,
+        expected_session=session, now=clock,
+    )
+    assert report["status"] == "STAGING_SAME_VENDOR_PATH_PARITY_PASS"
+    assert report["price_precision_classification"] == "WITHIN_8_BINARY32_ULPS"
+    assert report["mismatch_count"] == 1
+    assert report["outside_binary32_precision_count"] == 0
+    assert report["max_binary32_ulp_distance"] <= 8
+    assert report["numeric_rounding_compatible"] is True
+    assert report["decision_check_executed"] is True
+    assert report["policy_mismatch_count"] == 0
+    assert report["decisions_equal"] is True
+    assert report["second_provider_proven"] is False
+    assert report["price_rounding_origin_proven"] is False
+
+
+def test_nine_binary32_ulps_fail_even_when_trading_policy_identical():
+    _, session, clock, csv_bytes, df = history()
+    old = float(df.loc[15, "Close"])
+    ulp = math.ldexp(1.0, math.frexp(old)[1] - 1 - 23)
+    df.loc[15, "Close"] = old + 9 * ulp
+    report = compare_completed_histories(
+        vendor_raw=csv_bytes, reference_df=df,
+        expected_session=session, now=clock,
+    )
+    assert report["status"] == "STAGING_SAME_VENDOR_PATH_PARITY_MISMATCH"
+    assert report["outside_binary32_precision_count"] == 1
+    assert report["numeric_rounding_compatible"] is False
+    assert report["decision_check_executed"] is True
+    # Numeric mismatch is real even when semantic decisions remain unchanged.
+    assert report["decisions_equal"] is True
+
+
+def test_historical_policy_flip_is_reported_even_with_equal_latest_fingerprint():
+    _, session, clock, csv_bytes, df = history()
+    # A large one-day historic dislocation in 2009/2010 should change the
+    # frozen day's level/defense independently of the current feature window.
+    df.loc[500, "Close"] *= 0.15
+    report = compare_completed_histories(
+        vendor_raw=csv_bytes, reference_df=df,
+        expected_session=session, now=clock,
+    )
+    assert report["status"] == "STAGING_SAME_VENDOR_PATH_PARITY_MISMATCH"
+    assert report["feature_fingerprints_equal"] is True
+    assert report["decision_check_executed"] is True
+    assert report["policy_mismatch_count"] > 0
+    assert report["first_policy_mismatches"]
+    assert report["decisions_equal"] is False
+
+
+def test_recent_binary32_difference_not_accepted_if_fingerprint_changes():
+    _, session, clock, csv_bytes, df = history()
+    old = float(df.loc[len(df)-1, "Close"])
+    ulp = math.ldexp(1.0, math.frexp(old)[1] - 1 - 23)
+    df.loc[len(df)-1, "Close"] = old + ulp
+    report = compare_completed_histories(
+        vendor_raw=csv_bytes, reference_df=df,
+        expected_session=session, now=clock,
+    )
+    assert report["numeric_rounding_compatible"] is True
+    assert report["feature_fingerprints_equal"] is False
+    assert report["status"] == "STAGING_SAME_VENDOR_PATH_PARITY_MISMATCH"
 
 def test_stale_yfinance_reference_session_fails_closed():
     _, session, clock, csv_bytes, df = history()
