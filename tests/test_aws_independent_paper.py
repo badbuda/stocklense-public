@@ -103,6 +103,8 @@ class FakeS3:
         return {
             "Body": io.BytesIO(self.data[kwargs["Key"]]),
             "VersionId": "version-id",
+            # S3 server time is now mandatory for continuity classification.
+            "LastModified": datetime(2026, 10, 13, 0, 0, tzinfo=timezone.utc),
         }
 
     def put_object(self, **kwargs):
@@ -123,7 +125,7 @@ def test_two_session_aws_paper_chain_preserves_accounting_and_fails_closed():
         seed_signal(s3, d, obj)
 
     fetch = lambda prior, session: observed_market(session)
-    with pytest.raises(RuntimeError, match="MISSING_PAPER_PREVIOUS_SESSION"):
+    with pytest.raises(RuntimeError, match="MISSING_PREVIOUS_CONTINUITY_RECORD|MISSING_PAPER_PREVIOUS_SESSION"):
         run_paper(session="2026-10-09", now=NOW_FRI, s3=s3,
                   bucket="fixture", market_fetch=fetch)
 
@@ -131,13 +133,14 @@ def test_two_session_aws_paper_chain_preserves_accounting_and_fails_closed():
                       bucket="fixture", bootstrap=True, market_fetch=fetch)
     assert first["status"] == "STAGED_PAPER_VERIFIED"
     assert first["broker_orders"] is False
-    assert len(s3.data) == 5  # 3 signals, market and receipt
+    assert len(s3.data) == 7  # 3 signals, genesis, market, receipt, continuity
 
     same = run_paper(session="2026-10-09", now=NOW_FRI, s3=s3,
                      bucket="fixture", bootstrap=True, market_fetch=fetch)
     assert first == same
 
-    with pytest.raises(RuntimeError, match="PAPER_PREVIOUS_SESSION_EXISTS"):
+    # Now refused earlier by the durable book-genesis guard (stronger, same intent).
+    with pytest.raises(RuntimeError, match="REBOOTSTRAP_NOT_ALLOWED_BOOK_EXISTS|PAPER_PREVIOUS_SESSION_EXISTS"):
         run_paper(session="2026-10-12", now=NOW_MON, s3=s3,
                   bucket="fixture", bootstrap=True, market_fetch=fetch)
 

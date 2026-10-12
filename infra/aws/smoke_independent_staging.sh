@@ -41,7 +41,7 @@ block="$(aws s3api get-public-access-block --region "$REGION" \
 }
 TMP_DIR="$(mktemp -d)"
 trap 'rm -rf "$TMP_DIR"' EXIT
-for component in signal paper orchestrator; do
+for component in signal paper orchestrator watchdog; do
   case "$component" in
     signal)
       fn="$STACK-candidate"
@@ -54,6 +54,10 @@ for component in signal paper orchestrator; do
     orchestrator)
       fn="$STACK-orchestrator-candidate"
       expected_handler=infra.aws.independent_orchestrator.handler
+      ;;
+    watchdog)
+      fn="$STACK-session-watchdog"
+      expected_handler=infra.aws.independent_session_watchdog.handler
       ;;
   esac
   config="$(aws lambda get-function-configuration --region "$REGION" \

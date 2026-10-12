@@ -23,7 +23,10 @@ def _immutable_put(s3, bucket: str, key: str, body: bytes, content_type: str) ->
     try:
         res = s3.put_object(
             Bucket=bucket, Key=key, Body=body, ContentType=content_type,
-            IfNoneMatch="*", ServerSideEncryption="AES256"
+            IfNoneMatch="*", ServerSideEncryption="AES256",
+            # S3 computes and stores SHA-256; verifiers read it via HeadObject
+            # instead of downloading multi-MB receipts.
+            ChecksumAlgorithm="SHA256",
         )
         version_id = res.get("VersionId")
         if not version_id or version_id == "null":

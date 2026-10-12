@@ -60,7 +60,8 @@ def test_cloudformation_failure_prints_exact_stack_events_and_does_not_delete():
 
 def test_low_quota_account_can_create_lambdas_without_reserved_concurrency():
     template = Path("infra/aws/independent-staging.yaml").read_text(encoding="utf-8")
-    assert template.count("Type: AWS::Lambda::Function") == 3
+    # signal, paper, orchestrator + read-only session watchdog (no trading path)
+    assert template.count("Type: AWS::Lambda::Function") == 4
     assert "ReservedConcurrentExecutions" not in template
     assert "State: DISABLED" in template
     assert "stocklens-paper" in template  # explicitly documents original as untouched

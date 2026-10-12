@@ -27,11 +27,13 @@ from stocklens.paper import (
 from paper_portfolio_integrity import evaluate
 
 from infra.aws.independent_pipeline import canonical, _immutable_put
+from infra.aws import session_continuity as sc
 
 NY = ZoneInfo("America/New_York")
 SHADOW_MODE = "SHADOW_ONLY_NO_BROKER_ACTIONS"
 AUDIT_PASS = "PASS_MODELLED_PAPER_ACCOUNTING_NOT_BROKER_FILLS"
 BOOK = "NEW_AWS_INDEPENDENT_STAGING_BOOK"
+GENESIS_KEY = f"paper/book/{BOOK}/genesis.json"
 MAX_RECEIPT = 8_000_000
 
 
@@ -98,6 +100,7 @@ def build_paper_receipt(
     *, session: str, current_signal: dict, prior_signal: dict,
     market: SessionMarket, now: datetime, previous_receipt: dict | None,
     previous_receipt_sha256: str | None = None, bootstrap: bool = False,
+    max_age_days: int = 5,
 ):
     """Deterministic pure frozen-math receipt; no fetching or S3 in this function."""
     if now.tzinfo is None:
@@ -109,7 +112,9 @@ def build_paper_receipt(
         ny.date() == date.fromisoformat(session) and ny.time() < time(18, 0)
     ):
         raise ValueError("PAPER_SESSION_NOT_COMPLETED")
-    if (ny.date() - date.fromisoformat(session)).days > 5:
+    if max_age_days not in (5, 10):
+        raise ValueError("UNSUPPORTED_PAPER_AGE_WINDOW")
+    if (ny.date() - date.fromisoformat(session)).days > max_age_days:
         raise ValueError("PAPER_SESSION_TOO_OLD")
     current_at = _checked_signal(current_signal, session, now)
     prior_at = _checked_signal(prior_signal, prior_day, now)
@@ -203,22 +208,169 @@ def build_paper_receipt(
 
 
 def _s3_read(s3, bucket: str, key: str) -> tuple[bytes, str]:
+    raw, version_id, _ = _s3_read_meta(s3, bucket, key)
+    return raw, version_id
+
+
+def _is_missing(exc: Exception) -> bool:
+    code = getattr(exc, "response", {}).get("Error", {}).get("Code")
+    return code in ("NoSuchKey", "404", "NotFound") or type(exc).__name__ == "Missing"
+
+
+def _s3_read_meta(s3, bucket: str, key: str):
+    """Returns (body, version_id, server LastModified or None)."""
     obj = s3.get_object(Bucket=bucket, Key=key)
+    last_modified = obj.get("LastModified")
     version_id = obj.get("VersionId")
     if not version_id or version_id == "null":
         raise RuntimeError("S3_VERSION_ID_REQUIRED:" + key)
     raw = obj["Body"].read(MAX_RECEIPT + 1)
     if len(raw) > MAX_RECEIPT:
         raise RuntimeError("S3_RECEIPT_TOO_LARGE:" + key)
-    return raw, version_id
+    if last_modified is not None and last_modified.tzinfo is None:
+        raise RuntimeError("S3_LAST_MODIFIED_NAIVE:" + key)
+    return raw, version_id, last_modified
+
+
+def _continuity_key(session: str) -> str:
+    return f"paper/continuity/{session}.json"
+
+
+def _read_continuity(s3, bucket: str, session: str):
+    try:
+        raw, version, _ = _s3_read_meta(s3, bucket, _continuity_key(session))
+    except Exception as exc:
+        if _is_missing(exc):
+            return None, None
+        raise
+    return json.loads(raw), hashlib.sha256(raw).hexdigest()
+
+
+MAX_CHAIN_SESSIONS = 400
+
+
+def s3_object_sha256_and_time(s3, bucket: str, key: str):
+    """(hex sha256, LastModified) from S3 metadata, or (None, None) if absent.
+    Uses the server-computed ChecksumSHA256 via HeadObject when available; falls back to
+    downloading and hashing (objects written before checksums, or test fakes)."""
+    import base64
+    try:
+        head = s3.head_object(Bucket=bucket, Key=key, ChecksumMode="ENABLED")
+    except Exception as exc:
+        if _is_missing(exc):
+            return None, None
+        if not isinstance(exc, AttributeError):
+            raise
+        head = None
+    if head is not None and head.get("ChecksumSHA256") and "-" not in head["ChecksumSHA256"]:
+        return base64.b64decode(head["ChecksumSHA256"]).hex(), head.get("LastModified")
+    try:
+        raw, _, last_modified = _s3_read_meta(s3, bucket, key)
+    except Exception as exc:
+        if _is_missing(exc):
+            return None, None
+        raise
+    return hashlib.sha256(raw).hexdigest(), last_modified
+
+
+def verify_book_chain(s3, bucket: str, *, through_session: str, genesis: dict) -> int:
+    """Fully re-verify the continuity chain from the durable genesis through
+    ``through_session``: genesis binding, every record (recomputed counters, timing,
+    adjacency), receipt SHA and genuine S3 server times. Raises on any defect."""
+    import exchange_calendars as xcals
+    start = genesis.get("bootstrap_session")
+    cal = xcals.get_calendar("XNYS")
+    if not isinstance(start, str) or not cal.is_session(start) or start > through_session:
+        raise RuntimeError("PREVIOUS_CHAIN_UNVERIFIED:GENESIS_SESSION")
+    sessions = [d.date().isoformat() for d in cal.sessions_in_range(start, through_session)]
+    if len(sessions) > MAX_CHAIN_SESSIONS:
+        raise RuntimeError("PREVIOUS_CHAIN_UNVERIFIED:APPROVED_CHECKPOINT_REQUIRED")
+    prev = None
+    for day in sessions:
+        rec, _ = _read_continuity(s3, bucket, day)
+        if rec is None:
+            raise RuntimeError("PREVIOUS_CHAIN_UNVERIFIED:MISSING_RECORD:" + day)
+        if prev is None:
+            g = sc.validate_genesis(genesis, rec, book=BOOK)
+            if g:
+                raise RuntimeError("PREVIOUS_CHAIN_UNVERIFIED:" + day + ":" + ",".join(g))
+        receipt_sha, receipt_at = s3_object_sha256_and_time(s3, bucket, f"paper/sessions/{day}.json")
+        _, signal_at = s3_object_sha256_and_time(
+            s3, bucket, f"signals/{previous_xnys_session(day)}.json")
+        errs = sc.validate_record(rec, session=day, book=BOOK, previous=prev,
+                                  receipt_sha256=receipt_sha, receipt_saved_at=receipt_at,
+                                  signal_saved_at=signal_at, check_s3_times=True)
+        if errs:
+            raise RuntimeError("PREVIOUS_CHAIN_UNVERIFIED:" + day + ":" + ",".join(errs))
+        prev = rec
+    return len(sessions)
+
+
+def _read_genesis(s3, bucket: str):
+    try:
+        raw, _, _ = _s3_read_meta(s3, bucket, GENESIS_KEY)
+    except Exception as exc:
+        if _is_missing(exc):
+            return None
+        raise
+    return json.loads(raw)
+
+
+def _write_continuity(s3, bucket: str, *, session: str, status: str, now: datetime,
+                      signal_archived_at, reason=None, evidence=None, bootstrap=False):
+    existing, _ = _read_continuity(s3, bucket, session)
+    if existing is not None:
+        # Idempotent retry only if the recomputed classification is identical;
+        # anything else is contradictory evidence and fails closed.
+        same = (existing.get("status") == status
+                and (existing.get("evidence") or {}).get("paper_sha256")
+                == (evidence or {}).get("paper_sha256"))
+        if not same:
+            raise RuntimeError("CONTINUITY_CONFLICT:" + session)
+        return existing
+    if bootstrap:
+        prev, prev_sha = None, None
+    else:
+        prev, prev_sha = _read_continuity(s3, bucket, previous_xnys_session(session))
+        if prev is None:
+            raise RuntimeError("MISSING_PREVIOUS_CONTINUITY_RECORD_FAIL_CLOSED")
+    record = sc.build_record(
+        session=session, status=status, previous_record=prev,
+        previous_record_sha256=prev_sha, processed_at=now,
+        signal_archived_at=signal_archived_at, reason=reason,
+        evidence=evidence, book=BOOK)
+    _immutable_put(s3, bucket, _continuity_key(session), canonical(record), "application/json")
+    return record
 
 
 def run_paper(*, session: str, now: datetime, s3, bucket: str,
-              bootstrap: bool = False, market_fetch=fetch_execution_market) -> dict:
+              bootstrap: bool = False, market_fetch=fetch_execution_market,
+              max_age_days: int = 5) -> dict:
     prior_day = previous_xnys_session(session)
+    # ---- Guards evaluated BEFORE any write ----
+    own, _ = _read_continuity(s3, bucket, session)
+    if own is not None and own.get("status") == sc.MISSED:
+        raise RuntimeError("SESSION_CLASSIFIED_MISSED_CONFLICT_BOOK_HALTED:" + session)
+    prev_cont, _ = _read_continuity(s3, bucket, prior_day)
+    if prev_cont is not None and prev_cont.get("book_halted"):
+        raise RuntimeError("BOOK_HALTED_AFTER_MISSED_SESSION_HUMAN_RESUME_REQUIRED:" + prior_day)
+    genesis = _read_genesis(s3, bucket)
+    if not bootstrap:
+        if prev_cont is None:
+            raise RuntimeError("MISSING_PREVIOUS_CONTINUITY_RECORD_FAIL_CLOSED:" + prior_day)
+        if genesis is None:
+            raise RuntimeError("BOOK_GENESIS_MISSING_CHAIN_UNANCHORED")
+        # Full verification from genesis BEFORE any write (not a shallow field check).
+        verify_book_chain(s3, bucket, through_session=prior_day, genesis=genesis)
+    if bootstrap:
+        if genesis is not None and genesis.get("bootstrap_session") != session:
+            raise RuntimeError("REBOOTSTRAP_NOT_ALLOWED_BOOK_EXISTS:" + str(genesis.get("bootstrap_session")))
+        if prev_cont is not None:
+            raise RuntimeError("REBOOTSTRAP_NOT_ALLOWED_BOOK_HAS_CONTINUITY")
     # Source contracts are read from immutable S3 objects (never GitHub).
-    curr_raw, curr_version = _s3_read(s3, bucket, f"signals/{session}.json")
-    prior_raw, prior_version = _s3_read(s3, bucket, f"signals/{prior_day}.json")
+    curr_raw, curr_version, _ = _s3_read_meta(s3, bucket, f"signals/{session}.json")
+    prior_raw, prior_version, prior_archived_at = _s3_read_meta(
+        s3, bucket, f"signals/{prior_day}.json")
     current_signal, prior_signal = json.loads(curr_raw), json.loads(prior_raw)
     key_previous = f"paper/sessions/{prior_day}.json"
     try:
@@ -240,7 +392,7 @@ def run_paper(*, session: str, now: datetime, s3, bucket: str,
         session=session, current_signal=current_signal, prior_signal=prior_signal,
         market=market, now=now, previous_receipt=previous,
         previous_receipt_sha256=hashlib.sha256(previous_raw).hexdigest() if previous_raw else None,
-        bootstrap=bootstrap
+        bootstrap=bootstrap, max_age_days=max_age_days,
     )
     normalized_market = {
         "source": "YFINANCE_1M_RAW",
@@ -264,8 +416,34 @@ def run_paper(*, session: str, now: datetime, s3, bucket: str,
     final = canonical(receipt)
     key = f"paper/sessions/{session}.json"
     version = _immutable_put(s3, bucket, key, final, "application/json")
+    # Completion time = S3 server time the receipt was durably saved (on an idempotent
+    # retry this is the ORIGINAL save), never the Lambda's start clock.
+    stored, _, saved_at = _s3_read_meta(s3, bucket, key)
+    if saved_at is None:
+        raise RuntimeError("S3_SERVER_LAST_MODIFIED_REQUIRED:" + key)
+    if hashlib.sha256(stored).digest() != hashlib.sha256(final).digest():
+        raise RuntimeError("STORED_RECEIPT_MISMATCH:" + key)
+    status = sc.classify(session=session, signal_archived_at=prior_archived_at,
+                         processed_at=saved_at, accounting_completed=True)
+    continuity = _write_continuity(
+        s3, bucket, session=session, status=status, now=saved_at,
+        signal_archived_at=prior_archived_at, bootstrap=bootstrap,
+        evidence={"paper_key": key, "paper_version_id": version,
+                  "paper_sha256": hashlib.sha256(final).hexdigest()})
+    if bootstrap:
+        # Two-phase bootstrap: genesis is the COMMIT, written only after the receipt and
+        # its continuity record exist, and it binds to both by hash. A failed bootstrap
+        # leaves no genesis; a crash before this line is completed by an identical rerun.
+        # Concurrent bootstraps of different sessions race on IfNoneMatch: exactly one
+        # genesis wins; the loser fails (DIVERGENT_IMMUTABLE_S3_OBJECT) and its objects
+        # remain unanchored and are never accepted by verify_book_chain / the watchdog.
+        _immutable_put(s3, bucket, GENESIS_KEY,
+                       canonical(sc.build_genesis(book=BOOK, first_record=continuity)),
+                       "application/json")
     return {
         "status": "STAGED_PAPER_VERIFIED",
+        "continuity_status": continuity["status"],
+        "continuity_epoch": continuity["epoch"],
         "session": session,
         "book": BOOK,
         "paper_key": key,
@@ -274,6 +452,110 @@ def run_paper(*, session: str, now: datetime, s3, bucket: str,
         "equity": receipt["row"]["equity"],
         "trade_count": len(receipt["trades"]),
         "audit": receipt["integrity"]["status"],
+        "broker_fills": False,
+        "broker_orders": False,
+    }
+
+
+class ExecutionDataUnavailable(RuntimeError):
+    pass
+
+
+class ProviderUnavailable(RuntimeError):
+    """Raise from a market adapter ONLY when observations are genuinely absent."""
+
+
+# Exact PaperIntegrityError codes from stocklens.paper meaning "observations absent".
+# Everything else from the same exception class (DUPLICATE_MINUTE_BARS,
+# INVALID_EXEC_PRICE, NON_XNYS_PAPER_SESSION, ACTION_FETCH_FAILED, ...) is an
+# integrity/parsing failure and must propagate unchanged.
+_ABSENCE_CODE = __import__("re").compile(
+    r"^(MISSING_\d{4}_BAR:|MISSING_NEAR_SESSION_CLOSE:|NO_COMMON_EXECUTION_SESSION$)")
+
+
+def is_provider_unavailable(exc: BaseException) -> bool:
+    """True ONLY for definitive absence of observations (-> MISSED_UNRECOVERABLE).
+
+    Transient failures (timeouts, connection errors, HTTP errors) are deliberately NOT
+    included: they propagate, the orchestrator invocation fails (OnFailure + Errors
+    alarm), and the next night's bounded catch-up retries the session. A session is only
+    declared unrecoverable when the provider definitively lacks the bars. Nothing
+    recovered later is ever counted as contemporaneous execution evidence.
+    """
+    from stocklens.paper import PaperIntegrityError
+    if isinstance(exc, ProviderUnavailable):
+        return True
+    if type(exc) is PaperIntegrityError and _ABSENCE_CODE.match(str(exc)):
+        return True
+    return False
+
+
+def run_paper_catchup(*, target_session: str, now: datetime, s3, bucket: str,
+                      market_fetch=fetch_execution_market) -> dict:
+    """Process every unrecorded session up to target, oldest first, bounded horizon.
+
+    Missing *inputs* (signal never archived, observed bars unavailable) produce one
+    MISSED_UNRECOVERABLE record and halt. Any other error (integrity, math, chain) is
+    raised unchanged -- bugs are never reclassified as missed sessions.
+    """
+    probe, last = target_session, None
+    for _ in range(sc.MAX_CATCHUP_SESSIONS + 1):
+        rec, _ = _read_continuity(s3, bucket, probe)
+        if rec is not None:
+            last = rec
+            break
+        probe = previous_xnys_session(probe)
+    if last is None:
+        raise RuntimeError("NO_CONTINUITY_HEAD_WITHIN_HORIZON_HUMAN_REVIEW_REQUIRED")
+    if last["book_halted"]:
+        raise RuntimeError("BOOK_HALTED_AFTER_MISSED_SESSION_HUMAN_RESUME_REQUIRED:" + last["session"])
+    pending = sc.plan_catchup(last_recorded_session=last["session"], target_session=target_session)
+    if not pending:
+        # Nothing new: prove the already-stored receipt instead of returning null.
+        if last["session"] != target_session:
+            raise RuntimeError("CONTINUITY_HEAD_AHEAD_OF_TARGET")
+        raw, _, _ = _s3_read_meta(s3, bucket, f"paper/sessions/{target_session}.json")
+        sha = hashlib.sha256(raw).hexdigest()
+        if (last.get("evidence") or {}).get("paper_sha256") != sha:
+            raise RuntimeError("STORED_RECEIPT_DOES_NOT_MATCH_CONTINUITY:" + target_session)
+        return {"status": "STAGED_PAPER_CATCHUP_COMPLETED", "session": target_session,
+                "sessions": [], "paper_sha256": sha, "idempotent_noop": True,
+                "broker_actions": False, "broker_fills": False, "broker_orders": False}
+    done = []
+    for session in pending:
+        def guarded_fetch(prior, sess):
+            try:
+                return market_fetch(prior, sess)
+            except Exception as exc:
+                if not is_provider_unavailable(exc):
+                    raise          # schema / parser / logic errors propagate unchanged
+                raise ExecutionDataUnavailable(f"{type(exc).__name__}:{str(exc)[:120]}") from exc
+        try:
+            result = run_paper(session=session, now=now, s3=s3, bucket=bucket,
+                               market_fetch=guarded_fetch, max_age_days=10)
+        except ExecutionDataUnavailable as exc:
+            rec = _write_continuity(s3, bucket, session=session, status=sc.MISSED, now=now,
+                                    signal_archived_at=None,
+                                    reason="OBSERVED_EXECUTION_BARS_UNAVAILABLE:" + str(exc))
+            done.append({"session": session, "continuity_status": rec["status"]})
+            break
+        except Exception as exc:
+            if not _is_missing(exc):
+                raise
+            rec = _write_continuity(s3, bucket, session=session, status=sc.MISSED, now=now,
+                                    signal_archived_at=None,
+                                    reason="REQUIRED_ARCHIVED_SIGNAL_MISSING")
+            done.append({"session": session, "continuity_status": rec["status"]})
+            break
+        done.append({"session": session, "continuity_status": result["continuity_status"],
+                     "paper_sha256": result["paper_sha256"]})
+    halted = bool(done) and done[-1]["continuity_status"] == sc.MISSED
+    return {
+        "status": "STAGED_PAPER_HALTED" if halted else "STAGED_PAPER_CATCHUP_COMPLETED",
+        "session": target_session,
+        "sessions": done,
+        "paper_sha256": done[-1].get("paper_sha256") if done and not halted else None,
+        "broker_actions": False,
         "broker_fills": False,
         "broker_orders": False,
     }
@@ -295,6 +577,12 @@ def handler(event, context):
     if event.get("mode") == "STAGING_IMPORT_SMOKE":
         return _import_smoke()
     import boto3
+    if event.get("mode") == "STAGING_PAPER_CATCHUP":
+        if event.get("bootstrap") not in (None, False):
+            raise RuntimeError("CATCHUP_CANNOT_BOOTSTRAP")
+        return run_paper_catchup(
+            target_session=event["expected_session"], now=datetime.now(timezone.utc),
+            s3=boto3.client("s3"), bucket=os.environ["STOCKLENS_DATA_BUCKET"])
     if event.get("mode") != "STAGING_PAPER_ONLY":
         raise RuntimeError("STAGING_PAPER_MODE_REQUIRED")
     return run_paper(

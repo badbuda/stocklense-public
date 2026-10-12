@@ -22,7 +22,7 @@ class FakeLambda:
             return {"StatusCode": 200, "FunctionError": "Unhandled",
                     "Payload": io.BytesIO(b'{"errorMessage":"FAIL"}')}
         status = ("STAGED_SIGNAL_ARCHIVED" if kwargs["FunctionName"] == "signal"
-                  else "STAGED_PAPER_VERIFIED")
+                  else "STAGED_PAPER_CATCHUP_COMPLETED")
         result = {"status": status, "session": event["expected_session"],
                   "broker_actions": False, "broker_orders": False,
                   "broker_fills": False,
@@ -53,7 +53,7 @@ def test_orchestrator_sequences_signal_then_paper_and_never_bootstraps():
     assert len(client.calls) == 2
     assert [x[0] for x in client.calls] == ["signal", "paper"]
     assert client.calls[0][1]["mode"] == "STAGING_ONLY"
-    assert client.calls[1][1]["mode"] == "STAGING_PAPER_ONLY"
+    assert client.calls[1][1]["mode"] == "STAGING_PAPER_CATCHUP"
     assert client.calls[1][1]["bootstrap"] is False
 
 
