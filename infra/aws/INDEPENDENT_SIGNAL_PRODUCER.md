@@ -129,3 +129,48 @@ failed creation got far enough to make this bucket, the old bucket may remain af
 the stack is deleted and could incur charges. This opt-in path intentionally does not
 automatically delete any S3 objects/buckets; inspect and clean up only with explicit
 authorization after determining whether it contains evidence.
+
+
+### October 12 staging deployment success and first runtime smoke gate
+
+The account owner confirmed `CREATE_COMPLETE` for `stocklens-independent-staging`,
+including Signal, Paper, Orchestrator Lambdas, one private S3 data bucket and a
+disabled EventBridge schedule. This confirms **CloudFormation provisioning**, not
+runtime import integrity or real data-source / accounting parity.
+
+Three staging handlers now recognize a strictly import-only event:
+`{"mode":"STAGING_IMPORT_SMOKE"}`. The Signal handler tests core/AWS SDK
+import and the staging bucket environment; Paper imports numpy, pandas,
+yfinance, exchange_calendars, shared accounting and AWS SDK; Orchestrator
+tests exchange-calendars, AWS SDK and child-function environment variables.
+All respond with `STAGING_IMPORT_OK`, `broker_actions:false` and
+`market_data_written:false`. No provider request, S3 object mutation,
+ledger bootstrap, signal production, or broker action occurs on this path.
+
+The new `infra/aws/smoke_independent_staging.sh` inspects the existing
+Stack status, EventBridge rule `DISABLED`, S3 Versioning/Public Access Block,
+all three Lambda runtime configurations, and invokes each staged Lambda with
+the safe import-only event. It fails on Lambda `FunctionError` and displays a
+bounded runtime error excerpt. The deployment script calls this smoke check
+automatically **after** a successful separate-stack CloudFormation update.
+
+From the existing checked-out branch, the single combined update+check is:
+
+```bash
+git pull --ff-only && bash infra/aws/deploy_independent_staging.sh
+```
+
+The command builds and deploys a **new source SHA-pinned artifact** to the
+existing staging stack, then exercises the no-market smoke. It does not need
+`STOCKLENS_RECREATE_ROLLED_BACK_STAGING=1` when the stack is already
+`CREATE_COMPLETE`; that flag should not be passed again. The original
+`stocklens-paper` stack remains unchanged. Successful import smoke **does
+not authorize** enabling EventBridge or disconnecting the old GitHub source.
+
+The first prospective market-data execution must target a genuinely completed
+NYSE session after 18:00 New York local time. Never force an earlier session
+when the vendor includes a partial bar for the current session. The staged
+Paper book can begin only on the **next** real exchange session with a prior
+signal generated **before that session's 09:30 ET open**. It is not permissible
+to replay earlier sessions with newly generated timestamps and claim point-in-time
+paper fills.

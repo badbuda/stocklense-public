@@ -165,7 +165,20 @@ def run(*, expected_session: str, now: datetime, s3, bucket: str,
         "vendor_parity_proven": False,
     }
 
+def _import_smoke():
+    # No network access, market-data fetch, S3 writes or broker calls.
+    import importlib
+    for package in ("stocklens.core", "boto3"):
+        importlib.import_module(package)
+    if not os.environ.get("STOCKLENS_DATA_BUCKET"):
+        raise RuntimeError("STAGING_BUCKET_ENV_MISSING")
+    return {"status": "STAGING_IMPORT_OK", "component": "signal",
+            "broker_actions": False, "market_data_written": False}
+
+
 def handler(event, context):
+    if event.get("mode") == "STAGING_IMPORT_SMOKE":
+        return _import_smoke()
     import boto3
     if event.get("mode") != "STAGING_ONLY":
         raise RuntimeError("STAGING_MODE_REQUIRED")

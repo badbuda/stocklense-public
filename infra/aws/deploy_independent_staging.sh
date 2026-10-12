@@ -202,3 +202,10 @@ fi
 aws cloudformation describe-stacks --stack-name "$STACK" \
   --query 'Stacks[0].{Status:StackStatus,Outputs:Outputs}' --output json
 echo "DEPLOYED_STAGING_ONLY: no live stocklens-paper resources modified."
+echo "Running import-only Lambda smoke checks (no Yahoo requests or Paper writes)."
+if ! bash infra/aws/smoke_independent_staging.sh; then
+  echo "DEPLOYED_BUT_RUNTIME_SMOKE_FAILED: review error; original stocklens-paper remains untouched." >&2
+  exit 5
+fi
+echo "STAGING_RUNTIME_IMPORT_SMOKE_COMPLETE"
+

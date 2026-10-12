@@ -73,7 +73,19 @@ def run_orchestrator(*, now: datetime, client, signal_function: str, paper_funct
     }
 
 
+def _import_smoke():
+    import importlib
+    for package in ("exchange_calendars", "boto3"):
+        importlib.import_module(package)
+    if not os.environ.get("SIGNAL_FUNCTION") or not os.environ.get("PAPER_FUNCTION"):
+        raise RuntimeError("STAGING_CHILD_LAMBDAS_ENV_MISSING")
+    return {"status": "STAGING_IMPORT_OK", "component": "orchestrator",
+            "broker_actions": False, "market_data_written": False}
+
+
 def handler(event, context):
+    if event.get("mode") == "STAGING_IMPORT_SMOKE":
+        return _import_smoke()
     import boto3
     if event.get("mode") != "STAGING_ORCHESTRATOR_ONLY":
         raise RuntimeError("ORCHESTRATOR_STAGING_MODE_REQUIRED")

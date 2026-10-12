@@ -279,7 +279,21 @@ def run_paper(*, session: str, now: datetime, s3, bucket: str,
     }
 
 
+def _import_smoke():
+    # Imports target native Linux wheels without an intraday provider request.
+    import importlib
+    for package in ("numpy", "pandas", "yfinance", "exchange_calendars",
+                    "stocklens.paper", "paper_portfolio_integrity", "boto3"):
+        importlib.import_module(package)
+    if not os.environ.get("STOCKLENS_DATA_BUCKET"):
+        raise RuntimeError("STAGING_BUCKET_ENV_MISSING")
+    return {"status": "STAGING_IMPORT_OK", "component": "paper",
+            "broker_actions": False, "market_data_written": False}
+
+
 def handler(event, context):
+    if event.get("mode") == "STAGING_IMPORT_SMOKE":
+        return _import_smoke()
     import boto3
     if event.get("mode") != "STAGING_PAPER_ONLY":
         raise RuntimeError("STAGING_PAPER_MODE_REQUIRED")
