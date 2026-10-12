@@ -8,12 +8,12 @@ def b(x):return json.dumps(x,sort_keys=True).encode()
 def sha():return hashlib.sha256(b"fixture").hexdigest()
 
 def series():
-    return {"series_id":"BAMLH0A0HYM2","offset":0,"count":2,
+    return {"series_id":"BAMLH0A0HYM2","response":{"offset":0,"count":2,
         "observations":[
             {"date":"2018-02-05","realtime_start":"2018-02-06",
              "realtime_end":"2018-02-08","value":"3.20"},
             {"date":"2018-02-05","realtime_start":"2018-02-09",
-             "realtime_end":"9999-12-31","value":"3.40"}]}
+             "realtime_end":"9999-12-31","value":"3.40"}]}}
 
 def event(provider="SEC_EDGAR"):
     x={"provider":provider,"source_record_id":"test","source_record_sha256":sha(),
@@ -36,7 +36,7 @@ def test_alfred_vintage_date_is_not_trading_clock():
     ({"count":3},"incomplete observations"),
     ({"offset":1},"incomplete observations")])
 def test_alfred_response_fail_closed(change,error):
-    x=series();x.update(change)
+    x=series();(x if "series_id" in change else x["response"]).update(change)
     with pytest.raises(ValueError,match=error):fred(b(x))
 
 @pytest.mark.parametrize("field,value,error",[
@@ -46,13 +46,13 @@ def test_alfred_response_fail_closed(change,error):
     ("value","-0.1","spread invalid"),
     ("date","2018-99-01","date invalid")])
 def test_alfred_invalid_row(field,value,error):
-    x=series();x["observations"][0][field]=value
+    x=series();x["response"]["observations"][0][field]=value
     with pytest.raises(ValueError,match=error):fred(b(x))
 
 def test_alfred_duplicate_and_missing_value():
-    x=series();x["observations"].append(dict(x["observations"][0]));x["count"]=3
+    x=series();x["response"]["observations"].append(dict(x["response"]["observations"][0]));x["response"]["count"]=3
     with pytest.raises(ValueError,match="duplicate vintage"):fred(b(x))
-    x=series();x["observations"][0]["value"]="."
+    x=series();x["response"]["observations"][0]["value"]="."
     assert fred(b(x))["unique_observations"]==1
 
 def test_sec_gdelt_fomc_cpi_do_not_self_certify():
@@ -78,13 +78,13 @@ def test_duplicate_and_future_result_leak():
 
 def test_native_fred_json_must_be_wrapped_with_pinned_series():
     x=series()
-    native={k:v for k,v in x.items() if k!="series_id"}
+    native=x["response"]
     wrapped={"series_id":"BAMLH0A0HYM2","response":native}
     assert fred(b(wrapped))["distinct_vintage_starts"]==2
     with pytest.raises(ValueError,match="series not pinned"):
         fred(b(native))
 
 def test_boolean_value_cannot_masquerade_as_numeric_spread():
-    x=series();x["observations"][0]["value"]=True
+    x=series();x["response"]["observations"][0]["value"]=True
     with pytest.raises(ValueError,match="spread invalid"):
         fred(b(x))

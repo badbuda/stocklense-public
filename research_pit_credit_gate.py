@@ -26,7 +26,7 @@ def fred(raw):
         raise ValueError("series not pinned")
     # FRED's native response does not include series_id. Require an
     # explicit, auditable acquisition envelope rather than guessing.
-    response=d.get("response",d)
+    response=d.get("response")
     if not isinstance(response,dict):raise ValueError("invalid FRED response")
     rows=response.get("observations")
     if (not isinstance(rows,list) or not rows or

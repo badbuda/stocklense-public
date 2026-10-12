@@ -37,3 +37,12 @@ fixtures; no source downloading in CI, no keys, no unlicensed ICE bulk data
 committed, no external WORM claim, no trading code touched.
 **Stop rule:** source-qualification count remains 0 until actual
 permissioned independent raw data and receipt checks exist.
+
+### 2026-10-13 source-intake amendment (before this CI)
+
+No trading hypothesis, threshold, or new backtest. Add strict single-as-of
+FRED/ALFRED snapshot parser for two **noninterchangeable** series T10Y3M
+and ICE BAMLH0A0HYM2. Use only synthetically generated fixtures for
+adversarial parser checks; missing release-clock/rights/independent
+capture continues to BLOCK any economic use. Do not infer 2010-2022
+PIT history from an October 2026 FRED page.
