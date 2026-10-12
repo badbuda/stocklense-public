@@ -64,22 +64,28 @@ def _existing_object(s3, bucket: str, key: str, limit: int = 2_000_000):
 
 
 def run(*, expected_session: str, now: datetime, s3, bucket: str,
-        ingest_fn=ingest) -> dict:
+        ingest_fn=ingest_frozen_yfinance) -> dict:
+    """Source-pinned canonical StockLens Signal; validate before first S3 write."""
     if now.tzinfo is None:
         raise RuntimeError("NAIVE_CLOCK")
     raw, audit = ingest_fn(expected_session, now=now)
     source_digest = hashlib.sha256(raw).hexdigest()
     if audit["csv_sha256"] != source_digest or audit["last_session"] != expected_session:
         raise RuntimeError("INGEST_MANIFEST_MISMATCH")
-    if audit["provider"] != "YAHOO_CHART_PUBLIC_ENDPOINT":
-        raise RuntimeError("UNKNOWN_INGEST_PROVIDER")
+    if audit["provider"] != FROZEN_PROVIDER:
+        raise RuntimeError("FROZEN_YFINANCE_SOURCE_REQUIRED")
+    if (audit.get("source_path") != "stocklens.data.load_qqq_history"
+        or audit.get("data_integrity_status") !=
+           "FROZEN_YFINANCE_SOURCE_VERIFIED_NOT_INDEPENDENT_VENDOR"
+        or not audit.get("reference_feature_window_sha256")):
+        raise RuntimeError("FROZEN_SOURCE_PROVENANCE_MISSING")
 
     input_key = f"market/qqq/{expected_session}.csv"
     manifest_key = f"manifests/qqq/{expected_session}.json"
     signal_key = f"signals/{expected_session}.json"
 
-    # Re-ingest on retry to detect real price revisions; allow unchanged
-    # normalized prices even if vendor transport metadata changed.
+    # Never rewrite an existing session even when old adjusted Yahoo prices
+    # have been revised. Same-body retries are valid; divergent data abort.
     previous_market = _existing_object(s3, bucket, input_key)
     if previous_market is not None:
         prior_raw, _ = previous_market
@@ -92,50 +98,67 @@ def run(*, expected_session: str, now: datetime, s3, bucket: str,
     if previous_signal and not previous_manifest:
         raise RuntimeError("SIGNAL_EXISTS_WITHOUT_MANIFEST")
 
-    input_version = _immutable_put(s3, bucket, input_key, raw, "text/csv")
+    frozen_generation_time = now
+    manifest = None
     if previous_manifest is not None:
         manifest = json.loads(previous_manifest[0])
         if not (
             manifest.get("input_key") == input_key
-            and manifest.get("input_version_id") == input_version
+            and manifest.get("input_version_id") == previous_market[1]
             and manifest.get("sha256") == source_digest
             and manifest.get("status") == "VERIFIED"
-            and manifest.get("provider") == audit["provider"]
+            and manifest.get("provider") == FROZEN_PROVIDER
             and manifest.get("data_type") == "QQQ_ADJUSTED_DAILY"
+            and manifest.get("audit", {}).get("reference_feature_window_sha256")
+                == audit["reference_feature_window_sha256"]
         ):
             raise RuntimeError("PREVIOUS_MARKET_MANIFEST_DIVERGENCE")
         previous_retrieval = manifest["audit"]["retrieved_at_utc"]
         frozen_generation_time = datetime.fromisoformat(
             previous_retrieval.replace("Z", "+00:00")
         )
-        if frozen_generation_time.tzinfo is None or frozen_generation_time > now:
+        if (frozen_generation_time.tzinfo is None
+            or frozen_generation_time > now):
             raise RuntimeError("INVALID_PREVIOUS_MARKET_RECEIPT_TIMESTAMP")
+
+    # Perform the frozen computational replay and check reference fingerprint
+    # BEFORE creating any new immutable object. A bad provider/library must
+    # never leave an orphaned market object in S3.
+    report = build_signal(
+        raw, frozen_generation_time,
+        source=FROZEN_PROVIDER,
+        source_sha256=source_digest,
+    )
+    if report["latest"]["asof_date"] != expected_session:
+        raise RuntimeError("FROZEN_SIGNAL_SESSION_MISMATCH")
+    if (report["data_audit"]["feature_window_sha256"]
+        != audit["reference_feature_window_sha256"]):
+        raise RuntimeError("FROZEN_SOURCE_FEATURE_FINGERPRINT_MISMATCH")
+    if report["mode"] != "SHADOW_ONLY_NO_BROKER_ACTIONS":
+        raise RuntimeError("SHADOW_MODE_ONLY")
+    if report["execution_plan"]["broker_actions_enabled"] is not False:
+        raise RuntimeError("BROKER_FORBIDDEN")
+
+    # Only after all computations pass can immutable S3 changes start.
+    input_version = _immutable_put(s3, bucket, input_key, raw, "text/csv")
+    if manifest is not None:
+        if input_version != previous_market[1]:
+            raise RuntimeError("INPUT_VERSION_CHANGED_DURING_RETRY")
     else:
         manifest = {
             "status": "VERIFIED",
-            "note": "Checks vendor schema and exact completed session only; not independent vendor parity.",
+            "note": (
+                "Canonical original yfinance QQQ auto_adjust=True loader, "
+                "completed NYSE session and original reference fingerprint; "
+                "NOT independently verified vendor or point-in-time prices."
+            ),
             "data_type": "QQQ_ADJUSTED_DAILY",
-            "provider": audit["provider"],
+            "provider": FROZEN_PROVIDER,
             "input_key": input_key,
             "input_version_id": input_version,
             "sha256": source_digest,
             "audit": audit,
         }
-        frozen_generation_time = now
-
-    # Reconstruct identical frozen decisions and the same first-generation
-    # timestamp. An exact retry is idempotent; a revised QQQ price is not.
-    report = build_signal(
-        raw, frozen_generation_time,
-        source="YAHOO_CHART_ADJUSTED_QQQ",
-        source_sha256=source_digest,
-    )
-    if report["latest"]["asof_date"] != expected_session:
-        raise RuntimeError("FROZEN_SIGNAL_SESSION_MISMATCH")
-    if report["mode"] != "SHADOW_ONLY_NO_BROKER_ACTIONS":
-        raise RuntimeError("SHADOW_MODE_ONLY")
-    if report["execution_plan"]["broker_actions_enabled"] is not False:
-        raise RuntimeError("BROKER_FORBIDDEN")
 
     manifest_version = _immutable_put(
         s3, bucket, manifest_key, canonical(manifest), "application/json"
@@ -163,7 +186,10 @@ def run(*, expected_session: str, now: datetime, s3, bucket: str,
         "signal_sha256": signal_digest,
         "broker_actions": False,
         "vendor_parity_proven": False,
+        "canonical_source": FROZEN_PROVIDER,
+        "frozen_feature_window_sha256": audit["reference_feature_window_sha256"],
     }
+
 
 def _vendor_network_probe(*, now: datetime, fetcher=None) -> dict:
     """Read-only Yahoo network connectivity check, allowed before market close.

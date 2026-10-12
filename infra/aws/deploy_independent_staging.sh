@@ -113,6 +113,7 @@ from pathlib import Path
 
 paths = [
     "infra/aws/independent_market_ingest.py",
+    "infra/aws/independent_frozen_ingest.py",
     "infra/aws/independent_pipeline.py",
     "infra/aws/source_parity.py",
     "infra/aws/independent_orchestrator.py",

@@ -2,6 +2,7 @@
 from __future__ import annotations
 import csv
 import io
+import hashlib
 from datetime import date, datetime, time, timedelta, timezone
 from zoneinfo import ZoneInfo
 
@@ -11,7 +12,23 @@ from infra.aws.independent_market_ingest import (
 )
 from infra.aws.independent_pipeline import run
 
+
 NY = ZoneInfo("America/New_York")
+
+
+def freeze_source_fixture(raw, audit):
+    """Only tests the canonical contract; pure vendor extractor remains separate."""
+    rows = list(csv.DictReader(io.StringIO(raw.decode("utf-8"))))
+    window = "\n".join(
+        f"{r['Date']},{float(r['Close']):.12g}" for r in rows[-253:]
+    )
+    return {
+        **audit,
+        "provider": "YFINANCE_QQQ_AUTO_ADJUSTED",
+        "source_path": "stocklens.data.load_qqq_history",
+        "data_integrity_status": "FROZEN_YFINANCE_SOURCE_VERIFIED_NOT_INDEPENDENT_VENDOR",
+        "reference_feature_window_sha256": hashlib.sha256(window.encode()).hexdigest(),
+    }
 
 
 def daily_fixture(count=740):
@@ -103,6 +120,7 @@ class InMemoryVersionedS3:
 def test_staged_pipeline_end_to_end_and_idempotence():
     payload, day, clock = daily_fixture()
     raw, audit = extract_adjusted_qqq(payload, now=clock, expected_session=day)
+    audit = freeze_source_fixture(raw, audit)
     audit["vendor_response_sha256"] = "fixture-response-hash"
 
     def fixture_ingest(session, *, now):
@@ -115,6 +133,8 @@ def test_staged_pipeline_end_to_end_and_idempotence():
     assert receipt["status"] == "STAGED_SIGNAL_ARCHIVED"
     assert receipt["broker_actions"] is False
     assert receipt["vendor_parity_proven"] is False
+    assert receipt["canonical_source"] == "YFINANCE_QQQ_AUTO_ADJUSTED"
+    assert receipt["frozen_feature_window_sha256"] == audit["reference_feature_window_sha256"]
     assert len(s3.data) == 3
     repeat = run(expected_session=day, now=clock, s3=s3,
                  bucket="test", ingest_fn=fixture_ingest)
@@ -124,6 +144,7 @@ def test_staged_pipeline_end_to_end_and_idempotence():
 def test_detects_divergent_immutable_vendor_revision():
     payload, day, clock = daily_fixture()
     raw, audit = extract_adjusted_qqq(payload, now=clock, expected_session=day)
+    audit = freeze_source_fixture(raw, audit)
     s3 = InMemoryVersionedS3()
 
     def ingest_a(session, *, now):
@@ -145,6 +166,7 @@ def test_retry_after_new_retrieval_timestamp_preserves_original_signal_receipt()
     from datetime import timedelta
     payload, day, clock = daily_fixture()
     raw, audit = extract_adjusted_qqq(payload, now=clock, expected_session=day)
+    audit = freeze_source_fixture(raw, audit)
     s3 = InMemoryVersionedS3()
     def first(session, *, now):
         return raw, audit
@@ -157,3 +179,27 @@ def test_retry_after_new_retrieval_timestamp_preserves_original_signal_receipt()
                 s3=s3, bucket="test", ingest_fn=later)
     assert retry == original
     assert len(s3.data) == 3
+
+
+
+def test_chart_provider_is_rejected_before_any_staging_s3_mutation():
+    payload, day, clock = daily_fixture()
+    raw, audit = extract_adjusted_qqq(payload, now=clock, expected_session=day)
+    s3 = InMemoryVersionedS3()
+    with pytest.raises(RuntimeError, match="FROZEN_YFINANCE_SOURCE_REQUIRED"):
+        run(expected_session=day, now=clock, s3=s3, bucket="test",
+            ingest_fn=lambda session, *, now: (raw, audit))
+    assert s3.data == {}
+
+
+def test_frozen_source_fingerprint_mismatch_fails_without_s3_writes():
+    payload, day, clock = daily_fixture()
+    raw, audit = extract_adjusted_qqq(payload, now=clock, expected_session=day)
+    audit = freeze_source_fixture(raw, audit)
+    audit["reference_feature_window_sha256"] = "0"*64
+    s3 = InMemoryVersionedS3()
+    with pytest.raises(RuntimeError, match="FROZEN_SOURCE_FEATURE_FINGERPRINT_MISMATCH"):
+        run(expected_session=day, now=clock, s3=s3, bucket="test",
+            ingest_fn=lambda session, *, now: (raw, audit))
+    # All source/feature checks must occur before the first S3 mutation.
+    assert s3.data == {}

@@ -175,7 +175,12 @@ checks = {
     "manifest_source_checksum": manifest["sha256"] == market_sha,
     "manifest_source_version": manifest["input_version_id"] == market_meta["VersionId"],
     "manifest_source_key": manifest["input_key"] == f"market/qqq/{day}.csv",
-    "manifest_provider": manifest["provider"] == "YAHOO_CHART_PUBLIC_ENDPOINT",
+    "manifest_provider": manifest["provider"] == "YFINANCE_QQQ_AUTO_ADJUSTED",
+    "frozen_reference_source_path": manifest["audit"].get("source_path") == "stocklens.data.load_qqq_history",
+    "frozen_reference_fp": manifest["audit"].get("reference_feature_window_sha256") == window_sha,
+    "source_validation_status": manifest["audit"].get("data_integrity_status") == "FROZEN_YFINANCE_SOURCE_VERIFIED_NOT_INDEPENDENT_VENDOR",
+    "canonical_source_receipt": response.get("canonical_source") == "YFINANCE_QQQ_AUTO_ADJUSTED",
+    "canonical_source_fingerprint_receipt": response.get("frozen_feature_window_sha256") == window_sha,
     "manifest_type": manifest["data_type"] == "QQQ_ADJUSTED_DAILY",
     "manifest_status": manifest["status"] == "VERIFIED",
     "manifest_completed_session": manifest["audit"]["last_session"] == day,
@@ -200,6 +205,6 @@ print("MARKET_ROWS=" + str(len(market)) +
       " DEFENSE=" + str(latest["defense_active"]) +
       " LEVERAGE=" + str(latest["target_leverage"]) +
       " ACTION=" + str(signal["action"]))
-print("BROKER_DISABLED:YES; PROVENANCE_INTERNAL_SHA_CHAIN:YES")
-print("NOT_PROVEN:SECOND_PROVIDER_PARITY_OR_PROSPECTIVE_PAPER_EXECUTION")
+print("BROKER_DISABLED:YES; SOURCE=FROZEN_YFINANCE_AUTO_ADJUSTED; PROVENANCE_INTERNAL_SHA_CHAIN:YES")
+print("NOT_PROVEN:SECOND_PROVIDER_PARITY_OR_PROSPECTIVE_PAPER_EXECUTION; DIRECT_CHART_PRICE_DRIFT_REMAINS_DIAGNOSTIC")
 PY

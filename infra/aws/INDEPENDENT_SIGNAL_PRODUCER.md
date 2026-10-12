@@ -322,3 +322,74 @@ intact, does not write any market data or Paper receipts, and leaves the
 staging EventBridge schedule **DISABLED**. A green GitHub CI alone is NOT
 proof of the real Yahoo numerical comparison; the real Lambda output must
 be reviewed separately.
+
+
+### Canonical-input correction after observed parity mismatch — supersedes direct-chart signal source
+
+**Current recommended staging source:** the original, unchanged
+stocklens.data.load_qqq_history() loader with yfinance.download(auto_adjust=True).
+The QQQ chart direct endpoint remains available as a **read-only independent
+code-path diagnostic**, and both paths still ultimately use Yahoo data.
+This is a staging-only input-selection change, not a modification of
+stocklens/core.py or the existing production stocklens-paper stack.
+
+The user supplied **real AWS evidence** for the prior source comparison:
+4,723 date-aligned sessions; 4,303/4,303 frozen policy decisions identical
+(no changes to defense, level, leverage or QQQ/TQQQ allocations); 3,748
+different historical adjusted prices; 32 larger than the eight-ULP numeric
+diagnostic budget, at most 14 binary32 ULPs; the latest 253-day fingerprint
+differed. No definitive root cause for the price differences was established;
+different retrieval times and Yahoo/yfinance adjustments may contribute.
+Those mismatches were NOT waived and the direct-chart parity gate remains
+a recorded **DATA_MISMATCH**, not a PASS.
+
+The new candidate signal ingestion method:
+- Calls the **frozen yfinance loader in AWS**, not GitHub or a synthetic
+  return series, preserving the existing old system's input method.
+- Checks the XNYS calendar, completed-session 18:00 New York safeguard,
+  exact requested date, 2008 warmup, sorted/positive observed adjusted
+  prices and original loader's audit metadata.
+- Serializes the original floating-point values with .17g precision and
+  **requires exactly equal** 253-session SHA-256 fingerprints between
+  the frozen loader and the independently replayed candidate signal.
+- Records explicit immutable input provenance:
+  provider=YFINANCE_QQQ_AUTO_ADJUSTED,
+  source_path=stocklens.data.load_qqq_history,
+  reference_feature_window_sha256, retrieval UTC, full CSV SHA and
+  versioned S3 objects. No upstream HTTP byte archive or independent
+  quote provider proof is claimed.
+- Rejects the former direct Yahoo-chart provider as canonical input.
+  Any malformed source, wrong session or fingerprint fails **before**
+  creating new S3 objects. The same immutable input cannot be silently
+  overwritten by later Yahoo adjusted-close revisions.
+- Keeps the frozen strategy, Paper model, broker prohibition and
+  disabled EventBridge rule **unchanged**.
+
+If the older direct-chart path already created signals for some date,
+the archive remains immutable; the new canonical source would detect
+the existing CSV/manifest mismatch and refuse to overwrite it. A new
+deployment must not delete old receipts or rename them silently.
+
+After updating the branch and staging-only Lambda code, the **first
+allowed prospective** completion check for the 2026-10-12 session is
+after **18:00 America/New_York on October 12** (01:00 October 13 Israel).
+The combined command is:
+
+    git pull --ff-only && bash infra/aws/deploy_independent_staging.sh
+
+Then, only after that market-close cutoff:
+
+    bash infra/aws/accept_independent_staging.sh signal 2026-10-12
+
+The acceptance tool will fail unless all three S3 objects are versioned,
+the frozen original yfinance provider is recorded, source data hashes
+match and the original reference 253-session fingerprint equals the
+Signal fingerprint. This certifies source-method and frozen-state
+consistency at the observation time, NOT a second vendor, historical
+point-in-time quote fidelity, executable order fills or readiness for
+production brokerage.
+
+Do NOT rerun the strict direct-Yahoo parity test expecting its 32
+recorded numeric discrepancies to disappear. They remain documented
+and require independent evidence before any source-independent
+production-readiness claim.

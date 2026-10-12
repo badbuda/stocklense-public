@@ -6,6 +6,8 @@ Does not invoke Lambda, fetch external sites, access GitHub or modify AWS.
 """
 from __future__ import annotations
 import hashlib
+import csv
+import io
 import json
 import os
 import sys
@@ -41,6 +43,21 @@ def audit(session: str, *, s3, bucket: str) -> dict:
         raise RuntimeError("MARKET_PROVENANCE_MISMATCH")
     if manifest["audit"]["csv_sha256"] != items["market"]["sha"]:
         raise RuntimeError("VENDOR_CSV_DIGEST_MISMATCH")
+    if (manifest.get("provider") != "YFINANCE_QQQ_AUTO_ADJUSTED"
+        or manifest["audit"].get("source_path") != "stocklens.data.load_qqq_history"
+        or manifest["audit"].get("data_integrity_status") !=
+           "FROZEN_YFINANCE_SOURCE_VERIFIED_NOT_INDEPENDENT_VENDOR"):
+        raise RuntimeError("FROZEN_SOURCE_PROVENANCE_REQUIRED")
+    rows = list(csv.DictReader(io.StringIO(items["market"]["body"].decode("utf-8"))))
+    if len(rows) < 300 or rows[-1]["Date"] != session:
+        raise RuntimeError("CANONICAL_CSV_DATE_OR_LENGTH_INVALID")
+    fp = hashlib.sha256(
+        "\n".join(f"{r['Date']},{float(r['Close']):.12g}"
+                  for r in rows[-253:]).encode("utf-8")
+    ).hexdigest()
+    if (fp != manifest["audit"].get("reference_feature_window_sha256")
+        or fp != report["data_audit"].get("feature_window_sha256")):
+        raise RuntimeError("FROZEN_DATA_FP_MISMATCH")
     if manifest["audit"]["last_session"] != session:
         raise RuntimeError("VENDOR_SESSION_MISMATCH")
     if report["latest"]["asof_date"] != session:
@@ -61,6 +78,8 @@ def audit(session: str, *, s3, bucket: str) -> dict:
         "manifest_sha256": items["manifest"]["sha"],
         "broker_actions": False,
         "vendor_parity_proven": False,
+        "canonical_source": "YFINANCE_QQQ_AUTO_ADJUSTED",
+        "frozen_reference_feature_window_sha256": fp,
         "production_independence_proven": False,
     }
 
