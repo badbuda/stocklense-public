@@ -174,3 +174,56 @@ Paper book can begin only on the **next** real exchange session with a prior
 signal generated **before that session's 09:30 ET open**. It is not permissible
 to replay earlier sessions with newly generated timestamps and claim point-in-time
 paper fills.
+
+
+### AWS live-import smoke passed; next isolated provider + first-signal acceptance
+
+On October 12, the account operator confirmed `UPDATE_COMPLETE` for the
+isolated staging stack and **all three import-only Smoke checks passing**
+(`SMOKE_PASS:signal`, `SMOKE_PASS:paper`, `SMOKE_PASS:orchestrator`).
+S3 versioning/private-access checks passed and EventBridge remained `DISABLED`.
+These facts prove runtime and packaging integrity, not market-data availability.
+
+Next, use the **same shell in the existing checkout**, after updating the
+branch that includes this acceptance harness:
+
+```bash
+git pull --ff-only && bash infra/aws/deploy_independent_staging.sh
+```
+
+Run the safe **read-only provider network probe**. It uses an actual Yahoo chart
+HTTP GET from inside the candidate Signal Lambda, verifies that the expected QQQ
+chart schema is reachable, and returns the count/latest calendar date; it
+**does not write S3, declare today's session complete, produce a signal,
+bootstrap a Paper portfolio, or contact a broker**:
+
+```bash
+bash infra/aws/accept_independent_staging.sh probe
+```
+
+Once the US regular market session for **2026-10-12** has completed and it is
+**after 18:00 America/New_York on October 12** (01:00 Israel time on Oct 13),
+run the first independent AWS signal **only**:
+
+```bash
+bash infra/aws/accept_independent_staging.sh signal 2026-10-12
+```
+
+The runner refuses an incomplete New York session, invokes Signal with
+`STAGING_ONLY`, and independently downloads and checks three **versioned**
+S3 receipts (actual adjusted QQQ CSV, source manifest, frozen Signal JSON).
+It verifies all market/manifest/signal SHA links, 253-session fingerprint,
+latest session, `SHADOW_ONLY_NO_BROKER_ACTIONS`, disabled broker permissions,
+and first-write S3 version identities. A Lambda `FunctionError` is treated
+as a failure even if the AWS CLI exits successfully.
+
+The first signal is **not a Paper fill**; the independent Paper book can start
+no earlier than the **next** completed XNYS trading session, with that prior
+day's Signal already archived **before** the next market opening.
+
+This verifies single-provider access and **internal** provenance only.
+Identical adjusted-price/decision parity with the original yfinance generator,
+second-vendor verification, intraday corporate-action evidence and full
+prospective Paper continuity remain production cutover blockers. If Yahoo
+limits/blocks AWS IP addresses, the read-only network probe will report a
+runtime failure: do not fabricate data or silently replace the provider.

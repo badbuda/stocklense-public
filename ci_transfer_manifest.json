@@ -156,9 +156,9 @@
     "infra/aws/independent_market_ingest.py": "6d77f675a6c0584eba1b73bb509be25b4385073b",
     "infra/aws/independent_orchestrator.py": "f6a38d331e9a5e9ae63c48f106b9d7807722d7c8",
     "infra/aws/independent_paper.py": "27dda773a1495325ffdb2cb4ac5992ff1dbdbcff",
-    "infra/aws/independent_pipeline.py": "c94929f04e5274a0bf8e622d2d93b1c71da406c2",
+    "infra/aws/independent_pipeline.py": "f7b9d4d527d6ec70123cd92a8bb81ec4e5094db2",
     "infra/aws/INDEPENDENT_RUNTIME_HANDOFF.md": "6aff228eca13bd52ace2ffd36b1bf13cc3c2bb76",
-    "infra/aws/INDEPENDENT_SIGNAL_PRODUCER.md": "90e450b9f763db1bec8c222e479fe899b077020b",
+    "infra/aws/INDEPENDENT_SIGNAL_PRODUCER.md": "aea1d5d5af9b682f2231aef3f09a65dc31101e09",
     "infra/aws/independent_signal_producer.py": "42a697fad422bb997447bf2dfcc234de70404ab0",
     "infra/aws/independent-staging.yaml": "49c658c127220a79fe16fef030efaeff18f972ba",
     "infra/aws/paper-evidence-handler.py": "0a967783e199fe6b0135deb974062e93982477c7",
@@ -444,6 +444,8 @@
     "workbench_evidence_manifest.py": "7e290add5dcb861b0d4bdbed81cc7e4308ff4683",
     "workbench_selfcheck.py": "4f17be6d56ac7d3cc3637e1ef2b2af3ed9d880a8",
     "yahoo_eod_scorecard.py": "137465f3ff4d9a2b8c164bf4321480c0ea0869fd",
-    "yahoo_long_history.py": "e7e51b5c2f5697da5d583316638b98ec13e6114c"
+    "yahoo_long_history.py": "e7e51b5c2f5697da5d583316638b98ec13e6114c",
+    "infra/aws/accept_independent_staging.sh": "bf78c12e14ae06c1d63c0ecef6f76696a4ec7e8e",
+    "tests/test_aws_independent_live_acceptance.py": "c3c8eb7742f327ae737e2d00231617dfcbbc3da4"
   }
 }

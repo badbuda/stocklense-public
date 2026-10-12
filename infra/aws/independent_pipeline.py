@@ -9,7 +9,7 @@ import json
 import os
 from datetime import datetime, timezone
 
-from infra.aws.independent_market_ingest import ingest
+from infra.aws.independent_market_ingest import ingest, _vendor_request, NY
 from infra.aws.independent_signal_producer import build_signal
 
 
@@ -165,6 +165,50 @@ def run(*, expected_session: str, now: datetime, s3, bucket: str,
         "vendor_parity_proven": False,
     }
 
+def _vendor_network_probe(*, now: datetime, fetcher=None) -> dict:
+    """Read-only Yahoo network connectivity check, allowed before market close.
+
+    This does NOT validate a completed current session, certify numerical
+    parity or publish a signal. All ingest/paper paths remain untouched.
+    """
+    if now.tzinfo is None:
+        raise ValueError("NAIVE_VENDOR_PROBE_CLOCK")
+    payload, upstream_digest = (fetcher or _vendor_request)(now=now)
+    try:
+        chart = payload["chart"]
+        if chart.get("error") is not None:
+            raise ValueError("VENDOR_PROBE_ERROR")
+        series = chart["result"][0]
+        meta = series["meta"]
+        stamps = series["timestamp"]
+        adjusted = series["indicators"]["adjclose"][0]["adjclose"]
+        if meta.get("symbol") != "QQQ":
+            raise ValueError("VENDOR_PROBE_WRONG_SYMBOL")
+        if meta.get("exchangeTimezoneName") != "America/New_York":
+            raise ValueError("VENDOR_PROBE_WRONG_TIMEZONE")
+        if not isinstance(stamps, list) or len(stamps) < 300:
+            raise ValueError("VENDOR_PROBE_TOO_FEW_BARS")
+        if len(stamps) != len(adjusted):
+            raise ValueError("VENDOR_PROBE_ARRAY_MISMATCH")
+        last_day = datetime.fromtimestamp(int(stamps[-1]), NY).date()
+        if last_day > now.astimezone(NY).date():
+            raise ValueError("VENDOR_PROBE_FUTURE_BAR")
+    except (KeyError, IndexError, TypeError, OverflowError) as exc:
+        raise ValueError("VENDOR_PROBE_MALFORMED_CHART") from exc
+    return {
+        "status": "STAGING_VENDOR_NETWORK_OK",
+        "component": "signal",
+        "provider": "YAHOO_CHART_PUBLIC_ENDPOINT",
+        "rows": len(stamps),
+        "last_vendor_calendar_date": last_day.isoformat(),
+        "latest_session_completed": False,
+        "market_data_written": False,
+        "broker_actions": False,
+        "upstream_response_sha256": upstream_digest,
+        "historical_parity_proven": False,
+    }
+
+
 def _import_smoke():
     # No network access, market-data fetch, S3 writes or broker calls.
     import importlib
@@ -179,6 +223,8 @@ def _import_smoke():
 def handler(event, context):
     if event.get("mode") == "STAGING_IMPORT_SMOKE":
         return _import_smoke()
+    if event.get("mode") == "STAGING_VENDOR_NETWORK_PROBE":
+        return _vendor_network_probe(now=datetime.now(timezone.utc))
     import boto3
     if event.get("mode") != "STAGING_ONLY":
         raise RuntimeError("STAGING_MODE_REQUIRED")
