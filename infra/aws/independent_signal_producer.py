@@ -51,7 +51,7 @@ def build_signal(raw: bytes, now: datetime, *, source: str, source_sha256: str):
     if previous.defense_active != latest.defense_active:
         action = "ENTER_CASH_NEXT_SESSION" if latest.defense_active else "EXIT_CASH_NEXT_SESSION"
     # Match the frozen data.py 253-session fingerprint encoding byte-for-byte.
-    window = "\\n".join(
+    window = "\n".join(
         f"{d},{float(c):.12g}" for d, c in zip(dates[-253:], closes[-253:])
     )
     feature_window_sha256 = hashlib.sha256(window.encode("utf-8")).hexdigest()
