@@ -50,6 +50,11 @@ def build_signal(raw: bytes, now: datetime, *, source: str, source_sha256: str):
         action = "REBALANCE_NEXT_SESSION"
     if previous.defense_active != latest.defense_active:
         action = "ENTER_CASH_NEXT_SESSION" if latest.defense_active else "EXIT_CASH_NEXT_SESSION"
+    # Match the frozen data.py 253-session fingerprint encoding byte-for-byte.
+    window = "\\n".join(
+        f"{d},{float(c):.12g}" for d, c in zip(dates[-253:], closes[-253:])
+    )
+    feature_window_sha256 = hashlib.sha256(window.encode("utf-8")).hexdigest()
     report = {
         "version": VERSION,
         "generated_at_utc": now.isoformat(),
@@ -72,7 +77,15 @@ def build_signal(raw: bytes, now: datetime, *, source: str, source_sha256: str):
             "last_close": closes[-1],
             "source": source,
             "source_sha256": source_sha256,
+            "raw_rows": len(rows),
+            "completed_rows": len(rows),
             "feature_window_sessions": 253,
+            "feature_window_sha256": feature_window_sha256,
+            "raw_last_date": dates[-1],
+            "last_completed_date": dates[-1],
+            "dropped_incomplete_current_session": False,
+            "ny_time_at_validation": ny.isoformat(),
+            "safe_after_ny_time": "18:00",
         },
     }
     return report
