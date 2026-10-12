@@ -13,7 +13,6 @@ import json
 import os
 import sys
 
-import boto3
 from paper_portfolio_integrity import evaluate
 from infra.aws.independent_paper import (
     AUDIT_PASS, BOOK, MAX_RECEIPT, previous_xnys_session
@@ -128,6 +127,7 @@ def verify(*, session: str, s3, bucket: str):
 
 
 def main():
+    import boto3  # CloudShell-only; pure verify() works offline without the AWS SDK.
     if len(sys.argv) != 2:
         raise SystemExit("Usage: python infra/aws/verify_independent_paper.py YYYY-MM-DD")
     region = os.environ.get("AWS_REGION", "eu-central-1")

@@ -169,7 +169,7 @@
     "infra/aws/runtime_dependency_audit.py": "8775ba2dfee741019ab9833a7b56be64f93bb29f",
     "infra/aws/schedule-watchdog-handler.py": "12fd5f4941d81aa064317dfc1827032db5845339",
     "infra/aws/verify_independent_candidate.py": "01bd73cd4940039e48a12d442371eb9eaeee1d8b",
-    "infra/aws/verify_independent_paper.py": "aab0ee35ba5c15238ceef8fa38cd54a1eb9eb3e3",
+    "infra/aws/verify_independent_paper.py": "fd14c091ba8eba3731ae2c797af1b501599da5c0",
     "integrations/lean_chart_feature_exporter.py": "78e64d8620141ea8742f0b49116e6ebc6a9c152c",
     "integrations/lean_feature_evidence_exporter.py": "42b7d562895e9aae6b6e6f495e0bff0ce60b3988",
     "json_artifacts.py": "95093214d4b81a658bce8ce0430645589d2bd8e4",
