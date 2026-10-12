@@ -19,7 +19,6 @@ def canonical(obj: dict) -> bytes:
 
 def _immutable_put(s3, bucket: str, key: str, body: bytes, content_type: str) -> str:
     """Replay an identical payload safely, reject every divergent overwrite."""
-    from botocore.exceptions import ClientError
     try:
         res = s3.put_object(
             Bucket=bucket, Key=key, Body=body, ContentType=content_type,
@@ -29,8 +28,9 @@ def _immutable_put(s3, bucket: str, key: str, body: bytes, content_type: str) ->
         if not version_id or version_id == "null":
             raise RuntimeError("S3_BUCKET_VERSIONING_REQUIRED")
         return version_id
-    except ClientError as exc:
-        if exc.response.get("ResponseMetadata", {}).get("HTTPStatusCode") not in (409, 412):
+    except Exception as exc:
+        response = getattr(exc, "response", None)
+        if not isinstance(response, dict) or response.get("ResponseMetadata", {}).get("HTTPStatusCode") not in (409, 412):
             raise
         existing = s3.get_object(Bucket=bucket, Key=key)
         if hashlib.sha256(existing["Body"].read()).digest() != hashlib.sha256(body).digest():

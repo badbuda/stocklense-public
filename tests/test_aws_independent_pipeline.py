@@ -6,7 +6,6 @@ from datetime import date, datetime, time, timedelta, timezone
 from zoneinfo import ZoneInfo
 
 import pytest
-from botocore.exceptions import ClientError
 from infra.aws.independent_market_ingest import (
     MarketDataError, extract_adjusted_qqq
 )
@@ -82,6 +81,10 @@ def test_rejects_vendor_duplicate_day():
         extract_adjusted_qqq(payload, now=clock, expected_session=day)
 
 
+class MockPreconditionFailed(Exception):
+    response = {"ResponseMetadata": {"HTTPStatusCode": 412}}
+
+
 class InMemoryVersionedS3:
     def __init__(self):
         self.data = {}
@@ -89,11 +92,7 @@ class InMemoryVersionedS3:
     def put_object(self, **kw):
         key = kw["Key"]
         if key in self.data:
-            raise ClientError(
-                {"Error": {"Code": "PreconditionFailed"},
-                 "ResponseMetadata": {"HTTPStatusCode": 412}},
-                "PutObject",
-            )
+            raise MockPreconditionFailed("already exists")
         self.data[key] = kw["Body"]
         return {"VersionId": "v1"}
 
