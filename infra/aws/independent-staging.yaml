@@ -1,0 +1,88 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'StockLens 8.0 AWS-only candidate; isolated, manual-invoke, shadow-only; never replaces stocklens-paper'
+Parameters:
+  ArtifactBucket:
+    Type: String
+    Description: 'Private S3 bucket holding a pinned Python ZIP artifact; build time only'
+  ArtifactKey:
+    Type: String
+    Description: 'Immutable artifact ZIP key; do not use latest'
+Resources:
+  CandidateData:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      VersioningConfiguration:
+        Status: Enabled
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: BucketOwnerEnforced
+  CandidateLogs:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/aws/lambda/${AWS::StackName}-candidate'
+      RetentionInDays: 14
+  CandidateRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: CandidateS3AndLogsOnly
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:GetObjectVersion
+                  - s3:PutObject
+                Resource:
+                  - !Sub '${CandidateData.Arn}/market/qqq/*'
+                  - !Sub '${CandidateData.Arn}/manifests/qqq/*'
+                  - !Sub '${CandidateData.Arn}/signals/*'
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: !GetAtt CandidateLogs.Arn
+  CandidateLambda:
+    Type: AWS::Lambda::Function
+    DependsOn: CandidateLogs
+    Properties:
+      FunctionName: !Sub '${AWS::StackName}-candidate'
+      Runtime: python3.12
+      Architectures: [x86_64]
+      Handler: infra.aws.independent_pipeline.handler
+      Role: !GetAtt CandidateRole.Arn
+      Code:
+        S3Bucket: !Ref ArtifactBucket
+        S3Key: !Ref ArtifactKey
+      Timeout: 120
+      MemorySize: 512
+      ReservedConcurrentExecutions: 1
+      Environment:
+        Variables:
+          STOCKLENS_DATA_BUCKET: !Ref CandidateData
+Outputs:
+  CandidateFunctionName:
+    Value: !Ref CandidateLambda
+  CandidateDataBucket:
+    Value: !Ref CandidateData
+  CandidateLogGroup:
+    Value: !Ref CandidateLogs
