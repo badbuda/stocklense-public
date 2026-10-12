@@ -79,6 +79,65 @@ Resources:
       Environment:
         Variables:
           STOCKLENS_DATA_BUCKET: !Ref CandidateData
+  CandidatePaperLogs:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/aws/lambda/${AWS::StackName}-paper-candidate'
+      RetentionInDays: 14
+  CandidatePaperRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: CandidatePaperS3Scoped
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:GetObjectVersion
+                Resource:
+                  - !Sub '${CandidateData.Arn}/signals/*'
+                  - !Sub '${CandidateData.Arn}/paper/sessions/*'
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:GetObjectVersion
+                  - s3:PutObject
+                Resource:
+                  - !Sub '${CandidateData.Arn}/market/paper/*'
+                  - !Sub '${CandidateData.Arn}/paper/sessions/*'
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: !GetAtt CandidatePaperLogs.Arn
+  CandidatePaperLambda:
+    Type: AWS::Lambda::Function
+    DependsOn: CandidatePaperLogs
+    Properties:
+      FunctionName: !Sub '${AWS::StackName}-paper-candidate'
+      Runtime: python3.12
+      Architectures: [x86_64]
+      Handler: infra.aws.independent_paper.handler
+      Role: !GetAtt CandidatePaperRole.Arn
+      Code:
+        S3Bucket: !Ref ArtifactBucket
+        S3Key: !Ref ArtifactKey
+      Timeout: 240
+      MemorySize: 1536
+      ReservedConcurrentExecutions: 1
+      Environment:
+        Variables:
+          STOCKLENS_DATA_BUCKET: !Ref CandidateData
+
 Outputs:
   CandidateFunctionName:
     Value: !Ref CandidateLambda
@@ -86,3 +145,7 @@ Outputs:
     Value: !Ref CandidateData
   CandidateLogGroup:
     Value: !Ref CandidateLogs
+  CandidatePaperFunctionName:
+    Value: !Ref CandidatePaperLambda
+  CandidatePaperLogGroup:
+    Value: !Ref CandidatePaperLogs

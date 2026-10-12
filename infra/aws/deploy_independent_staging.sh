@@ -41,21 +41,55 @@ aws s3api put-bucket-versioning --bucket "$ARTIFACT_BUCKET" \
 
 TEMP_DIR="$(mktemp -d)"
 trap 'rm -rf "$TEMP_DIR"' EXIT
-python3 - "$TEMP_DIR/candidate.zip" <<'PY'
+# Paper uses exact frozen yfinance, pandas and exchange_calendars code paths.
+# Native wheels MUST target the same CPython version as the Lambda runtime.
+PY312="${PY312:-python3.12}"
+if ! command -v "$PY312" >/dev/null; then
+  echo "Python 3.12 is required to package the candidate's native wheels" >&2; exit 2
+fi
+"$PY312" - <<'PY'
+import sys
+assert sys.version_info[:2] == (3, 12), "Expected CPython 3.12 for Lambda x86_64"
+PY
+"$PY312" -m pip install --disable-pip-version-check --prefer-binary \
+  --no-compile --target "$TEMP_DIR/deps" -r requirements.txt
+
+"$PY312" - "$TEMP_DIR/candidate.zip" "$TEMP_DIR/deps" <<'PY'
 import sys, zipfile
 from pathlib import Path
+
 paths = [
     "infra/aws/independent_market_ingest.py",
     "infra/aws/independent_pipeline.py",
     "infra/aws/independent_signal_producer.py",
+    "infra/aws/independent_paper.py",
     "stocklens/core.py",
+    "stocklens/paper.py",
     "stocklens/__init__.py",
+    "paper_rebalance_math.py",
+    "paper_portfolio_integrity.py",
 ]
-with zipfile.ZipFile(sys.argv[1], "w", compression=zipfile.ZIP_DEFLATED) as out:
-    for file in paths:
-        if not Path(file).is_file():
-            raise RuntimeError(f"MISSING_PACKAGE_FILE:{file}")
-        out.write(file, file)
+deps = Path(sys.argv[2])
+files = [(Path(file), file) for file in paths]
+for file, _ in files:
+    if not file.is_file():
+        raise RuntimeError(f"MISSING_PACKAGE_FILE:{file}")
+for path in sorted(deps.rglob("*")):
+    if path.is_file() and "__pycache__" not in path.parts and path.suffix != ".pyc":
+        files.append((path, path.relative_to(deps).as_posix()))
+size = sum(path.stat().st_size for path, _ in files)
+if size > 240 * 1024 * 1024:
+    raise RuntimeError(f"UNZIPPED_LAMBDA_PACKAGE_TOO_LARGE:{size}")
+with zipfile.ZipFile(sys.argv[1], "w", compression=zipfile.ZIP_DEFLATED, compresslevel=6) as out:
+    out.writestr("infra/__init__.py", "")
+    out.writestr("infra/aws/__init__.py", "")
+    names = set()
+    for file, dest in files:
+        if dest in names:
+            raise RuntimeError(f"DUPLICATE_PACKAGE_PATH:{dest}")
+        names.add(dest)
+        out.write(file, dest)
+print(f"Package contents: {len(files)} files, {size} uncompressed bytes")
 PY
 DIGEST="$(sha256sum "$TEMP_DIR/candidate.zip" | cut -d' ' -f1)"
 ARTIFACT_KEY="candidate/${COMMIT}/${DIGEST}.zip"
@@ -69,8 +103,8 @@ aws cloudformation validate-template \
   --template-body file://infra/aws/independent-staging.yaml >/dev/null
 
 echo "STAGING ONLY: ${STACK}; source commit ${COMMIT}; ZIP sha256 ${DIGEST}"
-echo "This creates a separate S3 bucket, read/write-scoped role and"
-echo "manual-invocation Lambda; it creates NO schedule or broker access."
+echo "This creates one private bucket, TWO isolated candidate Lambdas and"
+echo "two scoped IAM roles. No schedule, broker or stocklens-paper change."
 aws cloudformation deploy \
   --region "$REGION" \
   --stack-name "$STACK" \

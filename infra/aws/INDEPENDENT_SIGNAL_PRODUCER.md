@@ -1,27 +1,34 @@
-# AWS-independent StockLens 8.0 candidate — operational handoff
+# AWS standalone runtime candidate — combined signal + modeled Paper
 
-**Draft only, not deployed. Does NOT change the existing stocklens-paper stack or send broker orders.**
+**Status: isolated Draft, not deployed to AWS, not a replacement of `stocklens-paper`.**
 
-## What is implemented
+This change packages two candidate Lambda functions in a **new** stack `stocklens-independent-staging`, and a private versioned S3 bucket. Neither Lambda reads GitHub at runtime, submits broker orders, updates the current DynamoDB archive, or has a production scheduler.
 
-- `independent_market_ingest.py`: obtains QQQ **observed adjusted daily closes** from the Yahoo chart endpoint *from within AWS*, not from a GitHub artifact. Vendor response is bounded and checked for correct symbol, timezone, completed session, positive finite closes, ordering, and minimum pre-2009 warmup. This is **one data provider** and its history may be revised or unavailable; independent cross-vendor price parity remains unproven.
-- `independent_signal_producer.py`: invokes **unchanged** `stocklens/core.py` frozen state replay; rejects malformed dates, invalid prices and incorrect sessions; carries 253-session SHA-256 fingerprint and a shadow-only execution flag. Its standalone Lambda handler requires versioned S3 data + manifest; the integrated candidate invokes its pure `build_signal` directly.
-- `independent_pipeline.py`: connects Yahoo -> immutable date-keyed, versioned private S3 market snapshot -> manifest -> StockLens 8.0 signal -> immutable signal snapshot. Repeated identical requests are checked; divergent overwrites fail closed. Writes **only** to its staging S3 bucket. **No DynamoDB, broker, GitHub or mutable latest pointer.**
-- `independent-staging.yaml`: a **separate** stack with an encrypted, versioned, private S3 bucket; manually-invoked Lambda and least-privilege logs/S3 role. No EventBridge rule, no shared DynamoDB or IAM broker grants.
-- `deploy_independent_staging.sh`: one local packaging+deployment command from a clean checked-out repository. Creates a separate encrypted/private artifact bucket and the staged CloudFormation stack. It does not invoke the function. AWS permissions and service costs apply.
-- `verify_independent_candidate.py`: read-only checks the S3 market, manifest, signal versions, SHA chains and no-broker flags.
+### Provenance and frozen economics
 
-## Single batch to stage in AWS (do NOT run before CI green and review)
+**Signal candidate** calls the public Yahoo chart API from AWS, obtains observed **adjusted daily QQQ closes** with explicit session, schema, timezone and SHA checks, replays unchanged `stocklens/core.py` 8.0 state and stores `market/qqq/YYYY-MM-DD.csv`, `manifests/qqq/YYYY-MM-DD.json`, `signals/YYYY-MM-DD.json` in private, versioned S3. `independent_signal_producer.py` includes a standalone S3-backed entry point; the integrated candidate runs `independent_pipeline.handler`.
 
-From a clean checkout of the specific reviewed PR commit, in AWS CloudShell in **eu-central-1**:
+**Paper candidate** reuses the **unchanged** `stocklens.paper` observed raw minute-price importer, fees/slippage, rebalance and accounting functions, plus the existing independent `paper_portfolio_integrity.evaluate` audit. It fetches live Yahoo market data via pinned yfinance **inside AWS**, not from GitHub. It requires the previous completed XNYS session's signal to have been generated before today's NY market open. It stores immutable `market/paper/YYYY-MM-DD.json` and `paper/sessions/YYYY-MM-DD.json` receipts, with a prior-receipt SHA chain, cumulative state/history, verified cash and share inventory, observed QQQ/TQQQ bar opens, dividends/splits, and no broker actions. Vendor HTTP byte-streams are **NOT** yet archived: the market receipt stores the validated normalized observation, its source tag and SHA, not independent quote provenance. Be accurate about this in later production readiness claims.
+
+Both candidates **fail closed** on missing days, late signals, unexpected prices, invalid corporate actions, divergent immutable objects and unsuccessful accounting verification.
+
+### Important account continuity distinction
+
+This is a **new independent staging paper book**. The first receipt uses a *deliberate, explicit prospective* `bootstrap:true` and a new modeled starting value of $100,000; this is NOT a migration or replacement of the existing `stocklens-paper` ledger. There is no automatic backfill, inferred historic executions or silent transfer of the existing holdings. A future production cutover must separately import and verify the existing book/state/ledger with hashes or explicitly approve a new book.
+
+### One packaging + staging deployment
+
+Run only from a **clean checked-out reviewed commit**, with AWS owner approval and a billing budget, in Frankfurt `eu-central-1`. The command uses Python 3.12, pip, native wheels and AWS IAM rights, and **creates billable resources**:
 
 ```bash
 bash infra/aws/deploy_independent_staging.sh
 ```
 
-Review the CloudFormation change and AWS costs first. The command creates **new isolated resources**, not updates to the production `stocklens-paper` stack. It packages only the candidate modules and unchanged frozen `stocklens/core.py`. Repo/GitHub is needed **at build time**, not at Lambda runtime.
+It packages the frozen modules and all pinned requirements, enforces the uncompressed Lambda size limit, stages the ZIP by its SHA and commit, then deploys the separate CloudFormation stack. Missing Python 3.12, oversized package, bad CloudFormation or IAM permission aborts. No stack under the name `stocklens-paper` is changed.
 
-Once an actual US market session has completed **after 18:00 America/New_York** and vendor data is available, manual staging example (fill SESSION with that completed NY trading date):
+### Prospective two-session acceptance (NOT historical replay)
+
+After a *genuinely completed* NYSE session and after at least 18:00 New York local time, run candidate Signal once for that date, e.g. replacing `YYYY-MM-DD`:
 
 ```bash
 SESSION=YYYY-MM-DD
@@ -29,28 +36,32 @@ aws lambda invoke --region eu-central-1 \
   --function-name stocklens-independent-staging-candidate \
   --cli-binary-format raw-in-base64-out \
   --payload "{\"mode\":\"STAGING_ONLY\",\"expected_session\":\"$SESSION\"}" \
-  /tmp/stocklens-staging-invocation.json
-cat /tmp/stocklens-staging-invocation.json
+  /tmp/stocklens-candidate-signal.json
+cat /tmp/stocklens-candidate-signal.json
 python3 infra/aws/verify_independent_candidate.py "$SESSION"
 ```
 
-A Lambda invocation may have `FunctionError` even if AWS CLI exited 0; inspect the invocation payload and CloudWatch logs before accepting a candidate. A successful staging receipt demonstrates **internal consistency**, not independent vendor parity or an AWS-only paper ledger.
+Ensure the invocation response contains **no FunctionError** before marking a success. Once the *next actual XNYS trading session* has closed, produce that day's Signal. Only now, with a valid prior signal that existed before today's open, start the **new staging** Paper book:
 
-## Blockers before any automated production cutover
+```bash
+SESSION=YYYY-MM-DD   # SECOND genuinely completed XNYS session
+aws lambda invoke --region eu-central-1 \
+  --function-name stocklens-independent-staging-paper-candidate \
+  --cli-binary-format raw-in-base64-out \
+  --payload "{\"mode\":\"STAGING_PAPER_ONLY\",\"expected_session\":\"$SESSION\",\"bootstrap\":true}" \
+  /tmp/stocklens-candidate-paper.json
+cat /tmp/stocklens-candidate-paper.json
+python3 infra/aws/verify_independent_paper.py "$SESSION"
+```
 
-1. **Identical-source parity:** prove adjusted Yahoo chart prices against frozen yfinance `auto_adjust=True` on identical timestamps and compare decisions, feature-window hash, action, levels and weights for historical regimes and fresh actual completed sessions. Candidate and historical snapshots may have data revisions. **Do not compare generated_at_utc or source labels as if identical.**
-2. **Observed paper executor:** migrate the exact `stocklens.paper` modeled ledger and independent `paper_portfolio_integrity` checks. Use observed 09:31/09:32 QQQ/TQQQ one-minute raw prices, actual closing bars and corporate actions. Persist prior state and previous valid signal in immutable versioned S3. No retrospective fills or synthetic leveraged ETF history.
-3. **Calendar, scheduling and health:** XNYS-aware gating for holidays, half-days, US DST, provider outages, freshness and missing-session alerts; only enable schedules after end-to-end evidence. Current 09:10/09:20 UTC archive clocks depend on GitHub and should not be reused blindly.
-4. **Safe release:** side-by-side compare paper NAV, fees, positions, receipts and hashes for multiple genuinely completed sessions; inspect IAM+S3 versions, test failure paths and SNS; reviewed, reversible aliases/CloudFormation change set. Never overwrite the existing retained DynamoDB table.
-5. **GitHub-off test:** stop GitHub publisher only after AWS produces and archives both the signal and actual-price paper independently for multiple sessions. Status remains **BLOCKED** until successful.
+On *subsequent* completed XNYS sessions, produce each Signal and Paper with `bootstrap:false` (or omit the flag). Any missed modeled session must be recorded as a gap, never backfilled or treated as a broker fill. The Paper pipeline fetches Yahoo's short-lived 1-minute market data; delayed invocations may be unexecutable, by design.
 
-## Failure semantics
+### Before any production activation
 
-- Provider 404, 429, bad timestamps, missing adjusted prices, weekend bars, stale session or blank input -> **fail**, never fabricate.
-- Existing immutable content with a different byte digest -> **divergence error**, never overwrite.
-- Yahoo as the single source -> mark provider parity *unproven*.
-- No broker calls, no actual fills, no financial order authorization.
+1. **Parity:** match Yahoo chart adjusted history to the original pinned yfinance series on same session and revision; compare frozen output with the original generator including 253-session hash, levels, actions, targets and previous state. Same-day timestamp differences are expected; semantic parity must be demonstrated rather than asserted.
+2. **Real provider evidence:** store byte-level 1-minute vendor responses, retrieval times, corporate-action provenance, and independent vendor comparison. Normalized receipts alone do not prove quote/executable market quality. Prove provider robustness through outages and revisions.
+3. **Continuity:** reconstruct/import the existing modeled Paper history and inventory if migrating it, or explicitly approve a separate new book. Verify complete independent accounting and cross-session model parity.
+4. **Scheduling and monitoring:** incorporate DST, XNYS calendar and half-day checks; enforce producer-before-consumer ordering, atomic incident signaling, missing-session metrics and SNS delivery. A heartbeat that only counts invocations is insufficient.
+5. **Controlled runtime test:** new signals **and** modeled paper receipts for multiple prospective sessions with GitHub Actions intentionally off, independently verified S3 and no broker privileges; rollback plan and alerts tested.
 
-## Cost and access
-
-This stack can incur Lambda, S3, IAM-related and CloudWatch charges; the data bucket has `DeletionPolicy: Retain` and survives stack deletion. An account owner must review stack changes and verify root MFA, budgets and least privilege. The public repo never contains AWS secrets.
+Until those gates are green the existing `stocklens-paper` Lambdas must remain untouched, and the new PR stays Draft.
