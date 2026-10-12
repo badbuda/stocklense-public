@@ -227,3 +227,47 @@ second-vendor verification, intraday corporate-action evidence and full
 prospective Paper continuity remain production cutover blockers. If Yahoo
 limits/blocks AWS IP addresses, the read-only network probe will report a
 runtime failure: do not fabricate data or silently replace the provider.
+
+
+### Read-only frozen price-path parity (does not use a second provider)
+
+The user verified the real AWS Yahoo networking probe returned 4,724 QQQ
+chart bars (latest calendar date 2026-10-12) and all three Lambda imports
+passed. The 2026-10-12 bar had not yet been certified complete.
+
+The candidate Signal Lambda now supports an **additional safe mode**:
+`STAGING_SAME_VENDOR_PATH_PARITY`. It reads Yahoo's QQQ adjusted daily
+closes via (1) the direct Yahoo chart endpoint and (2) the original
+frozen `stocklens.data.load_qqq_history` using pinned `yfinance`
+with `auto_adjust=True`. It requires the exact same completed XNYS
+session, ordered full calendars (no silent reindexing), near-identical
+history prices, the same 253-session feature fingerprint, and the same
+frozen current/previous decisions, weights, defense state and action.
+It returns explicit diagnostics and **does not publish any signal**.
+
+Before 18:00 America/New_York, the comparator only removes the current
+day's incomplete bar **in-memory for this read-only diagnostic**, then
+compares against the prior completed exchange session. This exception is
+not available in the permanent signal archive writer.
+
+To deploy the extended read-only probe into the existing staging stack
+and run it directly from the same CloudShell checkout:
+
+```bash
+git pull --ff-only &&
+bash infra/aws/deploy_independent_staging.sh &&
+bash infra/aws/accept_independent_staging.sh parity
+```
+
+Expected success text: `SAME_YAHOO_TWO_PATH_PARITY_PASS`, along with
+the last completed trading date, observed row count and whether today's
+incomplete bar was excluded. Failure does **not** authorize an adjusted
+threshold or deletion/overwrite of mismatched evidence; retain and debug
+the numeric/date differences.
+
+**Scope warning:** Yahoo direct chart versus yfinance is two processing/
+retrieval paths for the **same ultimate Yahoo data source**, *not two
+independent quote providers*. This pass cannot certify point-in-time
+corporate actions, execution-quality bid/ask prices, market microstructure
+or actual brokerage fills. The Paper session gates and disabled
+EventBridge schedule remain unchanged.

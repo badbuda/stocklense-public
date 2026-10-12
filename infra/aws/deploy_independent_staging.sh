@@ -114,10 +114,12 @@ from pathlib import Path
 paths = [
     "infra/aws/independent_market_ingest.py",
     "infra/aws/independent_pipeline.py",
+    "infra/aws/source_parity.py",
     "infra/aws/independent_orchestrator.py",
     "infra/aws/independent_signal_producer.py",
     "infra/aws/independent_paper.py",
     "stocklens/core.py",
+    "stocklens/data.py",
     "stocklens/paper.py",
     "stocklens/__init__.py",
     "paper_rebalance_math.py",

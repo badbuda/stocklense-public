@@ -225,6 +225,10 @@ def handler(event, context):
         return _import_smoke()
     if event.get("mode") == "STAGING_VENDOR_NETWORK_PROBE":
         return _vendor_network_probe(now=datetime.now(timezone.utc))
+    if event.get("mode") == "STAGING_SAME_VENDOR_PATH_PARITY":
+        # No S3 writes, shadow Signal production, or paper execution.
+        from infra.aws.source_parity import compare_live_paths
+        return compare_live_paths(now=datetime.now(timezone.utc))
     import boto3
     if event.get("mode") != "STAGING_ONLY":
         raise RuntimeError("STAGING_MODE_REQUIRED")

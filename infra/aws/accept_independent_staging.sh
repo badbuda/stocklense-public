@@ -8,8 +8,8 @@ REGION="${AWS_REGION:-eu-central-1}"
 STACK="stocklens-independent-staging"
 FUNCTION="$STACK-candidate"
 [[ "$REGION" == eu-central-1 ]] || { echo "REFUSE_NON_STAGING_REGION" >&2; exit 2; }
-[[ "$#" == 1 && "$1" == probe || "$#" == 2 && "$1" == signal ]] || {
-  echo "Usage: bash infra/aws/accept_independent_staging.sh probe|signal YYYY-MM-DD" >&2
+[[ "$#" == 1 && ( "$1" == probe || "$1" == parity ) || "$#" == 2 && "$1" == signal ]] || {
+  echo "Usage: bash infra/aws/accept_independent_staging.sh probe|parity|signal YYYY-MM-DD" >&2
   exit 2
 }
 mode="$1"
@@ -30,6 +30,8 @@ trap 'rm -rf "$TEMP_DIR"' EXIT
 payload="$TEMP_DIR/payload.json"
 if [[ "$mode" == probe ]]; then
   printf '%s' '{"mode":"STAGING_VENDOR_NETWORK_PROBE"}' >"$payload"
+elif [[ "$mode" == parity ]]; then
+  printf '%s' '{"mode":"STAGING_SAME_VENDOR_PATH_PARITY"}' >"$payload"
 else
   python3 - "$session" "$payload" <<'PY'
 import datetime
@@ -68,7 +70,14 @@ with open(response, encoding="utf-8") as f:
 if invoke.get("FunctionError") or invoke.get("StatusCode") != 200:
     print("STAGING_LAMBDA_EXECUTION_FAILED:" + str(result)[:1000])
     sys.exit(1)
-expected_status = "STAGING_VENDOR_NETWORK_OK" if mode == "probe" else "STAGED_SIGNAL_ARCHIVED"
+expected_status = {
+    "probe": "STAGING_VENDOR_NETWORK_OK",
+    "parity": "STAGING_SAME_VENDOR_PATH_PARITY_PASS",
+    "signal": "STAGED_SIGNAL_ARCHIVED",
+}[mode]
+if mode == "parity" and result.get("status") != expected_status:
+    print("SAME_VENDOR_PRICE_PARITY_FAILED:" + json.dumps(result, sort_keys=True)[:3000])
+    sys.exit(1)
 if result.get("status") != expected_status or result.get("broker_actions") is not False:
     print("UNEXPECTED_STAGING_RESULT:" + str(result)[:1000])
     sys.exit(1)
@@ -79,6 +88,18 @@ if mode == "probe":
           f"provider={result['provider']}:rows={result['rows']}:" +
           f"latest_vendor_calendar_date={result['last_vendor_calendar_date']}")
     print("NOT_PROVEN:CURRENT_BAR_COMPLETION_OR_INDEPENDENT_VENDOR_PARITY")
+elif mode == "parity":
+    if (result.get("market_data_written") is not False
+        or result.get("second_provider_proven") is not False
+        or result.get("decisions_equal") is not True
+        or result.get("feature_fingerprints_equal") is not True
+        or result.get("calendar_equal") is not True):
+        raise SystemExit("SOURCE_PARITY_PROBE_UNSAFE_OR_INCONSISTENT")
+    print("SAME_YAHOO_TWO_PATH_PARITY_PASS:" +
+          f"completed_session={result['expected_completed_session']}:" +
+          f"rows={result['vendor_rows']}:" +
+          f"dropped_current_partial={result['dropped_incomplete_vendor_current_session']}")
+    print("NOT_PROVEN:SECOND_PROVIDER_INDEPENDENCE_OR_BROKER_FILLS")
 else:
     if result.get("session") != session:
         raise SystemExit("WRONG_STAGING_SESSION")
@@ -87,7 +108,7 @@ PY
 then
   exit 3
 fi
-if [[ "$mode" == probe ]]; then
+if [[ "$mode" == probe || "$mode" == parity ]]; then
   exit 0
 fi
 
