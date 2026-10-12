@@ -9,7 +9,8 @@ import json
 import os
 from datetime import datetime, timezone
 
-from infra.aws.independent_market_ingest import ingest, _vendor_request, NY
+from infra.aws.independent_market_ingest import _vendor_request, NY
+from infra.aws.independent_frozen_ingest import ingest_frozen_yfinance, PROVIDER as FROZEN_PROVIDER
 from infra.aws.independent_signal_producer import build_signal
 
 

@@ -158,7 +158,7 @@
     "infra/aws/independent_market_ingest.py": "6d77f675a6c0584eba1b73bb509be25b4385073b",
     "infra/aws/independent_orchestrator.py": "f6a38d331e9a5e9ae63c48f106b9d7807722d7c8",
     "infra/aws/independent_paper.py": "27dda773a1495325ffdb2cb4ac5992ff1dbdbcff",
-    "infra/aws/independent_pipeline.py": "9884674411a2186750ff207aeb1ef3f606062583",
+    "infra/aws/independent_pipeline.py": "47532597a6070252c92739644388b65c1bd663b1",
     "infra/aws/INDEPENDENT_RUNTIME_HANDOFF.md": "6aff228eca13bd52ace2ffd36b1bf13cc3c2bb76",
     "infra/aws/INDEPENDENT_SIGNAL_PRODUCER.md": "6245bd7df414eeb68190cd1a495b1bf365a96553",
     "infra/aws/independent_signal_producer.py": "42a697fad422bb997447bf2dfcc234de70404ab0",
