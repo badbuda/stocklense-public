@@ -7,9 +7,10 @@ from __future__ import annotations
 import csv
 import hashlib
 import io
+import math
 import json
 import os
-from datetime import datetime, timezone, time
+from datetime import date, datetime, timezone, time
 from zoneinfo import ZoneInfo
 
 from stocklens.core import replay_levels
@@ -30,11 +31,18 @@ def build_signal(raw: bytes, now: datetime, *, source: str, source_sha256: str):
     closes = [float(r["Close"]) for r in rows]
     if dates != sorted(set(dates)) or len(dates) < 300:
         raise ValueError("UNSORTED_DUPLICATE_OR_SHORT_HISTORY")
+    if any(not math.isfinite(v) or v <= 0 for v in closes):
+        raise ValueError("INVALID_ADJUSTED_CLOSE")
     if dates[0] > "2008-01-10":
         raise ValueError("INSUFFICIENT_PRESTART_WARMUP")
+    for d in dates:
+        if date.fromisoformat(d).isoformat() != d:
+            raise ValueError("NON_CANONICAL_DATE")
     ny = now.astimezone(NY)
     if dates[-1] >= ny.date().isoformat() and ny.time() < time(18, 0):
         raise ValueError("INCOMPLETE_MARKET_SESSION")
+    if dates[-1] > ny.date().isoformat():
+        raise ValueError("FUTURE_MARKET_SESSION")
     decisions = replay_levels(closes, dates)
     latest, previous = decisions[-1], decisions[-2]
     action = "NO_CHANGE"
@@ -85,8 +93,20 @@ def handler(event, context):
     sha = hashlib.sha256(raw).hexdigest()
     if sha != event["expected_input_sha256"]:
         raise ValueError("INPUT_SHA_MISMATCH")
-    if event.get("independent_provider_verified") is not True:
-        raise ValueError("INDEPENDENT_PROVIDER_NOT_VERIFIED")
+    # A caller-provided Boolean cannot establish market-data provenance.
+    manifest_key = event["manifest_key"]
+    manifest_version = event["manifest_version_id"]
+    if not manifest_key.startswith("manifests/qqq/") or not manifest_version:
+        raise ValueError("VERSIONED_PROVENANCE_MANIFEST_REQUIRED")
+    mobj = s3.get_object(Bucket=bucket, Key=manifest_key, VersionId=manifest_version)
+    manifest = json.loads(mobj["Body"].read(100_001))
+    if manifest.get("provider") in (None, "", "GITHUB", "GITHUB_ACTIONS"):
+        raise ValueError("INDEPENDENT_PROVIDER_NOT_DOCUMENTED")
+    if manifest.get("input_key") != input_key or manifest.get("input_version_id") != version or manifest.get("sha256") != sha:
+        raise ValueError("PROVENANCE_INPUT_MISMATCH")
+    if manifest.get("status") != "VERIFIED" or manifest.get("data_type") != "QQQ_ADJUSTED_DAILY":
+        raise ValueError("PROVENANCE_NOT_VERIFIED")
+    # Manifest provenance is still only an attestation; upstream ingestion must be audited.
     report = build_signal(raw, datetime.now(timezone.utc), source="S3_VERIFIED_QQQ_ADJUSTED", source_sha256=sha)
     session = report["latest"]["asof_date"]
     if session != event["expected_session"]:
