@@ -21,40 +21,31 @@ if [[ -n "$(git status --porcelain)" ]]; then
   echo "Uncommitted or untracked repository changes: refusing non-reproducible package" >&2; exit 2
 fi
 COMMIT="$(git rev-parse HEAD)"
-ACCOUNT="$(aws sts get-caller-identity --query Account --output text)"
-if [[ ! "$ACCOUNT" =~ ^[0-9]{12}$ ]]; then
-  echo "Unexpected AWS account identity" >&2; exit 2
-fi
-ARTIFACT_BUCKET="stocklens-candidate-artifacts-${ACCOUNT}-${REGION}"
-if ! aws s3api head-bucket --bucket "$ARTIFACT_BUCKET" 2>/dev/null; then
-  aws s3api create-bucket --bucket "$ARTIFACT_BUCKET" \
-    --create-bucket-configuration "LocationConstraint=$REGION" >/dev/null
-fi
-aws s3api put-public-access-block --bucket "$ARTIFACT_BUCKET" \
-  --public-access-block-configuration \
-    "BlockPublicAcls=true,IgnorePublicAcls=true,BlockPublicPolicy=true,RestrictPublicBuckets=true"
-aws s3api put-bucket-encryption --bucket "$ARTIFACT_BUCKET" \
-  --server-side-encryption-configuration \
-    '{"Rules":[{"ApplyServerSideEncryptionByDefault":{"SSEAlgorithm":"AES256"}}]}'
-aws s3api put-bucket-versioning --bucket "$ARTIFACT_BUCKET" \
-  --versioning-configuration Status=Enabled
-
 TEMP_DIR="$(mktemp -d)"
 trap 'rm -rf "$TEMP_DIR"' EXIT
 # Paper uses exact frozen yfinance, pandas and exchange_calendars code paths.
 # Native wheels MUST target the same CPython version as the Lambda runtime.
-PY312="${PY312:-python3.12}"
-if ! command -v "$PY312" >/dev/null; then
-  echo "Python 3.12 is required to package the candidate's native wheels" >&2; exit 2
-fi
-"$PY312" - <<'PY'
+# CloudShell often has Python 3.9/3.11 but no local Python 3.12.
+# pip resolves the target *CPython 3.12 / Linux x86_64* wheel tags
+# without requiring a CPython 3.12 executable on the build host.
+PYTHON_BUILD="${PYTHON_BUILD:-python3}"
+"$PYTHON_BUILD" - <<'PY'
 import sys
-assert sys.version_info[:2] == (3, 12), "Expected CPython 3.12 for Lambda x86_64"
+if sys.version_info < (3, 9):
+    raise SystemExit("Packaging host needs Python 3.9+ (NOT Python 3.12)")
 PY
-"$PY312" -m pip install --disable-pip-version-check --prefer-binary \
-  --no-compile --target "$TEMP_DIR/deps" -r requirements.txt
+"$PYTHON_BUILD" -m pip --version >/dev/null || {
+  echo "pip unavailable for the host Python; install it before staging" >&2; exit 2;
+}
+"$PYTHON_BUILD" -m pip install --disable-pip-version-check --no-cache-dir \
+  --only-binary=:all: --no-compile \
+  --platform manylinux_2_34_x86_64 \
+  --platform manylinux_2_28_x86_64 \
+  --platform manylinux2014_x86_64 \
+  --python-version 3.12 --implementation cp --abi cp312 \
+  --target "$TEMP_DIR/deps" -r requirements.txt
 
-"$PY312" - "$TEMP_DIR/candidate.zip" "$TEMP_DIR/deps" <<'PY'
+"$PYTHON_BUILD" - "$TEMP_DIR/candidate.zip" "$TEMP_DIR/deps" <<'PY'
 import sys, zipfile
 from pathlib import Path
 
@@ -71,6 +62,16 @@ paths = [
     "paper_portfolio_integrity.py",
 ]
 deps = Path(sys.argv[2])
+if not (deps / "numpy").is_dir() or not (deps / "pandas").is_dir() or not (deps / "yfinance").is_dir():
+    raise RuntimeError("MISSING_REQUIRED_LAMBDA_DEPENDENCIES")
+# Disallow incompatible native extensions compiled for the CloudShell host.
+bad_extensions = []
+for path in deps.rglob("*.so"):
+    n = path.name
+    if ".cpython-" in n and ".cpython-312-" not in n:
+        bad_extensions.append(path.as_posix())
+if bad_extensions:
+    raise RuntimeError("NON_CP312_NATIVE_WHEELS:" + str(bad_extensions[:6]))
 files = [(Path(file), file) for file in paths]
 for file, _ in files:
     if not file.is_file():
@@ -92,6 +93,28 @@ with zipfile.ZipFile(sys.argv[1], "w", compression=zipfile.ZIP_DEFLATED, compres
         out.write(file, dest)
 print(f"Package contents: {len(files)} files, {size} uncompressed bytes")
 PY
+# Validate deployment inputs BEFORE any AWS resource is created.
+aws cloudformation validate-template \
+  --template-body file://infra/aws/independent-staging.yaml >/dev/null
+
+ACCOUNT="$(aws sts get-caller-identity --query Account --output text)"
+if [[ ! "$ACCOUNT" =~ ^[0-9]{12}$ ]]; then
+  echo "Unexpected AWS account identity" >&2; exit 2
+fi
+ARTIFACT_BUCKET="stocklens-candidate-artifacts-${ACCOUNT}-${REGION}"
+if ! aws s3api head-bucket --bucket "$ARTIFACT_BUCKET" 2>/dev/null; then
+  aws s3api create-bucket --bucket "$ARTIFACT_BUCKET" \
+    --create-bucket-configuration "LocationConstraint=$REGION" >/dev/null
+fi
+aws s3api put-public-access-block --bucket "$ARTIFACT_BUCKET" \
+  --public-access-block-configuration \
+    "BlockPublicAcls=true,IgnorePublicAcls=true,BlockPublicPolicy=true,RestrictPublicBuckets=true"
+aws s3api put-bucket-encryption --bucket "$ARTIFACT_BUCKET" \
+  --server-side-encryption-configuration \
+    '{"Rules":[{"ApplyServerSideEncryptionByDefault":{"SSEAlgorithm":"AES256"}}]}'
+aws s3api put-bucket-versioning --bucket "$ARTIFACT_BUCKET" \
+  --versioning-configuration Status=Enabled
+
 DIGEST="$(sha256sum "$TEMP_DIR/candidate.zip" | cut -d' ' -f1)"
 ARTIFACT_KEY="candidate/${COMMIT}/${DIGEST}.zip"
 if ! aws s3api head-object --bucket "$ARTIFACT_BUCKET" \
@@ -100,9 +123,6 @@ if ! aws s3api head-object --bucket "$ARTIFACT_BUCKET" \
     --key "$ARTIFACT_KEY" --body "$TEMP_DIR/candidate.zip" \
     --if-none-match '*' --server-side-encryption AES256 >/dev/null
 fi
-aws cloudformation validate-template \
-  --template-body file://infra/aws/independent-staging.yaml >/dev/null
-
 echo "STAGING ONLY: ${STACK}; source commit ${COMMIT}; ZIP sha256 ${DIGEST}"
 echo "This creates a private bucket, THREE candidate Lambdas and an"
 echo "EventBridge rule that is DISABLED. No broker or stocklens-paper change."

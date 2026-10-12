@@ -18,7 +18,7 @@ This is a **new independent staging paper book**. The first receipt uses a *deli
 
 ### One packaging + staging deployment
 
-Run only from a **clean checked-out reviewed commit**, with AWS owner approval and a billing budget, in Frankfurt `eu-central-1`. The command uses Python 3.12, pip, native wheels and AWS IAM rights, and **creates billable resources**:
+Run only from a **clean checked-out reviewed commit**, with AWS owner approval and a billing budget, in Frankfurt `eu-central-1`. The command uses the available CloudShell `python3` (3.9 or newer) to download **CPython 3.12 / Amazon Linux compatible x86_64 wheels** using pip's cross-target flags. A local `python3.12` executable is **not required**. The Lambda runtime itself remains Python 3.12. Pip, native wheels, and AWS IAM rights are required, and **the deployment creates potentially billable resources**. Packaging and CloudFormation template validation run before creating AWS resources:
 
 ```bash
 bash infra/aws/deploy_independent_staging.sh
@@ -87,3 +87,10 @@ Retries for unchanged QQQ prices now reuse the **original manifest retrieval
 timestamp**, preserve the first signal's timestamp and S3 object version,
 and verify the immutable bytes. Real changes in historical adjusted prices
 still trigger a fatal divergence instead of silently rewriting receipts.
+
+
+### CloudShell workaround recorded October 12, 2026
+
+An earlier deployment script exited with `Python 3.12 is required to package the candidate's native wheels` after cloning the repository. That was a **packaging-tool prerequisite error**, not a failure of either candidate Lambda or AWS itself. The updated branch builds Lambda-compatible CPython 3.12 wheels using the installed `python3`, validates package size and extension ABI, validates CloudFormation, and only then creates or updates isolated staging resources. After `git pull --ff-only` from the branch clone, rerun `bash infra/aws/deploy_independent_staging.sh`. Never install a random Python binary or change the Lambda runtime to match CloudShell just to satisfy the former script.
+
+A partially started earlier invocation may have created a private S3 artifact bucket before aborting; the new script reuses that bucket safely, without touching the existing `stocklens-paper` deployment. AWS costs and IAM rights still apply. If a platform-specific wheel does not exist, the new binary-only resolver **fails closed** rather than building a possibly incompatible CloudShell native binary.
