@@ -1,6 +1,10 @@
 # AWS-independent runtime handoff — staged, no production change
 
-Status: **NOT DEPLOYED / BLOCKED**. Frozen StockLens 8.0 remains shadow-only; no broker actions.
+Status as of 2026-10-13: **INDEPENDENT STAGING DEPLOYED; SIGNAL ACCEPTED; LIVE PRODUCTION CUTOVER BLOCKED**. The 2026-10-12 completed-session Signal was archived in private versioned staging S3 with an AWS-side verified SHA/version receipt (4,724 QQQ rows, level 3, leverage target 3x, action NO_CHANGE). Four Lambda import smokes passed; the combined Signal+Paper orchestrator remains DISABLED and the account-wide $20 budget is alert-only. No broker orders or production `stocklens-paper` changes.
+
+**Important deployment boundary:** the newest Draft PR #78 research/staging code, including the signal-silence watchdog and proposed Paper preflight, is NOT proven deployed until the operator reapplies the pinned CloudFormation+ZIP and verifies the Lambda imports. The prior CloudShell deploy reported `STAGING_SNS_EMAIL_UNCONFIRMED`, so Signal-only automatic scheduling has NOT been confirmed enabled. SNS actual end-to-end email delivery is not proven.
+
+**Independent source parity still FAILED**: 25 direct Yahoo Chart prices were outside the configured 8-binary32-ULP tolerance despite matched 4,303 policy decisions; second-provider evidence is not proven. The paper preflight (when deployed) will only estimate observed-minute-bar modelled fills, not broker fills, and NEVER create the actual Paper book or authorize bootstrap.
 
 ## Verified from deployed CloudShell evidence (2026-10-12)
 

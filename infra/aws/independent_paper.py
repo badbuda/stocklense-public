@@ -561,6 +561,82 @@ def run_paper_catchup(*, target_session: str, now: datetime, s3, bucket: str,
     }
 
 
+
+def preflight_prospective_paper_bootstrap(
+    *, session: str, now: datetime, s3, bucket: str,
+    market_fetch=fetch_execution_market,
+) -> dict:
+    """READ-ONLY test of the *first* prospective staging Paper session.
+
+    It never calls _immutable_put or any broker. It refuses retrospectively
+    fabricated sessions, existing paper books, or unaudited prior-close timing.
+    Paper still requires a separate explicit operator-approved bootstrap.
+    """
+    from infra.aws.independent_orchestrator import current_completed_session
+    if current_completed_session(now) != session:
+        raise RuntimeError("PREFLIGHT_REQUIRES_LATEST_COMPLETED_XNYS_SESSION")
+    prior = previous_xnys_session(session)
+    if _read_genesis(s3, bucket) is not None:
+        raise RuntimeError("PREFLIGHT_REFUSE_EXISTING_PAPER_BOOK")
+    own_cont, _ = _read_continuity(s3, bucket, session)
+    prev_cont, _ = _read_continuity(s3, bucket, prior)
+    if own_cont is not None or prev_cont is not None:
+        raise RuntimeError("PREFLIGHT_REFUSE_EXISTING_PAPER_CONTINUITY")
+    try:
+        _s3_read_meta(s3, bucket, f"paper/sessions/{prior}.json")
+    except Exception as exc:
+        if not _is_missing(exc):
+            raise
+    else:
+        raise RuntimeError("PREFLIGHT_REFUSE_EXISTING_PAPER_PRIOR_RECEIPT")
+
+    curr_raw, curr_version, curr_saved = _s3_read_meta(
+        s3, bucket, f"signals/{session}.json")
+    prior_raw, prior_version, prior_saved = _s3_read_meta(
+        s3, bucket, f"signals/{prior}.json")
+    if curr_saved is None or prior_saved is None:
+        raise RuntimeError("PREFLIGHT_S3_SERVER_TIMES_REQUIRED")
+    if curr_saved.tzinfo is None or prior_saved.tzinfo is None:
+        raise RuntimeError("PREFLIGHT_NAIVE_S3_SERVER_TIME")
+    if not (sc.session_close_utc(prior) <= prior_saved < sc.session_open_utc(session)):
+        raise RuntimeError("PREFLIGHT_PRIOR_SIGNAL_NOT_ARCHIVED_BEFORE_OPEN")
+    if not (sc.session_close_utc(session) <= curr_saved <= now.astimezone(timezone.utc)):
+        raise RuntimeError("PREFLIGHT_CURRENT_SIGNAL_NOT_ARCHIVED_AFTER_CLOSE")
+    current = json.loads(curr_raw)
+    previous = json.loads(prior_raw)
+    # Validates frozen 8.0 mode, session identity, leverage and self timestamps.
+    _checked_signal(previous, prior, now)
+    _checked_signal(current, session, now)
+    observed = market_fetch(prior, session)
+    modeled = build_paper_receipt(
+        session=session, current_signal=current, prior_signal=previous,
+        market=observed, now=now, previous_receipt=None,
+        bootstrap=True, max_age_days=5,
+    )
+    return {
+        "status": "STAGING_PAPER_BOOTSTRAP_PREFLIGHT_PASS_READ_ONLY",
+        "session": session,
+        "prior_session": prior,
+        "prior_signal_s3_version_id": prior_version,
+        "current_signal_s3_version_id": curr_version,
+        "prior_signal_s3_sha256": hashlib.sha256(prior_raw).hexdigest(),
+        "current_signal_s3_sha256": hashlib.sha256(curr_raw).hexdigest(),
+        "prior_signal_s3_saved_at_utc": prior_saved.isoformat(),
+        "current_signal_s3_saved_at_utc": curr_saved.isoformat(),
+        "market_source": observed.source,
+        "model_candidate_sha256": hashlib.sha256(canonical(modeled)).hexdigest(),
+        "paper_model_equity": modeled["row"]["equity"],
+        "paper_model_trades": len(modeled["trades"]),
+        "paper_accounting_audit": modeled["integrity"]["status"],
+        "broker_actions": False,
+        "broker_orders": False,
+        "broker_fills": False,
+        "market_data_written": False,
+        "paper_data_written": False,
+        "genesis_written": False,
+        "prospective_bootstrap_authorized": False,
+    }
+
 def _import_smoke():
     # Imports target native Linux wheels without an intraday provider request.
     import importlib
@@ -577,6 +653,12 @@ def handler(event, context):
     if event.get("mode") == "STAGING_IMPORT_SMOKE":
         return _import_smoke()
     import boto3
+    if event.get("mode") == "STAGING_PAPER_BOOTSTRAP_PREFLIGHT":
+        if event.get("bootstrap") not in (None, False):
+            raise RuntimeError("PREFLIGHT_NEVER_BOOTSTRAPS")
+        return preflight_prospective_paper_bootstrap(
+            session=event["expected_session"], now=datetime.now(timezone.utc),
+            s3=boto3.client("s3"), bucket=os.environ["STOCKLENS_DATA_BUCKET"])
     if event.get("mode") == "STAGING_PAPER_CATCHUP":
         if event.get("bootstrap") not in (None, False):
             raise RuntimeError("CATCHUP_CANNOT_BOOTSTRAP")
