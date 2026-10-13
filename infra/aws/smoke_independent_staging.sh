@@ -29,6 +29,18 @@ rule_state="$(aws events describe-rule --region "$REGION" --name "$rule" \
 [[ "$rule_state" == DISABLED ]] || {
   echo "UNSAFE_SCHEDULE_STATE:$rule_state" >&2; exit 2;
 }
+signal_rule="$(aws cloudformation describe-stacks --region "$REGION" \
+  --stack-name "$STACK" \
+  --query "Stacks[0].Outputs[?OutputKey=='CandidateSignalOnlyRuleName'].OutputValue|[0]" \
+  --output text)"
+[[ -n "$signal_rule" && "$signal_rule" != None ]] || {
+  echo "SIGNAL_ONLY_RULE_OUTPUT_MISSING" >&2; exit 2;
+}
+signal_rule_state="$(aws events describe-rule --region "$REGION" --name "$signal_rule" \
+  --query State --output text)"
+[[ "$signal_rule_state" == DISABLED ]] || {
+  echo "SIGNAL_ONLY_NOT_SAFE_BY_DEFAULT:$signal_rule_state" >&2; exit 2;
+}
 versioning="$(aws s3api get-bucket-versioning --region "$REGION" \
   --bucket "$bucket" --query Status --output text)"
 [[ "$versioning" == Enabled ]] || { echo "S3_VERSIONING_NOT_ENABLED" >&2; exit 2; }

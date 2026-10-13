@@ -250,6 +250,25 @@ def _import_smoke():
             "broker_actions": False, "market_data_written": False}
 
 
+def run_scheduled_signal(*, now: datetime, s3, bucket: str) -> dict:
+    """Staging-only nightly Signal, deliberately independent of Paper bootstrap.
+
+    EventBridge uses Tue-Sat 00:10 UTC, after NY 18:00 in both DST regimes.
+    XNYS non-trading days are skipped. This never calls Paper or a broker.
+    Any failure propagates to the existing candidate Lambda Errors alarm.
+    """
+    from infra.aws.independent_orchestrator import current_completed_session
+
+    session = current_completed_session(now)
+    if session is None:
+        return {
+            "status": "SKIPPED_XNYS_NONTRADING_DAY",
+            "broker_actions": False,
+            "market_data_written": False,
+        }
+    return run(expected_session=session, now=now, s3=s3, bucket=bucket)
+
+
 def handler(event, context):
     if event.get("mode") == "STAGING_IMPORT_SMOKE":
         return _import_smoke()
@@ -260,7 +279,14 @@ def handler(event, context):
         from infra.aws.source_parity import compare_live_paths
         return compare_live_paths(now=datetime.now(timezone.utc))
     import boto3
-    if event.get("mode") != "STAGING_ONLY":
+    mode = event.get("mode")
+    if mode == "STAGING_SIGNAL_SCHEDULED":
+        return run_scheduled_signal(
+            now=datetime.now(timezone.utc),
+            s3=boto3.client("s3"),
+            bucket=os.environ["STOCKLENS_DATA_BUCKET"],
+        )
+    if mode != "STAGING_ONLY":
         raise RuntimeError("STAGING_MODE_REQUIRED")
     session = event["expected_session"]
     bucket = os.environ["STOCKLENS_DATA_BUCKET"]

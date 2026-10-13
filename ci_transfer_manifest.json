@@ -159,12 +159,12 @@
     "infra/aws/README.md": "4d5015d3a5efd79a23e368759279d5f406bc6c31",
     "infra/aws/accept_independent_staging.sh": "1d9422543e0c9559a255e435ff2762cd9de4768e",
     "infra/aws/deploy_independent_staging.sh": "3b68c1cf452331ee73d5805671d36c16a55340c5",
-    "infra/aws/independent-staging.yaml": "b8c5fbdf2099ea3e3b9b1e583ee682e37ffe9fb4",
+    "infra/aws/independent-staging.yaml": "eec0f0c5b3c09d8e97ddaac403deaf2bb85c6815",
     "infra/aws/independent_frozen_ingest.py": "14a0701f4f21b9f96cb6d4beb14d16017536bf2e",
     "infra/aws/independent_market_ingest.py": "6d77f675a6c0584eba1b73bb509be25b4385073b",
     "infra/aws/independent_orchestrator.py": "8393cf34761556e6ea2ca029248bf9db2ce890a1",
     "infra/aws/independent_paper.py": "b0932ea427c9cd02dda41cdc6cd96e8780a36b0e",
-    "infra/aws/independent_pipeline.py": "96c7d5677e5aed8c33084da1b4a8a190d040af30",
+    "infra/aws/independent_pipeline.py": "0023c9e510a0dc846e1d6c7cefdc78e7983777f2",
     "infra/aws/independent_session_watchdog.py": "c5ee9a24a419413c1864f7a44d8cf461fa2cab44",
     "infra/aws/independent_signal_producer.py": "42a697fad422bb997447bf2dfcc234de70404ab0",
     "infra/aws/paper-evidence-handler.py": "0a967783e199fe6b0135deb974062e93982477c7",
@@ -174,7 +174,7 @@
     "infra/aws/runtime_dependency_audit.py": "8775ba2dfee741019ab9833a7b56be64f93bb29f",
     "infra/aws/schedule-watchdog-handler.py": "12fd5f4941d81aa064317dfc1827032db5845339",
     "infra/aws/session_continuity.py": "cb510ff09b93a0f692d78eae98f17b9c8fbe7bfd",
-    "infra/aws/smoke_independent_staging.sh": "33583ae882ef586282ff13017d1e69ce682f3eee",
+    "infra/aws/smoke_independent_staging.sh": "1e71b2d4e8e2063b11be4cd8be8acc03ec6fb80f",
     "infra/aws/source_parity.py": "7bc4ad76abb95849b2f1baa2b98e26e3dfea637f",
     "infra/aws/verify_independent_candidate.py": "33eed0a09e4cc9b37ee4122950f82d6fe305a5a8",
     "infra/aws/verify_independent_paper.py": "fd14c091ba8eba3731ae2c797af1b501599da5c0",
@@ -458,6 +458,7 @@
     "workbench_evidence_manifest.py": "7e290add5dcb861b0d4bdbed81cc7e4308ff4683",
     "workbench_selfcheck.py": "4f17be6d56ac7d3cc3637e1ef2b2af3ed9d880a8",
     "yahoo_eod_scorecard.py": "137465f3ff4d9a2b8c164bf4321480c0ea0869fd",
-    "yahoo_long_history.py": "e7e51b5c2f5697da5d583316638b98ec13e6114c"
+    "yahoo_long_history.py": "e7e51b5c2f5697da5d583316638b98ec13e6114c",
+    "tests/test_aws_independent_signal_schedule.py": "0f572fbcf30e8f48180f6798b1bf8a7ddeac4ccd"
   }
 }
