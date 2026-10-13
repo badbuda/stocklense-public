@@ -126,3 +126,23 @@ actual complete NYSE session and real Genesis receipt exist.
 Do not run these release actions merely to earn a green badge; the release
 wrapper is *deliberately not called in CI*. IAM, billing, SNS delivery and
 market data require real AWS/account evidence.
+
+## One-time Paper bootstrap runbook (prepared, never auto-run)
+
+The first genuine prospective Paper Genesis has a separately defended CLI:
+
+```bash
+bash infra/aws/bootstrap_staging_paper_once.sh YYYY-MM-DD
+```
+
+This command is valid **only** after the versioned prior-day Signal was
+archived before the execution session opened, the current session closed,
+both signals exist, and the read-only preflight passes before next NYSE open.
+It checks budget/SNS/schedules, prompts for explicit first-book creation
+consent, writes only the isolated Staging Paper account, verifies the new
+Genesis and full continuity chain, and leaves Paper-only EventBridge
+**DISABLED**. Any partial-write failure is a human S3 evidence recovery task,
+not an automatic reset. The trading broker stays unconnected.
+
+Do not substitute this command with an old retrospective backtest or a direct
+Lambda bootstrap call; it would not establish prospective reliability.

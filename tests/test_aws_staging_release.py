@@ -63,3 +63,25 @@ def test_system_completion_matrix_does_not_falsely_promote_external_gates():
     for text in ("CODE READY","AWS VERIFIED","EXTERNAL NO-GO",
                  "second", "SNS", "20", "production", "no broker"):
         assert text.lower() in doc.lower()
+
+
+def test_manual_first_paper_bootstrap_has_strict_dry_run_consent_and_postcommit_audit():
+    path="infra/aws/bootstrap_staging_paper_once.sh"
+    subprocess.run(["bash","-n",path],check=True)
+    script=Path(path).read_text()
+    assert "enable_staging_signal_only.sh check" in script
+    assert "accept_independent_paper_preflight.sh" in script
+    assert "CREATE_PROSPECTIVE_STAGING_PAPER_GENESIS" in script
+    assert 'STAGING_PAPER_ONLY' in script
+    assert '"bootstrap":true' in script
+    assert 'STAGING_PAPER_SCHEDULE_READINESS' in script
+    assert 'FIRST_PAPER_GENESIS_AND_FULL_CHAIN_VERIFIED' in script
+    assert "PAPER_BOOTSTRAP_NOT_APPROVED_NO_WRITES" in script
+    assert script.index("accept_independent_paper_preflight.sh") < script.index(
+        '"bootstrap":true')
+    assert script.index("CREATE_PROSPECTIVE_STAGING_PAPER_GENESIS") < script.index(
+        '"bootstrap":true')
+    for dangerous in ("aws events enable-rule","aws cloudformation deploy",
+                      "aws iam attach-role-policy","aws s3api put-object",
+                      "aws cloudformation delete-stack"):
+        assert dangerous not in script

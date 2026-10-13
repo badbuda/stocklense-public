@@ -34,6 +34,33 @@ create a first Paper receipt, make any model-ledger entry, or authorize a real
 Paper bootstrap. Always verify the five import-only AWS Lambda smoke results,
 including `paper_preflight`, after deploying the pinned code.
 
+## Explicit first prospective Paper initialization (NOT deployed)
+
+Once the five-Lambda staging release is accepted, the Staging SNS email has
+been confirmed and an actual alarm has arrived, **and a completed-session
+Signal genuinely existed before the next XNYS session opened**, the operator
+may run `bash infra/aws/bootstrap_staging_paper_once.sh YYYY-MM-DD` in
+CloudShell. This is the only recommended first-book runbook. It:
+
+- verifies the existing $20 budget, SNS subscription, enabled **Signal-only**
+  schedule and disabled Paper-only/combined schedules;
+- runs the independently IAM **read-only** Preflight on the SAME actual
+  completed session (must be before next XNYS market open);
+- explicitly requires interactive `CREATE_PROSPECTIVE_STAGING_PAPER_GENESIS`
+  consent before any Paper write;
+- invokes the already deployed `STAGING_PAPER_ONLY bootstrap=true` only for
+  this isolated Paper account and checks broker flags and ledger audit;
+- verifies the committed, versioned Genesis and the entire first-session
+  continuity chain with a separate no-write readiness invocation;
+- **leaves Paper-only automatic scheduling DISABLED** until a later explicit
+  risk review and `enable_staging_paper_only.sh check|activate`.
+
+An interruption after partial S3 writes is **not** permission to blindly
+rerun or replace immutable receipts. Investigate S3 versions and failed
+receipt before deciding on manual recovery; never fabricate a completed
+prospective timing claim. This runbook is not production cutover or brokerage
+authorization.
+
 ## Migration gates
 
 1. **Inventory and freeze:** capture deployed Lambda CodeSha256, CloudFormation template/change set, DynamoDB read-only snapshot, 8.0 source commit, and exact input/receipt hashes. Run `python infra/aws/runtime_dependency_audit.py` in CloudShell. No secrets in reports.

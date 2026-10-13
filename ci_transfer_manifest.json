@@ -153,7 +153,7 @@
     "hybrid_return_concentration.py": "b629a020fee9bb9db3068a1bbf6d66a8a8b5cc2e",
     "hybrid_rolling_distribution.py": "1d5b0c8ad6836407b5394261afa7836cbebc5cec",
     "incident_state.py": "2e38de1c4b0076f9186f1815b11bd8aa2995df79",
-    "infra/aws/INDEPENDENT_RUNTIME_HANDOFF.md": "08272d38f95c3e1a25d6b7d56d3aba80a512963d",
+    "infra/aws/INDEPENDENT_RUNTIME_HANDOFF.md": "da925bc0c8586f6190106f45c236657f7417e43b",
     "infra/aws/INDEPENDENT_SIGNAL_PRODUCER.md": "6245bd7df414eeb68190cd1a495b1bf365a96553",
     "infra/aws/PHASE2_UPDATE.md": "b0e5d0afbc86d8b711561835bce316bd3e62f511",
     "infra/aws/README.md": "4d5015d3a5efd79a23e368759279d5f406bc6c31",
@@ -468,6 +468,7 @@
     "tests/test_aws_staging_paper_automation.py": "2b78d1e2062e7ee8d34f5acb4177af76095f4eb0",
     "infra/aws/audit_staging_release.sh": "48efb09dc3888c168e2c2d4b737bfa5676165532",
     "infra/aws/release_staging_once.sh": "e0e02e5d4087036a086c49d0c43a31a7ac3a4252",
-    "tests/test_aws_staging_release.py": "5ae1b64f6184bd600ecb90dcd8649e0a7dddb9da"
+    "tests/test_aws_staging_release.py": "9295557dc8b305d7149cb715b29c44b11967910c",
+    "infra/aws/bootstrap_staging_paper_once.sh": "645b19f7bfcd4c33cf249c832b9a8754ed44cb06"
   }
 }
