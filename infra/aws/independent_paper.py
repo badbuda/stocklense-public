@@ -686,14 +686,145 @@ def preflight_handler(event, context):
     )
 
 
+def run_scheduled_paper(*, now: datetime, s3, bucket: str,
+                        market_fetch=fetch_execution_market) -> dict:
+    """One completed XNYS session, independent from the nightly Signal producer.
+
+    A staged Paper account must be PROSPECTIVELY initialized by a separate,
+    verified operator approval; scheduler can NEVER bootstrap. The archived
+    Signal must already exist (Signal-only schedule precedes this by 70m).
+    """
+    from infra.aws.independent_orchestrator import current_completed_session
+
+    day = current_completed_session(now)
+    if day is None:
+        return {
+            "status": "SKIPPED_XNYS_NONTRADING_DAY",
+            "broker_actions": False, "broker_orders": False,
+            "broker_fills": False, "paper_data_written": False,
+        }
+    genesis = _read_genesis(s3, bucket)
+    if genesis is None:
+        raise RuntimeError("AUTOMATED_PAPER_FORBIDDEN_WITHOUT_VERIFIED_GENESIS")
+    if genesis.get("schema") != sc.GENESIS_SCHEMA or genesis.get("book") != BOOK:
+        raise RuntimeError("AUTOMATED_PAPER_GENESIS_SCHEMA_OR_BOOK_INVALID")
+    if not isinstance(genesis.get("bootstrap_session"), str):
+        raise RuntimeError("AUTOMATED_PAPER_GENESIS_SESSION_INVALID")
+    # Fail-retryable on CURRENT-session market data or signal delays.
+    # Never persist MISSED_UNRECOVERABLE on the evening data have simply not
+    # arrived yet: that would halt this paper book irreversibly.
+    if genesis["bootstrap_session"] > day:
+        raise RuntimeError("AUTOMATED_PAPER_GENESIS_AHEAD_OF_MARKET")
+    already, _ = _read_continuity(s3, bucket, day)
+    pending_market = None
+    if already is None:
+        previous_day = previous_xnys_session(day)
+        try:
+            _s3_read_meta(s3, bucket, f"signals/{day}.json")
+            _s3_read_meta(s3, bucket, f"signals/{previous_day}.json")
+        except Exception as exc:
+            if _is_missing(exc):
+                raise RuntimeError("AUTOMATED_PAPER_SIGNALS_NOT_READY_RETRYABLE") from exc
+            raise
+        try:
+            pending_market = market_fetch(previous_day, day)
+            _checked_market(pending_market, day)
+        except Exception as exc:
+            if is_provider_unavailable(exc):
+                raise RuntimeError("AUTOMATED_PAPER_1M_BARS_NOT_READY_RETRYABLE") from exc
+            raise
+    # Catch-up finds the durable head; full chain and ledger integrity are
+    # checked before writes. Earlier missed sessions retain strict handling.
+    def fetch_with_current_preflight(previous, session):
+        if session == day and pending_market is not None:
+            return pending_market
+        return market_fetch(previous, session)
+    outcome = run_paper_catchup(target_session=day, now=now, s3=s3,
+                                bucket=bucket, market_fetch=fetch_with_current_preflight)
+    for field in ("broker_actions", "broker_orders", "broker_fills"):
+        if outcome.get(field) is not False:
+            raise RuntimeError("AUTOMATED_PAPER_BROKER_ACTIVITY_FORBIDDEN:" + field)
+    if outcome["status"] == "STAGED_PAPER_HALTED":
+        raise RuntimeError("AUTOMATED_PAPER_BOOK_HALTED_MISSED_SESSION")
+    if outcome["status"] != "STAGED_PAPER_CATCHUP_COMPLETED":
+        raise RuntimeError("AUTOMATED_PAPER_UNEXPECTED_RESULT")
+    # Idempotent/no-op executions also have to prove the entire saved chain.
+    verify_book_chain(s3, bucket, through_session=day, genesis=genesis)
+    return outcome
+
+
+
+def audit_paper_schedule_readiness(*, session: str, now: datetime, s3, bucket: str) -> dict:
+    """Side-effect-free approval preflight for enabling Paper-only EventBridge.
+
+    Verifies the last accepted prospective receipt and EVERY chained continuity
+    record since durable Genesis, including S3 server timestamps. It never
+    authorizes a broker or independently certifies cross-provider market data.
+    """
+    if now.tzinfo is None:
+        raise ValueError("READINESS_CLOCK_NAIVE")
+    import exchange_calendars as xcals
+    cal = xcals.get_calendar("XNYS")
+    if not cal.is_session(session) or sc.session_close_utc(session) > now:
+        raise ValueError("READINESS_SESSION_NOT_COMPLETED")
+    genesis = _read_genesis(s3, bucket)
+    if genesis is None:
+        raise RuntimeError("READINESS_GENESIS_MISSING")
+    if genesis.get("schema") != sc.GENESIS_SCHEMA or genesis.get("book") != BOOK:
+        raise RuntimeError("READINESS_GENESIS_INVALID")
+    chain_len = verify_book_chain(s3, bucket, through_session=session, genesis=genesis)
+    record, _ = _read_continuity(s3, bucket, session)
+    if record is None or record.get("status") not in sc.FORWARD_EVIDENCE:
+        raise RuntimeError("READINESS_LAST_RECEIPT_NOT_FORWARD_QUALIFIED")
+    raw, version, _ = _s3_read_meta(s3, bucket, f"paper/sessions/{session}.json")
+    paper = json.loads(raw)
+    if (paper.get("book") != BOOK or paper.get("session") != session or
+            paper.get("integrity", {}).get("status") != AUDIT_PASS or
+            paper.get("broker_orders_authorized") is not False or
+            paper.get("broker_fills_observed") is not False or
+            paper.get("production_replacement_authorized") is not False):
+        raise RuntimeError("READINESS_PAPER_RECEIPT_OR_BROKER_FLAG_INVALID")
+    return {
+        "status": "STAGING_PAPER_SCHEDULE_READINESS_PASS_READ_ONLY",
+        "session": session,
+        "genesis_session": genesis["bootstrap_session"],
+        "chain_sessions": chain_len,
+        "paper_sha256": hashlib.sha256(raw).hexdigest(),
+        "paper_version_id": version,
+        "continuity_status": record["status"],
+        "broker_actions": False,
+        "broker_orders": False,
+        "broker_fills": False,
+        "paper_data_written": False,
+        "paper_automation_authorized": False,
+        "cross_vendor_parity_proven": False,
+    }
+
+
 def handler(event, context):
     if event.get("mode") == "STAGING_IMPORT_SMOKE":
         return _import_smoke()
-    # Deny the read-only preflight mode and every unknown mode BEFORE loading
-    # boto3. Only the distinct least-privilege preflight_handler may accept it.
-    if event.get("mode") not in ("STAGING_PAPER_CATCHUP", "STAGING_PAPER_ONLY"):
+    # Deny unknown and read-only-preflight modes before loading AWS clients.
+    if event.get("mode") not in ("STAGING_PAPER_CATCHUP", "STAGING_PAPER_ONLY",
+                                  "STAGING_PAPER_SCHEDULED",
+                                  "STAGING_PAPER_SCHEDULE_READINESS"):
         raise RuntimeError("STAGING_PAPER_MODE_REQUIRED")
+    if event.get("mode") == "STAGING_PAPER_SCHEDULED":
+        if event.get("bootstrap") not in (None, False):
+            raise RuntimeError("AUTOMATED_PAPER_NEVER_BOOTSTRAPS")
+        import boto3
+        return run_scheduled_paper(
+            now=datetime.now(timezone.utc), s3=boto3.client("s3"),
+            bucket=os.environ["STOCKLENS_DATA_BUCKET"],
+        )
     import boto3
+    if event.get("mode") == "STAGING_PAPER_SCHEDULE_READINESS":
+        if event.get("bootstrap") not in (None, False):
+            raise RuntimeError("READINESS_CANNOT_BOOTSTRAP")
+        return audit_paper_schedule_readiness(
+            session=event["expected_session"], now=datetime.now(timezone.utc),
+            s3=boto3.client("s3"), bucket=os.environ["STOCKLENS_DATA_BUCKET"],
+        )
     if event.get("mode") == "STAGING_PAPER_CATCHUP":
         if event.get("bootstrap") not in (None, False):
             raise RuntimeError("CATCHUP_CANNOT_BOOTSTRAP")

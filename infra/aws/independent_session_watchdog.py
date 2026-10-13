@@ -21,7 +21,25 @@ from infra.aws import session_continuity as sc
 from infra.aws.independent_signal_monitor import due_signal_sessions
 
 NAMESPACE = "StockLens/IndependentStaging"
-MAX_MONITORED_SESSIONS = 400  # beyond this, archive/checkpoint and move MonitoringStartSession
+MAX_MONITORED_SESSIONS = 400
+
+
+def resolve_paper_monitoring_start(configured: str | None, genesis) -> str | None:
+    """The immutable S3 genesis starts monitoring automatically after bootstrap.
+
+    A blank CloudFormation parameter must NOT silently disable Paper monitoring
+    after an operator has established a real staging book.
+    """
+    if configured:
+        return configured
+    if genesis is None:
+        return None
+    if (not isinstance(genesis, dict) or
+            genesis.get("schema") != sc.GENESIS_SCHEMA or
+            genesis.get("book") != sc.BOOK or
+            not isinstance(genesis.get("bootstrap_session"), str)):
+        return "INVALID_DURABLE_GENESIS"
+    return genesis["bootstrap_session"]  # beyond this, archive/checkpoint and move MonitoringStartSession
 
 
 def due_sessions(now: datetime, monitoring_start: str) -> list[str]:
@@ -44,7 +62,7 @@ def inspect(*, now: datetime, rule_state: str | None, expected_rule_state: str,
             monitoring_start: str | None, read_record, read_receipt_sha=lambda s: None,
             read_last_modified=None, read_genesis=None, book: str = sc.BOOK,
             signal_rule_state: str | None = None, signal_activation_at: datetime | None = None,
-            read_signal_saved_at=None) -> dict:
+            read_signal_saved_at=None, paper_rule_state: str | None = None) -> dict:
     """read_record(session) -> dict | None; read_receipt_sha(session) -> sha | None;
     read_last_modified(key) -> aware datetime | None (genuine S3 server time).
 
@@ -65,6 +83,11 @@ def inspect(*, now: datetime, rule_state: str | None, expected_rule_state: str,
         failures.append(f"SCHEDULER_STATE_UNEXPECTED:{rule_state}!={expected_rule_state}")
     if rule_state == "ENABLED" and not monitoring_start:
         config_errors.append("MONITORING_START_SESSION_UNSET_WHILE_ENABLED")
+    if paper_rule_state is not None:
+        if paper_rule_state not in ("ENABLED", "DISABLED"):
+            config_errors.append("PAPER_ONLY_RULE_UNREADABLE:" + str(paper_rule_state))
+        elif paper_rule_state == "ENABLED" and not monitoring_start:
+            config_errors.append("AUTOMATED_PAPER_ENABLED_WITHOUT_GENESIS")
     checking = bool(monitoring_start)            # decoupled from the scheduler state
     genesis = None
     if checking:
@@ -184,7 +207,7 @@ def _import_smoke():
     for package in ("exchange_calendars", "boto3", "infra.aws.session_continuity",
                     "infra.aws.independent_paper"):
         importlib.import_module(package)
-    for var in ("STOCKLENS_DATA_BUCKET", "ORCHESTRATOR_RULE", "SIGNAL_ONLY_RULE", "EXPECTED_SCHEDULER_STATE"):
+    for var in ("STOCKLENS_DATA_BUCKET", "ORCHESTRATOR_RULE", "SIGNAL_ONLY_RULE", "PAPER_ONLY_RULE", "EXPECTED_SCHEDULER_STATE"):
         if not os.environ.get(var):
             raise RuntimeError("STAGING_ENV_MISSING:" + var)
     return {"status": "STAGING_IMPORT_OK", "component": "watchdog",
@@ -206,6 +229,11 @@ def handler(event, context):
         signal_rule_state = events.describe_rule(Name=os.environ["SIGNAL_ONLY_RULE"]).get("State")
     except Exception as exc:
         signal_rule_state = "UNREADABLE:" + type(exc).__name__
+
+    try:
+        paper_rule_state = events.describe_rule(Name=os.environ["PAPER_ONLY_RULE"]).get("State")
+    except Exception as exc:
+        paper_rule_state = "UNREADABLE:" + type(exc).__name__
 
     def read_signal_activation():
         """Read a strictly formatted immutable S3 marker and its SERVER timestamp."""
@@ -267,11 +295,26 @@ def handler(event, context):
         signal_activation_at = None
         signal_rule_state = "UNREADABLE_ANCHOR:" + type(exc).__name__
 
+    configured_start = os.environ.get("MONITORING_START_SESSION") or None
+    # Inspect the book even before an operator updates the optional CF
+    # MonitoringStartSession parameter. Invalid/unreadable genesis is an alarm,
+    # not a reason to quietly stop checking the Paper account.
+    try:
+        durable_genesis = read_genesis()
+    except Exception as exc:
+        durable_genesis = None
+        configured_start = configured_start or "INVALID_DURABLE_GENESIS"
+        genesis_reader = lambda error=exc: (_ for _ in ()).throw(error)
+    else:
+        genesis_reader = lambda: durable_genesis
+    monitoring_start = resolve_paper_monitoring_start(configured_start, durable_genesis)
+
     result = inspect(now=datetime.now(timezone.utc), rule_state=rule_state,
                      expected_rule_state=os.environ["EXPECTED_SCHEDULER_STATE"],
-                     monitoring_start=os.environ.get("MONITORING_START_SESSION") or None,
+                     monitoring_start=monitoring_start,
                      read_record=read_record, read_receipt_sha=read_receipt_sha,
-                     read_last_modified=read_last_modified, read_genesis=read_genesis,
+                     read_last_modified=read_last_modified, read_genesis=genesis_reader,
+                     paper_rule_state=paper_rule_state,
                      signal_rule_state=signal_rule_state,
                      signal_activation_at=signal_activation_at,
                      read_signal_saved_at=lambda day: read_last_modified(f"signals/{day}.json"))

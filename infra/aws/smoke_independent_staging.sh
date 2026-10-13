@@ -41,6 +41,18 @@ signal_rule_state="$(aws events describe-rule --region "$REGION" --name "$signal
 [[ "$signal_rule_state" == DISABLED ]] || {
   echo "SIGNAL_ONLY_NOT_SAFE_BY_DEFAULT:$signal_rule_state" >&2; exit 2;
 }
+paper_rule="$(aws cloudformation describe-stacks --region "$REGION" \
+  --stack-name "$STACK" \
+  --query "Stacks[0].Outputs[?OutputKey=='CandidatePaperOnlyRuleName'].OutputValue|[0]" \
+  --output text)"
+[[ -n "$paper_rule" && "$paper_rule" != None ]] || {
+  echo "PAPER_ONLY_RULE_OUTPUT_MISSING" >&2; exit 2;
+}
+paper_rule_state="$(aws events describe-rule --region "$REGION" --name "$paper_rule" \
+  --query State --output text)"
+[[ "$paper_rule_state" == DISABLED ]] || {
+  echo "PAPER_ONLY_NOT_SAFE_BY_DEFAULT:$paper_rule_state" >&2; exit 2;
+}
 versioning="$(aws s3api get-bucket-versioning --region "$REGION" \
   --bucket "$bucket" --query Status --output text)"
 [[ "$versioning" == Enabled ]] || { echo "S3_VERSIONING_NOT_ENABLED" >&2; exit 2; }

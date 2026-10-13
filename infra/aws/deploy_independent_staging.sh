@@ -82,6 +82,46 @@ case "$EXISTING_STATUS" in
     exit 3
     ;;
 esac
+# Never silently turn OFF an opted-in nightly producer with CF's safe
+# DISABLED default, nor reset an already anchored monitoring epoch. This guard
+# performs only read-only AWS queries before packaging or ANY AWS mutation.
+if [[ "$EXISTING_STATUS" == CREATE_COMPLETE || "$EXISTING_STATUS" == UPDATE_COMPLETE ]]; then
+  STACK_OUTPUTS="$(aws cloudformation describe-stacks --region "$REGION" \
+    --stack-name "$STACK" --query 'Stacks[0].Outputs' --output json)"
+  python3 - "$STACK_OUTPUTS" <<'PY'
+import json,sys
+if not isinstance(json.loads(sys.argv[1]),list):
+    raise SystemExit("INVALID_STAGING_OUTPUTS")
+PY
+  for output_key in CandidateSignalOnlyRuleName CandidatePaperOnlyRuleName CandidateOrchestratorRuleName; do
+    old_rule="$(aws cloudformation describe-stacks --region "$REGION" \
+      --stack-name "$STACK" \
+      --query "Stacks[0].Outputs[?OutputKey=='$output_key'].OutputValue|[0]" \
+      --output text)"
+    if [[ -n "$old_rule" && "$old_rule" != None ]]; then
+      rule_state="$(aws events describe-rule --region "$REGION" \
+        --name "$old_rule" --query State --output text)"
+      [[ "$rule_state" == DISABLED ]] || {
+        echo "REFUSE_REDEPLOY_ACTIVE_SCHEDULE:$output_key:$rule_state" >&2
+        exit 3
+      }
+    fi
+  done
+  data_bucket="$(aws cloudformation describe-stacks --region "$REGION" \
+    --stack-name "$STACK" \
+    --query "Stacks[0].Outputs[?OutputKey=='CandidateDataBucket'].OutputValue|[0]" \
+    --output text)"
+  if [[ -n "$data_bucket" && "$data_bucket" != None ]]; then
+    count="$(aws s3api list-objects-v2 --region "$REGION" --bucket "$data_bucket" \
+      --prefix 'monitoring/signal-only-activation.json' --max-keys 1 \
+      --query 'KeyCount' --output text)"
+    [[ "$count" == 0 ]] || {
+      echo "REFUSE_REDEPLOY_ESTABLISHED_SIGNAL_MONITOR_ANCHOR:count=$count" >&2
+      exit 3
+    }
+  fi
+fi
+
 COMMIT="$(git rev-parse HEAD)"
 TEMP_DIR="$(mktemp -d)"
 trap 'rm -rf "$TEMP_DIR"' EXIT

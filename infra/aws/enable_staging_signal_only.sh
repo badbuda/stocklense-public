@@ -24,14 +24,19 @@ stack_output() {
 }
 signal_rule="$(stack_output CandidateSignalOnlyRuleName)"
 orchestrator_rule="$(stack_output CandidateOrchestratorRuleName)"
+paper_rule="$(stack_output CandidatePaperOnlyRuleName)"
 alerts_topic="$(stack_output CandidateAlertsTopic)"
-[[ -n "$signal_rule" && "$signal_rule" != None && -n "$orchestrator_rule" &&    "$orchestrator_rule" != None && -n "$alerts_topic" && "$alerts_topic" != None ]] || {
+[[ -n "$signal_rule" && "$signal_rule" != None && -n "$paper_rule" && "$paper_rule" != None && -n "$orchestrator_rule" &&    "$orchestrator_rule" != None && -n "$alerts_topic" && "$alerts_topic" != None ]] || {
   echo "MISSING_STAGING_OUTPUTS" >&2; exit 3;
 }
 # The combined Signal+Paper orchestrator must not accidentally activate.
 orchestrator_state="$(aws events describe-rule --region "$REGION"   --name "$orchestrator_rule" --query State --output text)"
 [[ "$orchestrator_state" == DISABLED ]] || {
   echo "PAPER_ORCHESTRATOR_NOT_DISABLED:$orchestrator_state" >&2; exit 3;
+}
+paper_state="$(aws events describe-rule --region "$REGION" --name "$paper_rule" --query State --output text)"
+[[ "$paper_state" == DISABLED ]] || {
+  echo "REFUSE_SIGNAL_ACTIVATION_DURING_PAPER_SCHEDULE:$paper_state" >&2; exit 3;
 }
 signal_state="$(aws events describe-rule --region "$REGION"   --name "$signal_rule" --query State --output text)"
 [[ "$signal_state" == DISABLED || "$signal_state" == ENABLED ]] || {

@@ -363,6 +363,26 @@ Resources:
       FunctionName: !Ref CandidateLambda
       Principal: events.amazonaws.com
       SourceArn: !GetAtt CandidateSignalOnlySchedule.Arn
+  # A separate delayed Paper-only nightly trigger, 70 min AFTER Signal.
+  # Never automatically initializes a book; manual prospective Genesis first.
+  # Disarmed until independent data parity and actual Paper acceptance gates.
+  CandidatePaperOnlySchedule:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: 'STAGING: completed XNYS session Paper-only, no Signal re-fetch or broker. DISABLED until prospective book and independent parity verified.'
+      ScheduleExpression: 'cron(20 1 ? * TUE-SAT *)'
+      State: DISABLED
+      Targets:
+        - Id: StagingPaperOnly
+          Arn: !GetAtt CandidatePaperLambda.Arn
+          Input: '{"mode":"STAGING_PAPER_SCHEDULED","bootstrap":false}'
+  CandidatePaperOnlySchedulePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref CandidatePaperLambda
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt CandidatePaperOnlySchedule.Arn
   CandidateOrchestratorSchedule:
     Type: AWS::Events::Rule
     Properties:
@@ -474,6 +494,7 @@ Resources:
                 Resource:
                   - !GetAtt CandidateOrchestratorSchedule.Arn
                   - !GetAtt CandidateSignalOnlySchedule.Arn
+                  - !GetAtt CandidatePaperOnlySchedule.Arn
               - Effect: Allow
                 Action: cloudwatch:PutMetricData
                 Resource: '*'
@@ -505,6 +526,7 @@ Resources:
           STOCKLENS_DATA_BUCKET: !Ref CandidateData
           ORCHESTRATOR_RULE: !Ref CandidateOrchestratorSchedule
           SIGNAL_ONLY_RULE: !Ref CandidateSignalOnlySchedule
+          PAPER_ONLY_RULE: !Ref CandidatePaperOnlySchedule
           EXPECTED_SCHEDULER_STATE: !Ref ExpectedSchedulerState
           MONITORING_START_SESSION: !Ref MonitoringStartSession
   CandidateSessionWatchdogSchedule:
@@ -659,6 +681,8 @@ Outputs:
     Value: !Ref CandidateOrchestratorLambda
   CandidateSignalOnlyRuleName:
     Value: !Ref CandidateSignalOnlySchedule
+  CandidatePaperOnlyRuleName:
+    Value: !Ref CandidatePaperOnlySchedule
   CandidateOrchestratorRuleName:
     Value: !Ref CandidateOrchestratorSchedule
   CandidateAlertsTopic:
