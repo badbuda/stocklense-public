@@ -198,3 +198,10 @@ def test_signal_watchdog_cf_scoping_and_operator_immutable_activation():
     assert "SIGNAL_ACTIVATION_ALREADY_ANCHORED_BUT_RULE_DISABLED" in operator
     assert "--if-none-match '*'" in operator
     assert operator.count("aws events enable-rule") == 1
+
+
+def test_new_signal_monitor_module_is_in_lambda_deployment_artifact():
+    """Packaging is explicit: passing local imports is not AWS ZIP import parity."""
+    deploy = Path("infra/aws/deploy_independent_staging.sh").read_text()
+    assert '"infra/aws/independent_signal_monitor.py",' in deploy
+    assert '"infra/aws/independent_session_watchdog.py",' in deploy

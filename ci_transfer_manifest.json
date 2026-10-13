@@ -158,7 +158,7 @@
     "infra/aws/PHASE2_UPDATE.md": "b0e5d0afbc86d8b711561835bce316bd3e62f511",
     "infra/aws/README.md": "4d5015d3a5efd79a23e368759279d5f406bc6c31",
     "infra/aws/accept_independent_staging.sh": "1d9422543e0c9559a255e435ff2762cd9de4768e",
-    "infra/aws/deploy_independent_staging.sh": "3b68c1cf452331ee73d5805671d36c16a55340c5",
+    "infra/aws/deploy_independent_staging.sh": "d4e37d91a3e35a5d9cb9f41ccae2d81f1ef56ad4",
     "infra/aws/independent-staging.yaml": "819a6d4eed2f6a3b7e885afceb560a37f11998ab",
     "infra/aws/independent_frozen_ingest.py": "14a0701f4f21b9f96cb6d4beb14d16017536bf2e",
     "infra/aws/independent_market_ingest.py": "6d77f675a6c0584eba1b73bb509be25b4385073b",
@@ -459,7 +459,7 @@
     "workbench_selfcheck.py": "4f17be6d56ac7d3cc3637e1ef2b2af3ed9d880a8",
     "yahoo_eod_scorecard.py": "137465f3ff4d9a2b8c164bf4321480c0ea0869fd",
     "yahoo_long_history.py": "e7e51b5c2f5697da5d583316638b98ec13e6114c",
-    "tests/test_aws_independent_signal_schedule.py": "b0ee9332263b161b4470a726e4936dc32d8f801b",
+    "tests/test_aws_independent_signal_schedule.py": "7ce077baac28d5d74e973ce6d40167cc404e43f9",
     "infra/aws/enable_staging_signal_only.sh": "1cdb8e8afc0454cae427db1f8e48232900b9c035",
     "infra/aws/independent_signal_monitor.py": "dfcc9c3ab0839723a3a1b9ad871fcede4c834264"
   }

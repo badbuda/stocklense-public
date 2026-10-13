@@ -121,6 +121,7 @@ paths = [
     "infra/aws/independent_paper.py",
     "infra/aws/session_continuity.py",
     "infra/aws/independent_session_watchdog.py",
+    "infra/aws/independent_signal_monitor.py",
     "stocklens/core.py",
     "stocklens/data.py",
     "stocklens/paper.py",
