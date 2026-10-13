@@ -466,7 +466,6 @@
     "infra/aws/accept_independent_paper_preflight.sh": "550d2078cd981de444c8a352b6a7da422dfa8030",
     "infra/aws/enable_staging_paper_only.sh": "910d588fec8924bb09a9553d4f89d43851c7b1d7",
     "tests/test_aws_staging_paper_automation.py": "2b78d1e2062e7ee8d34f5acb4177af76095f4eb0",
-    "docs/STOCKLENS_SYSTEM_COMPLETION.md": "a0f482a2f674f3eb990f28737fc6bc65302921df",
     "infra/aws/audit_staging_release.sh": "48efb09dc3888c168e2c2d4b737bfa5676165532",
     "infra/aws/release_staging_once.sh": "e0e02e5d4087036a086c49d0c43a31a7ac3a4252",
     "tests/test_aws_staging_release.py": "5ae1b64f6184bd600ecb90dcd8649e0a7dddb9da"
