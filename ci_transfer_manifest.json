@@ -163,7 +163,7 @@
     "infra/aws/independent_frozen_ingest.py": "14a0701f4f21b9f96cb6d4beb14d16017536bf2e",
     "infra/aws/independent_market_ingest.py": "6d77f675a6c0584eba1b73bb509be25b4385073b",
     "infra/aws/independent_orchestrator.py": "8393cf34761556e6ea2ca029248bf9db2ce890a1",
-    "infra/aws/independent_paper.py": "8e763722b7a3891853fac9de785bd6746251d8b2",
+    "infra/aws/independent_paper.py": "1ebf4cfb293d8083ee7e44255b005bd1a602ee5f",
     "infra/aws/independent_pipeline.py": "0023c9e510a0dc846e1d6c7cefdc78e7983777f2",
     "infra/aws/independent_session_watchdog.py": "bcfe78f797f9818173926bde7c9c8576c4432c2b",
     "infra/aws/independent_signal_producer.py": "42a697fad422bb997447bf2dfcc234de70404ab0",
@@ -462,7 +462,7 @@
     "tests/test_aws_independent_signal_schedule.py": "7ce077baac28d5d74e973ce6d40167cc404e43f9",
     "infra/aws/enable_staging_signal_only.sh": "1cdb8e8afc0454cae427db1f8e48232900b9c035",
     "infra/aws/independent_signal_monitor.py": "dfcc9c3ab0839723a3a1b9ad871fcede4c834264",
-    "tests/test_aws_independent_paper_preflight.py": "75920f79b40e77502be0dd2987138e257e7dab81",
-    "infra/aws/accept_independent_paper_preflight.sh": "d92fdccaacb20e37b44cd3189b3ac23210805e1e"
+    "tests/test_aws_independent_paper_preflight.py": "5790b050fc2bd1de2a211be6f73aaac235d06c13",
+    "infra/aws/accept_independent_paper_preflight.sh": "4197a9fe8045fa425a760fb20ee8f7c19c3bc2e2"
   }
 }

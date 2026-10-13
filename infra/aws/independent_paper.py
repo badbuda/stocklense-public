@@ -572,9 +572,15 @@ def preflight_prospective_paper_bootstrap(
     fabricated sessions, existing paper books, or unaudited prior-close timing.
     Paper still requires a separate explicit operator-approved bootstrap.
     """
-    from infra.aws.independent_orchestrator import current_completed_session
-    if current_completed_session(now) != session:
-        raise RuntimeError("PREFLIGHT_REQUIRES_LATEST_COMPLETED_XNYS_SESSION")
+    if now.tzinfo is None:
+        raise RuntimeError("PREFLIGHT_CLOCK_MUST_BE_AWARE")
+    now = now.astimezone(timezone.utc)
+    # The prospective execution session must be fully closed, yet its NEXT
+    # market open must not have arrived. This lets the owner run the review
+    # next morning in Israel, without promoting late/backfilled evidence.
+    if not (sc.session_close_utc(session) <= now <
+            sc.accounting_deadline_utc(session)):
+        raise RuntimeError("PREFLIGHT_REQUIRES_COMPLETED_SESSION_BEFORE_NEXT_OPEN")
     prior = previous_xnys_session(session)
     if _read_genesis(s3, bucket) is not None:
         raise RuntimeError("PREFLIGHT_REFUSE_EXISTING_PAPER_BOOK")

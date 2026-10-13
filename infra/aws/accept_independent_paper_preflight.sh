@@ -10,8 +10,7 @@ STACK="stocklens-independent-staging"
 [[ "$#" == 1 ]] || { echo "Usage: $0 YYYY-MM-DD" >&2; exit 2; }
 
 python3 - "$1" <<'PY'
-from datetime import date, datetime, time
-from zoneinfo import ZoneInfo
+from datetime import date
 import sys
 session = sys.argv[1]
 try:
@@ -20,9 +19,9 @@ except ValueError:
     raise SystemExit("INVALID_SESSION_DATE")
 if session != requested.isoformat():
     raise SystemExit("NON_CANONICAL_SESSION_DATE")
-ny = datetime.now(ZoneInfo("America/New_York"))
-if requested != ny.date() or ny.time() < time(18):
-    raise SystemExit("PREFLIGHT_REQUIRE_TODAY_COMPLETED_NY_SESSION")
+# The Lambda validates the real XNYS close and next market open with
+# exchange_calendars; do not reject the following morning in Israel here.
+# This script only validates canonical input and the disabled orchestrator.
 PY
 
 stack_status="$(aws cloudformation describe-stacks --region "$REGION" \

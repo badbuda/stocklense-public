@@ -85,10 +85,13 @@ def test_preflight_refuses_existing_genesis_or_continuity():
 
 def test_preflight_requires_completed_current_session_and_observed_market():
     s3 = prepared()
-    with pytest.raises(RuntimeError, match="MARKET_DAY_NOT_YET_COMPLETE"):
-        preview(s3, at=U(2026, 10, 13, 20))
-    with pytest.raises(RuntimeError, match="PREFLIGHT_REQUIRES_LATEST_COMPLETED_XNYS_SESSION"):
-        preview(s3, at=U(2026, 10, 14, 23))
+    with pytest.raises(RuntimeError, match="PREFLIGHT_REQUIRES_COMPLETED_SESSION_BEFORE_NEXT_OPEN"):
+        preview(s3, at=U(2026, 10, 13, 19, 59))
+    # 08:30 in Israel on Oct 14 is 01:30 NY: next exchange open not reached.
+    assert preview(s3, at=U(2026, 10, 14, 5, 30))["status"].endswith("PASS_READ_ONLY")
+    # After the next NYSE open this is NOT prospective first-session evidence.
+    with pytest.raises(RuntimeError, match="PREFLIGHT_REQUIRES_COMPLETED_SESSION_BEFORE_NEXT_OPEN"):
+        preview(s3, at=U(2026, 10, 14, 14))
     with pytest.raises(ValueError, match="UNEXPECTED_OBSERVED_EXECUTION_SOURCE"):
         bad = replace(observed_market("2026-10-13"), source="SYNTHETIC")
         preview(s3, fetch=lambda prior, day: bad)
