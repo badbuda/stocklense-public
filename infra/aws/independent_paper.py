@@ -689,6 +689,10 @@ def preflight_handler(event, context):
 def handler(event, context):
     if event.get("mode") == "STAGING_IMPORT_SMOKE":
         return _import_smoke()
+    # Deny the read-only preflight mode and every unknown mode BEFORE loading
+    # boto3. Only the distinct least-privilege preflight_handler may accept it.
+    if event.get("mode") not in ("STAGING_PAPER_CATCHUP", "STAGING_PAPER_ONLY"):
+        raise RuntimeError("STAGING_PAPER_MODE_REQUIRED")
     import boto3
     if event.get("mode") == "STAGING_PAPER_CATCHUP":
         if event.get("bootstrap") not in (None, False):
