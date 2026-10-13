@@ -115,3 +115,86 @@ def test_signal_only_operator_opt_in_script_is_guarded_and_never_enables_paper()
     assert "aws events disable-rule" not in text
     assert "aws cloudformation delete-stack" not in text
     assert "aws lambda update-function" not in text
+
+
+def test_signal_watchdog_activation_deadline_and_dst():
+    from infra.aws.independent_signal_monitor import due_signal_sessions
+    def U(y,m,d,h,mi=0): return datetime(y,m,d,h,mi,tzinfo=timezone.utc)
+    assert due_signal_sessions(U(2026,10,14,1,9), U(2026,10,13,12)) == []
+    assert due_signal_sessions(U(2026,10,14,1,10), U(2026,10,13,12)) == [
+        ("2026-10-13", U(2026,10,14,1,10))
+    ]
+    assert ("2026-11-02", U(2026,11,3,1,10)) in due_signal_sessions(
+        U(2026,11,3,2), U(2026,11,2,12)
+    )
+
+
+def test_signal_watchdog_ignores_exchange_holidays_and_weekends():
+    from infra.aws.independent_signal_monitor import due_signal_sessions
+    def U(y,m,d,h): return datetime(y,m,d,h,tzinfo=timezone.utc)
+    due = due_signal_sessions(U(2026,12,29,3), U(2026,12,24,12))
+    days = [day for day, _ in due]
+    assert "2026-12-24" in days and "2026-12-28" in days
+    assert "2026-12-25" not in days and "2026-12-26" not in days
+
+
+def test_signal_watchdog_missing_and_late_s3_receipts_alarm_without_paper():
+    from infra.aws.independent_session_watchdog import inspect
+    def U(y,m,d,h,mi=0): return datetime(y,m,d,h,mi,tzinfo=timezone.utc)
+    common = dict(now=U(2026,10,15,3), rule_state="DISABLED",
+                  expected_rule_state="DISABLED", monitoring_start=None,
+                  read_record=lambda s: None, signal_rule_state="ENABLED",
+                  signal_activation_at=U(2026,10,13,12))
+    missing = inspect(**common, read_signal_saved_at=lambda day: None)
+    assert missing["missing_scheduled_signals"] == ["2026-10-13", "2026-10-14"]
+    assert missing["metrics"]["MissingOrLateScheduledSignals"] == 2
+    assert missing["status"] == "FAIL_CLOSED"
+    actual_times = {"2026-10-13": U(2026,10,14,1,11),
+                    "2026-10-14": U(2026,10,15,0,20)}
+    late = inspect(**common, read_signal_saved_at=actual_times.get)
+    assert late["late_scheduled_signals"] == ["2026-10-13"]
+    assert late["metrics"]["MissingOrLateScheduledSignals"] == 1
+    assert late["status"] == "FAIL_CLOSED"
+    on_time = inspect(**common, read_signal_saved_at=lambda d: U(
+        2026,10,14,0,20) if d=="2026-10-13" else U(2026,10,15,0,20))
+    assert on_time["metrics"]["MissingOrLateScheduledSignals"] == 0
+    assert on_time["status"] == "PASS"
+
+
+def test_signal_watchdog_detects_unexpected_disable_and_missing_activation():
+    from infra.aws.independent_session_watchdog import inspect
+    at = datetime(2026,10,14,tzinfo=timezone.utc)
+    common = dict(now=at, rule_state="DISABLED",
+                  expected_rule_state="DISABLED", monitoring_start=None,
+                  read_record=lambda s: None)
+    no_anchor = inspect(**common, signal_rule_state="ENABLED")
+    assert "CONFIGURATION:SIGNAL_RULE_ENABLED_WITHOUT_ACTIVATION_ANCHOR" in no_anchor["failures"]
+    disabled = inspect(**common, signal_rule_state="DISABLED",
+                       signal_activation_at=datetime(2026,10,13,tzinfo=timezone.utc))
+    assert "CONFIGURATION:SIGNAL_RULE_DISABLED_AFTER_ACTIVATION" in disabled["failures"]
+
+
+def test_signal_watchdog_cf_scoping_and_operator_immutable_activation():
+    import yaml
+    class L(yaml.SafeLoader): pass
+    L.add_multi_constructor("!", lambda ld, suffix, node: suffix + ":" + str(node.value))
+    r = yaml.load(Path("infra/aws/independent-staging.yaml").read_text(), Loader=L)["Resources"]
+    assert r["MissingOrLateScheduledSignalsAlarm"]["Properties"]["MetricName"] == "MissingOrLateScheduledSignals"
+    env = r["CandidateSessionWatchdogLambda"]["Properties"]["Environment"]["Variables"]
+    assert env["SIGNAL_ONLY_RULE"] == "Ref:CandidateSignalOnlySchedule"
+    grants = r["CandidateSessionWatchdogRole"]["Properties"]["Policies"][0]["PolicyDocument"]["Statement"]
+    read_paths = []
+    describe_rule_arns = []
+    for grant in grants:
+        actions = grant["Action"] if isinstance(grant["Action"], list) else [grant["Action"]]
+        paths = grant["Resource"] if isinstance(grant["Resource"], list) else [grant["Resource"]]
+        if "s3:GetObject" in actions: read_paths.extend(paths)
+        if "events:DescribeRule" in actions: describe_rule_arns.extend(paths)
+    assert any("monitoring/signal-only-activation.json" in p for p in read_paths)
+    assert "GetAtt:CandidateSignalOnlySchedule.Arn" in describe_rule_arns
+    operator = Path("infra/aws/enable_staging_signal_only.sh").read_text()
+    import subprocess
+    subprocess.run(["bash","-n","infra/aws/enable_staging_signal_only.sh"],check=True)
+    assert "SIGNAL_ACTIVATION_ALREADY_ANCHORED_BUT_RULE_DISABLED" in operator
+    assert "--if-none-match '*'" in operator
+    assert operator.count("aws events enable-rule") == 1

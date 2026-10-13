@@ -65,7 +65,11 @@ if [[ "$MODE" == check ]]; then
   exit 0
 fi
 if [[ "$signal_state" == ENABLED ]]; then
-  echo "ALREADY_ENABLED:signal-only staging rule; no action needed"
+  bucket="$(stack_output CandidateDataBucket)"
+  aws s3api head-object --region "$REGION" --bucket "$bucket" \
+    --key "monitoring/signal-only-activation.json" \
+    --query '{VersionId:VersionId,LastModified:LastModified}' --output json
+  echo "ALREADY_ENABLED:signal-only staging rule; activation anchor is present"
   exit 0
 fi
 printf 'Confirm real STAGING SNS alarm email delivery and no Paper/broker actions.\n' >&2
@@ -73,6 +77,29 @@ read -r -p 'Type RECEIVED_STAGING_ALARM_EMAIL to opt in: ' response
 [[ "$response" == RECEIVED_STAGING_ALARM_EMAIL ]] || {
   echo "ACTIVATION_NOT_CONFIRMED; no changes" >&2; exit 3;
 }
+# Anchor prospective monitoring to the S3 server's immutable creation time.
+# If the initial activation failed after writing the anchor, refuse a blind
+# retry or silent re-baselining. The owner must inspect that partial state.
+bucket="$(stack_output CandidateDataBucket)"
+[[ -n "$bucket" && "$bucket" != None ]] || {
+  echo "SIGNAL_MONITOR_STAGING_BUCKET_MISSING" >&2; exit 3;
+}
+marker="monitoring/signal-only-activation.json"
+if aws s3api head-object --region "$REGION" --bucket "$bucket" --key "$marker" >/dev/null 2>&1; then
+  echo "SIGNAL_ACTIVATION_ALREADY_ANCHORED_BUT_RULE_DISABLED:human_review_required" >&2
+  exit 3
+fi
+tmp="$(mktemp)"
+trap 'rm -f "$tmp"' EXIT
+printf '%s' '{"schema":"STOCKLENS_STAGING_SIGNAL_MONITOR_V1"}' >"$tmp"
+aws s3api put-object --region "$REGION" --bucket "$bucket" --key "$marker" \
+  --body "$tmp" --content-type application/json --if-none-match '*' >/dev/null
+marker_version="$(aws s3api head-object --region "$REGION" --bucket "$bucket" --key "$marker" \
+  --query 'VersionId' --output text)"
+[[ -n "$marker_version" && "$marker_version" != "None" && "$marker_version" != "null" ]] || {
+  echo "SIGNAL_MONITOR_ANCHOR_VERSION_MISSING" >&2; exit 4;
+}
+echo "SIGNAL_MONITOR_S3_ACTIVATION_ANCHOR_CREATED:versioned=true"
 aws events enable-rule --region "$REGION" --name "$signal_rule"
 [[ "$(aws events describe-rule --region "$REGION" --name "$signal_rule"   --query State --output text)" == ENABLED ]] || {
   echo "ACTIVATION_NOT_VERIFIED; inspect rule and alarms" >&2; exit 4;

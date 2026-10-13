@@ -18,6 +18,7 @@ import json
 import os
 
 from infra.aws import session_continuity as sc
+from infra.aws.independent_signal_monitor import due_signal_sessions
 
 NAMESPACE = "StockLens/IndependentStaging"
 MAX_MONITORED_SESSIONS = 400  # beyond this, archive/checkpoint and move MonitoringStartSession
@@ -41,7 +42,9 @@ def due_sessions(now: datetime, monitoring_start: str) -> list[str]:
 
 def inspect(*, now: datetime, rule_state: str | None, expected_rule_state: str,
             monitoring_start: str | None, read_record, read_receipt_sha=lambda s: None,
-            read_last_modified=None, read_genesis=None, book: str = sc.BOOK) -> dict:
+            read_last_modified=None, read_genesis=None, book: str = sc.BOOK,
+            signal_rule_state: str | None = None, signal_activation_at: datetime | None = None,
+            read_signal_saved_at=None) -> dict:
     """read_record(session) -> dict | None; read_receipt_sha(session) -> sha | None;
     read_last_modified(key) -> aware datetime | None (genuine S3 server time).
 
@@ -116,6 +119,37 @@ def inspect(*, now: datetime, rule_state: str | None, expected_rule_state: str,
             elif rec.get("status") == sc.MISSED:
                 halted.append(session)
             prev_rec = rec
+    # Signal-only has an independent S3-server-timed activation anchor. Do not
+    # treat arbitrary pre-activation history as missed automatic executions.
+    signal_missing, signal_late = [], []
+    if signal_rule_state is not None:
+        if signal_rule_state not in ("ENABLED", "DISABLED"):
+            config_errors.append("SIGNAL_RULE_UNREADABLE:" + str(signal_rule_state))
+        elif signal_rule_state == "ENABLED" and signal_activation_at is None:
+            config_errors.append("SIGNAL_RULE_ENABLED_WITHOUT_ACTIVATION_ANCHOR")
+        elif signal_rule_state == "DISABLED" and signal_activation_at is not None:
+            config_errors.append("SIGNAL_RULE_DISABLED_AFTER_ACTIVATION")
+        if signal_rule_state == "ENABLED" and signal_activation_at is not None:
+            if read_signal_saved_at is None:
+                config_errors.append("SIGNAL_RECEIPT_READER_MISSING")
+            else:
+                try:
+                    due = due_signal_sessions(now, signal_activation_at)
+                except Exception as exc:
+                    config_errors.append("SIGNAL_CALENDAR_ERROR:" + type(exc).__name__)
+                    due = []
+                for session, deadline in due:
+                    try:
+                        saved = read_signal_saved_at(session)
+                    except Exception as exc:
+                        config_errors.append("SIGNAL_S3_READ_ERROR:" + session + ":" + type(exc).__name__)
+                        continue
+                    if saved is None:
+                        signal_missing.append(session)
+                    elif saved.tzinfo is None or saved.astimezone(timezone.utc) > deadline:
+                        signal_late.append(session)
+    failures += ["MISSING_SCHEDULED_SIGNAL:" + d for d in signal_missing]
+    failures += ["LATE_SCHEDULED_SIGNAL:" + d for d in signal_late]
     failures += ["SESSION_WITHOUT_CONTINUITY_RECORD:" + x for x in missed]
     failures += ["BOOK_HALTED_AT:" + x for x in halted]
     failures += [f"INVALID_CONTINUITY_RECORD:{k}:{','.join(v)}" for k, v in invalid.items()]
@@ -124,10 +158,13 @@ def inspect(*, now: datetime, rule_state: str | None, expected_rule_state: str,
     return {
         "checked_utc": now.astimezone(timezone.utc).isoformat(),
         "mode": mode,
+        "missing_scheduled_signals": signal_missing,
+        "late_scheduled_signals": signal_late,
         "missed_sessions": missed,
         "halted_sessions": halted,
         "invalid_records": invalid,
         "metrics": {
+            "MissingOrLateScheduledSignals": len(signal_missing) + len(signal_late),
             "MissedSessions": len(missed),
             "BookHalted": len(halted),
             "InvalidReceipts": len(invalid),
@@ -147,7 +184,7 @@ def _import_smoke():
     for package in ("exchange_calendars", "boto3", "infra.aws.session_continuity",
                     "infra.aws.independent_paper"):
         importlib.import_module(package)
-    for var in ("STOCKLENS_DATA_BUCKET", "ORCHESTRATOR_RULE", "EXPECTED_SCHEDULER_STATE"):
+    for var in ("STOCKLENS_DATA_BUCKET", "ORCHESTRATOR_RULE", "SIGNAL_ONLY_RULE", "EXPECTED_SCHEDULER_STATE"):
         if not os.environ.get(var):
             raise RuntimeError("STAGING_ENV_MISSING:" + var)
     return {"status": "STAGING_IMPORT_OK", "component": "watchdog",
@@ -164,6 +201,30 @@ def handler(event, context):
         rule_state = events.describe_rule(Name=os.environ["ORCHESTRATOR_RULE"]).get("State")
     except Exception as exc:  # unreadable scheduler is itself an alert
         rule_state = "UNREADABLE:" + type(exc).__name__
+
+    try:
+        signal_rule_state = events.describe_rule(Name=os.environ["SIGNAL_ONLY_RULE"]).get("State")
+    except Exception as exc:
+        signal_rule_state = "UNREADABLE:" + type(exc).__name__
+
+    def read_signal_activation():
+        """Read a strictly formatted immutable S3 marker and its SERVER timestamp."""
+        try:
+            obj = s3.get_object(Bucket=bucket, Key="monitoring/signal-only-activation.json")
+        except Exception as exc:
+            code = getattr(exc, "response", {}).get("Error", {}).get("Code")
+            if code in ("NoSuchKey", "404", "NotFound"):
+                return None
+            raise
+        marker = json.loads(obj["Body"].read(4096))
+        if marker != {"schema": "STOCKLENS_STAGING_SIGNAL_MONITOR_V1"}:
+            raise ValueError("INVALID_SIGNAL_ACTIVATION_MARKER")
+        if not obj.get("VersionId") or obj["VersionId"] == "null":
+            raise ValueError("SIGNAL_ACTIVATION_MISSING_S3_VERSION")
+        ts = obj.get("LastModified")
+        if ts is None or ts.tzinfo is None:
+            raise ValueError("SIGNAL_ACTIVATION_MISSING_S3_SERVER_TIME")
+        return ts
 
     def read_record(session):
         try:
@@ -199,11 +260,21 @@ def handler(event, context):
                 return None
             raise
 
+    try:
+        signal_activation_at = read_signal_activation()
+    except Exception as exc:
+        # Corrupt/unreadable anchor always alerts rather than silently resetting.
+        signal_activation_at = None
+        signal_rule_state = "UNREADABLE_ANCHOR:" + type(exc).__name__
+
     result = inspect(now=datetime.now(timezone.utc), rule_state=rule_state,
                      expected_rule_state=os.environ["EXPECTED_SCHEDULER_STATE"],
                      monitoring_start=os.environ.get("MONITORING_START_SESSION") or None,
                      read_record=read_record, read_receipt_sha=read_receipt_sha,
-                     read_last_modified=read_last_modified, read_genesis=read_genesis)
+                     read_last_modified=read_last_modified, read_genesis=read_genesis,
+                     signal_rule_state=signal_rule_state,
+                     signal_activation_at=signal_activation_at,
+                     read_signal_saved_at=lambda day: read_last_modified(f"signals/{day}.json"))
     cw.put_metric_data(Namespace=NAMESPACE, MetricData=[
         {"MetricName": k, "Value": float(v), "Unit": "Count"} for k, v in result["metrics"].items()])
     print(json.dumps(result, sort_keys=True))

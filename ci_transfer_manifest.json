@@ -159,13 +159,13 @@
     "infra/aws/README.md": "4d5015d3a5efd79a23e368759279d5f406bc6c31",
     "infra/aws/accept_independent_staging.sh": "1d9422543e0c9559a255e435ff2762cd9de4768e",
     "infra/aws/deploy_independent_staging.sh": "3b68c1cf452331ee73d5805671d36c16a55340c5",
-    "infra/aws/independent-staging.yaml": "eec0f0c5b3c09d8e97ddaac403deaf2bb85c6815",
+    "infra/aws/independent-staging.yaml": "819a6d4eed2f6a3b7e885afceb560a37f11998ab",
     "infra/aws/independent_frozen_ingest.py": "14a0701f4f21b9f96cb6d4beb14d16017536bf2e",
     "infra/aws/independent_market_ingest.py": "6d77f675a6c0584eba1b73bb509be25b4385073b",
     "infra/aws/independent_orchestrator.py": "8393cf34761556e6ea2ca029248bf9db2ce890a1",
     "infra/aws/independent_paper.py": "b0932ea427c9cd02dda41cdc6cd96e8780a36b0e",
     "infra/aws/independent_pipeline.py": "0023c9e510a0dc846e1d6c7cefdc78e7983777f2",
-    "infra/aws/independent_session_watchdog.py": "c5ee9a24a419413c1864f7a44d8cf461fa2cab44",
+    "infra/aws/independent_session_watchdog.py": "bcfe78f797f9818173926bde7c9c8576c4432c2b",
     "infra/aws/independent_signal_producer.py": "42a697fad422bb997447bf2dfcc234de70404ab0",
     "infra/aws/paper-evidence-handler.py": "0a967783e199fe6b0135deb974062e93982477c7",
     "infra/aws/paper-signal-journal.yaml": "b99b0db90504cf0dbff0276ab3e0fedae16a9075",
@@ -459,7 +459,8 @@
     "workbench_selfcheck.py": "4f17be6d56ac7d3cc3637e1ef2b2af3ed9d880a8",
     "yahoo_eod_scorecard.py": "137465f3ff4d9a2b8c164bf4321480c0ea0869fd",
     "yahoo_long_history.py": "e7e51b5c2f5697da5d583316638b98ec13e6114c",
-    "tests/test_aws_independent_signal_schedule.py": "69f7278d8380f60eb63a5e4d1fdd973003edf04d",
-    "infra/aws/enable_staging_signal_only.sh": "30a437451abc5b954007077e7c2339107ddcf537"
+    "tests/test_aws_independent_signal_schedule.py": "b0ee9332263b161b4470a726e4936dc32d8f801b",
+    "infra/aws/enable_staging_signal_only.sh": "1cdb8e8afc0454cae427db1f8e48232900b9c035",
+    "infra/aws/independent_signal_monitor.py": "dfcc9c3ab0839723a3a1b9ad871fcede4c834264"
   }
 }

@@ -403,6 +403,7 @@ Resources:
                   - !Sub '${CandidateData.Arn}/paper/sessions/*'
                   - !Sub '${CandidateData.Arn}/signals/*'
                   - !Sub '${CandidateData.Arn}/paper/book/*'
+                  - !Sub '${CandidateData.Arn}/monitoring/signal-only-activation.json'
               # Read-only watchdog must distinguish genuinely absent
               # continuity/genesis keys (404) from denied access (403).
               - Effect: Allow
@@ -410,7 +411,9 @@ Resources:
                 Resource: !GetAtt CandidateData.Arn
               - Effect: Allow
                 Action: events:DescribeRule
-                Resource: !GetAtt CandidateOrchestratorSchedule.Arn
+                Resource:
+                  - !GetAtt CandidateOrchestratorSchedule.Arn
+                  - !GetAtt CandidateSignalOnlySchedule.Arn
               - Effect: Allow
                 Action: cloudwatch:PutMetricData
                 Resource: '*'
@@ -441,6 +444,7 @@ Resources:
         Variables:
           STOCKLENS_DATA_BUCKET: !Ref CandidateData
           ORCHESTRATOR_RULE: !Ref CandidateOrchestratorSchedule
+          SIGNAL_ONLY_RULE: !Ref CandidateSignalOnlySchedule
           EXPECTED_SCHEDULER_STATE: !Ref ExpectedSchedulerState
           MONITORING_START_SESSION: !Ref MonitoringStartSession
   CandidateSessionWatchdogSchedule:
@@ -459,6 +463,19 @@ Resources:
       FunctionName: !Ref CandidateSessionWatchdogLambda
       Principal: events.amazonaws.com
       SourceArn: !GetAtt CandidateSessionWatchdogSchedule.Arn
+  MissingOrLateScheduledSignalsAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmDescription: 'STAGING: due XNYS nightly Signal absent or archived after its 1h deadline'
+      Namespace: StockLens/IndependentStaging
+      MetricName: MissingOrLateScheduledSignals
+      Statistic: Maximum
+      Period: 3600
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      TreatMissingData: notBreaching
+      AlarmActions: [!Ref CandidateAlerts]
   MissedSessionsAlarm:
     Type: AWS::CloudWatch::Alarm
     Properties:
