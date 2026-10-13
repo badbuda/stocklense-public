@@ -459,6 +459,7 @@
     "workbench_selfcheck.py": "4f17be6d56ac7d3cc3637e1ef2b2af3ed9d880a8",
     "yahoo_eod_scorecard.py": "137465f3ff4d9a2b8c164bf4321480c0ea0869fd",
     "yahoo_long_history.py": "e7e51b5c2f5697da5d583316638b98ec13e6114c",
-    "tests/test_aws_independent_signal_schedule.py": "0f572fbcf30e8f48180f6798b1bf8a7ddeac4ccd"
+    "tests/test_aws_independent_signal_schedule.py": "69f7278d8380f60eb63a5e4d1fdd973003edf04d",
+    "infra/aws/enable_staging_signal_only.sh": "30a437451abc5b954007077e7c2339107ddcf537"
   }
 }

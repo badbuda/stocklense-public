@@ -99,3 +99,19 @@ def test_smoke_requires_new_signal_only_rule_disabled():
     shell = Path("infra/aws/smoke_independent_staging.sh").read_text()
     assert "CandidateSignalOnlyRuleName" in shell
     assert "SIGNAL_ONLY_NOT_SAFE_BY_DEFAULT" in shell
+
+def test_signal_only_operator_opt_in_script_is_guarded_and_never_enables_paper():
+    import subprocess
+    script = Path("infra/aws/enable_staging_signal_only.sh")
+    subprocess.run(["bash", "-n", str(script)], check=True)
+    text = script.read_text()
+    assert "StockLens-Whole-Account-20USD" in text
+    assert "CandidateSignalOnlyRuleName" in text
+    assert "CandidateOrchestratorRuleName" in text
+    assert "PAPER_ORCHESTRATOR_NOT_DISABLED" in text
+    assert "STAGING_SNS_EMAIL_UNCONFIRMED" in text
+    assert "RECEIVED_STAGING_ALARM_EMAIL" in text
+    assert text.count("aws events enable-rule") == 1
+    assert "aws events disable-rule" not in text
+    assert "aws cloudformation delete-stack" not in text
+    assert "aws lambda update-function" not in text
