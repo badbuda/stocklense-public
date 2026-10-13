@@ -228,6 +228,66 @@ Resources:
         Variables:
           STOCKLENS_DATA_BUCKET: !Ref CandidateData
 
+  # Dedicated no-PutObject Lambda for the prospective first Paper dry run.
+  # No schedules, no broker APIs; same pinned ZIP, distinct entrypoint and IAM.
+  CandidatePaperPreflightLogs:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/aws/lambda/${AWS::StackName}-paper-preflight'
+      RetentionInDays: 14
+  CandidatePaperPreflightRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: ReadOnlyStagingPaperPreflight
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:GetObjectVersion
+                Resource:
+                  - !Sub '${CandidateData.Arn}/signals/*'
+                  - !Sub '${CandidateData.Arn}/market/paper/*'
+                  - !Sub '${CandidateData.Arn}/paper/sessions/*'
+                  - !Sub '${CandidateData.Arn}/paper/continuity/*'
+                  - !Sub '${CandidateData.Arn}/paper/book/*'
+              # Required to distinguish absent GetObject keys (404) from denied
+              # access (403). Only the isolated private staging bucket.
+              - Effect: Allow
+                Action: s3:ListBucket
+                Resource: !GetAtt CandidateData.Arn
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: !GetAtt CandidatePaperPreflightLogs.Arn
+  CandidatePaperPreflightLambda:
+    Type: AWS::Lambda::Function
+    DependsOn: CandidatePaperPreflightLogs
+    Properties:
+      FunctionName: !Sub '${AWS::StackName}-paper-preflight'
+      Runtime: python3.12
+      Architectures: [x86_64]
+      Handler: infra.aws.independent_paper.preflight_handler
+      Role: !GetAtt CandidatePaperPreflightRole.Arn
+      Code:
+        S3Bucket: !Ref ArtifactBucket
+        S3Key: !Ref ArtifactKey
+      Timeout: 240
+      MemorySize: 1536
+      Environment:
+        Variables:
+          STOCKLENS_DATA_BUCKET: !Ref CandidateData
+
   CandidateOrchestratorLogs:
     Type: AWS::Logs::LogGroup
     Properties:
@@ -589,6 +649,8 @@ Outputs:
     Value: !Ref CandidateData
   CandidateLogGroup:
     Value: !Ref CandidateLogs
+  CandidatePaperPreflightFunctionName:
+    Value: !Ref CandidatePaperPreflightLambda
   CandidatePaperFunctionName:
     Value: !Ref CandidatePaperLambda
   CandidatePaperLogGroup:

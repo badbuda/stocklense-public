@@ -15,6 +15,25 @@ Status as of 2026-10-13: **INDEPENDENT STAGING DEPLOYED; SIGNAL ACCEPTED; LIVE P
 - `stocklens/core.py` and `stocklens/shadow.py` contain the frozen decision replay; `stocklens/data.py` downloads adjusted QQQ history from yfinance; paper execution depends on actual observed intraday prices. Do not replace with synthetic TQQQ.
 - Watchdog heartbeat measures **invocation**, not successful business validation.
 
+## Read-only first Paper acceptance (staging only; new code NOT yet deployed)
+
+The first Paper **preflight** must use a separate `CandidatePaperPreflightLambda`
+(`infra.aws.independent_paper.preflight_handler`) and IAM
+`CandidatePaperPreflightRole`. This role can read only the required prefixes
+of the **private staging S3 bucket** and write its own bounded CloudWatch logs.
+It has **no S3 PutObject, Lambda InvokeFunction, SNS Publish or broker permission**.
+The writable `CandidatePaperLambda` does not accept preflight mode.
+
+After a separately verified completed session and immutable daily signals,
+the operator can run `bash infra/aws/accept_independent_paper_preflight.sh
+YYYY-MM-DD` between that NYSE session's close and the NEXT NYSE session open.
+It refuses a Paper genesis, predecessor/current continuity, or partial existing
+Paper/market objects; checks actual S3 server timestamps and computes an audited
+modelled Paper result from observed QQQ/TQQQ 1-minute prices. It does **not**
+create a first Paper receipt, make any model-ledger entry, or authorize a real
+Paper bootstrap. Always verify the five import-only AWS Lambda smoke results,
+including `paper_preflight`, after deploying the pinned code.
+
 ## Migration gates
 
 1. **Inventory and freeze:** capture deployed Lambda CodeSha256, CloudFormation template/change set, DynamoDB read-only snapshot, 8.0 source commit, and exact input/receipt hashes. Run `python infra/aws/runtime_dependency_audit.py` in CloudShell. No secrets in reports.

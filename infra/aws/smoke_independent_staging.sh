@@ -53,7 +53,7 @@ block="$(aws s3api get-public-access-block --region "$REGION" \
 }
 TMP_DIR="$(mktemp -d)"
 trap 'rm -rf "$TMP_DIR"' EXIT
-for component in signal paper orchestrator watchdog; do
+for component in signal paper paper_preflight orchestrator watchdog; do
   case "$component" in
     signal)
       fn="$STACK-candidate"
@@ -62,6 +62,10 @@ for component in signal paper orchestrator watchdog; do
     paper)
       fn="$STACK-paper-candidate"
       expected_handler=infra.aws.independent_paper.handler
+      ;;
+    paper_preflight)
+      fn="$STACK-paper-preflight"
+      expected_handler=infra.aws.independent_paper.preflight_handler
       ;;
     orchestrator)
       fn="$STACK-orchestrator-candidate"

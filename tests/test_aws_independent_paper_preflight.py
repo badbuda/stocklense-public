@@ -125,3 +125,105 @@ def test_preflight_operator_script_is_read_only_and_region_fenced():
         "aws lambda update-function", "aws s3 rm", '"bootstrap":true',
     ):
         assert forbidden not in script
+
+
+@pytest.mark.parametrize("key", [
+    "paper/sessions/2026-10-12.json",
+    "paper/sessions/2026-10-13.json",
+    "market/paper/2026-10-12.json",
+    "market/paper/2026-10-13.json",
+])
+def test_preflight_rejects_all_partial_immutable_paper_objects_without_writes(key):
+    s3 = prepared()
+    s3.put(key, b'{"incomplete":"crash_before_genesis"}', U(2026, 10, 13, 23))
+    snapshot = (dict(s3.data), dict(s3.mtime))
+    with pytest.raises(RuntimeError, match="PREFLIGHT_REFUSE_EXISTING_PARTIAL_PAPER_OBJECT"):
+        preview(s3)
+    assert (s3.data, s3.mtime) == snapshot
+
+
+@pytest.mark.parametrize("mode", ["STAGING_PAPER_ONLY", "STAGING_PAPER_CATCHUP",
+                                  "STAGING_ONLY", "STAGING_ORCHESTRATOR_ONLY"])
+def test_dedicated_read_only_handler_rejects_mutating_or_unrelated_modes(mode):
+    from infra.aws.independent_paper import preflight_handler
+    with pytest.raises(RuntimeError, match="PREFLIGHT_ONLY_LAMBDA_MODE_REQUIRED"):
+        preflight_handler({"mode": mode, "expected_session": "2026-10-13",
+                           "bootstrap": True}, None)
+
+
+def test_paper_preflight_staging_lambda_is_isolated_and_physically_read_only():
+    import yaml
+    from pathlib import Path
+
+    class Loader(yaml.SafeLoader):
+        pass
+    Loader.add_multi_constructor(
+        "!", lambda loader, suffix, node: suffix + ":" + str(node.value)
+    )
+    doc = yaml.load(
+        Path("infra/aws/independent-staging.yaml").read_text(), Loader=Loader
+    )
+    r = doc["Resources"]
+    preflight = r["CandidatePaperPreflightLambda"]
+    p = preflight["Properties"]
+    assert preflight["Type"] == "AWS::Lambda::Function"
+    assert p["FunctionName"] == "Sub:${AWS::StackName}-paper-preflight"
+    assert p["Role"] == "GetAtt:CandidatePaperPreflightRole.Arn"
+    assert p["Handler"] == "infra.aws.independent_paper.preflight_handler"
+    assert p["Timeout"] <= 240
+    assert p["Code"] == r["CandidatePaperLambda"]["Properties"]["Code"]
+    assert p["Role"] != r["CandidatePaperLambda"]["Properties"]["Role"]
+
+    grants = r["CandidatePaperPreflightRole"]["Properties"]["Policies"][0][
+        "PolicyDocument"]["Statement"]
+    actions = {
+        action for statement in grants for action in
+        (statement["Action"] if isinstance(statement["Action"], list)
+         else [statement["Action"]])
+    }
+    assert actions == {
+        "s3:GetObject", "s3:GetObjectVersion", "s3:ListBucket",
+        "logs:CreateLogStream", "logs:PutLogEvents",
+    }
+    assert "s3:PutObject" not in actions
+    assert "lambda:InvokeFunction" not in actions
+    object_stmt = next(x for x in grants if x["Action"] == [
+        "s3:GetObject", "s3:GetObjectVersion"])
+    objects = object_stmt["Resource"]
+    assert all(x.startswith("Sub:${CandidateData.Arn}/") for x in objects)
+    assert len(objects) == 5
+    listing = next(x for x in grants if x["Action"] == "s3:ListBucket")
+    assert listing["Resource"] == "GetAtt:CandidateData.Arn"
+    assert "Condition" not in listing
+    assert doc["Outputs"]["CandidatePaperPreflightFunctionName"]["Value"] == (
+        "Ref:CandidatePaperPreflightLambda")
+    for schedule in ("CandidateSignalOnlySchedule", "CandidateOrchestratorSchedule"):
+        targets = r[schedule]["Properties"]["Targets"]
+        assert all(t["Arn"] != "GetAtt:CandidatePaperPreflightLambda.Arn"
+                   for t in targets)
+
+
+def test_operator_preflight_rejects_writable_paper_function_and_smoke_checks_fifth_lambda():
+    from pathlib import Path
+    import subprocess
+
+    preflight = Path("infra/aws/accept_independent_paper_preflight.sh")
+    shell = preflight.read_text()
+    subprocess.run(["bash", "-n", str(preflight)], check=True)
+    assert "CandidatePaperPreflightFunctionName" in shell
+    assert "CandidatePaperPreflightRole" in shell
+    assert "infra.aws.independent_paper.preflight_handler" in shell
+    assert '--function-name "$preflight_fn"' in shell
+    assert '--function-name "$STACK-paper-candidate"' not in shell
+
+    smoke = Path("infra/aws/smoke_independent_staging.sh").read_text()
+    subprocess.run(["bash", "-n", "infra/aws/smoke_independent_staging.sh"], check=True)
+    assert "signal paper paper_preflight orchestrator watchdog" in smoke
+    assert "infra.aws.independent_paper.preflight_handler" in smoke
+
+
+def test_writable_paper_handler_cannot_dispatch_read_only_preflight_mode():
+    from infra.aws.independent_paper import handler
+    with pytest.raises(RuntimeError, match="STAGING_PAPER_MODE_REQUIRED"):
+        handler({"mode": "STAGING_PAPER_BOOTSTRAP_PREFLIGHT",
+                 "expected_session": "2026-10-13"}, None)

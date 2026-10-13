@@ -588,13 +588,23 @@ def preflight_prospective_paper_bootstrap(
     prev_cont, _ = _read_continuity(s3, bucket, prior)
     if own_cont is not None or prev_cont is not None:
         raise RuntimeError("PREFLIGHT_REFUSE_EXISTING_PAPER_CONTINUITY")
-    try:
-        _s3_read_meta(s3, bucket, f"paper/sessions/{prior}.json")
-    except Exception as exc:
-        if not _is_missing(exc):
-            raise
-    else:
-        raise RuntimeError("PREFLIGHT_REFUSE_EXISTING_PAPER_PRIOR_RECEIPT")
+    # Read-only preflight must reject partially written first-session objects
+    # too: a crashed bootstrap could have written the observed market or
+    # modelled receipt without committing continuity or Genesis. Those
+    # immutable objects cannot safely be mistaken for a fresh empty book.
+    for key in (
+        f"paper/sessions/{prior}.json",
+        f"paper/sessions/{session}.json",
+        f"market/paper/{prior}.json",
+        f"market/paper/{session}.json",
+    ):
+        try:
+            _s3_read_meta(s3, bucket, key)
+        except Exception as exc:
+            if not _is_missing(exc):
+                raise
+        else:
+            raise RuntimeError("PREFLIGHT_REFUSE_EXISTING_PARTIAL_PAPER_OBJECT:" + key)
 
     curr_raw, curr_version, curr_saved = _s3_read_meta(
         s3, bucket, f"signals/{session}.json")
@@ -655,16 +665,31 @@ def _import_smoke():
             "broker_actions": False, "market_data_written": False}
 
 
+def preflight_handler(event, context):
+    """Least-privilege staging Lambda entrypoint: NEVER exposes Paper writes.
+
+    CloudFormation binds this handler to a distinct read-only IAM role. The
+    existing writable Paper Lambda and its handler remain unchanged.
+    """
+    if (event or {}).get("mode") == "STAGING_IMPORT_SMOKE":
+        smoke = _import_smoke()
+        smoke["component"] = "paper_preflight"
+        return smoke
+    if (event or {}).get("mode") != "STAGING_PAPER_BOOTSTRAP_PREFLIGHT":
+        raise RuntimeError("PREFLIGHT_ONLY_LAMBDA_MODE_REQUIRED")
+    if event.get("bootstrap") not in (None, False):
+        raise RuntimeError("PREFLIGHT_NEVER_BOOTSTRAPS")
+    import boto3
+    return preflight_prospective_paper_bootstrap(
+        session=event["expected_session"], now=datetime.now(timezone.utc),
+        s3=boto3.client("s3"), bucket=os.environ["STOCKLENS_DATA_BUCKET"],
+    )
+
+
 def handler(event, context):
     if event.get("mode") == "STAGING_IMPORT_SMOKE":
         return _import_smoke()
     import boto3
-    if event.get("mode") == "STAGING_PAPER_BOOTSTRAP_PREFLIGHT":
-        if event.get("bootstrap") not in (None, False):
-            raise RuntimeError("PREFLIGHT_NEVER_BOOTSTRAPS")
-        return preflight_prospective_paper_bootstrap(
-            session=event["expected_session"], now=datetime.now(timezone.utc),
-            s3=boto3.client("s3"), bucket=os.environ["STOCKLENS_DATA_BUCKET"])
     if event.get("mode") == "STAGING_PAPER_CATCHUP":
         if event.get("bootstrap") not in (None, False):
             raise RuntimeError("CATCHUP_CANNOT_BOOTSTRAP")

@@ -37,6 +37,30 @@ rule="$(aws cloudformation describe-stacks --region "$REGION" --stack-name "$STA
   echo "REFUSE_ACTIVE_PAPER_ORCHESTRATOR" >&2; exit 3;
 }
 
+# Never invoke the mutable Paper Lambda from the read-only preflight CLI.
+# Verify the CloudFormation-declared function, isolated role AND handler.
+preflight_fn="$(aws cloudformation describe-stacks --region "$REGION" \
+  --stack-name "$STACK" \
+  --query "Stacks[0].Outputs[?OutputKey=='CandidatePaperPreflightFunctionName'].OutputValue|[0]" \
+  --output text)"
+role_name="$(aws cloudformation describe-stack-resource --region "$REGION" \
+  --stack-name "$STACK" --logical-resource-id CandidatePaperPreflightRole \
+  --query 'StackResourceDetail.PhysicalResourceId' --output text)"
+[[ -n "$preflight_fn" && "$preflight_fn" != None && -n "$role_name" && "$role_name" != None ]] || {
+  echo "MISSING_DEDICATED_READ_ONLY_PREFLIGHT" >&2; exit 3;
+}
+[[ "$preflight_fn" == "$STACK-paper-preflight" ]] || {
+  echo "UNEXPECTED_PREFLIGHT_FUNCTION:$preflight_fn" >&2; exit 3;
+}
+function_handler="$(aws lambda get-function-configuration --region "$REGION" \
+  --function-name "$preflight_fn" --query Handler --output text)"
+function_role="$(aws lambda get-function-configuration --region "$REGION" \
+  --function-name "$preflight_fn" --query Role --output text)"
+[[ "$function_handler" == "infra.aws.independent_paper.preflight_handler" \
+   && "${function_role##*/}" == "$role_name" ]] || {
+  echo "PREFLIGHT_LAMBDA_ROLE_OR_HANDLER_MISMATCH" >&2; exit 3;
+}
+
 tmp="$(mktemp -d)"
 trap 'rm -rf "$tmp"' EXIT
 python3 - "$1" "$tmp/request.json" <<'PY'
@@ -46,7 +70,7 @@ with open(sys.argv[2], "w", encoding="utf-8") as f:
                "expected_session":sys.argv[1]}, f)
 PY
 aws lambda invoke --region "$REGION" \
-  --function-name "$STACK-paper-candidate" \
+  --function-name "$preflight_fn" \
   --cli-binary-format raw-in-base64-out \
   --payload "fileb://$tmp/request.json" \
   "$tmp/response.json" >"$tmp/invoke.json"

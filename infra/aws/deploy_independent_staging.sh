@@ -192,8 +192,9 @@ if ! aws s3api head-object --bucket "$ARTIFACT_BUCKET" \
     --if-none-match '*' --server-side-encryption AES256 >/dev/null
 fi
 echo "STAGING ONLY: ${STACK}; source commit ${COMMIT}; ZIP sha256 ${DIGEST}"
-echo "This creates a private bucket, THREE candidate Lambdas and an"
-echo "EventBridge rule that is DISABLED. No broker or stocklens-paper change."
+echo "This deploys FIVE isolated staging Lambdas (including a read-only Paper"
+echo "preflight), a private versioned bucket, and disabled Signal/Paper schedules."
+echo "Only the read-only watchdog is scheduled; no broker or stocklens-paper change."
 if ! aws cloudformation deploy \
   --region "$REGION" \
   --stack-name "$STACK" \
