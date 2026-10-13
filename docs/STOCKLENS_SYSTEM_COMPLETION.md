@@ -91,3 +91,38 @@ Broker/Excellence order authority: never enabled.
 ## Safety invariants
 
 **Never** auto-enable brokerage. **Never** assert broker fills from modeled prices. **Never** mark delayed/missing quotes as a successful signal. **Never** label a reconstructed/backdated Paper run as forward-qualified. **Never** merge Draft PR #78 or mutate `stocklens-paper` as a side effect of candidate deployment. **Never** call a green CI run an AWS end-to-end test. AWS Budget alerts do **not** cap billing.
+
+## Final one-command staging release (prepared, NOT executed)
+
+Once the **final** PR commit SHA has passing CI and the owner is ready for the
+one reviewed CloudFormation update, cleanly check out that exact SHA in AWS
+CloudShell and run:
+
+```bash
+export AWS_REGION=eu-central-1
+export EXPECTED_STOCKLENS_RELEASE_COMMIT=<the exact green CI 40-character SHA>
+bash infra/aws/release_staging_once.sh
+```
+
+This wrapper validates the pinned commit and transfer manifest, invokes the
+existing fail-closed staging deployer, waits for **five** AWS Lambda import smoke
+checks, then runs `infra/aws/audit_staging_release.sh`. The audit checks
+actual deployed private/versioned S3, FIVE Lambda handlers, the IAM policy of
+the read-only Preflight Lambda, encrypted SNS alarm wiring, three DISABLED
+trading rules, hourly ENABLED watchdog, and the account budget <=$20.
+It prints explicit NO-GOs; no activation, bootstrap, production change, or
+broker capability is silently performed. If SNS is not confirmed, the audit
+exits nonzero after a successful deploy and accurately reports a remaining
+external gate.
+
+After a true prospective first Paper receipt exists, the separate manual
+`enable_staging_paper_only.sh check|activate YYYY-MM-DD` uses the existing
+Budget/SNS/Signal preflight plus a read-only **full historical S3 chain audit**
+inside the Paper Lambda. It NEVER bootstraps on schedule. Its opt-in is a
+review of **Staging risk only**, not a waiver of numeric data-source parity
+or authorization for real capital. Do not run it before the corresponding
+actual complete NYSE session and real Genesis receipt exist.
+
+Do not run these release actions merely to earn a green badge; the release
+wrapper is *deliberately not called in CI*. IAM, billing, SNS delivery and
+market data require real AWS/account evidence.
