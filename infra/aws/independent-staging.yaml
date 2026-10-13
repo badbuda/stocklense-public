@@ -133,6 +133,13 @@ Resources:
                   - !Sub '${CandidateData.Arn}/market/qqq/*'
                   - !Sub '${CandidateData.Arn}/manifests/qqq/*'
                   - !Sub '${CandidateData.Arn}/signals/*'
+              # GetObject on a not-yet-created key must return 404, not 403.
+              # s3:prefix limits ListObjects requests; it does not authorize
+              # S3's missing-GetObject existence check. Bucket-level listing
+              # applies ONLY to this isolated private candidate bucket.
+              - Effect: Allow
+                Action: s3:ListBucket
+                Resource: !GetAtt CandidateData.Arn
               - Effect: Allow
                 Action:
                   - logs:CreateLogStream
@@ -192,14 +199,12 @@ Resources:
                   - !Sub '${CandidateData.Arn}/paper/sessions/*'
                   - !Sub '${CandidateData.Arn}/paper/continuity/*'
                   - !Sub '${CandidateData.Arn}/paper/book/*'
-              # Without ListBucket S3 answers AccessDenied (403) for absent keys, so the
-              # NoSuchKey-based missing-receipt / catch-up logic could never trigger.
+              # Missing GetObject keys return 404 only with bucket-level
+              # ListBucket; a ListObjects-only s3:prefix condition cannot
+              # satisfy that check. Scoped to the private staging bucket.
               - Effect: Allow
                 Action: s3:ListBucket
                 Resource: !GetAtt CandidateData.Arn
-                Condition:
-                  StringLike:
-                    s3:prefix: ['signals/*', 'paper/sessions/*', 'paper/continuity/*', 'paper/book/*']
               - Effect: Allow
                 Action:
                   - logs:CreateLogStream
@@ -379,12 +384,11 @@ Resources:
                   - !Sub '${CandidateData.Arn}/paper/sessions/*'
                   - !Sub '${CandidateData.Arn}/signals/*'
                   - !Sub '${CandidateData.Arn}/paper/book/*'
+              # Read-only watchdog must distinguish genuinely absent
+              # continuity/genesis keys (404) from denied access (403).
               - Effect: Allow
                 Action: s3:ListBucket
                 Resource: !GetAtt CandidateData.Arn
-                Condition:
-                  StringLike:
-                    s3:prefix: ['paper/continuity/*', 'paper/sessions/*', 'signals/*', 'paper/book/*']
               - Effect: Allow
                 Action: events:DescribeRule
                 Resource: !GetAtt CandidateOrchestratorSchedule.Arn

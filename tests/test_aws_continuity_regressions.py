@@ -73,3 +73,47 @@ def test_alert_topic_uses_cloudwatch_usable_customer_managed_key():
           if st.get("Principal", {}).get("Service") == "cloudwatch.amazonaws.com"]
     assert cw and {"kms:GenerateDataKey*", "kms:Decrypt"} <= set(cw[0]["Action"])
     assert "aws:SourceAccount" in cw[0]["Condition"]["StringEquals"]
+
+
+def test_all_staging_receipt_readers_can_distinguish_missing_s3_keys():
+    """Regression for live AccessDenied on signal's first absent S3 GetObject.
+
+    Missing GetObject requires ListBucket on the bucket itself, not only a
+    ListObjects-specific s3:prefix condition. Object read/write access stays
+    restricted to the existing candidate prefixes; no other bucket is granted.
+    """
+    import yaml
+
+    class CloudFormationLoader(yaml.SafeLoader):
+        pass
+
+    CloudFormationLoader.add_multi_constructor(
+        "!", lambda loader, suffix, node: suffix + ":" + str(node.value)
+    )
+    doc = yaml.load(
+        pathlib.Path("infra/aws/independent-staging.yaml").read_text(),
+        Loader=CloudFormationLoader,
+    )
+    resources = doc["Resources"]
+    for role_name in ("CandidateRole", "CandidatePaperRole", "CandidateSessionWatchdogRole"):
+        role = resources[role_name]
+        statements = [
+            statement
+            for policy in role["Properties"]["Policies"]
+            for statement in policy["PolicyDocument"]["Statement"]
+        ]
+        list_grants = [
+            statement for statement in statements
+            if "s3:ListBucket" in (
+                statement["Action"] if isinstance(statement["Action"], list)
+                else [statement["Action"]]
+            )
+        ]
+        assert len(list_grants) == 1, role_name
+        grant = list_grants[0]
+        assert grant["Effect"] == "Allow", role_name
+        assert grant["Resource"] == "GetAtt:CandidateData.Arn", role_name
+        assert "Condition" not in grant, role_name
+
+    orchestrator = resources["CandidateOrchestratorSchedule"]["Properties"]
+    assert orchestrator["State"] == "DISABLED"
