@@ -474,7 +474,7 @@
     "broker_readonly_evidence.py": "92df4b2a54391f99170721e12125814580b76505",
     "infra/aws/staging_portal_read.py": "e74cea07f71396652e6e8f2cef2cec386ce3e791",
     "infra/aws/staging-portal-readonly.yaml": "f6f255a98680a61ef29b9018a21aaa657293debd",
-    "tests/test_stocklens_four_gates.py": "49dd0f9d631d5e32b53c15169c232c2cfe8c57cd",
+    "tests/test_stocklens_four_gates.py": "497cf6a5a82d3682a0233914419bd61d210e1359",
     "infra/aws/deploy_staging_portal_readonly.sh": "a595ce3125a39126025c5043f9d18fddcc308f6d"
   }
 }

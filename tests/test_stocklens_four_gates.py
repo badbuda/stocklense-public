@@ -169,3 +169,55 @@ def test_optional_portal_deployment_requires_existing_cognito_jwt_and_human_cons
     assert "aws events enable-rule" not in script
     assert "aws s3api put-object" not in script
     assert script.index("get-authorizer") < script.index("cloudformation deploy")
+
+
+def test_staging_lambda_inline_python_exactly_tracks_pure_verifier_and_compiles():
+    import yaml
+    class Loader(yaml.SafeLoader): pass
+    Loader.add_multi_constructor("!", lambda ld,suffix,node:suffix+":"+str(node.value))
+    doc=yaml.load(Path("infra/aws/staging-portal-readonly.yaml").read_text(),Loader=Loader)
+    code=doc["Resources"]["StagingPortalReadLambda"]["Properties"]["Code"]["ZipFile"]
+    source=Path("infra/aws/staging_portal_read.py").read_text().strip()
+    assert source in code, "Deployed inline Lambda must contain tested verifier verbatim"
+    module={}
+    exec(compile(code,"cloudformation-inline-index.py","exec"),module)
+    invalid=module["handler"]({"requestContext":{"http":{"method":"POST"}}},None)
+    assert invalid["statusCode"]==405
+    invalid=module["handler"]({"requestContext":{"http":{"method":"GET"}},
+                               "queryStringParameters":{"dates":"not-a-date"}},None)
+    assert invalid["statusCode"]==400
+
+
+def test_staging_lambda_inline_actual_versioned_s3_request_is_read_only_and_redacted(monkeypatch):
+    import io,types,sys,yaml
+    class Loader(yaml.SafeLoader): pass
+    Loader.add_multi_constructor("!",lambda ld,suffix,node:suffix+":"+str(node.value))
+    template=yaml.load(Path("infra/aws/staging-portal-readonly.yaml").read_text(),Loader=Loader)
+    code=template["Resources"]["StagingPortalReadLambda"]["Properties"]["Code"]["ZipFile"]
+    module={}
+    exec(compile(code,"cf-index.py","exec"),module)
+    day="2026-10-13"
+    sig={"mode":"SHADOW_ONLY_NO_BROKER_ACTIONS",
+         "latest":{"asof_date":day,"level":3,"target_leverage":3.0},
+         "execution_plan":{"broker_actions_enabled":False}}
+    class NoSuchKey(Exception):
+        response={"Error":{"Code":"NoSuchKey"}}
+    class StubS3:
+        def get_object(self,*,Bucket,Key):
+            assert Bucket=="stocklens-independent-staging-fixture"
+            if Key!="signals/"+day+".json":
+                raise NoSuchKey()
+            return {"VersionId":"v6","LastModified":datetime(2026,10,14,1,tzinfo=timezone.utc),
+                    "Body":io.BytesIO(json.dumps(sig).encode())}
+    monkeypatch.setitem(sys.modules,"boto3",types.SimpleNamespace(client=lambda service: StubS3()))
+    monkeypatch.setenv("STAGING_DATA_BUCKET","stocklens-independent-staging-fixture")
+    out=module["handler"]({"requestContext":{"http":{"method":"GET"}},
+                           "queryStringParameters":{"dates":day}},None)
+    assert out["statusCode"]==200
+    payload=json.loads(out["body"])
+    assert payload["kind"]=="STOCKLENS_AUTHENTICATED_STAGING_S3_READ_ONLY"
+    assert payload["full_chain_verified_by_portal"] is False
+    assert payload["sessions"][0]["status"]=="SIGNAL_S3_VERSIONED"
+    assert payload["sessions"][0]["signal"]["level"]==3
+    assert payload["broker_orders_authorized"] is False
+    assert "account_id" not in out["body"]
