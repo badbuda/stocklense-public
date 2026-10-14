@@ -81,7 +81,10 @@
       <div id="cloud-status" class="inline-alert">ליצירת חיבור פרטי דרושה פריסת CloudFormation נפרדת.</div>
       <button id="cloud-login" type="button" class="secondary-btn" disabled>התחברות מאובטחת ל־AWS</button>
       <button id="cloud-load" type="button" class="secondary-btn" disabled>טעינת רשומות DynamoDB</button>
+      <button id="cloud-staging-load" type="button" class="secondary-btn" disabled>בדיקת AWS Staging (S3)</button>
       <div id="cloud-results" class="table-scroll" hidden></div>
+      <div id="cloud-staging-results" class="table-scroll" hidden></div>
+      <p>Staging: סיגנלים וקבלות Paper מבוססי S3. התצוגה אינה מאמתת את כל שרשרת ה־Paper ואינה מחוברת לברוקר.</p>
     </div>
   </div>
   <div class="panel"><div class="section-title"><div><h2>היסטוריית שווי תיק</h2><p>התפתחות התיק המדומה לפי יום, ללא השלמת ימים בדיעבד</p></div><button id="export-paper" class="underlink">↓ הורדת יומן CSV</button></div><div class="table-scroll"><table><thead><tr><th>תאריך</th><th>שווי תיק</th><th>תשואה מצטברת</th><th>ירידה משיא</th></tr></thead><tbody id="paper-body"></tbody></table></div></div>

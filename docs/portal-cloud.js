@@ -75,14 +75,40 @@ export async function refreshCloudJournal(){
  root.innerHTML='<table><thead><tr><th>יום מסחר</th><th>סטטוס אימות</th><th>רמת סיגנל</th><th>שווי Paper</th><th>עסקאות Paper</th><th>מועד ארכוב ב־AWS</th></tr></thead><tbody>'+
  d.sessions.map(row=>'<tr><td>'+html(row.session_date)+'</td><td>'+html(row.status)+'</td><td>'+html(row.signal?.level??'—')+'</td><td>'+money(row.paper?.row?.equity)+'</td><td>'+html(row.paper?.trades?.length??'—')+'</td><td>'+html(row.paper?.recorded_at_utc||row.signal?.recorded_at_utc||'—')+'</td></tr>').join('')+'</tbody></table>';
 }
+function recentStagingCandidates(){
+ const days=[],d=new Date();d.setUTCHours(12,0,0,0);
+ while(days.length<14){const w=d.getUTCDay();if(w>=1&&w<=5)days.push(d.toISOString().slice(0,10));d.setUTCDate(d.getUTCDate()-1)}
+ return days.reverse();
+}
+export async function refreshStagingEvidence(){
+ if(!config||config.staging_enabled!==true){status('קריאת S3 Staging טרם הוגדרה.');return}
+ if(!accessToken||Date.now()>=expiresAt){status('נדרשת התחברות Cognito מחדש.');return}
+ const days=recentStagingCandidates();
+ const u=config.api_base_url.replace(/\/$/,'')+'/v1/staging?dates='+encodeURIComponent(days.join(','));
+ const rsp=await fetch(u,{headers:{Authorization:'Bearer '+accessToken},cache:'no-store'});
+ if(!rsp.ok)throw Error('STAGING_API_HTTP_'+rsp.status);
+ const data=await rsp.json();
+ if(data.kind!=='STOCKLENS_AUTHENTICATED_STAGING_S3_READ_ONLY'||
+    !Array.isArray(data.sessions)||data.broker_orders_authorized!==false||
+    data.broker_fills_observed!==false||data.full_chain_verified_by_portal!==false||
+    data.production_cutover_authorized!==false)throw Error('UNTRUSTED_STAGING_EVIDENCE');
+ const root=byId('cloud-staging-results');
+ if(!root)return;
+ root.hidden=false;
+ root.innerHTML='<table><thead><tr><th>יום מסחר</th><th>ראיית S3</th><th>Level</th><th>יעד מינוף</th><th>הון Paper</th><th>מועד ארכוב</th></tr></thead><tbody>'+
+ data.sessions.map(x=>'<tr><td>'+html(x.session_date)+'</td><td>'+html(x.status)+'</td><td>'+html(x.signal?.level??'—')+'</td><td>'+html(x.signal?.target_leverage??'—')+'</td><td>'+money(x.paper?.equity)+'</td><td>'+html(x.paper?.saved_at_utc||x.signal?.saved_at_utc||'—')+'</td></tr>').join('')+'</tbody></table>';
+ status('Staging S3: '+data.sessions.length+' מועדים נבדקו. אימות מסלול Paper מלא מחייב ביקורת שרשרת נפרדת.');
+}
 export function initCloudJournal({getHistory:historyProvider}){
  getHistory=historyProvider;
- const loginBtn=byId('cloud-login'),loadBtn=byId('cloud-load');
+ const loginBtn=byId('cloud-login'),loadBtn=byId('cloud-load'),stagingBtn=byId('cloud-staging-load');
+ stagingBtn?.addEventListener('click',()=>refreshStagingEvidence().catch(err=>status('תקלה בקריאת Staging: '+err.message)));
  loginBtn?.addEventListener('click',()=>login().catch(err=>status('שגיאה בהתחברות: '+err.message)));
  loadBtn?.addEventListener('click',()=>refreshCloudJournal().catch(err=>status('שגיאת קריאה מ־AWS: '+err.message)));
  fetch('./cloud-config.json',{cache:'no-store'}).then(r=>r.ok?r.json():null).then(async cfg=>{
    if(!validateConfig(cfg)){status('חיבור DynamoDB אישי טרם הופעל. כדי להפעיל דרוש API מאובטח ותצורת Cognito, לא הרשאות AWS בדפדפן.');return}
    config=cfg;loginBtn.disabled=false;
+   if(stagingBtn)stagingBtn.disabled=cfg.staging_enabled!==true;
    status('אפשר להתחבר לחשבון Cognito פרטי כדי לקרוא רשומות DynamoDB בזמן אמת.');
    const authenticated=await completeLogin();
    if(authenticated&&accessToken)await refreshCloudJournal();
