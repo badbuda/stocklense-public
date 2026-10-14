@@ -44,7 +44,7 @@ def parse_csv(data: bytes, *, expected_date: str, name: str) -> tuple[list[str],
     return dates, close
 
 def _state(level):
-    return (level.level, level.defense, level.target_leverage,
+    return (level.level, level.defense_active, level.target_leverage,
             level.qqq_weight, level.tqqq_weight)
 
 def audit(*, frozen_csv: bytes, independent_csv: bytes, expected_session: str,

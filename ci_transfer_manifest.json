@@ -470,7 +470,7 @@
     "infra/aws/release_staging_once.sh": "e0e02e5d4087036a086c49d0c43a31a7ac3a4252",
     "tests/test_aws_staging_release.py": "9295557dc8b305d7149cb715b29c44b11967910c",
     "infra/aws/bootstrap_staging_paper_once.sh": "645b19f7bfcd4c33cf249c832b9a8754ed44cb06",
-    "infra/aws/second_vendor_parity.py": "07d75c26e20fb81003a2a98a9baa6154e6b1e157",
+    "infra/aws/second_vendor_parity.py": "ae6b679966244368d4ef25559974561b23a4ac44",
     "broker_readonly_evidence.py": "92df4b2a54391f99170721e12125814580b76505",
     "infra/aws/staging_portal_read.py": "e74cea07f71396652e6e8f2cef2cec386ce3e791",
     "infra/aws/staging-portal-readonly.yaml": "f6f255a98680a61ef29b9018a21aaa657293debd",
