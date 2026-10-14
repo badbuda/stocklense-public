@@ -66,6 +66,10 @@ def audit(*, frozen_csv: bytes, independent_csv: bytes, expected_session: str,
         return {"status":"SECOND_VENDOR_CALENDAR_MISMATCH","calendar_equal":False,
                 "frozen_rows":len(fdays),"vendor_rows":len(vdays),
                 "second_provider_proven":False,"broker_actions":False}
+    # Frozen 8.0 must start after >=252 distinct pre-2009-09-01 warmup
+    # sessions, else replay cannot reproduce the actual historical state.
+    if sum(d<"2009-09-01" for d in fdays)<252 or expected_session<"2009-09-01":
+        raise ValueError("SECOND_VENDOR_INSUFFICIENT_FROZEN_WARMUP")
     frozen_decisions = replay_levels(fprice, fdays)
     vendor_decisions = replay_levels(vprice, vdays)
     mismatches = [

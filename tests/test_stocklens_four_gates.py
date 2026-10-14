@@ -11,8 +11,8 @@ from infra.aws.second_vendor_parity import audit, parse_csv, PROVIDER
 from infra.aws.staging_portal_read import verified_body, summarize
 from broker_readonly_evidence import positions_csv, reconcile_readonly
 
-def _history(rows=650):
-    d=date(2024,1,1)
+def _history(rows=1050):
+    d=date(2007,1,1)
     days=[]
     while len(days)<rows:
         if d.weekday()<5:
@@ -154,3 +154,18 @@ def test_portal_ui_staging_button_is_locked_behind_cognito_connection():
     assert "/v1/staging?dates=" in s
     assert "full_chain_verified_by_portal!==false" in s
     subprocess.run(["node","--check","docs/portal-cloud.js"],check=True)
+
+
+def test_optional_portal_deployment_requires_existing_cognito_jwt_and_human_consent():
+    script=Path("infra/aws/deploy_staging_portal_readonly.sh").read_text()
+    subprocess.run(["bash","-n","infra/aws/deploy_staging_portal_readonly.sh"],check=True)
+    for check in ("REQUIRE_EXISTING_COGNITO_PORTAL_STACK",
+                  "PortalApiId","PortalAuthorizerId",
+                  "get-authorizer","REQUIRE_EXISTING_COGNITO_JWT_AUTHORIZER",
+                  "get-bucket-versioning","validate-template",
+                  "DEPLOY_READ_ONLY_PORTAL_ROUTE",
+                  "stocklens-staging-portal-readonly"):
+        assert check in script
+    assert "aws events enable-rule" not in script
+    assert "aws s3api put-object" not in script
+    assert script.index("get-authorizer") < script.index("cloudformation deploy")
