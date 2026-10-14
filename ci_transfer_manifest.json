@@ -25,7 +25,7 @@
     "artifact_integrity.py": "9d7ac3f28c64a14b843bd0fd6a0c71ff0721d8a8",
     "asymmetric_tail_layer_validation.py": "f45cac1a23e2568859afe4440face3992b6aa968",
     "automation_guard.py": "96aa8d97f55f39694ce1fa5096a524ffb7c34d37",
-    "aws_journal_export.py": "9756dfad0a67a65bb24612c4d6387deb0c8df7ba",
+    "aws_journal_export.py": "8d436bef8b2f592752a87d06ad29ed9772aa51d2",
     "aws_journal_session_guard.py": "ad1d09e1a341bbe457400a36138fb11c49bf7218",
     "aws_readonly_deadman.py": "eeb5cf06fb199fe9cdbea40555498de4674b0920",
     "backtest_adversarial.py": "b11e59b25282a91e95a7365181df11be202b9691",
@@ -424,6 +424,7 @@
     "tests/test_observed_vix3m_2day_placebo_study.py": "b965484f544d4603e5c7f5ad26e8b84775594b37",
     "research/predeclarations/SL9-026-CBOE-2DAY-DUTY-PLACEBO.md": "339786137b4ae2d9a89bc22e91bff081dd90e87c",
     "aws_paper_pairing.py": "5318d0659a8799db1424668c3914b7ce4b2c4b5d",
-    "tests/test_aws_paper_pairing.py": "1fec22d46a24dfc3b67eede67bd95c43c329eaae"
+    "tests/test_aws_paper_pairing.py": "1fec22d46a24dfc3b67eede67bd95c43c329eaae",
+    "tests/test_aws_getitem_empty_response.py": "dfdf134823f68f864a6cc050ca6891046d1a53ef"
   }
 }
