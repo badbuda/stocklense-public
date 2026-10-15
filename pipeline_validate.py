@@ -2,6 +2,59 @@ from __future__ import annotations
 import csv, json, sys
 from pathlib import Path
 
+
+def assess_prospective_maturity(mx: dict) -> tuple[list[str], list[str]]:
+    """Keep research quarantined without suppressing a valid frozen Shadow run.
+
+    BLOCKED and malformed research evidence remain fatal. The ONLY permitted
+    nonfatal state is an explicitly recorded, reviewed-as-pending evidence
+    fingerprint drift on an UNPROMOTED experiment with consistent persisted
+    forward rows, unchanged definition and same-run producer. We do not
+    declare that research experiment mature or allow trading.
+    """
+    errors, attention = [], []
+    if not isinstance(mx, dict):
+        return ["PROSPECTIVE_MATURITY_BAD_SCHEMA"], attention
+    rows = mx.get("experiments")
+    if not isinstance(rows, list) or not rows:
+        return ["PROSPECTIVE_MATURITY_BAD_SCHEMA"], attention
+    if mx.get("producer_current") is not True:
+        errors.append("PROSPECTIVE_PRODUCER_STALE")
+    for row in rows:
+        if not isinstance(row, dict):
+            errors.append("PROSPECTIVE_MATURITY_BAD_SCHEMA")
+            continue
+        if row.get("definition_current") is not True:
+            errors.append("PROSPECTIVE_DEFINITION_DRIFT")
+        if row.get("automatic_promotion") is not False:
+            errors.append("PROSPECTIVE_UNAUTHORIZED_PROMOTION")
+        if row.get("zero_backfill_enforced") is not True:
+            errors.append("PROSPECTIVE_BACKFILL_GATE_MISSING")
+        if (row.get("audit_schema_complete") is not True or
+            row.get("persistence_consistent") is not True):
+            errors.append("PROSPECTIVE_PERSISTENCE_OR_SCHEMA_INVALID")
+        state = row.get("evidence_state")
+        if state == "ATTENTION_PROSPECTIVE_EVIDENCE_FINGERPRINT_DRIFT":
+            if (row.get("source_fingerprint_review_required") is not True or
+                row.get("evidence_fingerprint_audited") is not True or
+                row.get("evidence_fingerprint_current") is not False):
+                errors.append("PROSPECTIVE_UNQUALIFIED_ATTENTION")
+            else:
+                attention.append(str(row.get("experiment_id") or "UNKNOWN"))
+        elif state not in ("ACCUMULATING_FORWARD_EVIDENCE",
+                           "WAITING_FOR_POST_INCEPTION_COMPLETED_XNYS"):
+            errors.append("PROSPECTIVE_MATURITY_BLOCKED")
+    status = mx.get("status")
+    if status == "ATTENTION":
+        if not attention or errors:
+            errors.append("PROSPECTIVE_MATURITY_BLOCKED")
+    elif status == "PASS":
+        if attention:
+            errors.append("PROSPECTIVE_ATTENTION_HIDDEN_BY_PASS")
+    else:
+        errors.append("PROSPECTIVE_MATURITY_BLOCKED")
+    return sorted(set(errors)), attention
+
 def validate():
     errors=[]
     hp=Path("historical_replay/summary.json"); dp=Path("historical_replay/daily_states.csv")
@@ -29,11 +82,11 @@ def validate():
     for required in ("shadow_history/readiness.json","shadow_history/daily_digest.json","shadow_history/slo.json","shadow_history/regime_analytics.json","shadow_history/change_digest.json","shadow_history/stress_scenarios.json","shadow_history/exposure.json","shadow_history/drawdown_budget.json","shadow_history/anomalies.json","shadow_history/recovery_plan.json","shadow_history/data_provenance.json","shadow_history/qc_input_ingestion.json","shadow_history/qc_same_input_parity.json","shadow_history/qc_parity_dossier.json","shadow_history/execution_plan.json","shadow_history/trade_receipts.json","shadow_history/execution_audit.json","shadow_history/cost_attribution.json","shadow_history/execution_readiness.json","shadow_history/incident_state.json","shadow_history/dependency_integrity.json","shadow_history/artifact_catalog.json","shadow_history/run_manifest.json","shadow_history/artifact_integrity.json","research/prospective/registry.json","docs/prospective_maturity.json","docs/capital_readiness.json","output/research_provenance.json"):
         if not Path(required).exists(): errors.append("MISSING_"+Path(required).stem.upper())
     maturity=Path("docs/prospective_maturity.json")
+    research_attention=[]
     if maturity.exists():
         mx=json.loads(maturity.read_text())
-        if mx.get("status")!="PASS": errors.append("PROSPECTIVE_MATURITY_BLOCKED")
-        if mx.get("producer_current") is not True: errors.append("PROSPECTIVE_PRODUCER_STALE")
-        if any(row.get("definition_current") is not True for row in mx.get("experiments",[])): errors.append("PROSPECTIVE_DEFINITION_DRIFT")
+        maturity_errors,research_attention=assess_prospective_maturity(mx)
+        errors.extend(maturity_errors)
     capital=Path("docs/capital_readiness.json")
     if capital.exists():
         cx=json.loads(capital.read_text())
@@ -47,7 +100,10 @@ def validate():
     if readiness.exists() and json.loads(readiness.read_text()).get("status")!="READY": errors.append("READINESS_BLOCKED")
     slo=Path("shadow_history/slo.json")
     if slo.exists() and json.loads(slo.read_text()).get("status")=="FAIL": errors.append("SLO_FAIL")
-    result={"status":"PASS" if not errors else "FAIL","errors":errors}
+    result={"status":"PASS" if not errors else "FAIL","errors":errors,
+            "research_maturity_attention":research_attention,
+            "experimental_research_promotion_authorized":False,
+            "broker_trading_authorized":False}
     Path("shadow_history/pipeline_validation.json").write_text(json.dumps(result,indent=2)+"\n")
     if errors: raise SystemExit("PIPELINE_VALIDATION_FAIL:"+",".join(errors))
     return result

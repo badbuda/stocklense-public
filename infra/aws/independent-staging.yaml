@@ -1,0 +1,691 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'StockLens 8.0 AWS-only candidate; isolated, manual-invoke, shadow-only; never replaces stocklens-paper'
+Parameters:
+  ArtifactBucket:
+    Type: String
+    Description: 'Private S3 bucket holding a pinned Python ZIP artifact; build time only'
+  ArtifactKey:
+    Type: String
+    Description: 'Immutable artifact ZIP key; do not use latest'
+  AlertEmail:
+    Type: String
+    Default: ''
+    Description: 'Optional email subscribed to staging alerts (confirmation required)'
+  ExpectedSchedulerState:
+    Type: String
+    Default: DISABLED
+    AllowedValues: [DISABLED, ENABLED]
+    Description: 'What the watchdog expects the orchestrator rule to be. Any other state alarms.'
+  MonitoringStartSession:
+    Type: String
+    Default: ''
+    Description: 'Book genesis (bootstrap) session YYYY-MM-DD. Non-empty turns ON paper completeness monitoring independent of the scheduler; empty = no book monitored'
+Conditions:
+  HasAlertEmail: !Not [!Equals [!Ref AlertEmail, '']]
+Resources:
+  # Customer-managed key: CloudWatch alarms CANNOT publish to a topic encrypted with
+  # the AWS-managed SNS key (its key policy cannot grant cloudwatch.amazonaws.com).
+  CandidateAlertsKey:
+    Type: AWS::KMS::Key
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      Description: !Sub '${AWS::StackName} staging alert topic encryption (CloudWatch-usable)'
+      EnableKeyRotation: true
+      KeyPolicy:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: AccountAdministrationViaIam
+            Effect: Allow
+            Principal:
+              AWS: !Sub 'arn:${AWS::Partition}:iam::${AWS::AccountId}:root'
+            Action: 'kms:*'
+            Resource: '*'
+          - Sid: CloudWatchAlarmsPublishToEncryptedTopic
+            Effect: Allow
+            Principal:
+              Service: cloudwatch.amazonaws.com
+            Action:
+              - kms:GenerateDataKey*
+              - kms:Decrypt
+            Resource: '*'
+            Condition:
+              StringEquals:
+                aws:SourceAccount: !Ref AWS::AccountId
+  CandidateAlertsKeyAlias:
+    Type: AWS::KMS::Alias
+    Properties:
+      AliasName: !Sub 'alias/${AWS::StackName}-candidate-alerts'
+      TargetKeyId: !Ref CandidateAlertsKey
+  CandidateAlerts:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: !Sub '${AWS::StackName}-candidate-alerts'
+      KmsMasterKeyId: !GetAtt CandidateAlertsKey.Arn
+  CandidateAlertsTopicPolicy:
+    Type: AWS::SNS::TopicPolicy
+    Properties:
+      Topics: [!Ref CandidateAlerts]
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: CloudWatchAlarmsSameAccountOnly
+            Effect: Allow
+            Principal:
+              Service: cloudwatch.amazonaws.com
+            Action: sns:Publish
+            Resource: !Ref CandidateAlerts
+            Condition:
+              StringEquals:
+                aws:SourceAccount: !Ref AWS::AccountId
+  CandidateAlertsEmail:
+    Type: AWS::SNS::Subscription
+    Condition: HasAlertEmail
+    Properties:
+      TopicArn: !Ref CandidateAlerts
+      Protocol: email
+      Endpoint: !Ref AlertEmail
+  CandidateData:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      VersioningConfiguration:
+        Status: Enabled
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: BucketOwnerEnforced
+  CandidateLogs:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/aws/lambda/${AWS::StackName}-candidate'
+      RetentionInDays: 14
+  CandidateRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: CandidateS3AndLogsOnly
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:GetObjectVersion
+                  - s3:PutObject
+                Resource:
+                  - !Sub '${CandidateData.Arn}/market/qqq/*'
+                  - !Sub '${CandidateData.Arn}/manifests/qqq/*'
+                  - !Sub '${CandidateData.Arn}/signals/*'
+              # GetObject on a not-yet-created key must return 404, not 403.
+              # s3:prefix limits ListObjects requests; it does not authorize
+              # S3's missing-GetObject existence check. Bucket-level listing
+              # applies ONLY to this isolated private candidate bucket.
+              - Effect: Allow
+                Action: s3:ListBucket
+                Resource: !GetAtt CandidateData.Arn
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: !GetAtt CandidateLogs.Arn
+  CandidateLambda:
+    Type: AWS::Lambda::Function
+    DependsOn: CandidateLogs
+    Properties:
+      FunctionName: !Sub '${AWS::StackName}-candidate'
+      Runtime: python3.12
+      Architectures: [x86_64]
+      Handler: infra.aws.independent_pipeline.handler
+      Role: !GetAtt CandidateRole.Arn
+      Code:
+        S3Bucket: !Ref ArtifactBucket
+        S3Key: !Ref ArtifactKey
+      Timeout: 120
+      MemorySize: 512
+      Environment:
+        Variables:
+          STOCKLENS_DATA_BUCKET: !Ref CandidateData
+  CandidatePaperLogs:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/aws/lambda/${AWS::StackName}-paper-candidate'
+      RetentionInDays: 14
+  CandidatePaperRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: CandidatePaperS3Scoped
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:GetObjectVersion
+                Resource:
+                  - !Sub '${CandidateData.Arn}/signals/*'
+                  - !Sub '${CandidateData.Arn}/paper/sessions/*'
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:GetObjectVersion
+                  - s3:PutObject
+                Resource:
+                  - !Sub '${CandidateData.Arn}/market/paper/*'
+                  - !Sub '${CandidateData.Arn}/paper/sessions/*'
+                  - !Sub '${CandidateData.Arn}/paper/continuity/*'
+                  - !Sub '${CandidateData.Arn}/paper/book/*'
+              # Missing GetObject keys return 404 only with bucket-level
+              # ListBucket; a ListObjects-only s3:prefix condition cannot
+              # satisfy that check. Scoped to the private staging bucket.
+              - Effect: Allow
+                Action: s3:ListBucket
+                Resource: !GetAtt CandidateData.Arn
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: !GetAtt CandidatePaperLogs.Arn
+  CandidatePaperLambda:
+    Type: AWS::Lambda::Function
+    DependsOn: CandidatePaperLogs
+    Properties:
+      FunctionName: !Sub '${AWS::StackName}-paper-candidate'
+      Runtime: python3.12
+      Architectures: [x86_64]
+      Handler: infra.aws.independent_paper.handler
+      Role: !GetAtt CandidatePaperRole.Arn
+      Code:
+        S3Bucket: !Ref ArtifactBucket
+        S3Key: !Ref ArtifactKey
+      Timeout: 240
+      MemorySize: 1536
+      Environment:
+        Variables:
+          STOCKLENS_DATA_BUCKET: !Ref CandidateData
+
+  # Dedicated no-PutObject Lambda for the prospective first Paper dry run.
+  # No schedules, no broker APIs; same pinned ZIP, distinct entrypoint and IAM.
+  CandidatePaperPreflightLogs:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/aws/lambda/${AWS::StackName}-paper-preflight'
+      RetentionInDays: 14
+  CandidatePaperPreflightRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: ReadOnlyStagingPaperPreflight
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:GetObjectVersion
+                Resource:
+                  - !Sub '${CandidateData.Arn}/signals/*'
+                  - !Sub '${CandidateData.Arn}/market/paper/*'
+                  - !Sub '${CandidateData.Arn}/paper/sessions/*'
+                  - !Sub '${CandidateData.Arn}/paper/continuity/*'
+                  - !Sub '${CandidateData.Arn}/paper/book/*'
+              # Required to distinguish absent GetObject keys (404) from denied
+              # access (403). Only the isolated private staging bucket.
+              - Effect: Allow
+                Action: s3:ListBucket
+                Resource: !GetAtt CandidateData.Arn
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: !GetAtt CandidatePaperPreflightLogs.Arn
+  CandidatePaperPreflightLambda:
+    Type: AWS::Lambda::Function
+    DependsOn: CandidatePaperPreflightLogs
+    Properties:
+      FunctionName: !Sub '${AWS::StackName}-paper-preflight'
+      Runtime: python3.12
+      Architectures: [x86_64]
+      Handler: infra.aws.independent_paper.preflight_handler
+      Role: !GetAtt CandidatePaperPreflightRole.Arn
+      Code:
+        S3Bucket: !Ref ArtifactBucket
+        S3Key: !Ref ArtifactKey
+      Timeout: 240
+      MemorySize: 1536
+      Environment:
+        Variables:
+          STOCKLENS_DATA_BUCKET: !Ref CandidateData
+
+  CandidateOrchestratorLogs:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/aws/lambda/${AWS::StackName}-orchestrator-candidate'
+      RetentionInDays: 14
+  CandidateOrchestratorRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: InvokeStagingCandidatesOnly
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: lambda:InvokeFunction
+                Resource:
+                  - !GetAtt CandidateLambda.Arn
+                  - !GetAtt CandidatePaperLambda.Arn
+              - Effect: Allow
+                Action: sns:Publish
+                Resource: !Ref CandidateAlerts
+              - Effect: Allow
+                Action:
+                  - kms:GenerateDataKey*
+                  - kms:Decrypt
+                Resource: !GetAtt CandidateAlertsKey.Arn
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: !GetAtt CandidateOrchestratorLogs.Arn
+  CandidateOrchestratorLambda:
+    Type: AWS::Lambda::Function
+    DependsOn: CandidateOrchestratorLogs
+    Properties:
+      FunctionName: !Sub '${AWS::StackName}-orchestrator-candidate'
+      Runtime: python3.12
+      Architectures: [x86_64]
+      Handler: infra.aws.independent_orchestrator.handler
+      Role: !GetAtt CandidateOrchestratorRole.Arn
+      Code:
+        S3Bucket: !Ref ArtifactBucket
+        S3Key: !Ref ArtifactKey
+      Timeout: 480
+      MemorySize: 256
+      Environment:
+        Variables:
+          SIGNAL_FUNCTION: !Ref CandidateLambda
+          PAPER_FUNCTION: !Ref CandidatePaperLambda
+  # Separate automatic Signal path: NEVER invokes Paper/broker, and needs
+  # explicit AWS operator opt-in. Paper/orchestrator remain disabled.
+  CandidateSignalOnlySchedule:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: 'STAGING candidate Signal ONLY; opt-in after alarm delivery review. Does not run Paper. Initially DISABLED.'
+      ScheduleExpression: 'cron(10 0 ? * TUE-SAT *)'
+      State: DISABLED
+      Targets:
+        - Id: StagingSignalOnly
+          Arn: !GetAtt CandidateLambda.Arn
+          Input: '{"mode":"STAGING_SIGNAL_SCHEDULED"}'
+  CandidateSignalOnlySchedulePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref CandidateLambda
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt CandidateSignalOnlySchedule.Arn
+  # A separate delayed Paper-only nightly trigger, 70 min AFTER Signal.
+  # Never automatically initializes a book; manual prospective Genesis first.
+  # Disarmed until independent data parity and actual Paper acceptance gates.
+  CandidatePaperOnlySchedule:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: 'STAGING: completed XNYS session Paper-only, no Signal re-fetch or broker. DISABLED until prospective book and independent parity verified.'
+      ScheduleExpression: 'cron(20 1 ? * TUE-SAT *)'
+      State: DISABLED
+      Targets:
+        - Id: StagingPaperOnly
+          Arn: !GetAtt CandidatePaperLambda.Arn
+          Input: '{"mode":"STAGING_PAPER_SCHEDULED","bootstrap":false}'
+  CandidatePaperOnlySchedulePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref CandidatePaperLambda
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt CandidatePaperOnlySchedule.Arn
+  CandidateOrchestratorSchedule:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: 'STAGING ONLY. Tue-Sat 00:10 UTC after prior NY close; DISABLED pending manual bootstrap, parity, and AWS owner approval.'
+      ScheduleExpression: 'cron(10 0 ? * TUE-SAT *)'
+      State: DISABLED
+      Targets:
+        - Id: StagingOrchestratorOnly
+          Arn: !GetAtt CandidateOrchestratorLambda.Arn
+          Input: '{"mode":"STAGING_ORCHESTRATOR_ONLY"}'
+  CandidateOrchestratorSchedulePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref CandidateOrchestratorLambda
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt CandidateOrchestratorSchedule.Arn
+
+  # ---- Failure routing (async EventBridge invocations) ----
+  CandidateOrchestratorInvokeConfig:
+    Type: AWS::Lambda::EventInvokeConfig
+    Properties:
+      FunctionName: !Ref CandidateOrchestratorLambda
+      Qualifier: $LATEST
+      # Recovery is the next night's bounded catch-up, not blind same-night retries.
+      MaximumRetryAttempts: 1
+      MaximumEventAgeInSeconds: 3600
+      DestinationConfig:
+        OnFailure:
+          Destination: !Ref CandidateAlerts
+  CandidateSignalErrorsAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmDescription: 'STAGING: signal candidate Lambda error'
+      Namespace: AWS/Lambda
+      MetricName: Errors
+      Dimensions: [{Name: FunctionName, Value: !Ref CandidateLambda}]
+      Statistic: Sum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      TreatMissingData: notBreaching
+      AlarmActions: [!Ref CandidateAlerts]
+  CandidatePaperErrorsAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmDescription: 'STAGING: paper candidate Lambda error'
+      Namespace: AWS/Lambda
+      MetricName: Errors
+      Dimensions: [{Name: FunctionName, Value: !Ref CandidatePaperLambda}]
+      Statistic: Sum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      TreatMissingData: notBreaching
+      AlarmActions: [!Ref CandidateAlerts]
+  CandidateOrchestratorErrorsAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmDescription: 'STAGING: orchestrator error (includes PAPER_BOOK_HALTED)'
+      Namespace: AWS/Lambda
+      MetricName: Errors
+      Dimensions: [{Name: FunctionName, Value: !Ref CandidateOrchestratorLambda}]
+      Statistic: Sum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      TreatMissingData: notBreaching
+      AlarmActions: [!Ref CandidateAlerts]
+  # ---- Calendar-aware session watchdog (read-only) ----
+  CandidateSessionWatchdogLogs:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/aws/lambda/${AWS::StackName}-session-watchdog'
+      RetentionInDays: 30
+  CandidateSessionWatchdogRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: WatchdogReadOnlyPlusMetrics
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: s3:GetObject
+                Resource:
+                  - !Sub '${CandidateData.Arn}/paper/continuity/*'
+                  - !Sub '${CandidateData.Arn}/paper/sessions/*'
+                  - !Sub '${CandidateData.Arn}/signals/*'
+                  - !Sub '${CandidateData.Arn}/paper/book/*'
+                  - !Sub '${CandidateData.Arn}/monitoring/signal-only-activation.json'
+              # Read-only watchdog must distinguish genuinely absent
+              # continuity/genesis keys (404) from denied access (403).
+              - Effect: Allow
+                Action: s3:ListBucket
+                Resource: !GetAtt CandidateData.Arn
+              - Effect: Allow
+                Action: events:DescribeRule
+                Resource:
+                  - !GetAtt CandidateOrchestratorSchedule.Arn
+                  - !GetAtt CandidateSignalOnlySchedule.Arn
+                  - !GetAtt CandidatePaperOnlySchedule.Arn
+              - Effect: Allow
+                Action: cloudwatch:PutMetricData
+                Resource: '*'
+                Condition:
+                  StringEquals:
+                    cloudwatch:namespace: StockLens/IndependentStaging
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: !GetAtt CandidateSessionWatchdogLogs.Arn
+  CandidateSessionWatchdogLambda:
+    Type: AWS::Lambda::Function
+    DependsOn: CandidateSessionWatchdogLogs
+    Properties:
+      FunctionName: !Sub '${AWS::StackName}-session-watchdog'
+      Runtime: python3.12
+      Architectures: [x86_64]
+      Handler: infra.aws.independent_session_watchdog.handler
+      Role: !GetAtt CandidateSessionWatchdogRole.Arn
+      Code:
+        S3Bucket: !Ref ArtifactBucket
+        S3Key: !Ref ArtifactKey
+      # Up to 400 sessions x 4 S3 calls; needs a staging load test (see review).
+      Timeout: 300
+      MemorySize: 256
+      Environment:
+        Variables:
+          STOCKLENS_DATA_BUCKET: !Ref CandidateData
+          ORCHESTRATOR_RULE: !Ref CandidateOrchestratorSchedule
+          SIGNAL_ONLY_RULE: !Ref CandidateSignalOnlySchedule
+          PAPER_ONLY_RULE: !Ref CandidatePaperOnlySchedule
+          EXPECTED_SCHEDULER_STATE: !Ref ExpectedSchedulerState
+          MONITORING_START_SESSION: !Ref MonitoringStartSession
+  CandidateSessionWatchdogSchedule:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: 'STAGING read-only watchdog, hourly every day. Monitoring only; no trading.'
+      ScheduleExpression: 'rate(1 hour)'
+      State: ENABLED
+      Targets:
+        - Id: SessionWatchdog
+          Arn: !GetAtt CandidateSessionWatchdogLambda.Arn
+  CandidateSessionWatchdogPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref CandidateSessionWatchdogLambda
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt CandidateSessionWatchdogSchedule.Arn
+  MissingOrLateScheduledSignalsAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmDescription: 'STAGING: due XNYS nightly Signal absent or archived after its 1h deadline'
+      Namespace: StockLens/IndependentStaging
+      MetricName: MissingOrLateScheduledSignals
+      Statistic: Maximum
+      Period: 3600
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      TreatMissingData: notBreaching
+      AlarmActions: [!Ref CandidateAlerts]
+  MissedSessionsAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmDescription: 'STAGING: XNYS session past its deadline without a continuity record'
+      Namespace: StockLens/IndependentStaging
+      MetricName: MissedSessions
+      Statistic: Maximum
+      Period: 3600
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      TreatMissingData: notBreaching
+      AlarmActions: [!Ref CandidateAlerts]
+  BookHaltedAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmDescription: 'STAGING: paper book halted after MISSED_UNRECOVERABLE session'
+      Namespace: StockLens/IndependentStaging
+      MetricName: BookHalted
+      Statistic: Maximum
+      Period: 3600
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      TreatMissingData: notBreaching
+      AlarmActions: [!Ref CandidateAlerts]
+  SchedulerStateMismatchAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmDescription: 'STAGING: orchestrator rule state differs from ExpectedSchedulerState (incl. unauthorized ENABLE)'
+      Namespace: StockLens/IndependentStaging
+      MetricName: SchedulerStateMismatch
+      Statistic: Maximum
+      Period: 3600
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      TreatMissingData: notBreaching
+      AlarmActions: [!Ref CandidateAlerts]
+  InvalidContinuityRecordAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmDescription: 'STAGING: continuity record fails schema/status/book/chain/receipt validation'
+      Namespace: StockLens/IndependentStaging
+      MetricName: InvalidReceipts
+      Statistic: Maximum
+      Period: 3600
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      TreatMissingData: notBreaching
+      AlarmActions: [!Ref CandidateAlerts]
+  WatchdogConfigurationErrorAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmDescription: 'STAGING: watchdog misconfigured or cannot read evidence (fails closed)'
+      Namespace: StockLens/IndependentStaging
+      MetricName: ConfigurationError
+      Statistic: Maximum
+      Period: 3600
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      TreatMissingData: notBreaching
+      AlarmActions: [!Ref CandidateAlerts]
+  WatchdogFailClosedAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmDescription: 'STAGING: watchdog FAIL_CLOSED for any reason (catch-all)'
+      Namespace: StockLens/IndependentStaging
+      MetricName: WatchdogFailClosed
+      Statistic: Maximum
+      Period: 3600
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      TreatMissingData: notBreaching
+      AlarmActions: [!Ref CandidateAlerts]
+  WatchdogHeartbeatDeadmanAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmDescription: 'STAGING: watchdog itself silent for 3h (it runs hourly every day, so a fixed window is valid here)'
+      Namespace: StockLens/IndependentStaging
+      MetricName: WatchdogHeartbeat
+      Statistic: SampleCount
+      Period: 3600
+      EvaluationPeriods: 3
+      Threshold: 1
+      ComparisonOperator: LessThanThreshold
+      TreatMissingData: breaching
+      AlarmActions: [!Ref CandidateAlerts]
+  CandidateSessionWatchdogErrorsAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmDescription: 'STAGING: watchdog Lambda error'
+      Namespace: AWS/Lambda
+      MetricName: Errors
+      Dimensions: [{Name: FunctionName, Value: !Ref CandidateSessionWatchdogLambda}]
+      Statistic: Sum
+      Period: 3600
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      TreatMissingData: notBreaching
+      AlarmActions: [!Ref CandidateAlerts]
+
+Outputs:
+  CandidateFunctionName:
+    Value: !Ref CandidateLambda
+  CandidateDataBucket:
+    Value: !Ref CandidateData
+  CandidateLogGroup:
+    Value: !Ref CandidateLogs
+  CandidatePaperPreflightFunctionName:
+    Value: !Ref CandidatePaperPreflightLambda
+  CandidatePaperFunctionName:
+    Value: !Ref CandidatePaperLambda
+  CandidatePaperLogGroup:
+    Value: !Ref CandidatePaperLogs
+  CandidateOrchestratorFunctionName:
+    Value: !Ref CandidateOrchestratorLambda
+  CandidateSignalOnlyRuleName:
+    Value: !Ref CandidateSignalOnlySchedule
+  CandidatePaperOnlyRuleName:
+    Value: !Ref CandidatePaperOnlySchedule
+  CandidateOrchestratorRuleName:
+    Value: !Ref CandidateOrchestratorSchedule
+  CandidateAlertsTopic:
+    Value: !Ref CandidateAlerts
+  CandidateSessionWatchdogFunctionName:
+    Value: !Ref CandidateSessionWatchdogLambda

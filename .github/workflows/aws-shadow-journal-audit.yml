@@ -66,12 +66,13 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          session="$(TZ=America/New_York date -d yesterday +%F)"
+          session="${{ steps.market_calendar.outputs.session }}"
           aws dynamodb get-item \
             --table-name "$TABLE" \
             --key "{\"session_date\":{\"S\":\"$session\"}}" \
             --consistent-read \
             --output json > /tmp/aws-journal.json
+          test -s /tmp/aws-journal.json || { echo "::error::AWS_SIGNAL_MISSING_SESSION:$session"; exit 1; }
           python3 aws_shadow_journal_verify.py /tmp/aws-journal.json "$session"
 
       - name: Validate separate modeled paper record in AWS; never broker fills
@@ -79,9 +80,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          session="$(TZ=America/New_York date -d yesterday +%F)"
+          session="${{ steps.market_calendar.outputs.session }}"
           key="$session#PAPER"
           aws dynamodb get-item --table-name "$TABLE" --key "{\"session_date\":{\"S\":\"$key\"}}" --consistent-read --output json > /tmp/paper.json
+          test -s /tmp/paper.json || { echo "::error::AWS_PAPER_MISSING_SESSION:$session"; exit 1; }
           SESSION="$session" python3 - <<'PY'
           import json,os
           from aws_journal_export import decode_paper
@@ -127,7 +129,7 @@ jobs:
           MARKET_CALENDAR_OUTCOME: ${{ steps.market_calendar.outcome }}
         run: |
           set -euo pipefail
-          session="$(TZ=America/New_York date -d yesterday +%F)"
+          session="${{ steps.market_calendar.outputs.session }}"
           verdict="${AUDIT_STATUS}"
           if [[ "${MARKET_CALENDAR_OUTCOME}" == "success" && "${MARKET_SESSION_REQUIRED}" == "false" ]]; then
             verdict="NO_XNYS_SESSION_EXPECTED;IDENTITY_AND_TABLE_PREFLIGHT=${AUDIT_STATUS}"

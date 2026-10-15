@@ -255,5 +255,9 @@ Outputs:
     Value: !Ref PortalUserPoolClient
   CognitoUserPoolId:
     Value: !Ref PortalUserPool
+  PortalApiId:
+    Value: !Ref JournalApi
+  PortalAuthorizerId:
+    Value: !Ref JournalAuthorizer
   JournalTable:
     Value: !Ref JournalTableName
