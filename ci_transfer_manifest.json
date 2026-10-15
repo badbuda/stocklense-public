@@ -6,7 +6,7 @@
   "frozen_stocklens8_untouched": true,
   "files": {
     ".github/workflows/aws-journal-export.yml": "f5a19164d85c48d9ce6adf243d1907085f2d6ffe",
-    ".github/workflows/aws-shadow-journal-audit.yml": "5dd4640f79fa1f7887374cd84ac8b66c0d65d479",
+    ".github/workflows/aws-shadow-journal-audit.yml": "3e805c052b951ae5bd0d21c083ab6e5b966f7b35",
     ".github/workflows/fast-guard.yml": "bd4fcaaf7778c99aa85bfe3a54a833763a6e6e1b",
     ".github/workflows/portal-browser-smoke.yml": "68a5bcbd7d5f790edc611dd4b3fa24f6848458c2",
     ".github/workflows/portal-history-build.yml": "2d731559dde6f3116cc349379190e74417a1ece9",
@@ -26,7 +26,7 @@
     "artifact_integrity.py": "9d7ac3f28c64a14b843bd0fd6a0c71ff0721d8a8",
     "asymmetric_tail_layer_validation.py": "f45cac1a23e2568859afe4440face3992b6aa968",
     "automation_guard.py": "96aa8d97f55f39694ce1fa5096a524ffb7c34d37",
-    "aws_journal_export.py": "9756dfad0a67a65bb24612c4d6387deb0c8df7ba",
+    "aws_journal_export.py": "8d436bef8b2f592752a87d06ad29ed9772aa51d2",
     "aws_journal_session_guard.py": "ad1d09e1a341bbe457400a36138fb11c49bf7218",
     "aws_paper_pairing.py": "5318d0659a8799db1424668c3914b7ce4b2c4b5d",
     "aws_readonly_deadman.py": "eeb5cf06fb199fe9cdbea40555498de4674b0920",
@@ -229,7 +229,7 @@
     "parity_contract.py": "68cbbfa6923f534a7fd85fe217b6b62f3345f134",
     "performance_analytics.py": "89e19ea4d9fc7839b54d228fabd8427663893ff7",
     "persist_signal.py": "f9a6aab4204b507c5449d81c71ce305fa4270554",
-    "pipeline_validate.py": "606234160c217159f6a1b7169af47daafacdfa91",
+    "pipeline_validate.py": "177f5ffcf7c94f2594ffb4271d95bb7840214314",
     "portal_feed.py": "245a114f35e47827b68d83eb2c385fbc6e2b7128",
     "preflight.py": "eb93cc99be889099267da78bcfcb0040fc9f95d9",
     "prospective_benchmark.py": "567002d2246babab25d3ae90382ed928b020bf0a",
@@ -475,6 +475,8 @@
     "infra/aws/staging_portal_read.py": "e74cea07f71396652e6e8f2cef2cec386ce3e791",
     "infra/aws/staging-portal-readonly.yaml": "f6f255a98680a61ef29b9018a21aaa657293debd",
     "tests/test_stocklens_four_gates.py": "497cf6a5a82d3682a0233914419bd61d210e1359",
-    "infra/aws/deploy_staging_portal_readonly.sh": "a595ce3125a39126025c5043f9d18fddcc308f6d"
+    "infra/aws/deploy_staging_portal_readonly.sh": "a595ce3125a39126025c5043f9d18fddcc308f6d",
+    "tests/test_shadow_publication_research_separation.py": "abf3cecf88d08f30a882331906ff9ee72459afb4",
+    "tests/test_aws_getitem_empty_response.py": "dfdf134823f68f864a6cc050ca6891046d1a53ef"
   }
 }
