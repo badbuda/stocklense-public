@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "kind": "SL9_031_READ_ONLY_CI_EVIDENCE",
+  "checked_date": "2026-10-15",
+  "export_run": 38751791496,
+  "audit_run": 38750933053,
+  "shadow_run": 38665958984,
+  "expected_sessions": 5,
+  "passed_sessions": 2,
+  "invalid_parser_sessions": 3,
+  "invalid_dates": [
+    "2026-10-12",
+    "2026-10-13",
+    "2026-10-14"
+  ],
+  "modeled_trade_receipts": 1,
+  "source_missing_or_corrupt_proven": false,
+  "external_forward_pairs_new": 0,
+  "broker_fills_observed": false,
+  "investment_alpha_proven": false
+}

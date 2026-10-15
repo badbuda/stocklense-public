@@ -20,7 +20,7 @@ NY = ZoneInfo("America/New_York")
 SAME_DAY_LATE_FORMS = frozenset({
     "3", "3/A", "4", "4/A", "5", "5/A", "144", "144/A",
     "F-1MEF", "F-3MEF", "F-4MEF", "N-14MEF", "N-2MEF",
-    "POS 462B", "S-11MEF", "S-1MEF", "S-3MEF", "S-4MEF",
+    "POS 462B", "S-11MEF", "S-1MEF", "S-3MEF", "S-4MEF", "S-BMEF",
 })
 
 
