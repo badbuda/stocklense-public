@@ -1,0 +1,20 @@
+{
+  "automatic_promotion": false,
+  "broker_orders_authorized": false,
+  "capital_deployment_authorized": false,
+  "collision_count": 2,
+  "fred_release_calendar_independently_verified": false,
+  "frozen_stocklens8_changed": false,
+  "historical_return_tests_run": 0,
+  "independently_qualified_pit_rows": 0,
+  "kind": "XNYS_VS_US_FEDERAL_HOLIDAY_FEASIBILITY",
+  "observed_federal_holidays": 11,
+  "sec_edgar_calendar_independently_verified": false,
+  "synthetic_tqqq_returns_used": false,
+  "xnys_open_federal_holidays": [
+    "2026-10-12",
+    "2026-11-11"
+  ],
+  "xnys_sessions": 251,
+  "year": 2026
+}

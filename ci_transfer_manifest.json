@@ -432,6 +432,10 @@
     "tests/test_research_pit_quote_gate.py": "7bb947c0f6e7972ec49756083ff6c46e56967746",
     "research/predeclarations/SL9-029-INDEPENDENT-PIT-SOURCE-FEASIBILITY.md": "56036007462fa05da7ac2c061a3733c9faf0fd85",
     "research_pit_vintage_gate.py": "d927dce913a150ef08f4138fc821d80b28fced6a",
-    "tests/test_research_pit_vintage_gate.py": "ad6322c79aae901633d1327768b9ee1f23c67176"
+    "tests/test_research_pit_vintage_gate.py": "ad6322c79aae901633d1327768b9ee1f23c67176",
+    "research_cross_calendar_gate.py": "d808da5f5ac83b41a2e3a0b53997dd7960a89733",
+    "tests/test_research_cross_calendar_gate.py": "8f084fbd4014ceff9d90536cae755ed7f6f4005a",
+    "research/predeclarations/SL9-030-CROSS-CALENDAR-CAUSAL-CLOCK.md": "e142ee2d9c86e9231835f4475b65a213343735bf",
+    "research/results/sl9_030_cross_calendar_2026.json": "582910513b80594290f06786e1b1e20e6de9658f"
   }
 }
