@@ -39,3 +39,7 @@
 .readiness-stats b.negative{color:#ff9da8}
 @media(max-width:950px){.readiness-stats{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:550px){.readiness-clarity{padding:14px}.readiness-stats{gap:8px}.readiness-stats b{font-size:21px}}
+
+/* Fail-closed freshness banner takes precedence over generic notice layout. */
+#feed-status[hidden]{display:none}
+#feed-status.error{background:#482331;border-color:#974054;color:#ffb7c0;font-weight:700}

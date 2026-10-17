@@ -1,6 +1,7 @@
 /* StockLens Portal — source-grounded UI only. No broker actions, no invented fill prices. */
 import {bindTradeInspector,showGapReport,updateScenarioComparison} from './portal-insights.js';
 import {initCloudJournal,refreshCloudJournal} from './portal-cloud.js';
+import {publicationFreshness,publicationMessage} from './portal-freshness.mjs';
 const byId=id=>document.getElementById(id);
 const shell=document.getElementById('sidebar');
 const fmt=new Intl.NumberFormat('en-US',{maximumFractionDigits:2});
@@ -44,7 +45,17 @@ function tag(title,desc,value,ok){return '<div class="factor"><div><strong>'+cle
 function render(){
   const d=state.data, sig=d.signal||{}, paper=d.paper||{}, latest=paper.latest||{}, perf=state.risk?.full_path||{}, period=state.risk?.period||{};
   const days=paper.sessions||0, target=Number(sig.tqqq_weight||0), cash=Number(sig.cash_weight||0);
-  put('side-status','פרסום אחרון: '+(sig.asof_date||'לא זמין'));
+  const freshness=publicationFreshness({
+    signalDate:sig.asof_date,
+    paperDate:latest.session_date,
+    historyDate:state.history?.updated_session,
+    riskDate:state.risk?.period?.end
+  });
+  const feedStatus=byId('feed-status');
+  feedStatus.hidden=false;
+  feedStatus.classList.toggle('error',!freshness.healthy);
+  feedStatus.textContent=publicationMessage(freshness);
+  put('side-status',freshness.healthy?'פרסום GitHub: '+sig.asof_date:'פרסום לא עדכני או לא עקבי');
   put('asof-badge','סיגנל '+(sig.asof_date||'חסר'));
   const level=sig.defense_active?'הגנה · מזומן':'רמה '+(sig.level??'—')+' · '+number(sig.target_leverage)+'×';
   put('hero-state',sig.defense_active?'המודל במצב הגנה':sig.action==='NO_CHANGE'?'אין שינוי בחשיפה':'נדרש שינוי בחשיפה');
