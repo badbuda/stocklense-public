@@ -76,7 +76,7 @@ jobs:
               fi
             done
             if test "$matched" = 1; then
-              echo "AMPLIFY_ALL_CORE_ASSET_SHA_MATCH=PASS;attempt=$attempt"
+              echo "AMPLIFY_ALL_SEVEN_ASSET_SHA_MATCH=PASS;attempt=$attempt"
               ready=1
               break
             fi
