@@ -246,6 +246,12 @@ Resources:
       Principal: apigateway.amazonaws.com
       SourceArn: !Sub 'arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${JournalApi}/*/GET/v1/sessions'
 Outputs:
+  PortalApiId:
+    Value: !Ref JournalApi
+    Description: Used by the separately reviewed JWT-protected Staging S3 read-only route.
+  PortalAuthorizerId:
+    Value: !Ref JournalAuthorizer
+    Description: The existing Cognito JWT authorizer; never publish unauthenticated staging routes.
   ApiBaseUrl:
     Value: !Sub 'https://${JournalApi}.execute-api.${AWS::Region}.amazonaws.com'
     Description: JWT-protected API Gateway endpoint; must never be opened publicly.
