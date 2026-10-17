@@ -69,13 +69,15 @@ try{
  assert.match(await page.locator('#paper-trade-detail').textContent(),/עלות החלקה/);
  assert.match(await page.locator('#journal-status').textContent(),/יומן Paper|אין חורים|פרסום|רצף/);
  const cloudConfig=await page.evaluate(()=>fetch('cloud-config.json',{cache:'no-store'}).then(r=>r.json()));
- if(cloudConfig.enabled===true){
+ const approvedOrigin=new URL(cloudConfig.redirect_uri).origin;
+ const onApprovedOrigin=new URL(page.url()).origin===approvedOrigin;
+ if(cloudConfig.enabled===true&&onApprovedOrigin){
    await page.waitForFunction(()=>!document.querySelector('#cloud-login')?.disabled,{timeout:10000});
    assert.equal(await page.locator('#cloud-login').isEnabled(),true,'Private Cognito login should be offered');
    assert.equal(await page.locator('#cloud-load').isDisabled(),true,'No journal read before Cognito authentication');
    assert.equal(await page.locator('#cloud-staging-load').isDisabled(),true,'No Staging S3 read before authentication');
  }else{
-   assert.equal(await page.locator('#cloud-login').isDisabled(),true,'Private AWS API is not configured');
+   assert.equal(await page.locator('#cloud-login').isDisabled(),true,'Cognito login must be disabled on nonapproved origins or when unconfigured');
  }
  await page.locator('button[data-page=performance]').click();
  assert.ok(await page.locator('#performance-chart polyline').count()===2,'Both observed ETF curves drawn');
