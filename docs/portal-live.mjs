@@ -35,8 +35,10 @@ export function stagingSnapshot(rows,now=new Date()){
    prev=entry.session_date;
    if(entry.status==='INVALID_EVIDENCE'){invalid.push(entry.session_date);continue}
    if(entry.status==='NO_STAGING_RECEIPT'){missing.push(entry.session_date);continue}
-   if(!evidence(entry.signal)||![0,1,2,3].includes(entry.signal.level)||
-      !amount(entry.signal.target_leverage))
+   if(!evidence(entry.signal)||![0,1,1.25,2,3].includes(entry.signal.level)||
+      typeof entry.signal.target_leverage!=='number'||
+      !Number.isFinite(entry.signal.target_leverage)||
+      entry.signal.target_leverage<0||entry.signal.target_leverage>3)
      throw Error('UNVERIFIED_STAGING_SIGNAL');
    signals.push(entry);
    if(entry.status==='SIGNAL_PAPER_CONTINUITY_S3_SHA_BOUND'){
