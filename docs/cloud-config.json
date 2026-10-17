@@ -1,8 +1,8 @@
 {
-  "enabled": false,
-  "api_base_url": null,
-  "cognito_domain": null,
-  "client_id": null,
-  "redirect_uri": null,
-  "note": "DynamoDB live access is disabled until a separate Cognito/API stack is deployed; no AWS secrets belong here."
+  "enabled": true,
+  "api_base_url": "https://c2r39dbwkg.execute-api.eu-central-1.amazonaws.com",
+  "cognito_domain": "https://stocklens-portal-634740393398.auth.eu-central-1.amazoncognito.com",
+  "client_id": "3p6tvbs5ljtgb8a6edh9ekkhp",
+  "redirect_uri": "https://main.d20nvlvzjafg5m.amplifyapp.com/portal.html",
+  "note": "Only public OAuth client metadata. Cognito JWT required on all AWS read routes. No credentials or brokerage actions."
 }
