@@ -44,6 +44,13 @@ try{
  assert.equal(governance.historySession,governance.signalSession,'Historical ETF feed is stale');
  assert.equal(governance.riskSession,governance.signalSession,'Risk cohort is stale');
  assert.match(await page.locator('#health-list').textContent(),/תאריך נתוני האתר/);
+ assert.equal(await page.locator('#feed-status').isVisible(),true,'Static publication must disclose source freshness');
+ const feedBanner=await page.locator('#feed-status').textContent();
+ assert.match(feedBanner,/GitHub|מיושנים|פער תאריכים|חסרים/);
+ const oldestPublished=[governance.signalSession,governance.paperSession,governance.historySession,governance.riskSession].sort()[0];
+ const snapshotAge=Math.floor((Date.now()-Date.parse(oldestPublished+'T00:00:00Z'))/86400000);
+ if(snapshotAge>4)assert.match(feedBanner,/מיושנים|פער תאריכים|חסרים/,'Stale dates must never appear as live');
+
  assert.match(await page.locator('#health-list').textContent(),/מאומת · /);
  assert.equal((await page.locator('#real-paper-sessions').textContent()).trim(),
    new Intl.NumberFormat('en-US').format(governance.paper));
