@@ -83,6 +83,9 @@
       <button id="cloud-login" type="button" class="secondary-btn" disabled>התחברות מאובטחת ל־AWS</button>
       <button id="cloud-load" type="button" class="secondary-btn" disabled>טעינת רשומות DynamoDB</button>
       <div id="cloud-results" class="table-scroll" hidden></div>
+      <div class="inline-alert" id="cloud-staging-status">סיגנלים נפרדים מ־S3 Staging ייטענו רק אחרי התחברות מאובטחת. הנתונים אינם מחליפים את ה־Paper הישן.</div>
+      <button id="cloud-staging-load" type="button" class="secondary-btn" disabled>טעינת Signal ו־Paper מאומתים מ־Staging S3</button>
+      <div id="cloud-staging-results" class="table-scroll" hidden></div>
     </div>
   </div>
   <div class="panel"><div class="section-title"><div><h2>היסטוריית שווי תיק</h2><p>התפתחות התיק המדומה לפי יום, ללא השלמת ימים בדיעבד</p></div><button id="export-paper" class="underlink">↓ הורדת יומן CSV</button></div><div class="table-scroll"><table><thead><tr><th>תאריך</th><th>שווי תיק</th><th>תשואה מצטברת</th><th>ירידה משיא</th></tr></thead><tbody id="paper-body"></tbody></table></div></div>
