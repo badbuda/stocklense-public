@@ -68,7 +68,15 @@ try{
  assert.match(await page.locator('#paper-trade-detail').textContent(),/מחיר מקור|מחיר מדומה/);
  assert.match(await page.locator('#paper-trade-detail').textContent(),/עלות החלקה/);
  assert.match(await page.locator('#journal-status').textContent(),/יומן Paper|אין חורים|פרסום|רצף/);
- assert.equal(await page.locator('#cloud-login').isDisabled(),true,'No public DynamoDB authentication without configured private stack');
+ const cloudConfig=await page.evaluate(()=>fetch('cloud-config.json',{cache:'no-store'}).then(r=>r.json()));
+ if(cloudConfig.enabled===true){
+   await page.waitForFunction(()=>!document.querySelector('#cloud-login')?.disabled,{timeout:10000});
+   assert.equal(await page.locator('#cloud-login').isEnabled(),true,'Private Cognito login should be offered');
+   assert.equal(await page.locator('#cloud-load').isDisabled(),true,'No journal read before Cognito authentication');
+   assert.equal(await page.locator('#cloud-staging-load').isDisabled(),true,'No Staging S3 read before authentication');
+ }else{
+   assert.equal(await page.locator('#cloud-login').isDisabled(),true,'Private AWS API is not configured');
+ }
  await page.locator('button[data-page=performance]').click();
  assert.ok(await page.locator('#performance-chart polyline').count()===2,'Both observed ETF curves drawn');
  assert.match(await page.locator('#perf-period').textContent(),/2010/);
