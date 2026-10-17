@@ -227,6 +227,18 @@ jobs:
           echo "::error::Provider daily bar remained stale after bounded retries; refusing stale signal."
           exit 1
 
+      - name: Reconcile observed ETF research after the canonical completed Shadow signal
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          # The Yahoo QQQ daily close can publish before TQQQ's observed OHLC.
+          # Retain frozen 8.0 and STRICT parity; refetch real prices only.
+          # This fails closed when data remain stale, prices drift, or policy changes.
+          python shadow_research_refresh.py
+          python tradable_tqqq_execution_validate.py
+          python observed_etf_market_calendar_audit.py
+          python observed_tqqq_risk_audit.py
+
       - name: Verify frozen backtest/live decision parity
         env:
           PYTHONPATH: ${{ github.workspace }}
