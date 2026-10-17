@@ -72,6 +72,7 @@ function render(){
   put('kpi-trades',number(paper.trades||0,0)+' עסקאות מדומות');
   put('kpi-days-note',days<20?'מוקדם מדי לקבוע אם המערכת מצליחה. נדרשים שבועות וחודשים של תצפית.':'נתונים מדומים קדימה בלבד; עדיין לא ממלאים פערי ברוקר.');
   put('history-cagr',percentage(perf.stocklens_cagr,1));put('history-dd',percentage(perf.stocklens_max_drawdown,1));
+  put('paper-nav-label','שווי Paper — פרסום GitHub '+(latest.session_date||'תאריך לא ידוע'));
   put('paper-nav',money(latest.equity));put('paper-cash',money(latest.cash));put('paper-shares',number(latest.tqqq_shares,0));
   put('paper-fees',money(latest.cumulative_fees));put('paper-slip',money(latest.cumulative_slippage_cost));
   put('perf-cagr',percentage(perf.stocklens_cagr));put('perf-qqq',percentage(perf.qqq_cagr));put('perf-dd',percentage(perf.stocklens_max_drawdown));
