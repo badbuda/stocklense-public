@@ -28,7 +28,7 @@ STATIC_DOCS = {
     "docs/execution.html", "docs/research.html", "docs/research-engine.js",
     "docs/manifest.webmanifest", "docs/sw.js",
     "docs/portal.html", "docs/portal.css", "docs/portal.js",
-    "docs/portal-insights.js", "docs/portal-cloud.js",
+    "docs/portal-insights.js", "docs/portal-cloud.js", "docs/portal-freshness.mjs",
 }
 MANDATORY = (
     "requirements.txt",
