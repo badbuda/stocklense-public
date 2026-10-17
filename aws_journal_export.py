@@ -50,7 +50,16 @@ def get_item(table: str, key: str) -> dict | None:
          "--consistent-read", "--output", "json"],
         check=True, capture_output=True, text=True, timeout=25,
     )
-    return json.loads(result.stdout).get("Item")
+    payload = result.stdout.strip()
+    if not payload:
+        return None  # AWS CLI omits the Item property for missing DynamoDB rows.
+    response = json.loads(payload)
+    if not isinstance(response, dict):
+        raise ValueError("DYNAMODB_GETITEM_NON_OBJECT_RESPONSE")
+    item = response.get("Item")
+    if item is not None and not isinstance(item, dict):
+        raise ValueError("DYNAMODB_GETITEM_INVALID_ITEM")
+    return item
 
 
 def decode_signal(item: dict | None, day: str) -> dict | None:
