@@ -2,6 +2,7 @@
 import {bindTradeInspector,showGapReport,updateScenarioComparison} from './portal-insights.js';
 import {initCloudJournal,refreshCloudJournal} from './portal-cloud.js';
 import {publicationFreshness,publicationMessage} from './portal-freshness.mjs';
+import {stagingSnapshot} from './portal-live.mjs';
 const byId=id=>document.getElementById(id);
 const shell=document.getElementById('sidebar');
 const fmt=new Intl.NumberFormat('en-US',{maximumFractionDigits:2});
@@ -15,7 +16,7 @@ const setHtml=(id,value)=>{const e=byId(id);if(e)e.innerHTML=value};
 const dateText=s=>s?new Intl.DateTimeFormat('he-IL',{year:'numeric',month:'short',day:'numeric',timeZone:'UTC'}).format(new Date(s+'T12:00:00Z')):'—';
 const signed=v=>v>0?'positive':v<0?'negative':'';
 const PAGE_NAMES={overview:'תמונת מצב',paper:'העסקאות והתיק',performance:'ביצועים וסיכון',simulator:'סימולטור',research:'מעבדת מחקר',evidence:'נתונים ואמינות'};
-const state={data:null,series:null,history:null,risk:null,workbench:null,quality:null,exposure:null,lastSimulation:null};
+const state={data:null,series:null,history:null,risk:null,workbench:null,quality:null,exposure:null,lastSimulation:null,stagingRows:null};
 const DATA_ENDPOINTS={data:'data.json',series:'timeseries.json',history:'portal-history.json',risk:'observed_tqqq_risk_audit.json',workbench:'workbench.json',quality:'site_health.json',exposure:'lean-exposure-evidence.json'};
 function navigate(page){
   if(!PAGE_NAMES[page])page='overview';
@@ -65,6 +66,7 @@ function render(){
   put('hero-cash',percentage(cash));
   put('hero-date','לפי נתוני QQQ עד '+dateText(sig.asof_date));
   put('kpi-nav',money(latest.equity));
+  put('kpi-nav-source','ארכיון GitHub '+(latest.session_date||'תאריך לא ידוע')+' · לא בזמן אמת');
   const ret=latest.cumulative_return;
   put('kpi-paper-change',ret!=null?percentage(ret,2)+' מאז תחילת התיק המדומה':'אין מספיק נתונים');
   byId('kpi-paper-change').className='metric-delta '+signed(Number(ret));
@@ -96,7 +98,67 @@ function render(){
   renderTrades();showGapReport(paper,state.history);renderResearch();renderRisk();renderHealth();renderGovernance(d);
   setupSimulation();
   paintPerformance();
+  renderAuthenticatedStaging();
 }
+// The authenticated staging S3 view is the only source permitted to update
+// current-model NAV or the recent Paper chart; old GitHub JSON remains an archive.
+function renderAuthenticatedStaging(){
+ if(!state.data||!state.stagingRows)return;
+ let current;
+ try{current=stagingSnapshot(state.stagingRows)}catch(error){
+   put('staging-overview-status','ראיות AWS נפסלו: '+error.message);
+   put('kpi-nav','—');put('kpi-nav-source','אין שווי Paper חדש מאומת');
+   return;
+ }
+ const sig=current.signal,book=current.paper,days=current.paperSeries;
+ if(sig){
+   put('hero-level','Staging S3 · רמה '+number(sig.signal.level)+' · '+number(sig.signal.target_leverage)+'×');
+   put('hero-state','Signal פרטי מ־AWS, ללא הוראת מסחר');
+   put('hero-date','Signal '+dateText(sig.session_date)+' · גרסת S3 מאומתת');
+   put('asof-badge','AWS Signal '+sig.session_date);
+   put('side-status','Signal מ־AWS: '+sig.session_date+' · Paper דורש אימות נפרד');
+   // Feature attribution and weights in static GitHub are NOT current S3
+   // evidence, so never leave them looking like updated position targets.
+   put('hero-tqqq','—');put('hero-qqq','—');put('hero-cash','—');
+   put('hero-explain','רמת היעד אומתה מול גרסת S3; פירוט הגורמים והמשקלים שמופיע במחקר ההיסטורי אינו נתון חי. אין הוראות ברוקר.');
+ }
+ if(!book){
+   put('kpi-nav','—');
+   put('kpi-nav-source','לא קיים שווי Paper חדש ומאומת ב־Staging');
+   put('staging-overview-status','Signal AWS קיים, אך תיק Paper חדש עדיין לא מאומת ('+current.status+'). שווי GitHub מ־9.10 נשאר ארכיון בלבד.');
+   byId('paper-chart').replaceChildren();
+   byId('paper-chart-empty').hidden=false;
+   put('paper-chart-empty','אין עדיין נקודות שווי רציפות מאומתות מ־Staging S3.');
+   put('paper-chart-caption','Staging AWS · ללא גרף Paper עד לתיעוד שרשרת תקינה');
+   return;
+ }
+ const equity=book.paper.equity;
+ put('kpi-nav',money(equity));
+ put('kpi-nav-source','Staging S3 '+book.session_date+' · SHA וגרסת S3 · לא ברוקר');
+ put('kpi-paper-change','תשואה מצטברת אינה מוכחת מסיכום S3 בלבד');
+ byId('kpi-paper-change').className='metric-delta muted';
+ put('paper-nav-label','שווי Paper חדש — Staging S3 '+book.session_date);
+ put('paper-nav',money(equity));
+ // The staging read endpoint returns equity and counts, but not cash,
+ // holdings, fees, or trades. Old production balances cannot be reused.
+ for(const id of ['paper-cash','paper-shares','paper-fees','paper-slip'])put(id,'—');
+ put('kpi-days',number(days.length,0));put('prospective-count',number(days.length,0));
+ put('kpi-trades',number(days.reduce((a,x)=>a+x.paper.trade_count,0),0)+' אירועי Paper נצפים ב־Staging');
+ put('staging-overview-status','Paper Staging S3 — '+book.session_date+
+     ' · תקינות קשרי SHA/גרסאות · לא הוכחת שרשרת מלאה או עסקאות ברוקר. ארכיון GitHub נשמר בנפרד.');
+ if(days.length>=2){
+   drawChart('paper-chart',days,['s'],false);
+   byId('paper-chart-empty').hidden=true;
+ }else{
+   byId('paper-chart').replaceChildren();
+   byId('paper-chart-empty').hidden=false;
+   put('paper-chart-empty','יום Paper אחד ב־AWS. הגרף יתמלא אחרי שיצטברו לפחות שני ימי שווי מאומתים.');
+ }
+ put('paper-chart-caption',days.length+' ימי Paper מאומתים בסיכומי S3 הפרטיים · חלון עד 14 ימי מסחר · ללא שרשור לארכיון הישן');
+ setHtml('paper-body',days.slice().reverse().map(x=>
+   '<tr><td>'+clean(x.date)+'</td><td>'+money(x.s)+'</td><td>—</td><td>—</td></tr>').join(''));
+}
+
 function renderGovernance(d){
   const capital=d.capital_readiness||{},qc=d.qc_frozen_record||{},paper=d.paper||{}, latest=paper.latest||{}, perf=d.performance||{};
   const original=Number(latest.equity),cum=Number(latest.cumulative_return),hasPaper=latest.equity!=null&&latest.cumulative_return!=null;
@@ -323,5 +385,12 @@ function runSimulation(e){
 byId('sim-form').addEventListener('submit',runSimulation);
 byId('scenario-b-form').addEventListener('submit',e=>{e.preventDefault();updateScenarioComparison({history:state.history,a:state.lastSimulation,simulate:simulateRealETF,draw:drawChart})});
 byId('sim-download').addEventListener('click',()=>downloadCSV('stocklens-historical-modelled-trades.csv',['date','symbol','side','qty','modeled_price','reason'],state.lastSimulation?.events||[]));
-initCloudJournal({getHistory:()=>state.history,showGaps:()=>showGapReport(state.data?.paper||{},state.history)});
+initCloudJournal({
+ getHistory:()=>state.history,
+ showGaps:()=>showGapReport(state.data?.paper||{},state.history),
+ onStagingChange:rows=>{
+   state.stagingRows=rows;
+   renderAuthenticatedStaging();
+ }
+});
 navigate(location.hash.slice(1)||'overview');refresh();
