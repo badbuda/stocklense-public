@@ -52,9 +52,16 @@ async function completeLogin(){
  if(byId('cloud-staging-load'))byId('cloud-staging-load').disabled=false;
  return true;
 }
+/* Legacy production ledger ceased prospective writes after 2026-10-09.
+   Probe ALL seven actual XNYS sessions in its sealed incident window rather
+   than derive requested dates from the stale Oct-09 GitHub daily feed; that
+   used to hide five missing DynamoDB sessions behind a false "0 missing". */
+export const LEGACY_INCIDENT_SESSIONS=Object.freeze([
+ '2026-10-08','2026-10-09','2026-10-12','2026-10-13',
+ '2026-10-14','2026-10-15','2026-10-16'
+]);
 function datesForCurrentJournal(){
- const h=getHistory(),days=h?.daily?.map(r=>r.date).filter(x=>x>='2026-10-08')||[];
- return [...new Set(days)].slice(-20);
+ return [...LEGACY_INCIDENT_SESSIONS];
 }
 export async function refreshCloudJournal(){
  if(!config){status('עדיין אין תצורת CloudFormation פרטית. הנתונים המוצגים בדשבורד מגיעים מפרסומי GitHub.');return}
@@ -71,7 +78,11 @@ export async function refreshCloudJournal(){
     d.broker_orders_authorized!==false||d.broker_fills_observed!==false)throw Error('UNTRUSTED_AWS_JOURNAL_REPLY');
  const matches=d.sessions.filter(x=>x.status==='PASS').length;
  const errors=d.sessions.filter(x=>x.status==='INVALID_EVIDENCE').length;
- status('DynamoDB — '+matches+' ימים תקינים, '+(d.sessions.length-matches-errors)+' טרם נשמרו, '+errors+' רשומות שנפסלו בבדיקת SHA. קריאה אישית בלבד.');
+ if(d.sessions.length!==days.length||
+    d.sessions.some((x,i)=>x?.session_date!==days[i]||
+    !['PASS','MISSING_SIGNAL','MISSING_PAPER','MISSING_BOTH','INVALID_EVIDENCE'].includes(x.status)))
+    throw Error('INCOMPLETE_OR_MISORDERED_LEGACY_ARCHIVE_REPLY');
+ status('ארכיון DynamoDB הישן עד 16.10.2026 — '+matches+' ימים תקינים, '+(d.sessions.length-matches-errors)+' ימים חסרים, '+errors+' רשומות שנפסלו ב־SHA. ימים חסרים אינם עסקאות אמיתיות ואין למלא אותם בדיעבד.');
  const root=byId('cloud-results');root.hidden=false;
  root.innerHTML='<table><thead><tr><th>יום מסחר</th><th>סטטוס אימות</th><th>רמת סיגנל</th><th>שווי Paper</th><th>עסקאות Paper</th><th>מועד ארכוב ב־AWS</th></tr></thead><tbody>'+
  d.sessions.map(row=>'<tr><td>'+html(row.session_date)+'</td><td>'+html(row.status)+'</td><td>'+html(row.signal?.level??'—')+'</td><td>'+money(row.paper?.row?.equity)+'</td><td>'+html(row.paper?.trades?.length??'—')+'</td><td>'+html(row.paper?.recorded_at_utc||row.signal?.recorded_at_utc||'—')+'</td></tr>').join('')+'</tbody></table>';
