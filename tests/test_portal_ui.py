@@ -126,14 +126,21 @@ def test_published_snapshot_contains_separate_evidence_types():
 
 
 
-def test_optional_private_aws_api_is_explicitly_disabled_by_default():
+def test_private_aws_api_only_uses_https_public_client_and_exact_approved_origin():
     import json
+    from urllib.parse import urlsplit
+
     config=json.loads(Path("docs/cloud-config.json").read_text(encoding="utf-8"))
-    assert config["enabled"] is False
-    assert config.get("api_base_url") is None
-    assert config.get("cognito_domain") is None
-    assert config.get("client_id") is None
+    assert config["enabled"] is True
+    api=urlsplit(config["api_base_url"])
+    issuer=urlsplit(config["cognito_domain"])
+    assert api.scheme=="https" and api.netloc.endswith(".execute-api.eu-central-1.amazonaws.com")
+    assert not api.path and not api.query
+    assert issuer.scheme=="https" and issuer.hostname.endswith(".auth.eu-central-1.amazoncognito.com")
+    assert config["client_id"].isalnum()
+    assert config["redirect_uri"]=="https://main.d20nvlvzjafg5m.amplifyapp.com/portal.html"
     assert not any("secret" in key.lower() for key in config)
+    assert not any("token" in key.lower() or "password" in key.lower() for key in config)
 
 
 
