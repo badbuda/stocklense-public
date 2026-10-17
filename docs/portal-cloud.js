@@ -1,5 +1,5 @@
 /* Optional Cognito PKCE: access token kept in memory only, never in URL/storage. */
-let config=null, accessToken=null, expiresAt=0, getHistory=()=>null;
+let config=null, accessToken=null, expiresAt=0, getHistory=()=>null, stagingUpdated=()=>{};
 const byId=id=>document.getElementById(id);
 const status=s=>{const n=byId('cloud-status');if(n)n.textContent=s};
 const html=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c]));
@@ -91,7 +91,7 @@ async function refreshStagingJournal(){
  const url=config.api_base_url.replace(/\/$/,'')+'/v1/staging?dates='+encodeURIComponent(stagingWeekdays().join(','));
  const r=await fetch(url,{headers:{Authorization:'Bearer '+accessToken},cache:'no-store'});
  if(r.status===404){notice.textContent='נתיב Staging המאובטח טרם הותקן';return}
- if(r.status===401||r.status===403){accessToken=null;byId('cloud-staging-load').disabled=true;notice.textContent='תוקף ההתחברות פג';return}
+ if(r.status===401||r.status===403){accessToken=null;byId('cloud-staging-load').disabled=true;stagingUpdated([]);notice.textContent='תוקף ההתחברות פג';return}
  if(!r.ok)throw Error('STAGING_READ_HTTP_'+r.status);
  const response=await r.json();
  if(response.kind!=='STOCKLENS_AUTHENTICATED_STAGING_S3_READ_ONLY'||
@@ -107,18 +107,26 @@ async function refreshStagingJournal(){
  const paper=response.sessions.filter(x=>x.status==='SIGNAL_PAPER_CONTINUITY_S3_SHA_BOUND');
  const invalid=response.sessions.filter(x=>x.status==='INVALID_EVIDENCE');
  notice.textContent='S3 Staging: '+signals.length+' סיגנלים, '+paper.length+' ימי Paper, '+invalid.length+' ראיות פסולות. אחרון: '+(signals.at(-1)?.session_date||'אין')+'. תצוגת SHA/גרסה, לא אימות מלא של שרשרת Paper או מסחר אמיתי.';
+ stagingUpdated(rows);
  container.hidden=false;
  container.innerHTML='<table><thead><tr><th>יום</th><th>מצב</th><th>רמת חשיפה</th><th>מינוף</th><th>שווי Paper מדומה</th><th>שמירת סיגנל ב־AWS</th></tr></thead><tbody>'+
  response.sessions.slice().reverse().map(x=>'<tr><td>'+html(x.session_date)+'</td><td>'+html(x.status)+'</td><td>'+
  html(x.signal?.level??'—')+'</td><td>'+html(x.signal?.target_leverage??'—')+'</td><td>'+
  money(x.paper?.equity)+'</td><td>'+html(x.signal?.saved_at_utc||'—')+'</td></tr>').join('')+'</tbody></table>';
 }
-export function initCloudJournal({getHistory:historyProvider}){
+export function initCloudJournal({getHistory:historyProvider,onStagingChange}){
  getHistory=historyProvider;
+ if(typeof onStagingChange==='function')stagingUpdated=onStagingChange;
  const loginBtn=byId('cloud-login'),loadBtn=byId('cloud-load');
  loginBtn?.addEventListener('click',()=>login().catch(err=>status('שגיאה בהתחברות: '+err.message)));
  loadBtn?.addEventListener('click',()=>refreshCloudJournal().catch(err=>status('שגיאת קריאה מ־AWS: '+err.message)));
  byId('cloud-staging-load')?.addEventListener('click',()=>refreshStagingJournal().catch(err=>{byId('cloud-staging-status').textContent='שגיאת S3: '+err.message}));
+ // Authenticated, read-only refresh while the tab is open. Never retain JWT in storage.
+ setInterval(()=>{
+   if(!config||!accessToken)return;
+   if(Date.now()>=expiresAt){accessToken=null;stagingUpdated([]);status('פג תוקף ההתחברות ל־AWS; התחברי שוב.');return}
+   refreshStagingJournal().catch(err=>{byId('cloud-staging-status').textContent='שגיאת רענון S3: '+err.message});
+ },300000);
  fetch('./cloud-config.json',{cache:'no-store'}).then(r=>r.ok?r.json():null).then(async cfg=>{
    if(!validateConfig(cfg)){status('חיבור DynamoDB אישי טרם הופעל. כדי להפעיל דרוש API מאובטח ותצורת Cognito, לא הרשאות AWS בדפדפן.');return}
    config=cfg;loginBtn.disabled=false;
