@@ -7,7 +7,7 @@
   "files": {
     ".github/workflows/aws-journal-export.yml": "f5a19164d85c48d9ce6adf243d1907085f2d6ffe",
     ".github/workflows/aws-shadow-journal-audit.yml": "5dd4640f79fa1f7887374cd84ac8b66c0d65d479",
-    ".github/workflows/fast-guard.yml": "2ea8617fb8effef1cff9a9ec0eb1b82d252eadc3",
+    ".github/workflows/fast-guard.yml": "8e942a9fa63bfd93d17c453fc955abf086db6ef8",
     ".github/workflows/portal-browser-smoke.yml": "68a5bcbd7d5f790edc611dd4b3fa24f6848458c2",
     ".github/workflows/portal-history-build.yml": "2d731559dde6f3116cc349379190e74417a1ece9",
     ".github/workflows/shadow.yml": "b4db9958876eaa47bbe3f183aa815feb15ab10c0",
@@ -267,10 +267,10 @@
     "research_factor_coverage.py": "93b904fc41c45c39f854ab02c7638e934c651d2d",
     "research_human_digest.py": "b1bb6861b789a7ff0e9a5ffb58dae4be49842546",
     "research_metrics.py": "49d855acbf22d9c903c04697586cc3681758fa84",
-    "research_pit_credit_gate.py": "e24a7831f260fb03723194a4d601621985d710c4",
+    "research_pit_credit_gate.py": "8fcde86c3ce0ce250ce3839ff93a52a4938e8458",
     "research_pit_decision_join.py": "2786ae10b9037d1a0dc2f18b9beada250a693b09",
-    "research_pit_event_gate.py": "f0239b4e14dcb712ad5ca71e73bada43e458c957",
-    "research_pit_quote_gate.py": "1e318eddcb55de1ebfb297889f633b5a9ac13e45",
+    "research_pit_event_gate.py": "e2405cad6a10925420d118bab915b1a48424f40d",
+    "research_pit_quote_gate.py": "14014cd0de67cd1e3be6dd62a00d9be5adb9aa3b",
     "research_pit_vintage_gate.py": "d927dce913a150ef08f4138fc821d80b28fced6a",
     "research_prospective_registry.py": "c8963dfffca6820d0400a3872fc2da8242b28a46",
     "research_provenance.py": "0402e1d6c86d49b2e57ac9a7539df77d3e80fb8a",
@@ -440,6 +440,12 @@
     "workbench_evidence_manifest.py": "7e290add5dcb861b0d4bdbed81cc7e4308ff4683",
     "workbench_selfcheck.py": "4f17be6d56ac7d3cc3637e1ef2b2af3ed9d880a8",
     "yahoo_eod_scorecard.py": "137465f3ff4d9a2b8c164bf4321480c0ea0869fd",
-    "yahoo_long_history.py": "e7e51b5c2f5697da5d583316638b98ec13e6114c"
+    "yahoo_long_history.py": "e7e51b5c2f5697da5d583316638b98ec13e6114c",
+    "research_pit_json_integrity.py": "f0ee22ec532e430a11803b9b831bf814d744b8dd",
+    "tests/test_research_pit_json_integrity.py": "b8270b85ddb093e027084052f88fce8d14ef7a28",
+    "tests/test_research_pit_sec_chronology.py": "b849d478c81edb0ca998d95d914785862d705ba0",
+    "tests/test_research_pit_credit_intervals.py": "e5b71354d54cb5ba1cb43247477039f9c3377e8c",
+    "tests/test_research_pit_utf8.py": "1608c9095f681211cdbbb3990644cee919ae5288",
+    "research/predeclarations/SL9-032-SOURCE-RECEIPT-REDTEAM.md": "ff972122fad3a00ac2a6756c9e7a14f532ea1758"
   }
 }

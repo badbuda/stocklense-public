@@ -2,7 +2,8 @@
 from __future__ import annotations
 from datetime import datetime,timezone
 from hashlib import sha256
-import json,re
+import re
+from research_pit_json_integrity import strict_json
 
 HEX=re.compile("^[0-9a-f]{64}$")
 SOURCES={"SEC_EDGAR","GDELT_2_0_GKG","FOMC_SCHEDULE","BLS_CPI_SCHEDULE"}
@@ -17,7 +18,7 @@ def utc(value):
 def audit(raw):
     if not isinstance(raw,bytes) or not raw or len(raw)>8*1024*1024:
         raise ValueError("invalid file size")
-    records=json.loads(raw.decode("utf-8"))
+    records=strict_json(raw)
     if not isinstance(records,list):raise ValueError("events must be list")
     seen=set();counts={k:0 for k in sorted(SOURCES)}
     for x in records:
@@ -38,6 +39,7 @@ def audit(raw):
         if provider=="SEC_EDGAR":
             accepted=utc(x.get("accepted_at_utc"))
             if accepted>collected:raise ValueError("SEC accepted after collection")
+            if published<accepted:raise ValueError("SEC_PUBLISHED_BEFORE_ACCEPTANCE")
         if provider in {"FOMC_SCHEDULE","BLS_CPI_SCHEDULE"}:
             utc(x.get("scheduled_release_at_utc"))
             if any(x.get(field) is not None for field in

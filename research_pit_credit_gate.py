@@ -7,7 +7,8 @@ licensed history, time-of-day release, or tradability.
 from __future__ import annotations
 from datetime import date
 from hashlib import sha256
-import json,math
+import math
+from research_pit_json_integrity import strict_json
 
 SERIES="BAMLH0A0HYM2"
 def day(v):
@@ -20,8 +21,7 @@ def day(v):
 def fred(raw):
     if not isinstance(raw,bytes) or not raw or len(raw)>8*1024*1024:
         raise ValueError("file invalid")
-    try:d=json.loads(raw.decode("utf-8"))
-    except (UnicodeError,ValueError) as e:raise ValueError("invalid JSON") from e
+    d=strict_json(raw)
     if not isinstance(d,dict) or d.get("series_id")!=SERIES:
         raise ValueError("series not pinned")
     # FRED's native response does not include series_id. Require an
@@ -33,7 +33,7 @@ def fred(raw):
         type(response.get("count")) is not int or
         response.get("offset")!=0 or response["count"]!=len(rows)):
         raise ValueError("incomplete observations")
-    seen=set();old=set();valid=set();revisions=set();missing=0
+    seen=set();old=set();valid=set();revisions=set();missing=0;windows={}
     for x in rows:
         if not isinstance(x,dict):raise ValueError("invalid observation row")
         ob=day(x.get("date"));start=day(x.get("realtime_start"));end=day(x.get("realtime_end"))
@@ -41,6 +41,7 @@ def fred(raw):
         key=(ob,start,end)
         if key in seen:raise ValueError("duplicate vintage")
         seen.add(key)
+        windows.setdefault(ob,[]).append((start,end))
         if x.get("value")==".":missing+=1;continue
         value=x.get("value")
         if type(value) not in (str,float,int):raise ValueError("spread invalid")
@@ -49,6 +50,11 @@ def fred(raw):
         if not math.isfinite(v) or not 0<=v<=100:raise ValueError("spread invalid")
         valid.add(ob);revisions.add(start)
         if ob.year<=2022 and start.year<=2022:old.add(ob)
+    for spans in windows.values():
+        ordered = sorted(spans)
+        for (_, previous_end), (next_start, _) in zip(ordered, ordered[1:]):
+            if next_start <= previous_end:
+                raise ValueError("overlapping vintage intervals")
     return {
         "kind":"ICE_CREDIT_VINTAGE",
         "status":"BLOCKED_LICENSE_AND_RELEASE_CLOCK",

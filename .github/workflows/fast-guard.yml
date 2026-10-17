@@ -44,7 +44,15 @@ jobs:
       - name: Unit and regression tests
         env:
           PYTHONPATH: ${{ github.workspace }}
-        run: python -m pytest -q
+        run: python -m pytest -q --junitxml=research/results/sl9_032_pytest.xml
+      - name: Preserve SL9-032 source-integrity test evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stocklens-sl9-032-provenance-regressions
+          path: research/results/sl9_032_pytest.xml
+          if-no-files-found: warn
+          retention-days: 30
       - name: Compute frozen-vs-risk-matched and volatility-drag falsification in one batch
         env:
           PYTHONPATH: ${{ github.workspace }}

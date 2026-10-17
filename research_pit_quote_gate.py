@@ -3,7 +3,8 @@ from __future__ import annotations
 from datetime import datetime,time,timezone
 from hashlib import sha256
 from zoneinfo import ZoneInfo
-import json,math,re
+import math,re
+from research_pit_json_integrity import strict_json
 import exchange_calendars as xcals
 
 NY=ZoneInfo("America/New_York")
@@ -20,7 +21,7 @@ def utc(v):
 def audit(raw):
     if not isinstance(raw,bytes) or not raw or len(raw)>8*1024*1024:
         raise ValueError("invalid quote file")
-    records=json.loads(raw.decode("utf-8"))
+    records=strict_json(raw)
     if not isinstance(records,list):raise ValueError("quotes must be list")
     seen=set();sessions=set()
     cal=xcals.get_calendar("XNYS")
