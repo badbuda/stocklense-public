@@ -67,7 +67,7 @@
     "capital_readiness.py": "78ed35792e5d9012330431251a5851de971eed1c",
     "change_digest.py": "2791b3b5b6688b2f1a0f11343cad07a6414de337",
     "ci_quota_efficiency.py": "a440c243b4b63ca898a91f44e01f21dafacc4d4f",
-    "ci_transfer_guard.py": "7f4f897751297479351aa6f7834e685c14039638",
+    "ci_transfer_guard.py": "07529480f319e0c923feab03293ef3afe5a5f2ef",
     "context_analytics.py": "7a48dab906bb8ddeaa7eacbf742402df723a37e5",
     "context_quality.py": "b0d9853c13c235c3665b6aadf9118efd8db7bd72",
     "cost_attribution.py": "16d7a921883ecebaf0054c4125746209f44985f1",
