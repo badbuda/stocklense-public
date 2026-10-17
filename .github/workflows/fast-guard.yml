@@ -38,6 +38,8 @@ jobs:
           node --check docs/portal.js
           node --check docs/portal-freshness.mjs
           node tests/portal_freshness.test.mjs
+          node tests/portal_live.test.mjs
+          node --check docs/portal-live.mjs
           node --check docs/portal-insights.js
           node --check docs/portal-cloud.js
           node --check tests/portal_insights_unit.cjs
