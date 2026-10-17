@@ -45,6 +45,8 @@ try{
  assert.equal(governance.riskSession,governance.signalSession,'Risk cohort is stale');
  assert.match(await page.locator('#health-list').textContent(),/תאריך נתוני האתר/);
  assert.equal(await page.locator('#feed-status').isVisible(),true,'Static publication must disclose source freshness');
+ assert.match(await page.locator('#kpi-nav-source').textContent(),/ארכיון GitHub/);
+ assert.match(await page.locator('#staging-overview-status').textContent(),/Staging/);
  const feedBanner=await page.locator('#feed-status').textContent();
  assert.match(feedBanner,/GitHub|מיושנים|פער תאריכים|חסרים/);
  const oldestPublished=[governance.signalSession,governance.paperSession,governance.historySession,governance.riskSession].sort()[0];
