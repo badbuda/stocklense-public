@@ -350,7 +350,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: 'STAGING candidate Signal ONLY; opt-in after alarm delivery review. Does not run Paper. Initially DISABLED.'
-      ScheduleExpression: 'cron(10 0 ? * TUE-SAT *)'
+      ScheduleExpression: 'cron(30 2 ? * TUE-SAT *)'
       State: DISABLED
       Targets:
         - Id: StagingSignalOnly
@@ -363,14 +363,14 @@ Resources:
       FunctionName: !Ref CandidateLambda
       Principal: events.amazonaws.com
       SourceArn: !GetAtt CandidateSignalOnlySchedule.Arn
-  # A separate delayed Paper-only nightly trigger, 70 min AFTER Signal.
+  # A separate delayed Paper-only nightly trigger, 50 min AFTER Signal.
   # Never automatically initializes a book; manual prospective Genesis first.
   # Disarmed until independent data parity and actual Paper acceptance gates.
   CandidatePaperOnlySchedule:
     Type: AWS::Events::Rule
     Properties:
       Description: 'STAGING: completed XNYS session Paper-only, no Signal re-fetch or broker. DISABLED until prospective book and independent parity verified.'
-      ScheduleExpression: 'cron(20 1 ? * TUE-SAT *)'
+      ScheduleExpression: 'cron(20 3 ? * TUE-SAT *)'
       State: DISABLED
       Targets:
         - Id: StagingPaperOnly
