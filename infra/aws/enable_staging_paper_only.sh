@@ -87,7 +87,7 @@ if [[ "$paper_state" == ENABLED ]]; then
   echo "PAPER_ONLY_RULE_ALREADY_ENABLED"
   exit 0
 fi
-echo "This enables ONLY STAGING Paper after the 00:10 UTC frozen Signal." >&2
+echo "This enables ONLY STAGING Paper after the 02:30 UTC frozen Signal." >&2
 echo "External same-vendor drift and second-provider parity MUST be reviewed before approving." >&2
 read -r -p 'Type REVIEWED_STAGING_PAPER_RISK_AND_EMAIL_ALERTS to enable: ' consent
 [[ "$consent" == REVIEWED_STAGING_PAPER_RISK_AND_EMAIL_ALERTS ]] || {
