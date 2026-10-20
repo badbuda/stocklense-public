@@ -11,6 +11,11 @@ Parameters:
     Type: String
     Default: ''
     Description: 'Optional email subscribed to staging alerts (confirmation required)'
+  CandidateSignalScheduleState:
+    Type: String
+    Default: DISABLED
+    AllowedValues: [DISABLED, ENABLED]
+    Description: 'Normally DISABLED. Existing activated Signal rule migration must explicitly preserve ENABLED.'
   ExpectedSchedulerState:
     Type: String
     Default: DISABLED
@@ -351,7 +356,7 @@ Resources:
     Properties:
       Description: 'STAGING candidate Signal ONLY; opt-in after alarm delivery review. Does not run Paper. Initially DISABLED.'
       ScheduleExpression: 'cron(30 2 ? * TUE-SAT *)'
-      State: DISABLED
+      State: !Ref CandidateSignalScheduleState
       Targets:
         - Id: StagingSignalOnly
           Arn: !GetAtt CandidateLambda.Arn

@@ -100,7 +100,9 @@ def test_template_has_separate_delayed_disabled_paper_schedule():
     r=doc["Resources"]
     signal=r["CandidateSignalOnlySchedule"]["Properties"]
     paper=r["CandidatePaperOnlySchedule"]["Properties"]
-    assert signal["State"] == paper["State"] == "DISABLED"
+    assert signal["State"] == "Ref:CandidateSignalScheduleState"
+    assert doc["Parameters"]["CandidateSignalScheduleState"]["Default"] == "DISABLED"
+    assert paper["State"] == "DISABLED"
     assert signal["ScheduleExpression"] == "cron(30 2 ? * TUE-SAT *)"
     assert paper["ScheduleExpression"] == "cron(20 3 ? * TUE-SAT *)"
     assert signal["Targets"][0]["Arn"] == "GetAtt:CandidateLambda.Arn"
