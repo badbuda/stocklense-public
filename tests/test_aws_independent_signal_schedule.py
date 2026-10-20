@@ -206,3 +206,67 @@ def test_new_signal_monitor_module_is_in_lambda_deployment_artifact():
     deploy = Path("infra/aws/deploy_independent_staging.sh").read_text()
     assert '"infra/aws/independent_signal_monitor.py",' in deploy
     assert '"infra/aws/independent_session_watchdog.py",' in deploy
+
+
+def test_historical_missing_signal_never_hides_new_healthy_signal():
+    """Oct 19 cannot be backfilled, but Oct 20 should show as healthy on its own."""
+    from infra.aws.independent_session_watchdog import inspect
+    def U(y,m,d,h,mi=0): return datetime(y,m,d,h,mi,tzinfo=timezone.utc)
+    recorded={"2026-10-20":U(2026,10,21,2,45)}
+    result=inspect(now=U(2026,10,21,4),
+                   rule_state="DISABLED",expected_rule_state="DISABLED",
+                   monitoring_start=None,read_record=lambda day:None,
+                   paper_rule_state="DISABLED",signal_rule_state="ENABLED",
+                   signal_activation_at=U(2026,10,18,12),
+                   read_signal_saved_at=recorded.get)
+    assert result["status"]=="FAIL_CLOSED"
+    assert result["metrics"]["WatchdogFailClosed"]==1
+    assert result["missing_scheduled_signals"]==["2026-10-19"]
+    assert result["latest_due_signal_session"]=="2026-10-20"
+    assert result["latest_due_signal_status"]=="ON_TIME"
+    assert result["historical_signal_incidents"]==[
+        {"session":"2026-10-19","status":"MISSING"}]
+
+
+def test_no_signal_due_never_claims_latest_signal_pass():
+    from infra.aws.independent_session_watchdog import inspect
+    at=datetime(2026,10,20,3,0,tzinfo=timezone.utc)
+    result=inspect(now=at,rule_state="DISABLED",
+                   expected_rule_state="DISABLED",monitoring_start=None,
+                   read_record=lambda day:None,signal_rule_state="ENABLED",
+                   signal_activation_at=datetime(2026,10,19,12,tzinfo=timezone.utc),
+                   read_signal_saved_at=lambda day:pytest.fail("NOT_DUE"))
+    assert result["latest_due_signal_session"] is None
+    assert result["latest_due_signal_status"]=="NOT_DUE"
+    assert result["historical_signal_incidents"]==[]
+
+
+def test_latest_due_missing_while_older_signal_passes_still_fails_closed():
+    from infra.aws.independent_session_watchdog import inspect
+    def U(y,m,d,h,mi=0):return datetime(y,m,d,h,mi,tzinfo=timezone.utc)
+    result=inspect(now=U(2026,10,21,4),rule_state="DISABLED",
+                   expected_rule_state="DISABLED",monitoring_start=None,
+                   read_record=lambda day:None,signal_rule_state="ENABLED",
+                   signal_activation_at=U(2026,10,18,12),
+                   read_signal_saved_at=lambda d:U(2026,10,20,2,40)
+                       if d=="2026-10-19" else None)
+    assert result["latest_due_signal_session"]=="2026-10-20"
+    assert result["latest_due_signal_status"]=="MISSING"
+    assert result["status"]=="FAIL_CLOSED"
+    assert result["historical_signal_incidents"]==[]
+
+
+def test_latest_due_s3_read_error_never_claims_on_time():
+    from infra.aws.independent_session_watchdog import inspect
+    def U(y,m,d,h,mi=0):return datetime(y,m,d,h,mi,tzinfo=timezone.utc)
+    def unreadable(day):
+        if day=="2026-10-20": raise PermissionError("S3 inaccessible")
+        return None
+    result=inspect(now=U(2026,10,21,4),rule_state="DISABLED",
+                   expected_rule_state="DISABLED",monitoring_start=None,
+                   read_record=lambda day:None,signal_rule_state="ENABLED",
+                   signal_activation_at=U(2026,10,18,12),
+                   read_signal_saved_at=unreadable)
+    assert result["latest_due_signal_status"]=="READ_ERROR"
+    assert result["status"]=="FAIL_CLOSED"
+    assert result["metrics"]["ConfigurationError"]>=1
