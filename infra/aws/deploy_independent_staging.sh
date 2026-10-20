@@ -82,6 +82,27 @@ case "$EXISTING_STATUS" in
     exit 3
     ;;
 esac
+# Migration is a separate explicit one-shot operator path. Default deployment
+# remains strictly disarmed and refuses ALL existing active schedules.
+ACTIVE_MIGRATION="${STOCKLENS_ACTIVE_SIGNAL_MIGRATION:-0}"
+[[ "$ACTIVE_MIGRATION" == 0 || "$ACTIVE_MIGRATION" == 1 ]] || {
+  echo "INVALID_SIGNAL_MIGRATION_OPT_IN" >&2; exit 3;
+}
+SIGNAL_RULE_CF_STATE=DISABLED
+if [[ "$ACTIVE_MIGRATION" == 1 ]]; then
+  [[ "$EXISTING_STATUS" == UPDATE_COMPLETE || "$EXISTING_STATUS" == CREATE_COMPLETE ]] || {
+    echo "MIGRATION_REQUIRES_EXISTING_HEALTHY_STACK" >&2; exit 3;
+  }
+  account="$(aws sts get-caller-identity --query Account --output text)"
+  [[ "$account" == 634740393398 ]] || {
+    echo "MIGRATION_WRONG_AWS_ACCOUNT" >&2; exit 3;
+  }
+  description="$(aws cloudformation describe-stacks --region "$REGION" --stack-name "$STACK" --query 'Stacks[0].Description' --output text)"
+  [[ "$description" == "StockLens 8.0 AWS-only candidate; isolated, manual-invoke, shadow-only; never replaces stocklens-paper" ]] || {
+    echo "MIGRATION_WRONG_STACK_IDENTITY" >&2; exit 3;
+  }
+  SIGNAL_RULE_CF_STATE=ENABLED
+fi
 # Never silently turn OFF an opted-in nightly producer with CF's safe
 # DISABLED default, nor reset an already anchored monitoring epoch. This guard
 # performs only read-only AWS queries before packaging or ANY AWS mutation.
@@ -101,10 +122,20 @@ PY
     if [[ -n "$old_rule" && "$old_rule" != None ]]; then
       rule_state="$(aws events describe-rule --region "$REGION" \
         --name "$old_rule" --query State --output text)"
-      [[ "$rule_state" == DISABLED ]] || {
-        echo "REFUSE_REDEPLOY_ACTIVE_SCHEDULE:$output_key:$rule_state" >&2
-        exit 3
-      }
+      if [[ "$ACTIVE_MIGRATION" == 1 && "$output_key" == CandidateSignalOnlyRuleName ]]; then
+        [[ "$rule_state" == ENABLED ]] || {
+          echo "MIGRATION_SIGNAL_RULE_NOT_ENABLED:$rule_state" >&2; exit 3;
+        }
+        old_schedule="$(aws events describe-rule --region "$REGION" --name "$old_rule" --query ScheduleExpression --output text)"
+        [[ "$old_schedule" == 'cron(10 0 ? * TUE-SAT *)' ]] || {
+          echo "MIGRATION_UNEXPECTED_OLD_SIGNAL_SCHEDULE:$old_schedule" >&2; exit 3;
+        }
+      else
+        [[ "$rule_state" == DISABLED ]] || {
+          echo "REFUSE_REDEPLOY_ACTIVE_SCHEDULE:$output_key:$rule_state" >&2
+          exit 3
+        }
+      fi
     fi
   done
   data_bucket="$(aws cloudformation describe-stacks --region "$REGION" \
@@ -115,10 +146,21 @@ PY
     count="$(aws s3api list-objects-v2 --region "$REGION" --bucket "$data_bucket" \
       --prefix 'monitoring/signal-only-activation.json' --max-keys 1 \
       --query 'KeyCount' --output text)"
-    [[ "$count" == 0 ]] || {
-      echo "REFUSE_REDEPLOY_ESTABLISHED_SIGNAL_MONITOR_ANCHOR:count=$count" >&2
-      exit 3
-    }
+    if [[ "$ACTIVE_MIGRATION" == 1 ]]; then
+      [[ "$count" == 1 ]] || { echo "MIGRATION_MISSING_SIGNAL_MONITOR_ANCHOR" >&2; exit 3; }
+      anchor_version="$(aws s3api head-object --region "$REGION" --bucket "$data_bucket" --key monitoring/signal-only-activation.json --query VersionId --output text)"
+      [[ "$anchor_version" != None && -n "$anchor_version" && "$anchor_version" != null ]] || {
+        echo "MIGRATION_UNVERSIONED_SIGNAL_ANCHOR" >&2; exit 3;
+      }
+      # Cannot migrate an already bootstrapped/active Paper book as a Signal-only recovery.
+      book_count="$(aws s3api list-objects-v2 --region "$REGION" --bucket "$data_bucket" --prefix 'paper/book/' --max-keys 1 --query KeyCount --output text)"
+      [[ "$book_count" == 0 ]] || { echo "MIGRATION_PAPER_BOOK_EXISTS_NEEDS_SEPARATE_PROCEDURE" >&2; exit 3; }
+    else
+      [[ "$count" == 0 ]] || {
+        echo "REFUSE_REDEPLOY_ESTABLISHED_SIGNAL_MONITOR_ANCHOR:count=$count" >&2
+        exit 3
+      }
+    fi
   fi
 fi
 
@@ -233,13 +275,14 @@ if ! aws s3api head-object --bucket "$ARTIFACT_BUCKET" \
 fi
 echo "STAGING ONLY: ${STACK}; source commit ${COMMIT}; ZIP sha256 ${DIGEST}"
 echo "This deploys FIVE isolated staging Lambdas (including a read-only Paper"
-echo "preflight), a private versioned bucket, and disabled Signal/Paper schedules."
+echo "preflight), a private versioned bucket, with Signal state $SIGNAL_RULE_CF_STATE."
+echo "Paper and combined orchestrator schedules remain DISABLED."
 echo "Only the read-only watchdog is scheduled; no broker or stocklens-paper change."
 if ! aws cloudformation deploy \
   --region "$REGION" \
   --stack-name "$STACK" \
   --template-file infra/aws/independent-staging.yaml \
-  --parameter-overrides "ArtifactBucket=$ARTIFACT_BUCKET" "ArtifactKey=$ARTIFACT_KEY" \
+  --parameter-overrides "ArtifactBucket=$ARTIFACT_BUCKET" "ArtifactKey=$ARTIFACT_KEY" "CandidateSignalScheduleState=$SIGNAL_RULE_CF_STATE" \
   --capabilities CAPABILITY_IAM \
   --no-fail-on-empty-changeset; then
   show_staging_events
@@ -250,7 +293,7 @@ aws cloudformation describe-stacks --stack-name "$STACK" \
   --query 'Stacks[0].{Status:StackStatus,Outputs:Outputs}' --output json
 echo "DEPLOYED_STAGING_ONLY: no live stocklens-paper resources modified."
 echo "Running import-only Lambda smoke checks (no Yahoo requests or Paper writes)."
-if ! bash infra/aws/smoke_independent_staging.sh; then
+if ! STOCKLENS_EXPECT_ENABLED_SIGNAL="$ACTIVE_MIGRATION" bash infra/aws/smoke_independent_staging.sh; then
   echo "DEPLOYED_BUT_RUNTIME_SMOKE_FAILED: review error; original stocklens-paper remains untouched." >&2
   exit 5
 fi
