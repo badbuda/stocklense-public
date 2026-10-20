@@ -145,6 +145,12 @@ def inspect(*, now: datetime, rule_state: str | None, expected_rule_state: str,
     # Signal-only has an independent S3-server-timed activation anchor. Do not
     # treat arbitrary pre-activation history as missed automatic executions.
     signal_missing, signal_late = [], []
+    # Independent operational visibility: retain lifetime fail-closed incident
+    # alarms while still reporting whether the *latest due* signal is healthy.
+    # This never clears or overrides any missing/late historic evidence.
+    latest_due_signal_session = None
+    latest_due_signal_status = "NOT_DUE"
+    signal_session_statuses = {}
     if signal_rule_state is not None:
         if signal_rule_state not in ("ENABLED", "DISABLED"):
             config_errors.append("SIGNAL_RULE_UNREADABLE:" + str(signal_rule_state))
@@ -161,16 +167,25 @@ def inspect(*, now: datetime, rule_state: str | None, expected_rule_state: str,
                 except Exception as exc:
                     config_errors.append("SIGNAL_CALENDAR_ERROR:" + type(exc).__name__)
                     due = []
+                if due:
+                    latest_due_signal_session = due[-1][0]
                 for session, deadline in due:
                     try:
                         saved = read_signal_saved_at(session)
                     except Exception as exc:
                         config_errors.append("SIGNAL_S3_READ_ERROR:" + session + ":" + type(exc).__name__)
+                        signal_session_statuses[session] = "READ_ERROR"
                         continue
                     if saved is None:
                         signal_missing.append(session)
+                        signal_session_statuses[session] = "MISSING"
                     elif saved.tzinfo is None or saved.astimezone(timezone.utc) > deadline:
                         signal_late.append(session)
+                        signal_session_statuses[session] = "LATE"
+                    else:
+                        signal_session_statuses[session] = "ON_TIME"
+                if latest_due_signal_session is not None:
+                    latest_due_signal_status = signal_session_statuses[latest_due_signal_session]
     failures += ["MISSING_SCHEDULED_SIGNAL:" + d for d in signal_missing]
     failures += ["LATE_SCHEDULED_SIGNAL:" + d for d in signal_late]
     failures += ["SESSION_WITHOUT_CONTINUITY_RECORD:" + x for x in missed]
@@ -183,6 +198,14 @@ def inspect(*, now: datetime, rule_state: str | None, expected_rule_state: str,
         "mode": mode,
         "missing_scheduled_signals": signal_missing,
         "late_scheduled_signals": signal_late,
+        "latest_due_signal_session": latest_due_signal_session,
+        "latest_due_signal_status": latest_due_signal_status,
+        "historical_signal_incidents": [
+            {"session": day, "status": signal_session_statuses[day]}
+            for day in sorted(signal_session_statuses)
+            if day != latest_due_signal_session
+            and signal_session_statuses[day] != "ON_TIME"
+        ],
         "missed_sessions": missed,
         "halted_sessions": halted,
         "invalid_records": invalid,
