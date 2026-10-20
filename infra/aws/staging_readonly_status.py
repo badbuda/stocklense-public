@@ -160,9 +160,21 @@ def snapshot(sessions: list[str], *, now: datetime,
     results = [_session_status(now=now.astimezone(timezone.utc), session=d,
                                bucket=bucket, head=head(bucket, d), read_signal=read_signal)
                for d in sessions]
+    due_failures = {
+        "MISSING_DUE_RECEIPT", "VERIFIED_RECEIPT_LATE",
+        "INVALID_UNVERSIONED_RECEIPT", "INVALID_UNREADABLE_RECEIPT",
+        "INVALID_SIGNAL_CONTRACT",
+    }
+    if not infra_verified:
+        readiness = "INFRA_NOT_VERIFIED"
+    elif any(r["status"] in due_failures for r in results):
+        readiness = "FAIL_CLOSED_SIGNAL_EVIDENCE"
+    elif any(r["status"] == "NOT_DUE_NO_RECEIPT" for r in results):
+        readiness = "WAITING_FOR_RECEIPT_DEADLINE"
+    else:
+        readiness = "RECEIPTS_ON_TIME_SCHEDULE_AND_VENDOR_UNPROVEN"
     return {
-        "status": "INFRA_VERIFIED_RECEIPTS_SEPARATELY_CLASSIFIED"
-                  if infra_verified else "INFRA_NOT_VERIFIED",
+        "status": readiness,
         "stack": STACK, "checked_at_utc": now.astimezone(timezone.utc).isoformat(),
         "rules": rules, "signal_lambda_state": lamb.get("State"),
         "signal_lambda_update": lamb.get("LastUpdateStatus"),
@@ -184,7 +196,9 @@ def main() -> int:
         print(json.dumps({"status": "FAIL_CLOSED", "code": str(exc)[:200]}, sort_keys=True))
         return 2
     print(json.dumps(result, indent=2, sort_keys=True))
-    return 0 if result["status"] == "INFRA_VERIFIED_RECEIPTS_SEPARATELY_CLASSIFIED" else 2
+    # The CLI is safe for automation: a successfully rendered report is NOT
+    # an all-clear if a due receipt is missing/late or any validation failed.
+    return 0 if result["status"] == "RECEIPTS_ON_TIME_SCHEDULE_AND_VENDOR_UNPROVEN" else 2
 
 
 if __name__ == "__main__":
