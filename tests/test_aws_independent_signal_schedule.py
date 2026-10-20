@@ -83,7 +83,8 @@ def test_cloudformation_signal_schedule_is_isolated_disabled_and_cost_bounded():
     assert signal["Type"] == "AWS::Events::Rule"
     prop = signal["Properties"]
     assert prop["ScheduleExpression"] == "cron(30 2 ? * TUE-SAT *)"
-    assert prop["State"] == "DISABLED"
+    assert prop["State"] == "Ref:CandidateSignalScheduleState"
+    assert doc["Parameters"]["CandidateSignalScheduleState"]["Default"] == "DISABLED"
     assert len(prop["Targets"]) == 1
     target = prop["Targets"][0]
     assert target["Arn"] == "GetAtt:CandidateLambda.Arn"
