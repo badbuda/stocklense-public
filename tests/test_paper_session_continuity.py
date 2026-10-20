@@ -146,7 +146,7 @@ def test_previous_paper_mark_cannot_be_skipped_when_signals_resume(monkeypatch,t
     assert [x["session_date"] for x in rows]==[
         "2026-10-12","2026-10-13","2026-10-14","2026-10-15",
         "2026-10-16","2026-10-19","2026-10-20"]
-    assert not (folder/"state.json").read_text().startswith('{"last_mark_session":')
+    assert json.loads((folder/"state.json").read_text())["last_mark_session"]=="2026-10-09"
     assert not (folder/"ledger.csv").exists()
 
 
