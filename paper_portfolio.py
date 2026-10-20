@@ -141,6 +141,38 @@ def reconcile(
     if not bootstrap and prior_date <= state["last_executed_signal_date"]:
         return {"paper_updated": "false", "paper_status": "SIGNAL_ALREADY_RECONCILED"}
 
+    # A genuine observed 09:31/09:32 Paper fill must be recorded
+    # prospectively, never requested as a historical Yahoo 1m backfill.
+    # The old all-days fetch otherwise requests >8 calendar days, and a
+    # vendor failure obscures missing decisions and real book discontinuity.
+    expected = _completed_nyse_dates(prior_date, current_date)
+    if not expected or expected[-1] != current_date:
+        raise PaperIntegrityError("PAPER_COMPLETED_XNYS_CALENDAR_MISMATCH")
+    prior_mark = state.get("last_mark_session") if not bootstrap else None
+    if prior_mark is not None and prior_mark > prior_date:
+        raise PaperIntegrityError("PAPER_BOOK_AHEAD_OF_PREVIOUS_SIGNAL")
+    # If this book last marked an older day, the existing account must NOT
+    # silently resume trading from its last balance after the unobserved gap.
+    missing_basis = (prior_mark if prior_mark and prior_mark < prior_date
+                     else prior_date)
+    missed = _completed_nyse_dates(missing_basis, current_date)
+    if len(expected) > 1 or (prior_mark is not None and prior_mark < prior_date):
+        for missed_session in missed:
+            gap = {
+                "session_date": missed_session,
+                "signal_date": prior_date,
+                "detected_completed_session": current_date,
+                "status": "MISSED_NO_BACKFILL",
+            }
+            if not _existing_session(GAPS_PATH, missed_session):
+                _append_csv(GAPS_PATH, gap)
+        return {
+            "paper_updated": "false",
+            "paper_status": "MISSED_SESSION_RECORDED_NO_BACKFILL",
+            "missed_session": missed[0],
+            "missed_sessions_count": str(len(missed)),
+        }
+
     try:
         market = fetch_execution_market(prior_date, current_date)
     except PaperIntegrityError as exc:

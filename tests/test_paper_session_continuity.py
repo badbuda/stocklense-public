@@ -107,3 +107,56 @@ def test_duplicate_gap_and_nonexchange_gap_are_rejected():
         snapshots={}, state=None,
     )
     assert "DUPLICATE_OR_NONMONOTONE_EVIDENCE_GAPS" in result["errors"]
+
+
+def test_yahoo_eight_day_limit_no_longer_hides_missed_oct_sessions(monkeypatch, tmp_path):
+    current, prior, folder = _setup(monkeypatch, tmp_path,
+        previous_day="2026-10-09", current_day="2026-10-19",
+        existing_state={"last_executed_signal_date":"2026-10-08",
+                        "last_mark_session":"2026-10-09"})
+    def must_never_call_yahoo(*_args):
+        raise AssertionError("HISTORICAL_MINUTE_DOWNLOAD_FORBIDDEN")
+    monkeypatch.setattr(paper_portfolio,"fetch_execution_market",must_never_call_yahoo)
+    first=paper_portfolio.reconcile(str(current),str(prior))
+    second=paper_portfolio.reconcile(str(current),str(prior))
+    assert first==second
+    assert first["paper_status"]=="MISSED_SESSION_RECORDED_NO_BACKFILL"
+    assert first["missed_sessions_count"]=="6"
+    with (folder/"evidence_gaps.csv").open(newline="") as fh:
+        rows=list(csv.DictReader(fh))
+    assert [x["session_date"] for x in rows]==[
+        "2026-10-12","2026-10-13","2026-10-14",
+        "2026-10-15","2026-10-16","2026-10-19"]
+    assert all(x["status"]=="MISSED_NO_BACKFILL" for x in rows)
+    assert not (folder/"ledger.csv").exists()
+    assert not (folder/"trades.csv").exists()
+
+
+def test_previous_paper_mark_cannot_be_skipped_when_signals_resume(monkeypatch,tmp_path):
+    current,prior,folder=_setup(monkeypatch,tmp_path,
+        previous_day="2026-10-19",current_day="2026-10-20",
+        existing_state={"last_executed_signal_date":"2026-10-08",
+                        "last_mark_session":"2026-10-09"})
+    monkeypatch.setattr(paper_portfolio,"fetch_execution_market",
+                        lambda *_:pytest.fail("NO_RESTART_FROM_STALE_BOOK"))
+    result=paper_portfolio.reconcile(str(current),str(prior))
+    assert result["paper_status"]=="MISSED_SESSION_RECORDED_NO_BACKFILL"
+    with (folder/"evidence_gaps.csv").open(newline="") as fh:
+        rows=list(csv.DictReader(fh))
+    assert [x["session_date"] for x in rows]==[
+        "2026-10-12","2026-10-13","2026-10-14","2026-10-15",
+        "2026-10-16","2026-10-19","2026-10-20"]
+    assert json.loads((folder/"state.json").read_text())["last_mark_session"]=="2026-10-09"
+    assert not (folder/"ledger.csv").exists()
+
+
+def test_account_ahead_of_prior_signal_fails_closed(monkeypatch,tmp_path):
+    current,prior,folder=_setup(monkeypatch,tmp_path,
+        previous_day="2026-10-07",current_day="2026-10-08",
+        existing_state={"last_executed_signal_date":"2026-10-06",
+                        "last_mark_session":"2026-10-08"})
+    monkeypatch.setattr(paper_portfolio,"fetch_execution_market",
+                        lambda *_:pytest.fail("OUT_OF_ORDER_MARK_FORBIDDEN"))
+    with pytest.raises(PaperIntegrityError,match="PAPER_BOOK_AHEAD_OF_PREVIOUS_SIGNAL"):
+        paper_portfolio.reconcile(str(current),str(prior))
+    assert not (folder/"ledger.csv").exists()
