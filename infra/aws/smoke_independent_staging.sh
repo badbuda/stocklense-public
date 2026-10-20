@@ -38,9 +38,23 @@ signal_rule="$(aws cloudformation describe-stacks --region "$REGION" \
 }
 signal_rule_state="$(aws events describe-rule --region "$REGION" --name "$signal_rule" \
   --query State --output text)"
-[[ "$signal_rule_state" == DISABLED ]] || {
-  echo "SIGNAL_ONLY_NOT_SAFE_BY_DEFAULT:$signal_rule_state" >&2; exit 2;
-}
+if [[ "${STOCKLENS_EXPECT_ENABLED_SIGNAL:-0}" == 1 ]]; then
+  [[ "$signal_rule_state" == ENABLED ]] || {
+    echo "MIGRATION_SIGNAL_RULE_NOT_ENABLED:$signal_rule_state" >&2; exit 2;
+  }
+  scheduled="$(aws events describe-rule --region "$REGION" --name "$signal_rule" --query ScheduleExpression --output text)"
+  [[ "$scheduled" == 'cron(30 2 ? * TUE-SAT *)' ]] || {
+    echo "MIGRATION_SIGNAL_SCHEDULE_NOT_UPDATED:$scheduled" >&2; exit 2;
+  }
+  marker="$(aws s3api head-object --region "$REGION" --bucket "$bucket" --key monitoring/signal-only-activation.json --query VersionId --output text)"
+  [[ -n "$marker" && "$marker" != None && "$marker" != null ]] || {
+    echo "MIGRATION_ACTIVATION_ANCHOR_LOST" >&2; exit 2;
+  }
+else
+  [[ "$signal_rule_state" == DISABLED ]] || {
+    echo "SIGNAL_ONLY_NOT_SAFE_BY_DEFAULT:$signal_rule_state" >&2; exit 2;
+  }
+fi
 paper_rule="$(aws cloudformation describe-stacks --region "$REGION" \
   --stack-name "$STACK" \
   --query "Stacks[0].Outputs[?OutputKey=='CandidatePaperOnlyRuleName'].OutputValue|[0]" \
@@ -129,5 +143,5 @@ PY
     exit 3
   fi
 done
-echo "PASS_STAGING_INFRA_AND_IMPORTS:stack=$STACK:rule=DISABLED:S3=PRIVATE_VERSIONED"
+echo "PASS_STAGING_INFRA_AND_IMPORTS:stack=$STACK:signal=$signal_rule_state:orchestrator=DISABLED:paper=DISABLED:S3=PRIVATE_VERSIONED"
 echo "NOT_PROVEN:market-session-source-parity-or-real-paper-receipts"
