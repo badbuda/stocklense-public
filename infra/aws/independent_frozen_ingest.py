@@ -61,8 +61,16 @@ def ingest_frozen_yfinance(expected_session: str, *, now: datetime | None = None
     closes = [float(v) for v in frame["Close"]]
     if len(set(dates)) != len(dates) or dates != sorted(dates):
         raise ValueError("CANONICAL_INGEST_DUPLICATE_OR_UNSORTED")
-    if dates[0] > "2008-01-10" or dates[-1] != expected_session:
-        raise ValueError("CANONICAL_INGEST_STALE_OR_SHORT_HISTORY")
+    if dates[0] > "2008-01-10":
+        raise ValueError(
+            f"CANONICAL_INGEST_SHORT_HISTORY:expected_start_by=2008-01-10:"
+            f"vendor_first={dates[0]}:vendor_last={dates[-1]}"
+        )
+    if dates[-1] != expected_session:
+        raise ValueError(
+            f"CANONICAL_INGEST_STALE_LAST_SESSION:expected={expected_session}:"
+            f"vendor_last={dates[-1]}:audit_last={audit.get('last_completed_date')}"
+        )
     if any(date.fromisoformat(d).weekday() > 4 for d in dates):
         raise ValueError("CANONICAL_INGEST_WEEKEND_VENDOR_BAR")
     if any(not math.isfinite(x) or x <= 0 for x in closes):

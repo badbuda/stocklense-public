@@ -253,7 +253,7 @@ def _import_smoke():
 def run_scheduled_signal(*, now: datetime, s3, bucket: str) -> dict:
     """Staging-only nightly Signal, deliberately independent of Paper bootstrap.
 
-    EventBridge uses Tue-Sat 00:10 UTC, after NY 18:00 in both DST regimes.
+    EventBridge uses Tue-Sat 02:30 UTC, after NY 18:00 in both DST regimes.
     XNYS non-trading days are skipped. This never calls Paper or a broker.
     Any failure propagates to the existing candidate Lambda Errors alarm.
     """
