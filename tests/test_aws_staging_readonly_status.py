@@ -94,7 +94,7 @@ def test_snapshot_never_claims_receipt_if_only_infra_working():
         pytest.fail(str(args))
     report=snapshot(["2026-10-19","2026-10-20"],now=U(2026,10,21,4),
                     aws=aws,head=lambda _bucket,_session:None)
-    assert report["status"]=="INFRA_VERIFIED_RECEIPTS_SEPARATELY_CLASSIFIED"
+    assert report["status"]=="FAIL_CLOSED_SIGNAL_EVIDENCE"
     assert [x["status"] for x in report["receipts"]]==[
         "MISSING_DUE_RECEIPT","MISSING_DUE_RECEIPT"]
     assert report["paper_automation_verified"] is False
@@ -113,3 +113,14 @@ def test_operator_code_does_not_mutate_aws_or_book():
         "bootstrap=true",
     ):
         assert forbidden not in source
+
+
+def test_pending_receipt_never_turns_cli_report_green():
+    from infra.aws.staging_readonly_status import _session_status
+    result=_session_status(now=U(2026,10,21,3),session="2026-10-20",
+                           bucket="private",head=None)
+    assert result["status"]=="NOT_DUE_NO_RECEIPT"
+    source=Path("infra/aws/staging_readonly_status.py").read_text()
+    assert '"WAITING_FOR_RECEIPT_DEADLINE"' in source
+    assert '"RECEIPTS_ON_TIME_SCHEDULE_AND_VENDOR_UNPROVEN"' in source
+    assert "return 0 if result[\"status\"] == \"RECEIPTS_ON_TIME_SCHEDULE_AND_VENDOR_UNPROVEN\" else 2" in source
