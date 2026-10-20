@@ -52,8 +52,8 @@ def test_single_release_all_trading_eventbridge_rules_initially_disabled():
     resources=yaml.load(
         Path("infra/aws/independent-staging.yaml").read_text(),
         Loader=Loader)["Resources"]
-    for name in ("CandidateSignalOnlySchedule","CandidatePaperOnlySchedule",
-                 "CandidateOrchestratorSchedule"):
+    assert resources["CandidateSignalOnlySchedule"]["Properties"]["State"]=="Ref:CandidateSignalScheduleState"
+    for name in ("CandidatePaperOnlySchedule","CandidateOrchestratorSchedule"):
         assert resources[name]["Properties"]["State"]=="DISABLED",name
     assert resources["CandidateSessionWatchdogSchedule"]["Properties"]["State"]=="ENABLED"
 
