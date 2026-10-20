@@ -132,7 +132,7 @@ def test_signal_watchdog_activation_deadline_and_dst():
 def test_signal_watchdog_ignores_exchange_holidays_and_weekends():
     from infra.aws.independent_signal_monitor import due_signal_sessions
     def U(y,m,d,h): return datetime(y,m,d,h,tzinfo=timezone.utc)
-    due = due_signal_sessions(U(2026,12,29,3), U(2026,12,24,12))
+    due = due_signal_sessions(U(2026,12,29,4), U(2026,12,24,12))
     days = [day for day, _ in due]
     assert "2026-12-24" in days and "2026-12-28" in days
     assert "2026-12-25" not in days and "2026-12-26" not in days
