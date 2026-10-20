@@ -2,7 +2,7 @@
 from __future__ import annotations
 from datetime import datetime, date, time, timedelta, timezone
 
-SCHEDULE_UTC = time(0, 10)
+SCHEDULE_UTC = time(2, 30)
 GRACE = timedelta(hours=1)
 MAX_SESSIONS = 400
 
@@ -10,7 +10,7 @@ MAX_SESSIONS = 400
 def due_signal_sessions(now: datetime, activation_at: datetime) -> list[tuple[str, datetime]]:
     """Return (XNYS session, UTC receipt deadline) only for runs after activation.
 
-    The scheduled UTC invocation at 00:10 is on the next calendar day after
+    The scheduled UTC invocation at 02:30 is on the next calendar day after
     the NYSE session, including Fridays. This holds across US DST changes.
     """
     if now.tzinfo is None or activation_at.tzinfo is None:
