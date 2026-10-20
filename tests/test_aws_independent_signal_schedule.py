@@ -82,7 +82,7 @@ def test_cloudformation_signal_schedule_is_isolated_disabled_and_cost_bounded():
     signal = r["CandidateSignalOnlySchedule"]
     assert signal["Type"] == "AWS::Events::Rule"
     prop = signal["Properties"]
-    assert prop["ScheduleExpression"] == "cron(10 0 ? * TUE-SAT *)"
+    assert prop["ScheduleExpression"] == "cron(30 2 ? * TUE-SAT *)"
     assert prop["State"] == "DISABLED"
     assert len(prop["Targets"]) == 1
     target = prop["Targets"][0]
@@ -120,12 +120,12 @@ def test_signal_only_operator_opt_in_script_is_guarded_and_never_enables_paper()
 def test_signal_watchdog_activation_deadline_and_dst():
     from infra.aws.independent_signal_monitor import due_signal_sessions
     def U(y,m,d,h,mi=0): return datetime(y,m,d,h,mi,tzinfo=timezone.utc)
-    assert due_signal_sessions(U(2026,10,14,1,9), U(2026,10,13,12)) == []
-    assert due_signal_sessions(U(2026,10,14,1,10), U(2026,10,13,12)) == [
-        ("2026-10-13", U(2026,10,14,1,10))
+    assert due_signal_sessions(U(2026,10,14,3,29), U(2026,10,13,12)) == []
+    assert due_signal_sessions(U(2026,10,14,3,30), U(2026,10,13,12)) == [
+        ("2026-10-13", U(2026,10,14,3,30))
     ]
-    assert ("2026-11-02", U(2026,11,3,1,10)) in due_signal_sessions(
-        U(2026,11,3,2), U(2026,11,2,12)
+    assert ("2026-11-02", U(2026,11,3,3,30)) in due_signal_sessions(
+        U(2026,11,3,4), U(2026,11,2,12)
     )
 
 
@@ -141,7 +141,7 @@ def test_signal_watchdog_ignores_exchange_holidays_and_weekends():
 def test_signal_watchdog_missing_and_late_s3_receipts_alarm_without_paper():
     from infra.aws.independent_session_watchdog import inspect
     def U(y,m,d,h,mi=0): return datetime(y,m,d,h,mi,tzinfo=timezone.utc)
-    common = dict(now=U(2026,10,15,3), rule_state="DISABLED",
+    common = dict(now=U(2026,10,15,5), rule_state="DISABLED",
                   expected_rule_state="DISABLED", monitoring_start=None,
                   read_record=lambda s: None, signal_rule_state="ENABLED",
                   signal_activation_at=U(2026,10,13,12))
@@ -149,14 +149,14 @@ def test_signal_watchdog_missing_and_late_s3_receipts_alarm_without_paper():
     assert missing["missing_scheduled_signals"] == ["2026-10-13", "2026-10-14"]
     assert missing["metrics"]["MissingOrLateScheduledSignals"] == 2
     assert missing["status"] == "FAIL_CLOSED"
-    actual_times = {"2026-10-13": U(2026,10,14,1,11),
+    actual_times = {"2026-10-13": U(2026,10,14,3,31),
                     "2026-10-14": U(2026,10,15,0,20)}
     late = inspect(**common, read_signal_saved_at=actual_times.get)
     assert late["late_scheduled_signals"] == ["2026-10-13"]
     assert late["metrics"]["MissingOrLateScheduledSignals"] == 1
     assert late["status"] == "FAIL_CLOSED"
     on_time = inspect(**common, read_signal_saved_at=lambda d: U(
-        2026,10,14,0,20) if d=="2026-10-13" else U(2026,10,15,0,20))
+        2026,10,14,2,40) if d=="2026-10-13" else U(2026,10,15,2,40))
     assert on_time["metrics"]["MissingOrLateScheduledSignals"] == 0
     assert on_time["status"] == "PASS"
 
