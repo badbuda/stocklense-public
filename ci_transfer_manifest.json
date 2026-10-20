@@ -368,7 +368,7 @@
     "tests/test_aws_independent_paper.py": "b403668759abdd5de1468e88c8c02503b1f78d3b",
     "tests/test_aws_independent_pipeline.py": "ba8cb10bf2e03ef4a451cd1551004b3a3e33dd28",
     "tests/test_aws_independent_signal_producer.py": "6e87a8d3f90bf7840dc6992e82e70b447aab8211",
-    "tests/test_aws_independent_signal_schedule.py": "badeeb791e49b3618d9f36522c34a72cea2d084f",
+    "tests/test_aws_independent_signal_schedule.py": "5e7b69f342fd1fa671368c18fe4229f0ab6a972e",
     "tests/test_aws_journal_export.py": "60833c59988e0f2755073ed4bac80dbeb8c5ea2b",
     "tests/test_aws_journal_session_guard.py": "5d39ca397242199da04b2006e6f3624a29f29994",
     "tests/test_aws_paper_pairing.py": "1fec22d46a24dfc3b67eede67bd95c43c329eaae",
