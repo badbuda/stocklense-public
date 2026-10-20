@@ -103,7 +103,7 @@ def test_past_session_must_match_exact_last_trading_date():
     stale = df.iloc[:-1].copy()
     stale_audit = dict(audit, completed_rows=len(stale),
                        last_completed_date=stale.iloc[-1]["Date"].date().isoformat())
-    with pytest.raises(ValueError, match="STALE_OR_SHORT_HISTORY"):
+    with pytest.raises(ValueError, match="STALE_LAST_SESSION"):
         ingest_frozen_yfinance(day, now=clock,
                               loader=lambda *, now_ny: (stale, stale_audit))
 
@@ -116,7 +116,7 @@ def test_new_source_has_no_partial_data_silently_added():
     ]
     bad_audit = dict(audit, completed_rows=len(partial),
                      last_completed_date=(pd.Timestamp(day)+pd.Timedelta(days=1)).date().isoformat())
-    with pytest.raises(ValueError, match="STALE_OR_SHORT_HISTORY"):
+    with pytest.raises(ValueError, match="STALE_LAST_SESSION"):
         ingest_frozen_yfinance(day, now=clock,
                               loader=lambda *, now_ny: (partial, bad_audit))
 
