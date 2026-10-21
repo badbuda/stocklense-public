@@ -3,10 +3,10 @@ from __future__ import annotations
 
 import copy
 from pathlib import Path
+import re
 import subprocess
 
 import pytest
-import yaml
 
 from infra.aws.verify_legacy_retirement_changeset import (
     validate_changeset, ALLOWED, RULES, ALARMS,
@@ -16,45 +16,34 @@ TEMPLATE = Path("infra/aws/paper-signal-journal.yaml")
 SCRIPT = Path("infra/aws/retire_legacy_stocklens.sh")
 
 
-class Loader(yaml.SafeLoader):
-    pass
-
-
-Loader.add_multi_constructor("!", lambda loader, tag, node:
-    tag + ":" + str(node.value) if isinstance(node, yaml.ScalarNode) else
-    (tag + ":" + str(loader.construct_sequence(node))
-     if isinstance(node, yaml.SequenceNode) else
-     tag + ":" + str(loader.construct_mapping(node))))
-
-
-def resources():
-    return yaml.load(TEMPLATE.read_text(), Loader=Loader)
+def section(name: str) -> str:
+    text = TEMPLATE.read_text()
+    match = re.search(r"(?m)^  " + re.escape(name) + r":\\n", text)
+    assert match is not None, name
+    following = text[match.end():]
+    end = re.search(r"(?m)^  [A-Za-z][A-Za-z0-9]*:\\n", following)
+    return following[:end.start()] if end else following
 
 
 def test_default_decommissions_three_and_keeps_old_table():
     raw = TEMPLATE.read_text()
-    doc = resources()
-    assert doc["Parameters"]["LegacyRetirementMode"]["Default"] == "RETIRED"
-    assert doc["Parameters"]["LegacyRetirementMode"]["AllowedValues"] == [
-        "RUNNING", "RETIRED"]
-    all_res = doc["Resources"]
-    assert all_res["Signals"]["DeletionPolicy"] == "Retain"
-    assert all_res["Signals"]["Type"] == "AWS::DynamoDB::Table"
-    assert all_res["GitHubAuditRole"]["Type"] == "AWS::IAM::Role"
-    assert all_res["GitHubOIDC"]["Type"] == "AWS::IAM::OIDCProvider"
-    assert doc["Outputs"]["TableName"]
-    assert len([x for x in all_res.values()
-                if x["Type"] == "AWS::Events::Rule"]) == 3
-    for n in RULES:
-        assert all_res[n]["Properties"]["State"].startswith("If:")
-        assert "LegacyArchiveRunning" in all_res[n]["Properties"]["State"]
-    for n in ALARMS:
-        alarm = all_res[n]["Properties"]
-        assert alarm["AlarmActions"].startswith("If:")
-        assert "LegacyNotify" in alarm["AlarmActions"]
-        assert alarm["TreatMissingData"] in ("notBreaching",) or n == "WatchdogHeartbeatAlarm"
-    assert "LegacyArchiveRunning, breaching, notBreaching" in raw
-    # Never send new production/standalone Staging into this stack.
+    assert "LegacyRetirementMode:" in raw
+    assert "Default: RETIRED" in raw
+    assert "AllowedValues: [RUNNING, RETIRED]" in raw
+    table = section("Signals")
+    assert "Type: AWS::DynamoDB::Table" in table
+    assert "DeletionPolicy: Retain" in table
+    assert "Type: AWS::IAM::Role" in section("GitHubAuditRole")
+    assert "Type: AWS::IAM::OIDCProvider" in section("GitHubOIDC")
+    assert "TableName: {Value: !Ref Signals}" in raw
+    assert raw.count("Type: AWS::Events::Rule") == 3
+    for name in RULES:
+        assert "State: !If [LegacyArchiveRunning, ENABLED, DISABLED]" in section(name)
+    for name in ALARMS:
+        assert "AlarmActions: !If [LegacyNotify, [!Ref PaperAlertTopic], !Ref 'AWS::NoValue']" in section(name)
+        if name != "WatchdogHeartbeatAlarm":
+            assert "TreatMissingData: notBreaching" in section(name)
+    assert "TreatMissingData: !If [LegacyArchiveRunning, breaching, notBreaching]" in section("WatchdogHeartbeatAlarm")
     assert "stocklens-independent-staging" not in raw
 
 
