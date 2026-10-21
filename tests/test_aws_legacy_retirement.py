@@ -18,10 +18,10 @@ SCRIPT = Path("infra/aws/retire_legacy_stocklens.sh")
 
 def section(name: str) -> str:
     text = TEMPLATE.read_text()
-    match = re.search(r"(?m)^  " + re.escape(name) + r":\\n", text)
+    match = re.search(r"(?m)^  " + re.escape(name) + ":" + chr(10), text)
     assert match is not None, name
     following = text[match.end():]
-    end = re.search(r"(?m)^  [A-Za-z][A-Za-z0-9]*:\\n", following)
+    end = re.search(r"(?m)^  [A-Za-z][A-Za-z0-9]*:" + chr(10), following)
     return following[:end.start()] if end else following
 
 
