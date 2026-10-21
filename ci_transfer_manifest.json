@@ -340,7 +340,7 @@
     "tests/test_aws_calendar_workflow.py": "93878060f3ea1002e1397ef91fe547c4bb95cbe6",
     "tests/test_aws_journal_export.py": "60833c59988e0f2755073ed4bac80dbeb8c5ea2b",
     "tests/test_aws_journal_session_guard.py": "5d39ca397242199da04b2006e6f3624a29f29994",
-    "tests/test_aws_legacy_retirement.py": "f4cb3eecf7e3af78ad798c9de7bc1c3c97920d8f",
+    "tests/test_aws_legacy_retirement.py": "f9d07c70be371fce5123473556ef2d3cf600e1bb",
     "tests/test_aws_paper_pairing.py": "1fec22d46a24dfc3b67eede67bd95c43c329eaae",
     "tests/test_aws_phase2_behavior.py": "8cbd5c6e8124c05d684b9220484a68b8718f05f0",
     "tests/test_aws_phase2_paper_template.py": "e1a5545ea20d7c5ab6deb5d7693879dbb986377f",
