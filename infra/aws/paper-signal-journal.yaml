@@ -4,8 +4,17 @@ Parameters:
     Type: String
     Default: ''
     Description: 'Optional AWS SNS alert email, requiring subscription confirmation'
+  LegacyRetirementMode:
+    Type: String
+    Default: RETIRED
+    AllowedValues: [RUNNING, RETIRED]
+    Description: 'Existing legacy journal retirement; RETIRED disables all three archive/watchdog schedules and notification actions without deleting records'
 Conditions:
   EmailAlertsConfigured: !Not [!Equals [!Ref AlertEmail, '']]
+  LegacyArchiveRunning: !Equals [!Ref LegacyRetirementMode, RUNNING]
+  LegacyNotify: !And
+    - !Condition EmailAlertsConfigured
+    - !Condition LegacyArchiveRunning
 Description: StockLens shadow-only signal archive; broker trading is always disabled.
 Resources:
   PaperAlertTopic:
@@ -237,7 +246,7 @@ Resources:
     Properties:
       Description: '09:20 UTC Tue-Sat: archive previous NY calendar trading session after completed GitHub publication.'
       ScheduleExpression: 'cron(20 9 ? * TUE-SAT *)'
-      State: ENABLED
+      State: !If [LegacyArchiveRunning, ENABLED, DISABLED]
       Targets:
         - {Id: PaperEvidence, Arn: !GetAtt PaperEvidenceLambda.Arn}
   PaperEvidencePermission:
@@ -260,14 +269,14 @@ Resources:
       Threshold: 0
       ComparisonOperator: GreaterThanThreshold
       TreatMissingData: notBreaching
-      AlarmActions: !If [EmailAlertsConfigured, [!Ref PaperAlertTopic], !Ref 'AWS::NoValue']
+      AlarmActions: !If [LegacyNotify, [!Ref PaperAlertTopic], !Ref 'AWS::NoValue']
 
   NightlyRule:
     Type: AWS::Events::Rule
     Properties:
       Description: At 09:10 UTC Tue-Sat, archive prior NY business-day signal after GitHub publication (fail closed on market holidays).
       ScheduleExpression: 'cron(10 9 ? * TUE-SAT *)'
-      State: ENABLED
+      State: !If [LegacyArchiveRunning, ENABLED, DISABLED]
       Targets:
         - {Id: ShadowArchive, Arn: !GetAtt ShadowLambda.Arn}
   RuleInvokePermission:
@@ -290,7 +299,7 @@ Resources:
       Threshold: 0
       ComparisonOperator: GreaterThanThreshold
       TreatMissingData: notBreaching
-      AlarmActions: !If [EmailAlertsConfigured, [!Ref PaperAlertTopic], !Ref 'AWS::NoValue']
+      AlarmActions: !If [LegacyNotify, [!Ref PaperAlertTopic], !Ref 'AWS::NoValue']
   # Independent from both archive schedules, including weekend health probes.
   WatchdogLogs:
     Type: AWS::Logs::LogGroup
@@ -414,7 +423,7 @@ Resources:
     Properties:
       Description: 'Independent watchdog every 6h; on Tue-Sat 12:15Z verify 09Z archive invocations.'
       ScheduleExpression: 'cron(15 0/6 * * ? *)'
-      State: ENABLED
+      State: !If [LegacyArchiveRunning, ENABLED, DISABLED]
       Targets:
         - {Id: IndependentScheduleWatchdog, Arn: !GetAtt WatchdogLambda.Arn}
   WatchdogInvokePermission:
@@ -437,7 +446,7 @@ Resources:
       Threshold: 0
       ComparisonOperator: GreaterThanThreshold
       TreatMissingData: notBreaching
-      AlarmActions: !If [EmailAlertsConfigured, [!Ref PaperAlertTopic], !Ref 'AWS::NoValue']
+      AlarmActions: !If [LegacyNotify, [!Ref PaperAlertTopic], !Ref 'AWS::NoValue']
   WatchdogHeartbeatAlarm:
     Type: AWS::CloudWatch::Alarm
     Properties:
@@ -451,8 +460,8 @@ Resources:
       DatapointsToAlarm: 2
       Threshold: 1
       ComparisonOperator: LessThanThreshold
-      TreatMissingData: breaching
-      AlarmActions: !If [EmailAlertsConfigured, [!Ref PaperAlertTopic], !Ref 'AWS::NoValue']
+      TreatMissingData: !If [LegacyArchiveRunning, breaching, notBreaching]
+      AlarmActions: !If [LegacyNotify, [!Ref PaperAlertTopic], !Ref 'AWS::NoValue']
   GitHubOIDC:
     Type: AWS::IAM::OIDCProvider
     Properties:
