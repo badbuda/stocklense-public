@@ -85,7 +85,7 @@ def test_read_only_monitor_template_uses_independent_watchdog_and_sns():
     assert "cron(15 0/6 * * ? *)" in TEMPLATE
     assert "WatchdogHeartbeatAlarm:" in TEMPLATE and "WatchdogErrorAlarm:" in TEMPLATE
     section = TEMPLATE.split("  WatchdogHeartbeatAlarm:")[1].split("  GitHubOIDC:")[0]
-    assert "TreatMissingData: breaching" in section
+    assert "TreatMissingData: !If [LegacyArchiveRunning, breaching, notBreaching]" in section
     assert "DatapointsToAlarm: 2" in section
     assert "Period: 21600" in section
     assert "cloudwatch:GetMetricStatistics" in TEMPLATE
