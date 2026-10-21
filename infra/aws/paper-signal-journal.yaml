@@ -1,5 +1,10 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Parameters:
+  LegacyArchiveState:
+    Type: String
+    Default: ENABLED
+    AllowedValues: [ENABLED, DISABLED]
+    Description: 'Explicit retire opt-in. DISABLED stops old archive producers; retains table and receipt history.'
   AlertEmail:
     Type: String
     Default: ''
@@ -11,6 +16,7 @@ Parameters:
     Description: 'Existing legacy journal retirement; RETIRED disables all three archive/watchdog schedules and notification actions without deleting records'
 Conditions:
   EmailAlertsConfigured: !Not [!Equals [!Ref AlertEmail, '']]
+  LegacyArchivesEnabled: !Equals [!Ref LegacyArchiveState, ENABLED]
   LegacyArchiveRunning: !Equals [!Ref LegacyRetirementMode, RUNNING]
   LegacyNotify: !And
     - !Condition EmailAlertsConfigured
