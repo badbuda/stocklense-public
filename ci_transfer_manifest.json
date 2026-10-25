@@ -162,6 +162,7 @@
     "infra/aws/portal-journal-handler.py": "7dc97bb5e90b6644177ba8392089d5958269852c",
     "infra/aws/portal-readonly-api.yaml": "88e609620d46dac089bce74d8ab5f1bdaa91ce54",
     "infra/aws/README.md": "4d5015d3a5efd79a23e368759279d5f406bc6c31",
+    "infra/aws/retire_from_deployed_template.py": "4c2446b5158be7b970a732a15a2228bf0d9e7398",
     "infra/aws/retire_legacy_stocklens.sh": "697e534c409ba867cef4ceff3fef4f3b800d4ee7",
     "infra/aws/schedule-watchdog-handler.py": "12fd5f4941d81aa064317dfc1827032db5845339",
     "infra/aws/second_vendor_parity.py": "ae6b679966244368d4ef25559974561b23a4ac44",
