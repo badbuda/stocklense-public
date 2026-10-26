@@ -30,3 +30,17 @@ def test_qualified_skip_reporting_is_not_false_success():
     assert 'if [[ "${MARKET_CALENDAR_OUTCOME}" == "success"' in W
     assert "AWS_SIGNAL_AND_PAPER_AUDIT" in W
     assert "gh issue comment 10" in W
+
+def test_retired_legacy_aws_workflows_are_explicitly_manual_only():
+    # AWS legacy rules were disabled by the operator in 2026-10-26.
+    # Missing future legacy journal sessions cannot be treated as live outages.
+    for name in ("aws-journal-export.yml", "aws-shadow-journal-audit.yml"):
+        text = Path(".github/workflows", name).read_text()
+        triggers = text.split("permissions:", 1)[0]
+        assert "  workflow_dispatch:" in triggers
+        assert "  schedule:" not in triggers
+        assert "  push:" not in triggers
+        assert "2026-10-26" in triggers
+    assert "(github.event_name == 'schedule'" not in W
+    assert "github.event_name == 'push'" not in W
+    assert W.count("github.event_name == 'workflow_dispatch' && inputs.verify_session") == 4

@@ -24,7 +24,7 @@ def test_two_isolated_scheduled_lambdas_and_no_secrets():
     assert T.count("Type: AWS::Lambda::Function")==3
     assert "cron(20 9 ? * TUE-SAT *)" in T
     assert "cron(10 9 ? * TUE-SAT *)" in T
-    assert "40 9 * * 2-6" in W
+    assert "  schedule:" not in W.split("permissions:", 1)[0]  # legacy archive retired
     assert "AWS_PROSPECTIVE_PAPER=PASS_MODELED_ONLY" in W
     assert "AWS_STOCKLENS_AUDIT_ROLE_ARN" in W
     assert "AWS_ACCESS_KEY_ID" not in W
@@ -109,6 +109,6 @@ def test_github_audit_rejects_another_session(monkeypatch):
 def test_aws_audit_result_is_visible_and_rechecks_on_workflow_change():
     assert "issues: write" in W
     assert "AWS_SIGNAL_AND_PAPER_AUDIT" in W
-    assert "github.event_name == 'push'" in W
+    assert "github.event_name == 'workflow_dispatch' && inputs.verify_session" in W
     assert "always()" in W
     assert "gh issue comment 10" in W
