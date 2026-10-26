@@ -442,6 +442,8 @@
     "workbench_evidence_manifest.py": "7e290add5dcb861b0d4bdbed81cc7e4308ff4683",
     "workbench_selfcheck.py": "4f17be6d56ac7d3cc3637e1ef2b2af3ed9d880a8",
     "yahoo_eod_scorecard.py": "137465f3ff4d9a2b8c164bf4321480c0ea0869fd",
-    "yahoo_long_history.py": "e7e51b5c2f5697da5d583316638b98ec13e6114c"
+    "yahoo_long_history.py": "e7e51b5c2f5697da5d583316638b98ec13e6114c",
+    "infra/aws/one_shot_staging_readonly_audit.sh": "55fc32c5b0913ad80bd421eeab93dc6d6283334d",
+    "tests/test_one_shot_staging_readonly_audit.py": "0cf951168193ad1dbc3139e67945bf20e4a55a18"
   }
 }
