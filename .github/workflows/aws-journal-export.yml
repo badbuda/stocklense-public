@@ -1,5 +1,9 @@
 name: StockLens AWS DynamoDB CSV Export
 
+# Legacy stocklens-paper schedules were stopped in AWS on 2026-10-26.
+# This historical DynamoDB CSV export is manual-only; the new isolated S3 staging
+# ledger has separate evidence and must not be represented by these results.
+
 on:
   workflow_dispatch:
     inputs:
@@ -13,14 +17,6 @@ on:
           - '90'
           - '252'
         default: '60'
-  push:
-    branches:
-      - main
-    paths:
-      - '.github/workflows/aws-journal-export.yml'
-  schedule:
-    # After the 09:10Z signal, 09:20Z paper archive and 09:40Z read-only audit.
-    - cron: '55 9 * * 2-6'
 
 permissions:
   contents: read
