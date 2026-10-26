@@ -343,7 +343,7 @@
     "tests/test_aws_legacy_retirement.py": "d750dbda64529514edd85515ea567c73606bb3b4",
     "tests/test_aws_paper_pairing.py": "1fec22d46a24dfc3b67eede67bd95c43c329eaae",
     "tests/test_aws_phase2_behavior.py": "8cbd5c6e8124c05d684b9220484a68b8718f05f0",
-    "tests/test_aws_phase2_paper_template.py": "e1a5545ea20d7c5ab6deb5d7693879dbb986377f",
+    "tests/test_aws_phase2_paper_template.py": "ee31df0515b81730b70ed5de0412b0bdc3a84c2d",
     "tests/test_aws_readonly_deadman.py": "c695e2107b0cf8448f9b352231978d39c1173309",
     "tests/test_aws_schedule_watchdog.py": "9023196262597c0c18004586c6d5fe5448557af4",
     "tests/test_aws_shadow_journal_verify.py": "277ad25de75a9785c71ec9250e132dd408435175",
