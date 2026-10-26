@@ -1,5 +1,9 @@
 name: StockLens AWS Shadow Journal Read Audit
 
+# Historical legacy DynamoDB audit only. The legacy AWS schedules were stopped
+# on 2026-10-26; do not auto-audit a retired journal as if it remains live.
+# Manual verification of archived sessions remains available on explicit opt-in.
+
 on:
   workflow_dispatch:
     inputs:
@@ -8,14 +12,6 @@ on:
         type: boolean
         required: false
         default: false
-  push:
-    branches:
-      - main
-    paths:
-      - '.github/workflows/aws-shadow-journal-audit.yml'
-      - 'aws_shadow_journal_verify.py'
-  schedule:
-    - cron: '40 9 * * 2-6'
 
 permissions:
   id-token: write
@@ -62,7 +58,7 @@ jobs:
           echo "AWS_STOCKLENS_OIDC_PREFLIGHT=PASS_READ_ONLY_TABLE_ACTIVE"
           echo "AWS_STOCKLENS_LIVE_TRADING_AUTHORIZED=false"
       - name: Verify the scheduled completed-session signal, never broker fills
-        if: ${{ (github.event_name == 'schedule' || github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.verify_session)) && steps.market_calendar.outputs.required == 'true' }}
+        if: ${{ (github.event_name == 'workflow_dispatch' && inputs.verify_session) && steps.market_calendar.outputs.required == 'true' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -79,7 +75,7 @@ jobs:
           python3 aws_shadow_journal_verify.py /tmp/aws-journal.json "$session"
 
       - name: Validate separate modeled paper record in AWS; never broker fills
-        if: ${{ (github.event_name == 'schedule' || github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.verify_session)) && steps.market_calendar.outputs.required == 'true' }}
+        if: ${{ (github.event_name == 'workflow_dispatch' && inputs.verify_session) && steps.market_calendar.outputs.required == 'true' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -106,7 +102,7 @@ jobs:
                 ";trade_count="+str(len(verified["value"]["trs"])))
           PY
       - name: Cross-check previous archived shadow with next-session modeled paper
-        if: ${{ (github.event_name == 'schedule' || github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.verify_session)) && steps.market_calendar.outputs.required == 'true' }}
+        if: ${{ (github.event_name == 'workflow_dispatch' && inputs.verify_session) && steps.market_calendar.outputs.required == 'true' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -125,7 +121,7 @@ jobs:
           echo "AWS_SIGNAL_PAPER_PAIRING=PASS_MODELED_ONLY_NOT_BROKER_FILLS"
 
       - name: Record daily AWS journal audit outcome on project issue
-        if: ${{ always() && (github.event_name == 'schedule' || github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.verify_session)) }}
+        if: ${{ always() && (github.event_name == 'workflow_dispatch' && inputs.verify_session) }}
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
