@@ -46,9 +46,93 @@ for key in CandidateFunctionName CandidatePaperFunctionName CandidatePaperPrefli
   if [[ -z "$fn" || "$fn" == None ]]; then
     block "LAMBDA_NOT_DEPLOYED:$key"
   else
-    config="$(aws lambda get-function-configuration --function-name "$fn" --query '[State,LastUpdateStatus,Runtime,Handler]' --output text)"
-    echo "STAGING_LAMBDA:$key:$config"
-    [[ "$config" == Active$'\t'Successful$'\t'python3.12$'\t'* ]] || block "LAMBDA_CONFIG:$key"
+    if config="$(aws lambda get-function-configuration --function-name "$fn" --query '[State,LastUpdateStatus,Runtime,Handler]' --output text 2>/dev/null)"; then
+      echo "STAGING_LAMBDA:$key:$config"
+      [[ "$config" == Active
+  fi
+done
+curl -fsSL --retry 3 "https://raw.githubusercontent.com/badbuda/stocklense-public/$REF/infra/aws/staging_readonly_status.py" -o "$work/status.py"
+[[ "$(git hash-object "$work/status.py")" == 2e550e4f032289b21f3a41bff7cb326eb6e0106a ]] || { echo "PINNED_AUDIT_HASH_MISMATCH"; exit 3; }
+if python3 "$work/status.py" --session 2026-10-20 --session 2026-10-21 --session 2026-10-22 --session 2026-10-23 > "$work/report.json"; then
+  echo "STAGING_SIGNAL_RECEIPT_AUDIT:PASS_S3_ONLY"
+else
+  block "SIGNAL_RECEIPT_INCOMPLETE_LATE_OR_INVALID"
+fi
+python3 - "$work/report.json" <<'PY'
+import json,sys
+o=json.load(open(sys.argv[1]))
+print("SIGNAL_STATUS:",o.get("status"))
+for r in o.get("receipts",[]):
+    print("SIGNAL:",r.get("session"),r.get("status"),"sha256="+str(r.get("sha256","UNVERIFIED"))[:16])
+PY
+genesis="paper/book/NEW_AWS_INDEPENDENT_STAGING_BOOK/genesis.json"
+if aws s3api head-object --bucket "$bucket" --key "$genesis" >/dev/null 2>&1; then
+  echo "PAPER_GENESIS_PRESENT:ACCOUNTING_NOT_YET_VERIFIED"
+else
+  block "PAPER_GENESIS_NOT_FOUND_OR_UNREADABLE"
+fi
+echo "AUDIT_READ_ONLY:NO_LAMBDA_INVOKE:NO_S3_WRITE:NO_ORDER"
+echo "NOT_PROVEN:EVENTBRIDGE_PROVENANCE,PROVIDER_PARITY,PAPER_ACCOUNTING,DASHBOARD_LIVE_SOURCE"
+if ((errors)); then echo "AUDIT_BLOCKED:$errors"; exit 2; fi
+echo "INFRA_S3_RECEIPTS_PASS_ONLY:OTHER_GATES_STILL_REQUIRED"
+\t'Successful
+  fi
+done
+curl -fsSL --retry 3 "https://raw.githubusercontent.com/badbuda/stocklense-public/$REF/infra/aws/staging_readonly_status.py" -o "$work/status.py"
+[[ "$(git hash-object "$work/status.py")" == 2e550e4f032289b21f3a41bff7cb326eb6e0106a ]] || { echo "PINNED_AUDIT_HASH_MISMATCH"; exit 3; }
+if python3 "$work/status.py" --session 2026-10-20 --session 2026-10-21 --session 2026-10-22 --session 2026-10-23 > "$work/report.json"; then
+  echo "STAGING_SIGNAL_RECEIPT_AUDIT:PASS_S3_ONLY"
+else
+  block "SIGNAL_RECEIPT_INCOMPLETE_LATE_OR_INVALID"
+fi
+python3 - "$work/report.json" <<'PY'
+import json,sys
+o=json.load(open(sys.argv[1]))
+print("SIGNAL_STATUS:",o.get("status"))
+for r in o.get("receipts",[]):
+    print("SIGNAL:",r.get("session"),r.get("status"),"sha256="+str(r.get("sha256","UNVERIFIED"))[:16])
+PY
+genesis="paper/book/NEW_AWS_INDEPENDENT_STAGING_BOOK/genesis.json"
+if aws s3api head-object --bucket "$bucket" --key "$genesis" >/dev/null 2>&1; then
+  echo "PAPER_GENESIS_PRESENT:ACCOUNTING_NOT_YET_VERIFIED"
+else
+  block "PAPER_GENESIS_NOT_FOUND_OR_UNREADABLE"
+fi
+echo "AUDIT_READ_ONLY:NO_LAMBDA_INVOKE:NO_S3_WRITE:NO_ORDER"
+echo "NOT_PROVEN:EVENTBRIDGE_PROVENANCE,PROVIDER_PARITY,PAPER_ACCOUNTING,DASHBOARD_LIVE_SOURCE"
+if ((errors)); then echo "AUDIT_BLOCKED:$errors"; exit 2; fi
+echo "INFRA_S3_RECEIPTS_PASS_ONLY:OTHER_GATES_STILL_REQUIRED"
+\t'python3.12
+  fi
+done
+curl -fsSL --retry 3 "https://raw.githubusercontent.com/badbuda/stocklense-public/$REF/infra/aws/staging_readonly_status.py" -o "$work/status.py"
+[[ "$(git hash-object "$work/status.py")" == 2e550e4f032289b21f3a41bff7cb326eb6e0106a ]] || { echo "PINNED_AUDIT_HASH_MISMATCH"; exit 3; }
+if python3 "$work/status.py" --session 2026-10-20 --session 2026-10-21 --session 2026-10-22 --session 2026-10-23 > "$work/report.json"; then
+  echo "STAGING_SIGNAL_RECEIPT_AUDIT:PASS_S3_ONLY"
+else
+  block "SIGNAL_RECEIPT_INCOMPLETE_LATE_OR_INVALID"
+fi
+python3 - "$work/report.json" <<'PY'
+import json,sys
+o=json.load(open(sys.argv[1]))
+print("SIGNAL_STATUS:",o.get("status"))
+for r in o.get("receipts",[]):
+    print("SIGNAL:",r.get("session"),r.get("status"),"sha256="+str(r.get("sha256","UNVERIFIED"))[:16])
+PY
+genesis="paper/book/NEW_AWS_INDEPENDENT_STAGING_BOOK/genesis.json"
+if aws s3api head-object --bucket "$bucket" --key "$genesis" >/dev/null 2>&1; then
+  echo "PAPER_GENESIS_PRESENT:ACCOUNTING_NOT_YET_VERIFIED"
+else
+  block "PAPER_GENESIS_NOT_FOUND_OR_UNREADABLE"
+fi
+echo "AUDIT_READ_ONLY:NO_LAMBDA_INVOKE:NO_S3_WRITE:NO_ORDER"
+echo "NOT_PROVEN:EVENTBRIDGE_PROVENANCE,PROVIDER_PARITY,PAPER_ACCOUNTING,DASHBOARD_LIVE_SOURCE"
+if ((errors)); then echo "AUDIT_BLOCKED:$errors"; exit 2; fi
+echo "INFRA_S3_RECEIPTS_PASS_ONLY:OTHER_GATES_STILL_REQUIRED"
+\t'* ]] || block "LAMBDA_CONFIG:$key"
+    else
+      block "LAMBDA_UNREADABLE:$key"
+    fi
   fi
 done
 curl -fsSL --retry 3 "https://raw.githubusercontent.com/badbuda/stocklense-public/$REF/infra/aws/staging_readonly_status.py" -o "$work/status.py"
