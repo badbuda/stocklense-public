@@ -8,7 +8,7 @@
     ".github/workflows/aws-journal-export.yml": "32bd92d6da3bfd6f89df09d9a719d3ce9f166871",
     ".github/workflows/aws-shadow-journal-audit.yml": "89d8bbba6c80a6da6bb739eef78fd7c73b0ae47b",
     ".github/workflows/fast-guard.yml": "a9b640c9fb437d3d25ae6ab1496c23699a3cfb1b",
-    ".github/workflows/portal-browser-smoke.yml": "114c3bee246a1ab995834166a67a34d16fb3b637",
+    ".github/workflows/portal-browser-smoke.yml": "02a15ff071257313191bd8ad6f7e0a353ee7fc92",
     ".github/workflows/portal-history-build.yml": "2d731559dde6f3116cc349379190e74417a1ece9",
     ".github/workflows/shadow.yml": "234865debaa532a1c63f6dde697791607145a588",
     "accel_mechanism_broad_megabatch.py": "aa9c3c2585a2505cdca95be3768f67a904c27e45",
@@ -446,6 +446,7 @@
     "infra/aws/one_shot_staging_readonly_audit.sh": "55fc32c5b0913ad80bd421eeab93dc6d6283334d",
     "tests/test_one_shot_staging_readonly_audit.py": "0cf951168193ad1dbc3139e67945bf20e4a55a18",
     "shadow_research_publication_policy.py": "c5b56019e0dbb5da9ed46761421746070331fbcb",
-    "tests/test_shadow_research_publication_policy.py": "1e226b7ed9a1e6c67e8eec0975ff9f9a59588f5b"
+    "tests/test_shadow_research_publication_policy.py": "1e226b7ed9a1e6c67e8eec0975ff9f9a59588f5b",
+    "tests/test_portal_post_shadow_autoverify.py": "c8a8e328e34999db0b77e5f814db750b92959a93"
   }
 }

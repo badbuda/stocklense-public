@@ -2,6 +2,11 @@ name: StockLens Portal Browser E2E
 
 on:
   workflow_dispatch:
+  # GitHub Actions bot's evidence commits do NOT retrigger push workflows.
+  # Verify deployed Amplify bytes and E2E after a completed, successful Shadow.
+  workflow_run:
+    workflows: ["StockLens 8.0 Shadow"]
+    types: [completed]
   push:
     branches: [main]
     paths:
@@ -25,6 +30,7 @@ concurrency:
 
 jobs:
   browser:
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
