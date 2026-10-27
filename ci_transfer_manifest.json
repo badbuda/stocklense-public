@@ -445,7 +445,7 @@
     "yahoo_long_history.py": "e7e51b5c2f5697da5d583316638b98ec13e6114c",
     "infra/aws/one_shot_staging_readonly_audit.sh": "55fc32c5b0913ad80bd421eeab93dc6d6283334d",
     "tests/test_one_shot_staging_readonly_audit.py": "0cf951168193ad1dbc3139e67945bf20e4a55a18",
-    "shadow_research_publication_policy.py": "2a5227247f0911f2892c3a018c903c9f30dc7863",
+    "shadow_research_publication_policy.py": "c5b56019e0dbb5da9ed46761421746070331fbcb",
     "tests/test_shadow_research_publication_policy.py": "1e226b7ed9a1e6c67e8eec0975ff9f9a59588f5b"
   }
 }
