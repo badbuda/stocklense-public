@@ -29,9 +29,17 @@ def validate():
     for required in ("shadow_history/readiness.json","shadow_history/daily_digest.json","shadow_history/slo.json","shadow_history/regime_analytics.json","shadow_history/change_digest.json","shadow_history/stress_scenarios.json","shadow_history/exposure.json","shadow_history/drawdown_budget.json","shadow_history/anomalies.json","shadow_history/recovery_plan.json","shadow_history/data_provenance.json","shadow_history/qc_input_ingestion.json","shadow_history/qc_same_input_parity.json","shadow_history/qc_parity_dossier.json","shadow_history/execution_plan.json","shadow_history/trade_receipts.json","shadow_history/execution_audit.json","shadow_history/cost_attribution.json","shadow_history/execution_readiness.json","shadow_history/incident_state.json","shadow_history/dependency_integrity.json","shadow_history/artifact_catalog.json","shadow_history/run_manifest.json","shadow_history/artifact_integrity.json","research/prospective/registry.json","docs/prospective_maturity.json","docs/capital_readiness.json","output/research_provenance.json"):
         if not Path(required).exists(): errors.append("MISSING_"+Path(required).stem.upper())
     maturity=Path("docs/prospective_maturity.json")
+    research_maturity_status="MISSING"
+    research_publication_disposition="RESEARCH_MATURITY_MISSING"
     if maturity.exists():
+        from shadow_research_publication_policy import disposition
         mx=json.loads(maturity.read_text())
-        if mx.get("status")!="PASS": errors.append("PROSPECTIVE_MATURITY_BLOCKED")
+        research_maturity_status=mx.get("status","MISSING")
+        publishable,research_publication_disposition=disposition(mx)
+        # This gate NEVER changes the independent research maturity report.
+        # Only a narrowly audited evidence-fingerprint ATTENTION permits
+        # SHADOW_ONLY evidence publication; capital gating remains separate.
+        if not publishable: errors.append("PROSPECTIVE_MATURITY_BLOCKED:"+research_publication_disposition)
         if mx.get("producer_current") is not True: errors.append("PROSPECTIVE_PRODUCER_STALE")
         if any(row.get("definition_current") is not True for row in mx.get("experiments",[])): errors.append("PROSPECTIVE_DEFINITION_DRIFT")
     capital=Path("docs/capital_readiness.json")
@@ -47,7 +55,11 @@ def validate():
     if readiness.exists() and json.loads(readiness.read_text()).get("status")!="READY": errors.append("READINESS_BLOCKED")
     slo=Path("shadow_history/slo.json")
     if slo.exists() and json.loads(slo.read_text()).get("status")=="FAIL": errors.append("SLO_FAIL")
-    result={"status":"PASS" if not errors else "FAIL","errors":errors}
+    result={"status":"PASS" if not errors else "FAIL","errors":errors,
+            "research_maturity_status":research_maturity_status,
+            "research_publication_disposition":research_publication_disposition,
+            "automatic_trading_authorized":False,
+            "automatic_model_promotion":False}
     Path("shadow_history/pipeline_validation.json").write_text(json.dumps(result,indent=2)+"\n")
     if errors: raise SystemExit("PIPELINE_VALIDATION_FAIL:"+",".join(errors))
     return result
