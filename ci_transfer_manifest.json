@@ -217,7 +217,7 @@
     "parity_contract.py": "68cbbfa6923f534a7fd85fe217b6b62f3345f134",
     "performance_analytics.py": "89e19ea4d9fc7839b54d228fabd8427663893ff7",
     "persist_signal.py": "f9a6aab4204b507c5449d81c71ce305fa4270554",
-    "pipeline_validate.py": "606234160c217159f6a1b7169af47daafacdfa91",
+    "pipeline_validate.py": "9648cd1f213e7d16ac9bad662706e75ce60ad355",
     "portal_feed.py": "245a114f35e47827b68d83eb2c385fbc6e2b7128",
     "preflight.py": "eb93cc99be889099267da78bcfcb0040fc9f95d9",
     "prospective_benchmark.py": "567002d2246babab25d3ae90382ed928b020bf0a",
@@ -444,6 +444,8 @@
     "yahoo_eod_scorecard.py": "137465f3ff4d9a2b8c164bf4321480c0ea0869fd",
     "yahoo_long_history.py": "e7e51b5c2f5697da5d583316638b98ec13e6114c",
     "infra/aws/one_shot_staging_readonly_audit.sh": "55fc32c5b0913ad80bd421eeab93dc6d6283334d",
-    "tests/test_one_shot_staging_readonly_audit.py": "0cf951168193ad1dbc3139e67945bf20e4a55a18"
+    "tests/test_one_shot_staging_readonly_audit.py": "0cf951168193ad1dbc3139e67945bf20e4a55a18",
+    "shadow_research_publication_policy.py": "2a5227247f0911f2892c3a018c903c9f30dc7863",
+    "tests/test_shadow_research_publication_policy.py": "1e226b7ed9a1e6c67e8eec0975ff9f9a59588f5b"
   }
 }
