@@ -10,6 +10,7 @@ from __future__ import annotations
 import re
 
 HEX_SHA256 = re.compile(r"[0-9a-f]{64}\Z")
+HEX_GIT_SHA = re.compile(r"[0-9a-f]{40}\Z")
 DRIFT = "ATTENTION_PROSPECTIVE_EVIDENCE_FINGERPRINT_DRIFT"
 
 
@@ -20,7 +21,7 @@ def disposition(maturity: dict) -> tuple[bool, str]:
         return False, "UNEXPECTED_MATURITY_SCHEMA"
     producer = maturity.get("producer_git_sha")
     if (maturity.get("producer_current") is not True
-            or not isinstance(producer, str) or not HEX_SHA256.fullmatch(producer)
+            or not isinstance(producer, str) or not HEX_GIT_SHA.fullmatch(producer)
             or maturity.get("current_git_sha") != producer):
         return False, "RESEARCH_PRODUCER_UNVERIFIED"
     experiments = maturity.get("experiments")
