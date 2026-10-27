@@ -1,32 +1,34 @@
 {
-  "schema_version": 5,
-  "producer_git_sha": "d652ec1c87aa35e46257ff684376c6d7edcdce78",
-  "current_git_sha": "d652ec1c87aa35e46257ff684376c6d7edcdce78",
+  "schema_version": 6,
+  "producer_git_sha": "d3d95d7e1935cf3cb6933400e276980fe74ea09c",
+  "current_git_sha": "d3d95d7e1935cf3cb6933400e276980fe74ea09c",
   "producer_current": true,
-  "registry_updated_at_utc": "2026-10-10T02:32:06.379116+00:00",
-  "status": "PASS",
+  "registry_updated_at_utc": "2026-10-27T16:53:48.418259+00:00",
+  "status": "ATTENTION",
   "experiments": [
     {
       "experiment_id": "SL9-007-UPSHIFT-CONFIRMATION",
       "status": "ACTIVE_RESEARCH_ONLY",
       "inception_date": "2026-09-26",
-      "accepted_completed_xnys_sessions": 10,
-      "persisted_prospective_sessions": 10,
+      "accepted_completed_xnys_sessions": 21,
+      "persisted_prospective_sessions": 21,
       "definition_current": true,
       "registered_definition_fingerprint": "b6c7a09db9bfb74ed323f36f8cfe1fbcc34d0962cea7fade1fdcfffbf7779fb7",
       "current_definition_fingerprint": "b6c7a09db9bfb74ed323f36f8cfe1fbcc34d0962cea7fade1fdcfffbf7779fb7",
       "evidence_fingerprint_current": false,
+      "evidence_fingerprint_audited": true,
+      "source_fingerprint_review_required": true,
       "registered_fingerprint": "ffd63bf6988f51442f2ff2232fbace4054b55e88d8afe968e4817759d274897d",
       "queue_fingerprint": "995ffc17a889c63d3fcc68376a2b9a688f038c6866820e6baace660e67d02528",
       "source_status": "AVAILABLE",
       "returns_csv": "research/data/SL9-007-UPSHIFT-CONFIRMATION.csv",
       "audit_schema_complete": true,
       "persistence_consistent": true,
-      "evidence_state": "ACCUMULATING_FORWARD_EVIDENCE",
+      "evidence_state": "ATTENTION_PROSPECTIVE_EVIDENCE_FINGERPRINT_DRIFT",
       "zero_backfill_enforced": true,
       "automatic_promotion": false,
       "threshold_status": "NO_MATURITY_THRESHOLD_INVENTED"
     }
   ],
-  "semantics": "Forward evidence only. Definition lineage is immutable while evidence fingerprints may refresh. Missing ingestion audit fields fail closed; no pre-inception backfill and no maturity threshold is invented by this report."
+  "semantics": "Forward evidence only. Definition lineage is immutable while evidence fingerprints may refresh. Missing audit fields fail closed; unreviewed evidence fingerprints never count as clean prospective maturity. Session date later than inception is not independent proof of original same-day capture. No historical first-seen or forward return edge is claimed."
 }

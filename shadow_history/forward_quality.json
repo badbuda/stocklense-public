@@ -4,6 +4,9 @@
   "performance_comparison_allowed": false,
   "risk_comparison_allowed": false,
   "strong_live_claims_allowed": false,
-  "execution_cost_observable": true,
+  "independently_qualified_frozen8_sessions": 0,
+  "legacy_row_count_not_a_verified_forward_claim": true,
+  "execution_cost_observable": false,
+  "modeled_execution_cost_diagnostic_available": true,
   "warning": "Prospective observations are descriptive; small samples are not evidence of durable edge."
 }

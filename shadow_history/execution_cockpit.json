@@ -12,7 +12,7 @@
     "TQQQ": 1197
   },
   "reference_prices": {
-    "QQQ": 751.27001953125,
+    "QQQ": 712.2000122070312,
     "TQQQ": 81.27999877929688
   },
   "orders": [],
@@ -41,5 +41,6 @@
   },
   "no_change_tolerance_applied": true,
   "pretrade_target_weight_gap": 0.0007683128442422804,
+  "price_semantics": "INDICATIVE_LAST_PUBLISHED_REFERENCE_NOT_NEXT_SESSION_09_31_09_32",
   "note": "Dry-run plan only. No live broker order is submitted."
 }

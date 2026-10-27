@@ -9,5 +9,8 @@
   "data_source": "YFINANCE_1M_RAW",
   "broker_fills_observed": false,
   "live_trading_authorized": false,
-  "note": "Observed QQQ/TQQQ 1m ETF opens with modeled fees/slippage. NOT actual broker execution."
+  "inception_cash_and_holdings_replayed": true,
+  "quote_bid_ask_proven": false,
+  "independent_vendor_close_proven": false,
+  "note": "Cash and share inventory replayed independently from modeled receipts, including inception. Yahoo minute opens are not independently verified broker fills or bid/ask quotes."
 }

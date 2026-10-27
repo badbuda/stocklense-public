@@ -3,41 +3,41 @@
   "alerts": [],
   "diagnostics": {
     "close": {
-      "relative_change": 0.004935929742705773,
+      "relative_change": 0.011073236119571367,
       "absolute_limit": 0.15,
-      "rolling_median_change": 0.00724969860467105,
-      "rolling_mad": 0.004436158477541111,
+      "rolling_median_change": 0.006519184970759696,
+      "rolling_mad": 0.004152301704235876,
       "effective_limit": 0.15
     },
     "sma50": {
-      "relative_change": 0.0018939494718039223,
+      "relative_change": 0.0004992557522289026,
       "absolute_limit": 0.05,
-      "rolling_median_change": 0.00041334489867177795,
-      "rolling_mad": 0.00026191143329927285,
+      "rolling_median_change": 0.0003716318837054427,
+      "rolling_mad": 0.0002515007909154181,
       "effective_limit": 0.05
     },
     "sma200": {
-      "relative_change": 0.001000899416797884,
+      "relative_change": 0.0006939527360431956,
       "absolute_limit": 0.02,
-      "rolling_median_change": 0.0008448837752289087,
-      "rolling_mad": 8.588205175116831e-05,
+      "rolling_median_change": 0.0008565928908713931,
+      "rolling_mad": 7.925099369086489e-05,
       "effective_limit": 0.02
     },
     "vol20": {
-      "relative_change": 0.008445013950948413,
+      "relative_change": 0.019800820007072714,
       "absolute_limit": 0.75,
       "rolling_median_change": 0.021429638277502473,
-      "rolling_mad": 0.014548448256979067,
+      "rolling_mad": 0.01363172194696304,
       "effective_limit": 0.75
     },
     "mom12": {
-      "relative_change": 0.03306943263711914,
+      "relative_change": 0.018309298397076956,
       "absolute_limit": 0.75,
-      "rolling_median_change": 0.04242807031945,
-      "rolling_mad": 0.020952393291819752,
+      "rolling_median_change": 0.03936187567088434,
+      "rolling_mad": 0.020129457067260347,
       "effective_limit": 0.75
     }
   },
-  "sessions_available": 252,
+  "sessions_available": 251,
   "policy": "absolute safety limits plus robust rolling baseline; never changes frozen model"
 }

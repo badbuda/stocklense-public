@@ -1,4 +1,8 @@
 {
   "status": "PASS",
-  "errors": []
+  "errors": [],
+  "research_maturity_status": "ATTENTION",
+  "research_publication_disposition": "RESEARCH_DRIFT_RECORDED_SHADOW_PUBLICATION_ONLY",
+  "automatic_trading_authorized": false,
+  "automatic_model_promotion": false
 }

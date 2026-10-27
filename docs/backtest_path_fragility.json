@@ -2,16 +2,16 @@
   "schema_version": 2,
   "publication_identity": {
     "schema_version": 2,
-    "git_sha": "d652ec1c87aa35e46257ff684376c6d7edcdce78",
+    "git_sha": "d3d95d7e1935cf3cb6933400e276980fe74ea09c",
     "signal_asof": null,
     "replay_dataset_sha256": "db0889da31af43b1b75e005c1f4ab2cad421dfb55a6c55a77a223e0623950d95",
-    "replay_rows_sha256": "b70d8238ab8b49b6a9f6b9d74fbfea33181441a89fa5d8974b66528c5e37f0d6",
+    "replay_rows_sha256": "6d1e7de74b8403787722cf223edb2397779b24b3d21f9dd4e6691db81d56fd9f",
     "simulator_contract_sha256": "80745a3640c6fe667a3c500571fb15abee1d532a5b720fb6efc8b52f291dfc68",
-    "generation_id": "c7286dd077530e65016343937426211669adcb4ab9d6fa6dd12d2fa8404507b4"
+    "generation_id": "4db67d3cc022324fd95e805fcb1f7fe5b77b818c23f9e6f54e93fad0a31d1900"
   },
   "status": "PASS",
   "full_path": {
-    "compounded_gross_return": 0.5440384438297377,
+    "compounded_gross_return": 0.5726110367098594,
     "max_drawdown": -0.32608002269767367,
     "max_drawdown_peak_date": "2026-06-02",
     "max_drawdown_trough_date": "2026-07-29"
@@ -41,8 +41,8 @@
       "sessions": 63,
       "window_count": 189,
       "worst_return_window": {
-        "compounded_gross_return": -0.24167200462180516,
-        "max_drawdown": -0.27179840547316925,
+        "compounded_gross_return": -0.2416719022309881,
+        "max_drawdown": -0.2717981023303432,
         "max_drawdown_peak_date": "2026-01-28",
         "max_drawdown_trough_date": "2026-03-30",
         "start": "2025-12-29",
@@ -61,16 +61,16 @@
       "sessions": 126,
       "window_count": 126,
       "worst_return_window": {
-        "compounded_gross_return": -0.10318349871557142,
-        "max_drawdown": -0.29150101591402133,
+        "compounded_gross_return": -0.07198828254293654,
+        "max_drawdown": -0.29150093584512493,
         "max_drawdown_peak_date": "2025-10-29",
         "max_drawdown_trough_date": "2026-03-30",
-        "start": "2025-10-09",
-        "end": "2026-04-10"
+        "start": "2025-10-10",
+        "end": "2026-04-13"
       },
       "worst_drawdown_window": {
-        "compounded_gross_return": 0.011689332645047568,
-        "max_drawdown": -0.3260800226976739,
+        "compounded_gross_return": 0.01168946218364586,
+        "max_drawdown": -0.3260800226976738,
         "max_drawdown_peak_date": "2026-06-02",
         "max_drawdown_trough_date": "2026-07-29",
         "start": "2026-01-28",

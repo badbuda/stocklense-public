@@ -2,195 +2,195 @@
   "schema_version": 1,
   "items": [
     {
-      "short_sha": "d652ec1",
-      "date": "2026-10-09T23:46:25+03:00",
-      "title": "AWS journal audit: use actual XNYS sessions, not weekdays, for missed-archive checks (#39)",
+      "short_sha": "d3d95d7",
+      "date": "2026-10-27T18:38:36+02:00",
+      "title": "ops(shadow): run immediate full frozen-8.0 shadow publication validation after PR #99",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "fd86b35",
-      "date": "2026-10-09T23:37:58+03:00",
-      "title": "QC order forensics: correct false slippage claim and flag 5 historical quote outliers (#38)",
+      "short_sha": "21178cb",
+      "date": "2026-10-27T18:38:12+02:00",
+      "title": "fix(shadow): publish frozen signals with audited research drift, preserve capital blocks",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "708bd01",
-      "date": "2026-10-09T23:20:15+03:00",
-      "title": "QC: strict same-input observer audit for 7.33 feature export (no false provenance promotion) (#37)",
+      "short_sha": "8cc1b8a",
+      "date": "2026-10-26T10:34:24+02:00",
+      "title": "ops: provide one-shot read-only StockLens AWS staging acceptance audit",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "1f95339",
-      "date": "2026-10-09T23:04:37+03:00",
-      "title": "P0: suppress spurious cockpit dry-run rebalance inside Paper 50bp band (#36)",
+      "short_sha": "8b9a22a",
+      "date": "2026-10-26T09:12:08+02:00",
+      "title": "ops: archive scheduled legacy AWS DynamoDB audits after verified stack stop",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "07032cd",
-      "date": "2026-10-09T23:02:52+03:00",
-      "title": "P0: publish verified daily LEAN exposure alignment with explicit parity limits (#35)",
+      "short_sha": "e2e6bc6",
+      "date": "2026-10-21T22:00:25+03:00",
+      "title": "ops: retire broken legacy AWS schedules and notifications safely via reviewed CFN change set",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "a548891",
-      "date": "2026-10-09T22:56:42+03:00",
-      "title": "P0: correct inception paper returns and reject inconsistent ledgers (#34)",
+      "short_sha": "ab41427",
+      "date": "2026-10-20T07:02:22+03:00",
+      "title": "fix(paper): never request retroactive Yahoo minute bars for missed XNYS sessions",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "fbdaf29",
-      "date": "2026-10-09T22:43:09+03:00",
-      "title": "p0: independently confirm 99.81% LEAN vs Yahoo cross-provider daily exposure alignment",
+      "short_sha": "4bacd94",
+      "date": "2026-10-17T23:41:19+03:00",
+      "title": "research: independent Alpaca adjusted QQQ parity without broker privileges",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "34cd4bc",
-      "date": "2026-10-09T17:59:47+03:00",
-      "title": "p0: fingerprint every original LEAN daily state and audit Yahoo exposure lag",
+      "short_sha": "a90e71e",
+      "date": "2026-10-17T23:35:23+03:00",
+      "title": "fix(legacy): expose true missing DynamoDB sessions and use exchange-calendar audit",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "048cc79",
-      "date": "2026-10-09T17:36:28+03:00",
-      "title": "p0: enable free QuantConnect native-feature chart evidence extraction without changing model",
+      "short_sha": "91b592b",
+      "date": "2026-10-17T23:31:15+03:00",
+      "title": "feat(portal): live private Staging S3 Paper shown only from valid receipts",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "d543af6",
-      "date": "2026-10-09T17:31:17+03:00",
-      "title": "p0: require original LEAN evidence and block forged partial same-input parity",
+      "short_sha": "e23a64b",
+      "date": "2026-10-17T21:28:24+03:00",
+      "title": "fix(portal): identify stale Paper NAV with archived session date",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "9af9553",
-      "date": "2026-10-09T15:33:32+03:00",
-      "title": "ci: await exact AWS Amplify release revision before real browser gate",
-      "kind": "FIX",
+      "short_sha": "d5e245d",
+      "date": "2026-10-17T20:59:42+03:00",
+      "title": "test(portal): require Cognito login only from approved callback origin",
+      "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "2049b43",
-      "date": "2026-10-09T15:29:35+03:00",
-      "title": "fix: show honest -2.57% inception return, separate research/Paper and block false READY labels",
-      "kind": "FIX",
+      "short_sha": "722ba0c",
+      "date": "2026-10-17T20:55:08+03:00",
+      "title": "feat(portal): activate verified Cognito JWT-protected private AWS read feeds",
+      "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     }
   ],
   "high_signal_items": [
     {
-      "short_sha": "d652ec1",
-      "date": "2026-10-09T23:46:25+03:00",
-      "title": "AWS journal audit: use actual XNYS sessions, not weekdays, for missed-archive checks (#39)",
+      "short_sha": "d3d95d7",
+      "date": "2026-10-27T18:38:36+02:00",
+      "title": "ops(shadow): run immediate full frozen-8.0 shadow publication validation after PR #99",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "fd86b35",
-      "date": "2026-10-09T23:37:58+03:00",
-      "title": "QC order forensics: correct false slippage claim and flag 5 historical quote outliers (#38)",
+      "short_sha": "21178cb",
+      "date": "2026-10-27T18:38:12+02:00",
+      "title": "fix(shadow): publish frozen signals with audited research drift, preserve capital blocks",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "708bd01",
-      "date": "2026-10-09T23:20:15+03:00",
-      "title": "QC: strict same-input observer audit for 7.33 feature export (no false provenance promotion) (#37)",
+      "short_sha": "8cc1b8a",
+      "date": "2026-10-26T10:34:24+02:00",
+      "title": "ops: provide one-shot read-only StockLens AWS staging acceptance audit",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "1f95339",
-      "date": "2026-10-09T23:04:37+03:00",
-      "title": "P0: suppress spurious cockpit dry-run rebalance inside Paper 50bp band (#36)",
+      "short_sha": "8b9a22a",
+      "date": "2026-10-26T09:12:08+02:00",
+      "title": "ops: archive scheduled legacy AWS DynamoDB audits after verified stack stop",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "07032cd",
-      "date": "2026-10-09T23:02:52+03:00",
-      "title": "P0: publish verified daily LEAN exposure alignment with explicit parity limits (#35)",
+      "short_sha": "e2e6bc6",
+      "date": "2026-10-21T22:00:25+03:00",
+      "title": "ops: retire broken legacy AWS schedules and notifications safely via reviewed CFN change set",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "a548891",
-      "date": "2026-10-09T22:56:42+03:00",
-      "title": "P0: correct inception paper returns and reject inconsistent ledgers (#34)",
+      "short_sha": "ab41427",
+      "date": "2026-10-20T07:02:22+03:00",
+      "title": "fix(paper): never request retroactive Yahoo minute bars for missed XNYS sessions",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "fbdaf29",
-      "date": "2026-10-09T22:43:09+03:00",
-      "title": "p0: independently confirm 99.81% LEAN vs Yahoo cross-provider daily exposure alignment",
+      "short_sha": "4bacd94",
+      "date": "2026-10-17T23:41:19+03:00",
+      "title": "research: independent Alpaca adjusted QQQ parity without broker privileges",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "34cd4bc",
-      "date": "2026-10-09T17:59:47+03:00",
-      "title": "p0: fingerprint every original LEAN daily state and audit Yahoo exposure lag",
+      "short_sha": "a90e71e",
+      "date": "2026-10-17T23:35:23+03:00",
+      "title": "fix(legacy): expose true missing DynamoDB sessions and use exchange-calendar audit",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "048cc79",
-      "date": "2026-10-09T17:36:28+03:00",
-      "title": "p0: enable free QuantConnect native-feature chart evidence extraction without changing model",
+      "short_sha": "91b592b",
+      "date": "2026-10-17T23:31:15+03:00",
+      "title": "feat(portal): live private Staging S3 Paper shown only from valid receipts",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "d543af6",
-      "date": "2026-10-09T17:31:17+03:00",
-      "title": "p0: require original LEAN evidence and block forged partial same-input parity",
+      "short_sha": "e23a64b",
+      "date": "2026-10-17T21:28:24+03:00",
+      "title": "fix(portal): identify stale Paper NAV with archived session date",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "9af9553",
-      "date": "2026-10-09T15:33:32+03:00",
-      "title": "ci: await exact AWS Amplify release revision before real browser gate",
-      "kind": "FIX",
+      "short_sha": "d5e245d",
+      "date": "2026-10-17T20:59:42+03:00",
+      "title": "test(portal): require Cognito login only from approved callback origin",
+      "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "2049b43",
-      "date": "2026-10-09T15:29:35+03:00",
-      "title": "fix: show honest -2.57% inception return, separate research/Paper and block false READY labels",
-      "kind": "FIX",
+      "short_sha": "722ba0c",
+      "date": "2026-10-17T20:55:08+03:00",
+      "title": "feat(portal): activate verified Cognito JWT-protected private AWS read feeds",
+      "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     }
   ],
   "recent_summary": [
     {
-      "short_sha": "d652ec1",
-      "date": "2026-10-09T23:46:25+03:00",
-      "title": "AWS journal audit: use actual XNYS sessions, not weekdays, for missed-archive checks (#39)",
+      "short_sha": "d3d95d7",
+      "date": "2026-10-27T18:38:36+02:00",
+      "title": "ops(shadow): run immediate full frozen-8.0 shadow publication validation after PR #99",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "fd86b35",
-      "date": "2026-10-09T23:37:58+03:00",
-      "title": "QC order forensics: correct false slippage claim and flag 5 historical quote outliers (#38)",
+      "short_sha": "21178cb",
+      "date": "2026-10-27T18:38:12+02:00",
+      "title": "fix(shadow): publish frozen signals with audited research drift, preserve capital blocks",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "708bd01",
-      "date": "2026-10-09T23:20:15+03:00",
-      "title": "QC: strict same-input observer audit for 7.33 feature export (no false provenance promotion) (#37)",
+      "short_sha": "8cc1b8a",
+      "date": "2026-10-26T10:34:24+02:00",
+      "title": "ops: provide one-shot read-only StockLens AWS staging acceptance audit",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     }
