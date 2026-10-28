@@ -44,7 +44,7 @@ try{
  // Keep the health verdict RED, but do not abort all browser/Amplify UI coverage
  // before charts, buttons, trade details and mobile navigation are exercised.
  if(paperArchiveStale){
-   const reason=`PUBLISHED_PAPER_ARCHIVE_STALE:paper=${governance.paperSession}:signal=${governance.signalSession}`;
+   const reason=`Paper is stale versus published signal: PUBLISHED_PAPER_ARCHIVE_STALE:paper=${governance.paperSession}:signal=${governance.signalSession}`;
    console.error(reason);
    failures.push(reason);
  }
