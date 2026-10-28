@@ -32,6 +32,9 @@ src_paper="$(output "$SOURCE" CandidatePaperFunctionName)"
    -n "$src_paper" && "$src_paper" != None ]] || { echo SOURCE_OUTPUTS_MISSING; exit 3; }
 signal_sha="$(aws lambda get-function-configuration --function-name "$src_signal" --query CodeSha256 --output text)"
 paper_sha="$(aws lambda get-function-configuration --function-name "$src_paper" --query CodeSha256 --output text)"
+[[ -n "$signal_sha" && "$signal_sha" != None && "$signal_sha" == "$paper_sha" ]] || {
+ echo "SOURCE_LAMBDAS_DIFFERENT_CODE_PACKAGES_NO_IDENTICAL_CLONE" >&2;exit 3;
+}
 for rule_type in CandidatePaperOnlyRuleName CandidateOrchestratorRuleName; do
  rule="$(output "$SOURCE" "$rule_type")"
  [[ "$(aws events describe-rule --name "$rule" --query State --output text)" == DISABLED ]] || {
@@ -47,6 +50,10 @@ if [[ "$MODE" == inspect ]]; then
   bucket="$(output "$target" CandidateDataBucket)"
   fn="$(output "$target" CandidateFunctionName)"
   pn="$(output "$target" CandidatePaperFunctionName)"
+  if [[ "$state" == REVIEW_IN_PROGRESS ]]; then
+    echo "PENDING_REVIEW_NOT_DEPLOYED:$target"
+    continue
+  fi
   [[ "$state" == CREATE_COMPLETE || "$state" == UPDATE_COMPLETE ]] || {
     echo "ENV_UNHEALTHY:$target:$state" >&2;exit 4;
   }
@@ -71,7 +78,16 @@ fi
 
 # Neither an existing PROD nor an existing ST may be replaced or updated.
 for target in "$PROD" "$ST"; do
- if exists "$target"; then echo "REFUSE_EXISTING_TARGET:$target";exit 4;fi
+ if [[ "$MODE" == prepare ]]; then
+   if exists "$target"; then echo "REFUSE_EXISTING_TARGET:$target";exit 4;fi
+ else
+   # CFN CREATE change sets leave a REVIEW_IN_PROGRESS placeholder stack.
+   state="$(aws cloudformation describe-stacks --stack-name "$target" \
+       --query 'Stacks[0].StackStatus' --output text)"
+   [[ "$state" == REVIEW_IN_PROGRESS ]] || {
+     echo "REFUSE_NOT_REVIEW_ONLY_PLACEHOLDER:$target:$state" >&2;exit 4;
+   }
+ fi
 done
 work="$(mktemp -d)"
 trap 'rm -rf "$work"' EXIT
@@ -106,6 +122,26 @@ artifact_bucket="$(sed -n '1p' <<< "$(printf '%s\n' "${artifact[@]}")")"
 artifact_key="$(sed -n '2p' <<< "$(printf '%s\n' "${artifact[@]}")")"
 [[ -n "$artifact_bucket" && -n "$artifact_key" ]] || { echo NO_ARTIFACT;exit 4; }
 aws s3api head-object --bucket "$artifact_bucket" --key "$artifact_key" >/dev/null
+# Lambda CodeSha256 is base64(SHA256(exact deployed ZIP)). Reject a stale S3
+# artifact key even if the CloudFormation parameter still points to it.
+aws s3api get-object --bucket "$artifact_bucket" --key "$artifact_key" "$work/artifact.zip" >/dev/null
+python3 - "$work/artifact.zip" "$signal_sha" <<'PY'
+import base64,hashlib,pathlib,sys
+actual=base64.b64encode(hashlib.sha256(pathlib.Path(sys.argv[1]).read_bytes()).digest()).decode()
+if actual!=sys.argv[2]:
+ raise SystemExit("DEPLOYED_LAMBDA_CODE_SHA_DIFFERS_FROM_SOURCE_ARTIFACT")
+print("IDENTICAL_PINNED_RUNTIME_SOURCE_VERIFIED")
+PY
+budget="$(aws budgets describe-budget --region us-east-1 --account-id "$ACCOUNT"  --budget-name StockLens-Whole-Account-20USD  --query 'Budget.BudgetLimit.Amount' --output text)"
+python3 - "$budget" <<'PY'
+from decimal import Decimal
+import sys
+try:
+ assert Decimal("0") < Decimal(sys.argv[1]) <= Decimal("20")
+except Exception:
+ raise SystemExit("EXISTING_COST_ALERT_BUDGET_UNVERIFIED")
+print("COST_ALERT_BUDGET_VERIFIED_NOT_HARD_CAP")
+PY
 echo "ARTIFACT_PIN:s3://$artifact_bucket/$artifact_key"
 echo "COST:two_KMS_keys_plus_Lambda_CloudWatch_S3_SNS;budget_is_alert_only"
 if [[ "$MODE" == prepare ]]; then
