@@ -60,7 +60,7 @@ jobs:
                 await page.goto(process.env.SITE+'/st-combo.html',{waitUntil:'domcontentloaded'});
                 await page.waitForFunction(()=>document.querySelectorAll('#results tr').length===56,{timeout:30000});
                 assert.equal(await page.locator('#stress tr').count(),4);
-                assert.equal(await page.locator('#curves path').count(),5);
+                await page.waitForFunction(()=>document.querySelectorAll('#curves path').length===5,null,{timeout:30000});
                 await page.locator('#mix').selectOption('q3_soxl25');
                 assert.equal(await page.locator('#results tr').count(),8);
                 assert.match(await page.locator('#message').innerText(),/המחקר המאומת/);
@@ -103,7 +103,7 @@ jobs:
               await page.goto(process.env.SITE+'/st-combo.html',{waitUntil:'domcontentloaded'});
               await page.waitForFunction(()=>document.querySelectorAll('#results tr').length===56,{timeout:30000});
               assert.equal(await page.locator('#stress tr').count(),4);
-              assert.equal(await page.locator('#curves path').count(),5);
+              await page.waitForFunction(()=>document.querySelectorAll('#curves path').length===5,null,{timeout:30000});
               await page.locator('#overlay').selectOption('vol60_ramp5');
               assert.equal(await page.locator('#results tr').count(),7);
               console.log('ST_COMBOS_DEPLOYED_INTERACTIVE_BROWSER=PASS');
