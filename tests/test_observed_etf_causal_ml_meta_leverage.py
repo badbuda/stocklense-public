@@ -188,3 +188,26 @@ def test_real_observed_data_source_is_yahoo_not_lean_or_synthetic():
     assert ml.HORIZON==5
     assert ml.SLIPPAGE_BPS==(10.,20.,30.)
     assert ml.RANDOMNESS.startswith("NONE")
+
+def test_registered_historical_ml_cohort_ignores_current_portal_extensions():
+    """Research stays on exactly 4,191 originally registered real-ETF rows."""
+    registered = ml.load_pinned_research()
+    current = load()
+    assert registered["period"]["start"] == "2010-02-11"
+    assert registered["period"]["end"] == ml.LAST_TEST == "2026-10-09"
+    assert registered["updated_session"] == ml.LAST_TEST
+    assert registered["period"]["sessions"] == len(registered["daily"]) == 4191
+    assert registered["snapshot_sha256"] == (
+        "bd2e53c6bbaa4d47247cc0b9c80094c268bb8354c1873c53901030f4b4011129"
+    )
+    assert current["updated_session"] >= registered["updated_session"]
+    assert current["live_trading_authorized"] is False
+    assert registered["live_trading_authorized"] is False
+
+
+def test_registered_ml_rejects_tampered_historical_bytes(tmp_path,monkeypatch):
+    corrupt=tmp_path/"changed.json"
+    corrupt.write_bytes(ml.PINNED_ML_SOURCE.read_bytes()+b" ")
+    monkeypatch.setattr(ml,"PINNED_ML_SOURCE",corrupt)
+    with pytest.raises(ValueError,match="PINNED_ML_SOURCE_BYTES_CHANGED"):
+        ml.load_pinned_research()
