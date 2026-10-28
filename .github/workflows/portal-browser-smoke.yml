@@ -54,6 +54,9 @@ jobs:
           PORTAL_SCREENSHOT_SUFFIX: local
         run: node tests/portal_browser_smoke.cjs
       - name: Verify actual AWS Amplify deployed website, not only local source
+        # Asset parity must still run if the local Paper-freshness E2E fails.
+        # The overall job stays RED; this only adds independent deployed evidence.
+        if: ${{ !cancelled() }}
         env:
           PORTAL_BASE_URL: https://main.d20nvlvzjafg5m.amplifyapp.com
           PORTAL_SCREENSHOT_SUFFIX: aws
