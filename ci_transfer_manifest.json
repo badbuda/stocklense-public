@@ -449,6 +449,9 @@
     "workbench_selfcheck.py": "4f17be6d56ac7d3cc3637e1ef2b2af3ed9d880a8",
     "yahoo_eod_scorecard.py": "137465f3ff4d9a2b8c164bf4321480c0ea0869fd",
     "yahoo_long_history.py": "e7e51b5c2f5697da5d583316638b98ec13e6114c",
-    "tests/test_portal_stale_paper_e2e_coverage.py": "8f76bad15c1c95bdaa418540d55aaa9549526c7f"
+    "tests/test_portal_stale_paper_e2e_coverage.py": "8f76bad15c1c95bdaa418540d55aaa9549526c7f",
+    "infra/aws/provision_isolated_prod_st.sh": "4ae3322bda8e64a689a79774252c6dc3cfecd81a",
+    "tests/test_aws_dual_environment_provisioning.py": "666325a7dd8e3649296ea733038b42015435f7f1",
+    "infra/aws/PROD_ST_ENVIRONMENTS.md": "1acc2f02d1d46e80bf7b7496d6d29728ae3d8402"
   }
 }
