@@ -1,20 +1,20 @@
 {
   "publication_identity": {
     "schema_version": 2,
-    "git_sha": "d3d95d7e1935cf3cb6933400e276980fe74ea09c",
+    "git_sha": "174222cd7b77f70e060c2dc496433e5241af4e08",
     "signal_asof": null,
     "replay_dataset_sha256": "db0889da31af43b1b75e005c1f4ab2cad421dfb55a6c55a77a223e0623950d95",
-    "replay_rows_sha256": "6d1e7de74b8403787722cf223edb2397779b24b3d21f9dd4e6691db81d56fd9f",
+    "replay_rows_sha256": "c09a1c6ae3ca0e7f7b2e8ae096399947047f841273a11ad45237ba75c6fe4130",
     "simulator_contract_sha256": "80745a3640c6fe667a3c500571fb15abee1d532a5b720fb6efc8b52f291dfc68",
-    "generation_id": "4db67d3cc022324fd95e805fcb1f7fe5b77b818c23f9e6f54e93fad0a31d1900"
+    "generation_id": "d10d552504a08c044269e63d0fe8c8a061ce6d179c1a3a65b9ab3e8e8d03282d"
   },
   "backtest_request": {
     "strategy_id": "STOCKLENS_8_FROZEN_REPLAY",
     "initial_capital": 100000.0,
     "monthly_contribution": 3500.0,
     "transaction_cost_bps": 5.0,
-    "start": "2025-10-09",
-    "end": "2026-10-09"
+    "start": "2025-10-27",
+    "end": "2026-10-26"
   },
   "strategy_contract": {
     "strategy_id": "STOCKLENS_8_FROZEN_REPLAY",
@@ -23,9 +23,9 @@
   "generic_engine": {
     "status": "PASS",
     "result_kind": "GENERIC_BACKTEST_RESULT",
-    "request_sha256": "16a44999f3932d9598652d00607f6d5200d43c98a355807a7a80ed9dfc8a23fa",
-    "rows_sha256": "6d1e7de74b8403787722cf223edb2397779b24b3d21f9dd4e6691db81d56fd9f",
-    "ledger_sha256": "02f77aa53193ad3f07ed177f6adb7a7050d3a7e9470b34f2d871319d011e07a6",
+    "request_sha256": "0bbee337a3f5c5d145c8fdb7a0e212e6947ae5b9eca35986f231d257fdeccd10",
+    "rows_sha256": "c09a1c6ae3ca0e7f7b2e8ae096399947047f841273a11ad45237ba75c6fe4130",
+    "ledger_sha256": "db0af57f4aa9619bb7d55fcc1c585254cd0251f5cb889009aa8a3042be6aa056",
     "frozen_accounting_parity": {
       "end_equity": true,
       "paid_capital": true,
@@ -34,65 +34,65 @@
     },
     "analytics": {
       "cagr_without_contribution_distortion": null,
-      "time_weighted_return": 0.5682907037195586,
-      "time_weighted_growth_index": 1.5682907037195586,
-      "time_weighted_max_drawdown": -0.3267537741949812,
-      "legacy_cashflow_distorted_nav_drawdown": -0.3141292827049843,
-      "annualized_volatility_proxy": 0.5648655983089063,
-      "sharpe_proxy_zero_risk_free": 1.0831295025818026,
+      "time_weighted_return": 0.2290747654572396,
+      "time_weighted_growth_index": 1.2290747654572396,
+      "time_weighted_max_drawdown": -0.32675377419498075,
+      "legacy_cashflow_distorted_nav_drawdown": -0.31335200255007,
+      "annualized_volatility_proxy": 0.5645126799834489,
+      "sharpe_proxy_zero_risk_free": 0.6509040429107648,
       "total_turnover_proxy": 5.5,
-      "cost_to_paid_capital": 0.0025125749017796658,
-      "ending_to_paid_capital_multiple": 1.5113847342341478,
+      "cost_to_paid_capital": 0.002363060430393086,
+      "ending_to_paid_capital_multiple": 1.209773711150484,
       "semantics": "Generic close-to-close replay, not broker execution. CAGR omitted with contributions; volatility, Sharpe and drawdown are contribution-neutral TWR."
     }
   },
   "status": "PASS",
-  "sessions": 252,
-  "start": "2025-10-09",
-  "end": "2026-10-09",
+  "sessions": 251,
+  "start": "2025-10-27",
+  "end": "2026-10-26",
   "replay_dataset_sha256": "db0889da31af43b1b75e005c1f4ab2cad421dfb55a6c55a77a223e0623950d95",
-  "replay_rows_sha256": "6d1e7de74b8403787722cf223edb2397779b24b3d21f9dd4e6691db81d56fd9f",
+  "replay_rows_sha256": "c09a1c6ae3ca0e7f7b2e8ae096399947047f841273a11ad45237ba75c6fe4130",
   "contract_sha256": "80745a3640c6fe667a3c500571fb15abee1d532a5b720fb6efc8b52f291dfc68",
   "replay_evidence": "FROZEN_MODEL_HISTORICAL_REPLAY",
   "provenance": {
     "status": "PASS",
     "dataset_sha256": "db0889da31af43b1b75e005c1f4ab2cad421dfb55a6c55a77a223e0623950d95",
-    "replay_rows_sha256": "6d1e7de74b8403787722cf223edb2397779b24b3d21f9dd4e6691db81d56fd9f",
+    "replay_rows_sha256": "c09a1c6ae3ca0e7f7b2e8ae096399947047f841273a11ad45237ba75c6fe4130",
     "contract_sha256": "80745a3640c6fe667a3c500571fb15abee1d532a5b720fb6efc8b52f291dfc68",
-    "generation_id": "4db67d3cc022324fd95e805fcb1f7fe5b77b818c23f9e6f54e93fad0a31d1900",
+    "generation_id": "d10d552504a08c044269e63d0fe8c8a061ce6d179c1a3a65b9ab3e8e8d03282d",
     "evidence_class": "REPLAY_APPROXIMATION",
     "full_lean_execution_parity": false
   },
-  "end_equity": 214616.63226124897,
-  "qqq_end_equity": 171651.44581190974,
+  "end_equity": 171787.86698336873,
+  "qqq_end_equity": 159480.6290004081,
   "paid": 142000.0,
-  "replay_profit_loss": 72616.63226124897,
-  "ending_to_paid_multiple": 1.5113847342341478,
-  "max_drawdown": -0.3267537741949812,
-  "legacy_cashflow_distorted_nav_drawdown": -0.3141292827049843,
-  "time_weighted_return": 0.5682907037195586,
+  "replay_profit_loss": 29787.86698336873,
+  "ending_to_paid_multiple": 1.209773711150484,
+  "max_drawdown": -0.32675377419498075,
+  "legacy_cashflow_distorted_nav_drawdown": -0.31335200255007,
+  "time_weighted_return": 0.2290747654572396,
   "exposure_changes": 4,
-  "total_estimated_transaction_cost": 356.78563605271256,
+  "total_estimated_transaction_cost": 335.5545811158182,
   "cost_sensitivity": [
     {
       "cost_bps": 0.0,
-      "end_equity": 215145.67071638614,
+      "end_equity": 172208.50607091063,
       "total_estimated_transaction_cost": 0.0
     },
     {
       "cost_bps": 5.0,
-      "end_equity": 214616.632261249,
-      "total_estimated_transaction_cost": 356.78563605271273
+      "end_equity": 171787.86698336864,
+      "total_estimated_transaction_cost": 335.55458111581817
     },
     {
       "cost_bps": 10.0,
-      "end_equity": 214088.6312952178,
-      "total_estimated_transaction_cost": 712.7437887586813
+      "end_equity": 171368.05147054073,
+      "total_estimated_transaction_cost": 670.3324881234155
     },
     {
       "cost_bps": 20.0,
-      "end_equity": 213035.73647808284,
-      "total_estimated_transaction_cost": 1422.1823960504867
+      "end_equity": 170530.8869235856,
+      "total_estimated_transaction_cost": 1337.5627358066533
     }
   ],
   "cost_ledger": [
@@ -100,33 +100,33 @@
       "date": "2026-03-20",
       "event": "SELL_EXPOSURE",
       "turnover": 1.75,
-      "estimated_cost": 85.56907723588988,
-      "cumulative_cost": 85.56907723588988,
-      "nav_after_cost": 97707.6620494954
+      "estimated_cost": 80.20510153693765,
+      "cumulative_cost": 80.20510153693765,
+      "nav_after_cost": 91582.76808353467
     },
     {
       "date": "2026-04-08",
       "event": "BUY_EXPOSURE",
       "turnover": 1.75,
-      "estimated_cost": 93.27774486101868,
-      "cumulative_cost": 178.84682209690857,
-      "nav_after_cost": 106509.85923916033
+      "estimated_cost": 87.63458100721344,
+      "cumulative_cost": 167.8396825441511,
+      "nav_after_cost": 100066.17228437959
     },
     {
       "date": "2026-06-23",
       "event": "SELL_EXPOSURE",
       "turnover": 1.0,
-      "estimated_cost": 87.79219371345738,
-      "cumulative_cost": 266.63901581036595,
-      "nav_after_cost": 175496.5952332013
+      "estimated_cost": 82.70039452914861,
+      "cumulative_cost": 250.5400770732997,
+      "nav_after_cost": 165318.08866376808
     },
     {
       "date": "2026-07-15",
       "event": "BUY_EXPOSURE",
       "turnover": 1.0,
-      "estimated_cost": 90.14662024234661,
-      "cumulative_cost": 356.78563605271256,
-      "nav_after_cost": 180203.0938644509
+      "estimated_cost": 85.01450404251851,
+      "cumulative_cost": 335.5545811158182,
+      "nav_after_cost": 169943.99358099452
     }
   ],
   "accounting_invariants": {

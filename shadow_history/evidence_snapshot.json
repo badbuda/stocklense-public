@@ -18,18 +18,18 @@
     },
     {
       "path": "shadow_history/health.json",
-      "sha256": "d8c3d6f3f8aef24cd15beeda68a444d05928aae1c534301118317515596d0a89",
+      "sha256": "eaca6ce1c78f308f1a796b0d29e691bdc6068bae4c36e8e66ae6d5bc533db935",
       "bytes": 185
     },
     {
       "path": "shadow_history/readiness.json",
-      "sha256": "365279a7ff408614410240dc74bce55631c9c5a6a4cd646a46432584da580d2e",
+      "sha256": "19a76e16da824e0dc2686d9f2003ecac2274945a62061d9936e23a0cebed3076",
       "bytes": 779
     },
     {
       "path": "shadow_history/qc_daily_parity.json",
-      "sha256": "17aa023234a82bf550f592be6198362952c30cb8fb925e05e167dc98ca08185e",
-      "bytes": 34797
+      "sha256": "8b1bbeea0cfec7dd9ffed75e1adfdd0b22040942ba99a89c737e86f5cb51f852",
+      "bytes": 34789
     },
     {
       "path": "shadow_history/qc_parity_dossier.json",
@@ -38,13 +38,13 @@
     },
     {
       "path": "shadow_history/data_provenance.json",
-      "sha256": "468d8db55462427b12e0b9cd1e67d818faa2e9cf36604f6ccf77d3e95d3dc829",
-      "bytes": 329
+      "sha256": "643e3bffca1c3dc512bd724ac41a2326b8dd97634642385489fe9635b7747de4",
+      "bytes": 330
     },
     {
       "path": "shadow_history/anomalies.json",
-      "sha256": "5b1c36183e2e246d7112dd685d43052dd85d135900f281d9ce449065abbaa423",
-      "bytes": 1317
+      "sha256": "4a784938066f1c45040a10d14fb79a787f3c0c5fdd2be0c0f4097ddbcddf301b",
+      "bytes": 1314
     },
     {
       "path": "shadow_history/execution_audit.json",
@@ -53,13 +53,13 @@
     },
     {
       "path": "shadow_history/forward_quality.json",
-      "sha256": "08371ddf9568b4b4f5b9fdae945bb053ff512fe0e68bae8eadc084e56ea5442a",
-      "bytes": 313
+      "sha256": "c126f0fbad998fa81930513371eeee226532e571f95e1d04cfab4db5999a08e4",
+      "bytes": 475
     },
     {
       "path": "shadow_history/market_context.json",
-      "sha256": "37b526909d544a9453dc28e7b7ce93025ef218c1b71f083f430d016ef04e0bf0",
-      "bytes": 532
+      "sha256": "116782d1f4f9866e4a80136f98f94bc0f14ffe50982d16289921b1e2301c72d6",
+      "bytes": 533
     },
     {
       "path": "shadow_history/context_quality.json",

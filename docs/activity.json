@@ -2,6 +2,20 @@
   "schema_version": 1,
   "items": [
     {
+      "short_sha": "174222c",
+      "date": "2026-10-27T18:55:18+02:00",
+      "title": "ops(portal): automatically verify deployed Amplify after successful Shadow",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "f035d2c",
+      "date": "2026-10-27T16:53:58Z",
+      "title": "shadow: record prospective evidence 2026-10-26",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
       "short_sha": "d3d95d7",
       "date": "2026-10-27T18:38:36+02:00",
       "title": "ops(shadow): run immediate full frozen-8.0 shadow publication validation after PR #99",
@@ -68,26 +82,26 @@
       "short_sha": "e23a64b",
       "date": "2026-10-17T21:28:24+03:00",
       "title": "fix(portal): identify stale Paper NAV with archived session date",
-      "kind": "PROJECT",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "d5e245d",
-      "date": "2026-10-17T20:59:42+03:00",
-      "title": "test(portal): require Cognito login only from approved callback origin",
-      "kind": "PROJECT",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "722ba0c",
-      "date": "2026-10-17T20:55:08+03:00",
-      "title": "feat(portal): activate verified Cognito JWT-protected private AWS read feeds",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     }
   ],
   "high_signal_items": [
     {
+      "short_sha": "174222c",
+      "date": "2026-10-27T18:55:18+02:00",
+      "title": "ops(portal): automatically verify deployed Amplify after successful Shadow",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "f035d2c",
+      "date": "2026-10-27T16:53:58Z",
+      "title": "shadow: record prospective evidence 2026-10-26",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
       "short_sha": "d3d95d7",
       "date": "2026-10-27T18:38:36+02:00",
       "title": "ops(shadow): run immediate full frozen-8.0 shadow publication validation after PR #99",
@@ -156,41 +170,27 @@
       "title": "fix(portal): identify stale Paper NAV with archived session date",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "d5e245d",
-      "date": "2026-10-17T20:59:42+03:00",
-      "title": "test(portal): require Cognito login only from approved callback origin",
-      "kind": "PROJECT",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "722ba0c",
-      "date": "2026-10-17T20:55:08+03:00",
-      "title": "feat(portal): activate verified Cognito JWT-protected private AWS read feeds",
-      "kind": "PROJECT",
-      "impact": "Repository change; CI validation is separate."
     }
   ],
   "recent_summary": [
     {
+      "short_sha": "174222c",
+      "date": "2026-10-27T18:55:18+02:00",
+      "title": "ops(portal): automatically verify deployed Amplify after successful Shadow",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "f035d2c",
+      "date": "2026-10-27T16:53:58Z",
+      "title": "shadow: record prospective evidence 2026-10-26",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
       "short_sha": "d3d95d7",
       "date": "2026-10-27T18:38:36+02:00",
       "title": "ops(shadow): run immediate full frozen-8.0 shadow publication validation after PR #99",
-      "kind": "PROJECT",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "21178cb",
-      "date": "2026-10-27T18:38:12+02:00",
-      "title": "fix(shadow): publish frozen signals with audited research drift, preserve capital blocks",
-      "kind": "PROJECT",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "8cc1b8a",
-      "date": "2026-10-26T10:34:24+02:00",
-      "title": "ops: provide one-shot read-only StockLens AWS staging acceptance audit",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     }

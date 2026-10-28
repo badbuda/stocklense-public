@@ -1,8 +1,8 @@
 {
   "status": "PASS",
   "errors": [],
-  "replay_sessions": 252,
+  "replay_sessions": 251,
   "transition_count": 67,
-  "manifest_sha256": "6aad164818252986c7883f615fd02052b43a623e2dd48c10fe875711b779c480",
+  "manifest_sha256": "ad2667428e5b5b4e10914aa8d537a79de31ea0de7653f0b4828b5f69c94f1acc",
   "automatic_model_change": false
 }

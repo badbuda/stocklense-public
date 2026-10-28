@@ -3,41 +3,41 @@
   "alerts": [],
   "diagnostics": {
     "close": {
-      "relative_change": 0.011073236119571367,
+      "relative_change": 0.012707087388167561,
       "absolute_limit": 0.15,
-      "rolling_median_change": 0.006519184970759696,
-      "rolling_mad": 0.004152301704235876,
+      "rolling_median_change": 0.006752200120281114,
+      "rolling_mad": 0.004289869131207312,
       "effective_limit": 0.15
     },
     "sma50": {
-      "relative_change": 0.0004992557522289026,
+      "relative_change": 0.0002168105954309168,
       "absolute_limit": 0.05,
-      "rolling_median_change": 0.0003716318837054427,
-      "rolling_mad": 0.0002515007909154181,
+      "rolling_median_change": 0.0003809588192483581,
+      "rolling_mad": 0.0002525899495207072,
       "effective_limit": 0.05
     },
     "sma200": {
-      "relative_change": 0.0006939527360431956,
+      "relative_change": 0.000714835735590158,
       "absolute_limit": 0.02,
-      "rolling_median_change": 0.0008565928908713931,
-      "rolling_mad": 7.925099369086489e-05,
+      "rolling_median_change": 0.0008565933566685672,
+      "rolling_mad": 7.925099259945418e-05,
       "effective_limit": 0.02
     },
     "vol20": {
-      "relative_change": 0.019800820007072714,
+      "relative_change": 0.034650928027804784,
       "absolute_limit": 0.75,
       "rolling_median_change": 0.021429638277502473,
       "rolling_mad": 0.01363172194696304,
       "effective_limit": 0.75
     },
     "mom12": {
-      "relative_change": 0.018309298397076956,
+      "relative_change": 0.013684242029552719,
       "absolute_limit": 0.75,
-      "rolling_median_change": 0.03936187567088434,
-      "rolling_mad": 0.020129457067260347,
+      "rolling_median_change": 0.0393621214986921,
+      "rolling_mad": 0.02051317348149566,
       "effective_limit": 0.75
     }
   },
-  "sessions_available": 251,
+  "sessions_available": 252,
   "policy": "absolute safety limits plus robust rolling baseline; never changes frozen model"
 }
