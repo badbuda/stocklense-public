@@ -450,8 +450,8 @@
     "yahoo_eod_scorecard.py": "137465f3ff4d9a2b8c164bf4321480c0ea0869fd",
     "yahoo_long_history.py": "e7e51b5c2f5697da5d583316638b98ec13e6114c",
     "tests/test_portal_stale_paper_e2e_coverage.py": "8f76bad15c1c95bdaa418540d55aaa9549526c7f",
-    "infra/aws/provision_isolated_prod_st.sh": "4ae3322bda8e64a689a79774252c6dc3cfecd81a",
-    "tests/test_aws_dual_environment_provisioning.py": "666325a7dd8e3649296ea733038b42015435f7f1",
+    "infra/aws/provision_isolated_prod_st.sh": "814dbee46fa273b87cf2ec05591fbca4fbc5165d",
+    "tests/test_aws_dual_environment_provisioning.py": "b1e72019d84ce05ab97043c0ef8a1bfdb5e58229",
     "infra/aws/PROD_ST_ENVIRONMENTS.md": "1acc2f02d1d46e80bf7b7496d6d29728ae3d8402"
   }
 }
