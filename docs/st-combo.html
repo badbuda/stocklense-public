@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>StockLens ST | 224 בק־טסטים משולבים</title>
+<style>
+:root{font-family:Arial,system-ui,sans-serif;color-scheme:dark;color:#eaf2fc;background:#0b1422}
+*{box-sizing:border-box}body{margin:0}main{max-width:1200px;margin:auto;padding:24px 20px 70px}
+h1{font-size:clamp(1.7rem,4vw,2.6rem);margin:8px 0}p{line-height:1.65;color:#bac8de}a{color:#a3cbff}
+header{background:linear-gradient(118deg,#192b47,#0f1b2c);padding:24px;border-radius:18px;border:1px solid #375171}
+small{color:#a9b8ce}.note{padding:14px 18px;border-right:3px solid #9cc9ff;background:#15263d;border-radius:5px;margin:20px 0}
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:12px;margin:22px 0}
+.metric{border:1px solid #34455f;border-radius:12px;padding:16px;background:#142238}
+.metric strong{display:block;font-size:1.5rem}.metric small{display:block}
+.filters{display:flex;flex-wrap:wrap;align-items:end;gap:14px;padding:16px 0}
+label{display:grid;gap:8px;color:#adbeda}select{max-width:100%;padding:11px;background:#1b2a40;color:white;border-radius:8px;border:1px solid #526983;min-width:210px}
+.panel{background:#131f31;border:1px solid #35445d;border-radius:14px;padding:16px;margin:18px 0}
+.wrap{overflow:auto;max-height:640px}table{border-collapse:collapse;width:100%;min-width:810px}
+th,td{text-align:right;padding:12px;border-bottom:1px solid #314258;white-space:nowrap}
+th{font-size:.9rem;color:#b9c6da;position:sticky;top:0;background:#152237}
+tr:hover{background:#20324e}td:first-child{font-weight:600}
+.good{color:#85e1bb}.bad{color:#ffb1ab}svg{width:100%;height:330px;background:#101b2d;border-radius:8px}
+.legend{display:flex;gap:15px;flex-wrap:wrap;margin:10px 0}.legend span{font-size:.83rem;color:#bfcbe1}
+.legend i{display:inline-block;width:11px;height:11px;margin-left:5px}
+footer{font-size:.83rem;color:#a6b4c9;padding-top:18px}#message{padding:12px;border-radius:10px;background:#18304b;margin-top:16px}
+</style>
+</head>
+<body>
+<main>
+<a href="./portal.html#research">← חזרה למעבדת המחקר</a>
+<header>
+<small>STOCKLENS / ST / SL9-031</small>
+<h1>מחקר השילובים: ETF ממונפים × ניהול סיכון</h1>
+<p>השוואת 56 שילובים קבועים מראש על מחירי ETF אמיתיים, עם ארבע רמות עלויות והשהיה לכל שילוב. StockLens 8.0 נשארת קבוצת הביקורת.</p>
+<strong>מחקר היסטורי בלבד — לא עסקאות Paper, לא אישור למסחר ולא סביבת PROD.</strong>
+<div id="message" role="status">טוען נתונים מאומתים…</div>
+</header>
+<section class="metrics" id="summary" aria-label="נתוני המחקר"></section>
+<div class="note">224 בק־טסטים אינם 224 הזדמנויות עצמאיות: כולם נבדקו על אותה היסטוריה שכבר נבחנה בעבר.
+תוצאה עם תשואה גבוהה אינה מספיקה; דרוש גם סיכון סביר, יציבות במבחני הרגישות ואימות קדימה.</div>
+<h2>השוואת כל השילובים</h2>
+<div class="filters">
+<label>הרכב ETF
+<select id="mix"><option value="all">כל ההרכבים</option></select>
+</label>
+<label>מנגנון סיכון
+<select id="overlay"><option value="all">כל המנגנונים</option></select>
+</label>
+<label>סידור תוצאות
+<select id="sort"><option value="cagr">CAGR הגבוה תחילה</option><option value="maxdd">ירידה מקסימלית מתונה תחילה</option><option value="name">שם שילוב</option></select>
+</label>
+</div>
+<div class="panel wrap"><table><thead><tr><th>הרכב ETF</th><th>מנגנון</th><th>CAGR</th><th>MaxDD</th><th>Δ CAGR</th><th>שיפור MaxDD</th><th>רגישות</th></tr></thead><tbody id="results"></tbody></table></div>
+<h2>פירוט ארבע בדיקות הרגישות</h2>
+<p>בחרי שורה בטבלה. הבסיס ההשוואתי בכל שורה הוא אותו StockLens 8.0 עם השהיה ועלויות זהות.</p>
+<div class="panel"><strong id="selected">ממתין לבחירת שילוב</strong>
+<div class="wrap"><table><thead><tr><th>השהיה נוספת</th><th>החלקה לכל צד</th><th>CAGR</th><th>MaxDD</th><th>Δ CAGR</th><th>Δ MaxDD</th><th>עמד בסף?</th></tr></thead><tbody id="stress"></tbody></table></div>
+<div id="eras"></div></div>
+<h2>עקומות שווי — חמש חלופות שנקבעו מראש</h2>
+<p>גרף לוגריתמי, תיק התחלתי $100,000, ללא הפקדות. המחירים והביצועים מדומים בביצוע יומי ולא משקפים מילויי ברוקר.</p>
+<div class="panel"><div class="legend" id="legend"></div><svg id="curves" role="img" aria-label="עקומות היסטוריות של חמישה תרחישים קבועים" viewBox="0 0 1050 330"></svg><small id="curve-status">טוען קובץ עקומות…</small></div>
+<footer><a href="./st-combo-results.json">JSON כל 56 השילובים</a> · <a href="./st-combo-curves.csv">CSV עקומות השוואה</a> · <a href="https://github.com/badbuda/stocklense-public/actions/workflows/st-real-etf-combinations.yml">מחקר ו־CI ב־GitHub</a>. אין מקור מחירים שני, אין Forward Paper מאומת, אין אישור הפעלה אוטומטית.</footer>
+</main>
+<script>
+(async function(){
+const $ = id=>document.getElementById(id);
+const percent=n=>(100*n).toFixed(2)+'%';
+const point=n=>(n>=0?'+':'')+n.toFixed(2)+' נק׳';
+function make(tag,text){const n=document.createElement(tag);n.textContent=text;return n;}
+function row(cells,body){const tr=document.createElement('tr');for(const s of cells)tr.append(make('td',String(s)));body.append(tr);return tr;}
+function metric(name,value){const a=make('div','');a.className='metric';a.append(make('small',name),make('strong',value));$('summary').append(a);}
+try{
+const res=await fetch('./st-combo-results.json',{cache:'no-store'});
+if(!res.ok)throw Error('נתוני המחקר טרם נפרסו');
+const d=await res.json();
+if(d.kind!=='SL9_031_ST_REAL_ETF_OVERLAY_COMBINATIONS'||d.case_count!==56||d.stress_runs!==224||
+ d.frozen_daily_parity_all_stress_cases!==true||d.automatic_promotion!==false||
+ d.broker_actions!==false||d.aws_st_paper_runs!==false||d.results.length!==56||
+ Object.keys(d.stress).length!==56)throw Error('קובץ התוצאות נכשל באימות');
+const frozen=d.results.find(x=>x.mix==='frozen'&&x.overlay==='frozen');
+if(!frozen)throw Error('חסרה קבוצת ביקורת');
+const qualified=d.results.filter(x=>x.continuation_only===true).length;
+metric('ימי מסחר',d.period.sessions.toLocaleString('en-US'));
+metric('תרחישים',String(d.stress_runs));
+metric('StockLens 8.0 CAGR',percent(frozen.cagr));
+metric('StockLens 8.0 MaxDD',percent(frozen.maxdd));
+metric('עברו סף המשך',qualified+' / 55');
+$('message').textContent='המחקר המאומת נטען. '+qualified+' חלופות עברו את כל מבחני הקבלה; אין אישור לקדם מודל לייצור.';
+const mix=$('mix'), overlay=$('overlay'), sorting=$('sort');
+for(const s of Object.keys(d.mixes)){const opt=make('option',s);opt.value=s;mix.append(opt);}
+for(const s of d.overlays){const opt=make('option',s);opt.value=s;overlay.append(opt);}
+function detail(x){
+ const key=x.mix+'|'+x.overlay;
+ $('selected').textContent=key+' — CAGR '+percent(x.cagr)+' | MaxDD '+percent(x.maxdd);
+ const body=$('stress');body.replaceChildren();
+ const cases=d.stress[key];
+ if(!Array.isArray(cases)||cases.length!==4)throw Error('תרחישי עלויות חסרים');
+ for(const s of cases)row([s.additional_lag+' יום',s.slippage_bps_side+' bps',percent(s.cagr),percent(s.maxdd),point(s.cagr_delta_pp),point(s.drawdown_gain_pp),s.screen?'כן':'לא'],body);
+ const e=$('eras');e.replaceChildren();
+ for(const name of ['2010_2017','2018_2022','2023_2026','covid_2020','bear_2022']){
+  const a=x.eras[name];
+  e.append(make('p',name+': תשואה תקופתית '+percent(a.return)+', ירידה מקומית '+percent(a.local_maxdd)));
+ }
+}
+function render(){
+ const filtered=d.results.filter(x=>(mix.value==='all'||x.mix===mix.value)&&
+                                    (overlay.value==='all'||x.overlay===overlay.value));
+ filtered.sort((a,b)=>sorting.value==='cagr'?b.cagr-a.cagr:
+                    sorting.value==='maxdd'?b.maxdd-a.maxdd:(a.mix+'|'+a.overlay).localeCompare(b.mix+'|'+b.overlay));
+ const t=$('results');t.replaceChildren();
+ for(const x of filtered){
+  const tr=row([x.mix,x.overlay,percent(x.cagr),percent(x.maxdd),point(x.delta_cagr_pp),
+                point(x.drawdown_gain_pp),x.passes+'/4'],t);
+  tr.style.cursor='pointer';
+  tr.tabIndex=0;
+  tr.addEventListener('click',()=>detail(x));
+  tr.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();detail(x);}});
+ }
+ if(filtered.length)detail(filtered[0]);
+}
+[mix,overlay,sorting].forEach(el=>el.addEventListener('change',render));render();
+try{
+const csv=await fetch('./st-combo-curves.csv',{cache:'no-store'});
+if(!csv.ok)throw Error('CSV טרם זמין');
+const lines=(await csv.text()).trim().split(/\r?\n/);
+const headers=lines[0].split(',');
+if(lines.length!==d.period.sessions+1||headers.length!==6)throw Error('מבנה CSV לא תואם');
+const series=headers.slice(1).map((h,i)=>({name:h,values:[],color:['#9bbfff','#f5c469','#fa7f85','#69d5ba','#d1aaff'][i]}));
+for(const line of lines.slice(1)){
+ const parts=line.split(',');if(parts.length!==6)throw Error('שורת CSV חסרה');
+ for(let i=1;i<6;i++){const n=Number(parts[i]);if(!Number.isFinite(n)||n<=0)throw Error('NAV לא תקין');series[i-1].values.push(n);}
+}
+let ys=series.flatMap(s=>s.values.map(v=>Math.log(v/100000)));
+const ymin=Math.min(...ys), ymax=Math.max(...ys), width=1020,height=290;
+const svg=$('curves');svg.replaceChildren();
+const ns='http://www.w3.org/2000/svg';
+for(let k=0;k<5;k++){
+ const y=16+(height-16)*k/4;
+ const line=document.createElementNS(ns,'line');
+ line.setAttribute('x1','20');line.setAttribute('x2',String(width));
+ line.setAttribute('y1',String(y));line.setAttribute('y2',String(y));
+ line.setAttribute('stroke','#324259');svg.appendChild(line);
+}
+for(const s of series){
+ const path=document.createElementNS(ns,'path');
+ let cmd='';
+ for(let i=0;i<s.values.length;i++){
+  const x=20+i/(s.values.length-1)*(width-20);
+  const y=16+(ymax-Math.log(s.values[i]/100000))/(ymax-ymin||1)*(height-16);
+  cmd+=(i?'L':'M')+x.toFixed(1)+','+y.toFixed(1);
+ }
+ path.setAttribute('d',cmd);path.setAttribute('fill','none');
+ path.setAttribute('stroke',s.color);path.setAttribute('stroke-width','2');
+ svg.appendChild(path);
+ const key=make('span',s.name);
+ const dot=make('i','');dot.style.backgroundColor=s.color;key.prepend(dot);$('legend').append(key);
+}
+$('curve-status').textContent='עקומות היסטוריות מהנתונים הנעולים; ציר Y לוגריתמי, תאריך התחלה '+d.period.start+' עד '+d.period.end+'.';
+}catch(e){$('curve-status').textContent='לא ניתן לאמת עקומות: '+e.message;}
+}catch(e){$('message').textContent='מחקר עדיין לא זמין או לא מאומת: '+e.message;}
+})();
+</script>
+</body>
+</html>

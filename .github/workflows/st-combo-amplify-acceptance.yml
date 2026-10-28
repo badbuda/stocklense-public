@@ -1,0 +1,112 @@
+name: StockLens ST Combinations Amplify Acceptance
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/st-combo-amplify-acceptance.yml'
+      - 'docs/st-combo.html'
+      - 'docs/portal.html'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  acceptance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 17
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify historical outcome gate and extracted JavaScript syntax
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json,re
+          from pathlib import Path
+          j=json.loads(Path('docs/st-combo-results.json').read_text())
+          assert j['kind']=='SL9_031_ST_REAL_ETF_OVERLAY_COMBINATIONS'
+          assert j['case_count']==56 and j['stress_runs']==224 and len(j['results'])==56
+          assert j['frozen_daily_parity_all_stress_cases'] is True
+          assert j['automatic_promotion'] is False and j['broker_actions'] is False
+          assert j['aws_st_paper_runs'] is False
+          assert 'st-combo.html' in Path('docs/portal.html').read_text()
+          src=Path('docs/st-combo.html').read_text()
+          scripts=re.findall(r'<script>(.*?)</script>',src,re.S)
+          assert len(scripts)==1
+          Path('/tmp/st-combo-browser.js').write_text(scripts[0])
+          print('ST_COMBO_HISTORICAL_ONLY_GATE_PASS')
+          PY
+          node --check /tmp/st-combo-browser.js
+      - name: Install Chromium and launch local static dashboard
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+          python3 -m http.server 8768 --bind 127.0.0.1 --directory docs >/tmp/st-combo-http.log 2>&1 &
+      - name: Verify real UI renders 56 rows, filtering, stress details and curves
+        env:
+          SITE: http://127.0.0.1:8768
+        run: |
+          node - <<'JS'
+          const { chromium }=require('playwright');
+          const assert=require('node:assert/strict');
+          (async()=>{
+            const browser=await chromium.launch({headless:true});
+            try{
+              for(const viewport of [{width:1260,height:820},{width:390,height:844}]){
+                const page=await browser.newPage({viewport});
+                await page.goto(process.env.SITE+'/st-combo.html',{waitUntil:'domcontentloaded'});
+                await page.waitForFunction(()=>document.querySelectorAll('#results tr').length===56,{timeout:30000});
+                assert.equal(await page.locator('#stress tr').count(),4);
+                assert.equal(await page.locator('#curves path').count(),5);
+                await page.locator('#mix').selectOption('q3_soxl25');
+                assert.equal(await page.locator('#results tr').count(),8);
+                assert.match(await page.locator('#message').innerText(),/המחקר המאומת/);
+                await page.close();
+              }
+              console.log('ST_COMBO_BROWSER_PASS_DESKTOP_MOBILE');
+            }finally{await browser.close();}
+          })().catch(e=>{console.error(e);process.exit(1)});
+          JS
+      - name: Confirm exact assets deployed on AWS Amplify (not private AWS ST)
+        run: |
+          set -euo pipefail
+          url="https://main.d20nvlvzjafg5m.amplifyapp.com"
+          assets=(portal.html st-combo.html st-combo-results.json st-combo-curves.csv)
+          ready=0
+          for attempt in $(seq 1 45); do
+            good=1
+            for asset in "${assets[@]}"; do
+              expected="$(sha256sum "docs/$asset" | cut -d' ' -f1)"
+              if ! curl -fLsS --max-time 15 "$url/$asset?check=$attempt" -o /tmp/asset-check; then good=0;break;fi
+              actual="$(sha256sum /tmp/asset-check | cut -d' ' -f1)"
+              if [[ "$actual" != "$expected" ]]; then good=0;break;fi
+            done
+            if [[ "$good" == 1 ]];then ready=1;break;fi
+            sleep 8
+          done
+          test "$ready" = 1 || { echo "ST_COMBOS_AMPLIFY_PARITY_FAILED";exit 1; }
+          echo "ST_COMBOS_ALL_FOUR_AMPLIFY_ASSETS_SHA_MATCH=PASS"
+      - name: Exercise deployed combination filter and stress table in Chromium
+        env:
+          SITE: https://main.d20nvlvzjafg5m.amplifyapp.com
+        run: |
+          node - <<'JS'
+          const {chromium}=require('playwright');
+          const assert=require('node:assert/strict');
+          (async()=>{
+            const browser=await chromium.launch({headless:true});
+            try{
+              const page=await browser.newPage();
+              await page.goto(process.env.SITE+'/st-combo.html',{waitUntil:'domcontentloaded'});
+              await page.waitForFunction(()=>document.querySelectorAll('#results tr').length===56,{timeout:30000});
+              assert.equal(await page.locator('#stress tr').count(),4);
+              assert.equal(await page.locator('#curves path').count(),5);
+              await page.locator('#overlay').selectOption('vol60_ramp5');
+              assert.equal(await page.locator('#results tr').count(),7);
+              console.log('ST_COMBOS_DEPLOYED_INTERACTIVE_BROWSER=PASS');
+            }finally{await browser.close();}
+          })().catch(e=>{console.error(e);process.exit(1)});
+          JS
