@@ -1,0 +1,403 @@
+{
+  "additional_real_etf_data_sha256": "0d74fb3664e84d521ac8b24474976db5fc266d5a4e1cc9ebca634aad45d97075",
+  "asof": "2026-10-27",
+  "automatic_promotion": false,
+  "base_sha256": "7ee65acbc657e4fbc60e09d3efbefd76094a0e6c32d4ed0937c67d3fb7b21ae0",
+  "baseline_nav_parity": true,
+  "broker_actions": false,
+  "captured_utc": "2026-10-28T16:52:53.977052+00:00",
+  "clean_oos": false,
+  "execution_proxy": "adjusted daily open, whole shares; 2 bps fee + 10/20 bps slippage per side",
+  "experiments": [
+    {
+      "cagr": 0.34269782481210087,
+      "cagr_delta_pp": 0.0,
+      "continue_research": false,
+      "ending_equity": 13436461.78,
+      "maxdd": -0.501180648861479,
+      "maxdd_gain_pp": 0.0,
+      "name": "frozen",
+      "stress": [
+        {
+          "cagr_delta_pp": 0.0,
+          "continuation_screen": false,
+          "drawdown_gain_pp": 0.0,
+          "extra_lag": 0,
+          "slippage_bps_side": 10.0
+        },
+        {
+          "cagr_delta_pp": 0.0,
+          "continuation_screen": false,
+          "drawdown_gain_pp": 0.0,
+          "extra_lag": 0,
+          "slippage_bps_side": 20.0
+        },
+        {
+          "cagr_delta_pp": 0.0,
+          "continuation_screen": false,
+          "drawdown_gain_pp": 0.0,
+          "extra_lag": 1,
+          "slippage_bps_side": 10.0
+        },
+        {
+          "cagr_delta_pp": 0.0,
+          "continuation_screen": false,
+          "drawdown_gain_pp": 0.0,
+          "extra_lag": 1,
+          "slippage_bps_side": 20.0
+        }
+      ],
+      "trades": 147,
+      "volatility": 0.4728450262890461
+    },
+    {
+      "cagr": 0.2440863551805752,
+      "cagr_delta_pp": -9.861146963152567,
+      "continue_research": false,
+      "ending_equity": 3778929.03,
+      "maxdd": -0.4976986260616263,
+      "maxdd_gain_pp": 0.34820227998526576,
+      "name": "replace3_UPRO",
+      "stress": [
+        {
+          "cagr_delta_pp": -11.136941543361377,
+          "continuation_screen": false,
+          "drawdown_gain_pp": 0.4425400362893628,
+          "extra_lag": 0,
+          "slippage_bps_side": 10.0
+        },
+        {
+          "cagr_delta_pp": -11.234931033127381,
+          "continuation_screen": false,
+          "drawdown_gain_pp": 1.0161047378275168,
+          "extra_lag": 0,
+          "slippage_bps_side": 20.0
+        },
+        {
+          "cagr_delta_pp": -9.861146963152567,
+          "continuation_screen": false,
+          "drawdown_gain_pp": 0.34820227998526576,
+          "extra_lag": 1,
+          "slippage_bps_side": 10.0
+        },
+        {
+          "cagr_delta_pp": -9.963255328585818,
+          "continuation_screen": false,
+          "drawdown_gain_pp": -0.44697008419815054,
+          "extra_lag": 1,
+          "slippage_bps_side": 20.0
+        }
+      ],
+      "trades": 193,
+      "volatility": 0.38386116407753595
+    },
+    {
+      "cagr": 0.3080510551292215,
+      "cagr_delta_pp": -3.4646769682879386,
+      "continue_research": false,
+      "ending_equity": 8699097.24,
+      "maxdd": -0.7876177718656203,
+      "maxdd_gain_pp": -28.643712300414137,
+      "name": "replace3_SOXL",
+      "stress": [
+        {
+          "cagr_delta_pp": -4.383390984326518,
+          "continuation_screen": false,
+          "drawdown_gain_pp": -28.178008026712618,
+          "extra_lag": 0,
+          "slippage_bps_side": 10.0
+        },
+        {
+          "cagr_delta_pp": -4.533735717376985,
+          "continuation_screen": false,
+          "drawdown_gain_pp": -27.490786169683666,
+          "extra_lag": 0,
+          "slippage_bps_side": 20.0
+        },
+        {
+          "cagr_delta_pp": -3.4646769682879386,
+          "continuation_screen": false,
+          "drawdown_gain_pp": -28.643712300414137,
+          "extra_lag": 1,
+          "slippage_bps_side": 10.0
+        },
+        {
+          "cagr_delta_pp": -3.6176744763323,
+          "continuation_screen": false,
+          "drawdown_gain_pp": -29.032803693526432,
+          "extra_lag": 1,
+          "slippage_bps_side": 20.0
+        }
+      ],
+      "trades": 193,
+      "volatility": 0.7337153763382603
+    },
+    {
+      "cagr": 0.3301966499401692,
+      "cagr_delta_pp": -1.2501174871931697,
+      "continue_research": false,
+      "ending_equity": 11500756.94,
+      "maxdd": -0.5422707926072978,
+      "maxdd_gain_pp": -4.1090143745818875,
+      "name": "replace3_TECL",
+      "stress": [
+        {
+          "cagr_delta_pp": -1.5177750783264443,
+          "continuation_screen": false,
+          "drawdown_gain_pp": -4.300074570560519,
+          "extra_lag": 0,
+          "slippage_bps_side": 10.0
+        },
+        {
+          "cagr_delta_pp": -1.6696037862188984,
+          "continuation_screen": false,
+          "drawdown_gain_pp": -3.6646127717563703,
+          "extra_lag": 0,
+          "slippage_bps_side": 20.0
+        },
+        {
+          "cagr_delta_pp": -1.2501174871931697,
+          "continuation_screen": false,
+          "drawdown_gain_pp": -4.1090143745818875,
+          "extra_lag": 1,
+          "slippage_bps_side": 10.0
+        },
+        {
+          "cagr_delta_pp": -1.4016660453727958,
+          "continuation_screen": false,
+          "drawdown_gain_pp": -4.754024898023202,
+          "extra_lag": 1,
+          "slippage_bps_side": 20.0
+        }
+      ],
+      "trades": 193,
+      "volatility": 0.5110419781288351
+    },
+    {
+      "cagr": 0.2019597972005096,
+      "cagr_delta_pp": -14.073802761159126,
+      "continue_research": false,
+      "ending_equity": 2130951.17,
+      "maxdd": -0.7515073483424357,
+      "maxdd_gain_pp": -25.032669948095677,
+      "name": "replace3_FAS",
+      "stress": [
+        {
+          "cagr_delta_pp": -14.190834259976626,
+          "continuation_screen": false,
+          "drawdown_gain_pp": -24.068017677755236,
+          "extra_lag": 0,
+          "slippage_bps_side": 10.0
+        },
+        {
+          "cagr_delta_pp": -14.279656193074008,
+          "continuation_screen": false,
+          "drawdown_gain_pp": -24.290119551477364,
+          "extra_lag": 0,
+          "slippage_bps_side": 20.0
+        },
+        {
+          "cagr_delta_pp": -14.073802761159126,
+          "continuation_screen": false,
+          "drawdown_gain_pp": -25.032669948095677,
+          "extra_lag": 1,
+          "slippage_bps_side": 10.0
+        },
+        {
+          "cagr_delta_pp": -14.161786386846087,
+          "continuation_screen": false,
+          "drawdown_gain_pp": -25.825771180949985,
+          "extra_lag": 1,
+          "slippage_bps_side": 20.0
+        }
+      ],
+      "trades": 193,
+      "volatility": 0.45396909667999646
+    },
+    {
+      "cagr": 0.32154727196359123,
+      "cagr_delta_pp": -2.115055284850964,
+      "continue_research": false,
+      "ending_equity": 10318368.97,
+      "maxdd": -0.4991742945431529,
+      "maxdd_gain_pp": 0.20063543183260757,
+      "name": "blend25_UPRO",
+      "stress": [
+        {
+          "cagr_delta_pp": -2.434541352118913,
+          "continuation_screen": false,
+          "drawdown_gain_pp": 0.4777625243717054,
+          "extra_lag": 0,
+          "slippage_bps_side": 10.0
+        },
+        {
+          "cagr_delta_pp": -2.423435922941364,
+          "continuation_screen": false,
+          "drawdown_gain_pp": 1.1164801535459845,
+          "extra_lag": 0,
+          "slippage_bps_side": 20.0
+        },
+        {
+          "cagr_delta_pp": -2.115055284850964,
+          "continuation_screen": false,
+          "drawdown_gain_pp": 0.20063543183260757,
+          "extra_lag": 1,
+          "slippage_bps_side": 10.0
+        },
+        {
+          "cagr_delta_pp": -2.1046469641067267,
+          "continuation_screen": false,
+          "drawdown_gain_pp": 0.1987968318236999,
+          "extra_lag": 1,
+          "slippage_bps_side": 20.0
+        }
+      ],
+      "trades": 196,
+      "volatility": 0.44737549787739084
+    },
+    {
+      "cagr": 0.3542534499605423,
+      "cagr_delta_pp": 1.155562514844144,
+      "continue_research": false,
+      "ending_equity": 15494458.03,
+      "maxdd": -0.5788850945296791,
+      "maxdd_gain_pp": -7.770444566820012,
+      "name": "blend25_SOXL",
+      "stress": [
+        {
+          "cagr_delta_pp": 1.0178157817182676,
+          "continuation_screen": false,
+          "drawdown_gain_pp": -3.983712336269285,
+          "extra_lag": 0,
+          "slippage_bps_side": 10.0
+        },
+        {
+          "cagr_delta_pp": 1.012584791378912,
+          "continuation_screen": false,
+          "drawdown_gain_pp": -3.9274442567530765,
+          "extra_lag": 0,
+          "slippage_bps_side": 20.0
+        },
+        {
+          "cagr_delta_pp": 1.155562514844144,
+          "continuation_screen": false,
+          "drawdown_gain_pp": -7.770444566820012,
+          "extra_lag": 1,
+          "slippage_bps_side": 10.0
+        },
+        {
+          "cagr_delta_pp": 1.150479231594681,
+          "continuation_screen": false,
+          "drawdown_gain_pp": -8.276593178963065,
+          "extra_lag": 1,
+          "slippage_bps_side": 20.0
+        }
+      ],
+      "trades": 196,
+      "volatility": 0.5240241431523533
+    },
+    {
+      "cagr": 0.3427536829296487,
+      "cagr_delta_pp": 0.005585811754782455,
+      "continue_research": false,
+      "ending_equity": 13445760.59,
+      "maxdd": -0.5056834210214891,
+      "maxdd_gain_pp": -0.450277216001016,
+      "name": "blend25_TECL",
+      "stress": [
+        {
+          "cagr_delta_pp": -0.04755631608552857,
+          "continuation_screen": false,
+          "drawdown_gain_pp": -0.169753012933338,
+          "extra_lag": 0,
+          "slippage_bps_side": 10.0
+        },
+        {
+          "cagr_delta_pp": -0.047086798843598565,
+          "continuation_screen": false,
+          "drawdown_gain_pp": -0.17032963100673815,
+          "extra_lag": 0,
+          "slippage_bps_side": 20.0
+        },
+        {
+          "cagr_delta_pp": 0.005585811754782455,
+          "continuation_screen": false,
+          "drawdown_gain_pp": -0.450277216001016,
+          "extra_lag": 1,
+          "slippage_bps_side": 10.0
+        },
+        {
+          "cagr_delta_pp": 0.006198536286516898,
+          "continuation_screen": false,
+          "drawdown_gain_pp": -0.9666842677231613,
+          "extra_lag": 1,
+          "slippage_bps_side": 20.0
+        }
+      ],
+      "trades": 196,
+      "volatility": 0.4794605191122266
+    },
+    {
+      "cagr": 0.3165373484300147,
+      "cagr_delta_pp": -2.6160476382086184,
+      "continue_research": false,
+      "ending_equity": 9686781.02,
+      "maxdd": -0.538924642928579,
+      "maxdd_gain_pp": -3.774399406710005,
+      "name": "blend25_FAS",
+      "stress": [
+        {
+          "cagr_delta_pp": -2.662371211762804,
+          "continuation_screen": false,
+          "drawdown_gain_pp": -0.05738257023480964,
+          "extra_lag": 0,
+          "slippage_bps_side": 10.0
+        },
+        {
+          "cagr_delta_pp": -2.6514157062746513,
+          "continuation_screen": false,
+          "drawdown_gain_pp": 0.04877477624020132,
+          "extra_lag": 0,
+          "slippage_bps_side": 20.0
+        },
+        {
+          "cagr_delta_pp": -2.6160476382086184,
+          "continuation_screen": false,
+          "drawdown_gain_pp": -3.774399406710005,
+          "extra_lag": 1,
+          "slippage_bps_side": 10.0
+        },
+        {
+          "cagr_delta_pp": -2.604619273558595,
+          "continuation_screen": false,
+          "drawdown_gain_pp": -4.571168867293462,
+          "extra_lag": 1,
+          "slippage_bps_side": 20.0
+        }
+      ],
+      "trades": 196,
+      "volatility": 0.4418128140936076
+    }
+  ],
+  "extra_etfs": [
+    "UPRO",
+    "SOXL",
+    "TECL",
+    "FAS"
+  ],
+  "frozen8_modified": false,
+  "kind": "ST_REAL_3X_ETF_FROZEN_8_COMPARISON",
+  "modes": "replace entire TQQQ only at level 3; or blend 75% TQQQ 25% alternate at 3x; other frozen states untouched",
+  "period": {
+    "end": "2026-10-27",
+    "sessions": 4184,
+    "start": "2010-03-11"
+  },
+  "primary": "lag1,10bps",
+  "prospective_paper_observed": false,
+  "schema_version": 1,
+  "selection_gate": "at least +0.5 pp CAGR and no >1pp MaxDD worsening in all 4 stress cases; continuation only",
+  "source_independently_audited": false,
+  "source_vendor": "YAHOO_YFINANCE_AUTO_ADJUST",
+  "status": "HISTORICAL_REUSED_NO_PROMOTION"
+}
