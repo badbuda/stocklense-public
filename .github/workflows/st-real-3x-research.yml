@@ -1,0 +1,108 @@
+name: StockLens ST Real 3x ETF Research
+on:
+  pull_request:
+    paths:
+      - 'stocklens_st_real_3x_research.py'
+      - 'tests/test_stocklens_st_real_3x_research.py'
+      - 'research/predeclarations/SL9-030-REAL-3X-ST.md'
+      - '.github/workflows/st-real-3x-research.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'stocklens_st_real_3x_research.py'
+      - 'tests/test_stocklens_st_real_3x_research.py'
+      - 'research/predeclarations/SL9-030-REAL-3X-ST.md'
+      - '.github/workflows/st-real-3x-research.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  id-token: write
+concurrency:
+  group: stocklens-st-real-3x-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: Install pinned repository dependencies
+        run: |
+          python -m pip install -r requirements.txt
+          python -m pip install pytest
+      - name: Validate whole-share research mechanics (no network)
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          python -m pytest -q tests/test_stocklens_st_real_3x_research.py
+          python ci_transfer_guard.py
+      - name: Acquire actual leveraged ETF price histories and score fixed nine arms
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          python stocklens_st_real_3x_research.py --acquire
+          test -s research/private/st_real_3x_etfs.json
+          test -s research/results/st_real_3x_etfs.json
+          test -s research/reports/st_real_3x_etfs.md
+          python - <<'PY'
+          import json
+          x=json.load(open("research/results/st_real_3x_etfs.json"))
+          assert x["status"]=="HISTORICAL_REUSED_NO_PROMOTION"
+          assert len(x["experiments"])==9 and x["baseline_nav_parity"]
+          assert x["broker_actions"] is False and x["automatic_promotion"] is False
+          assert x["prospective_paper_observed"] is False
+          print("ST_REAL_3X_RESEARCH_RESULTS_VERIFIED")
+          PY
+      - name: Archive source, results and report even on provider failure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stocklens-st-real-3x-observed-comparison
+          path: |
+            research/private/st_real_3x_etfs.json
+            research/results/st_real_3x_etfs.json
+            research/reports/st_real_3x_etfs.md
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Publish historical snapshot for dashboard on main ONLY
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp research/results/st_real_3x_etfs.json docs/st-real-3x-results.json
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- docs/st-real-3x-results.json
+          if ! git diff --cached --quiet; then
+            git commit -m "research: publish ST observed 3x ETF results (historical only)"
+            git push origin HEAD:main
+          fi
+      - name: Assume optional ST-only OIDC role
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && vars.AWS_STOCKLENS_ST_RESEARCH_ROLE_ARN != ''
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: eu-central-1
+          role-to-assume: ${{ vars.AWS_STOCKLENS_ST_RESEARCH_ROLE_ARN }}
+          role-session-name: stocklens-st-historical-research
+      - name: Publish immutable historical evidence to isolated ST bucket
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && vars.AWS_STOCKLENS_ST_RESEARCH_ROLE_ARN != ''
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(aws sts get-caller-identity --query Account --output text)" = "634740393398"
+          bucket="stocklens-st-candidatedata-6jj7i9fxjmfr"
+          test "$(aws s3api get-bucket-versioning --bucket "$bucket" --query Status --output text)" = Enabled
+          prefix="research/experiments/SL9-030/${GITHUB_SHA}/${GITHUB_RUN_ID}"
+          aws s3 cp research/private/st_real_3x_etfs.json "s3://${bucket}/${prefix}/real_observed_bars.json" --only-show-errors
+          aws s3 cp research/results/st_real_3x_etfs.json "s3://${bucket}/${prefix}/results.json" --only-show-errors
+          aws s3 cp research/reports/st_real_3x_etfs.md "s3://${bucket}/${prefix}/report.md" --only-show-errors
+          aws s3api head-object --bucket "$bucket" --key "${prefix}/results.json" --query '[ContentLength,VersionId]' --output text
+          echo "ST_RESEARCH_S3_PUBLISHED:${prefix}"
