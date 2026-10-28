@@ -28,6 +28,11 @@ from tradable_tqqq_execution_comparison import _rebalance, _mark
 
 OUT = Path("research/results/ml_meta_leverage_walkforward.json")
 REPORT = Path("research/reports/ml_meta_leverage_walkforward.md")
+# Registered, byte-identical historical ML cohort. The live portal feed is
+# allowed to extend/restate Yahoo adjusted prices, but must never rewrite
+# retrospective registered research data without a separately reviewed study.
+PINNED_ML_SOURCE = Path("research/frozen_sources/observed_qqq_tqqq_ml_20100211_20261009.json")
+PINNED_ML_GIT_BLOB_SHA = "c9ce87cdd40692f77fab883d86ad6692dabeb050"
 FEATURE_NAMES = (
     "qqq_log_mom5", "qqq_log_mom20", "qqq_log_mom63",
     "qqq_realized_vol20", "qqq_realized_vol63", "qqq_sma200_gap",
@@ -50,6 +55,21 @@ SPLITS = {
     "2018_2022_reused": ("2018-01-02","2022-12-30"),
     "2023_2026_reused": ("2023-01-03","2026-10-09")
 }
+
+
+def load_pinned_research():
+    """Verify the exact archived Git blob before research calculation.
+
+    A mutable, longer Yahoo portal-history file must not silently change
+    this already-inspected 2010-2026-10-09 training/evaluation cohort.
+    """
+    payload = PINNED_ML_SOURCE.read_bytes()
+    git_blob = hashlib.sha1(
+        f"blob {len(payload)}\0".encode("ascii") + payload
+    ).hexdigest()
+    if git_blob != PINNED_ML_GIT_BLOB_SHA:
+        raise ValueError("PINNED_ML_SOURCE_BYTES_CHANGED")
+    return load(PINNED_ML_SOURCE)
 
 
 def feature_at(rows, i):
@@ -402,7 +422,7 @@ def evaluate(raw, *, include_curves=False):
     r={
         "schema_version":1,"kind":"FROZEN8_CAUSAL_MONTHLY_WALKFORWARD_RIDGE_META_LEVERAGE",
         "status":"HISTORICAL_HYPOTHESIS_SCREEN_NOT_CLEAN_OOS",
-        "source":"docs/portal-history.json",
+        "source":str(PINNED_ML_SOURCE),
         "source_price_sha256":raw.get("snapshot_sha256"),
         "period":raw["period"],
         "test_window":{"start":FIRST_TEST,"end":LAST_TEST,
@@ -507,7 +527,7 @@ def human_report(r):
 
 
 def build(out=OUT, report=REPORT):
-    data=evaluate(load())
+    data=evaluate(load_pinned_research())
     out=Path(out); report=Path(report)
     out.parent.mkdir(parents=True,exist_ok=True)
     report.parent.mkdir(parents=True,exist_ok=True)
