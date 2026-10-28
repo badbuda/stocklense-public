@@ -21,7 +21,13 @@ def test_separate_stacks_no_legacy_mutations_or_broker():
     assert "CREATE_TWO_ISOLATED_STOCKLENS_ENVIRONMENTS" in code
     assert "read -r -p" in code
     assert "--change-set-type CREATE" in code
-    assert "REFUSE_UPDATE_CHANGE_SET" in code
+    # DescribeChangeSet does not return ChangeSetType; CREATE is proven by
+    # REVIEW_IN_PROGRESS placeholder + stack identity + additive changes.
+    assert 'x.get("ChangeSetType")' not in code
+    assert 'x.get("StackName")!=sys.argv[4]' in code
+    assert "CHANGE_SET_WRONG_STACK" in code
+    assert "CHANGE_SET_WRONG_NAME" in code
+    assert "REFUSE_IMPORT_CHANGE_SET" in code
     assert "REFUSE_NON_ADDITIVE_CHANGE_SET" in code
     assert "ParameterKey=CandidateSignalScheduleState,ParameterValue=DISABLED" in code
     assert "ParameterKey=ExpectedSchedulerState,ParameterValue=DISABLED" in code
