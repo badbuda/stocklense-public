@@ -21,3 +21,9 @@ def test_browser_checks_exact_production_inputs():
         assert path in W
     assert "Verify local build in desktop and mobile Chromium" in W
     assert "Verify actual AWS Amplify deployed website" in W
+
+
+def test_deployed_parity_is_not_skipped_on_local_paper_staleness():
+    section = W.split("- name: Verify actual AWS Amplify deployed website", 1)[1]
+    assert "if: ${{ !cancelled() }}" in section.split("env:", 1)[0]
+    assert "AMPLIFY_ASSET_SHA_MISMATCH" in section
