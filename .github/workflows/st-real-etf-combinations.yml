@@ -1,0 +1,101 @@
+name: StockLens ST Real ETF Overlay Combinations
+on:
+  pull_request:
+    paths:
+      - 'sl9_031_real_etf_combinations.py'
+      - 'tests/test_sl9_031_real_etf_combinations.py'
+      - 'research/predeclarations/SL9-031-REAL-ETF-OVERLAY-COMBINATIONS.md'
+      - '.github/workflows/st-real-etf-combinations.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'sl9_031_real_etf_combinations.py'
+      - 'tests/test_sl9_031_real_etf_combinations.py'
+      - 'research/predeclarations/SL9-031-REAL-ETF-OVERLAY-COMBINATIONS.md'
+      - '.github/workflows/st-real-etf-combinations.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+concurrency:
+  group: stocklens-st-combos-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  factorial:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: Install analysis dependencies
+        run: |
+          python -m pip install -r requirements.txt
+          python -m pip install pytest
+      - name: Independent toy regression and full source fingerprint guard
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          python -m pytest -q tests/test_sl9_031_real_etf_combinations.py
+          python ci_transfer_guard.py
+      - name: Restore only pinned GREEN original REAL market-data archive
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p research/locked/sl9-030
+          gh run download 40730235493 -R badbuda/stocklense-public \
+            --name stocklens-st-real-3x-observed-comparison \
+            --dir research/locked/sl9-030
+          test -s research/locked/sl9-030/private/st_real_3x_etfs.json
+          test -s research/locked/sl9-030/results/st_real_3x_etfs.json
+          echo "PINNED_REAL_3X_MARKET_DATA_RESTORED"
+      - name: Run ALL 56 fixed instrument × overlay combinations with four stress scenarios
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          python sl9_031_real_etf_combinations.py
+          python - <<'PY'
+          import json,csv
+          x=json.load(open('research/results/sl9_031_combinations.json'))
+          assert x['case_count']==56 and x['stress_runs']==224
+          assert len(x['results'])==56 and len(x['stress'])==56
+          assert x['frozen_daily_parity_all_stress_cases'] is True
+          assert x['broker_actions'] is False and x['automatic_promotion'] is False
+          assert x['aws_st_paper_runs'] is False
+          assert x['source_independently_audited'] is False
+          assert x['period']['sessions']>=4000
+          with open('research/results/sl9_031_fixed_curves.csv') as f:
+              assert len(list(csv.reader(f))) == x['period']['sessions']+1
+          print('SL9_031_224_OBSERVED_ETF_SIMULATIONS_PASS')
+          PY
+      - name: Archive immutable research source, full stress grid, report and curves
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stocklens-st-sl9-031-real-etf-interactions
+          path: |
+            research/locked/sl9-030/private/st_real_3x_etfs.json
+            research/locked/sl9-030/results/st_real_3x_etfs.json
+            research/results/sl9_031_combinations.json
+            research/results/sl9_031_fixed_curves.csv
+            research/reports/sl9_031_combinations.md
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Publish read-only historical research to main dashboard data
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          set -euo pipefail
+          cp research/results/sl9_031_combinations.json docs/st-combo-results.json
+          cp research/results/sl9_031_fixed_curves.csv docs/st-combo-curves.csv
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- docs/st-combo-results.json docs/st-combo-curves.csv
+          if ! git diff --cached --quiet; then
+            git commit -m "research: publish fixed ST ETF combination history, not Paper"
+            git push origin HEAD:main
+          fi
