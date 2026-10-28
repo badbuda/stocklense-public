@@ -40,7 +40,14 @@ try{
      historySession:h.updated_session,riskSession:r.period.end};
  });
  assert.ok(governance.signalSession,'No published signal session');
- assert.equal(governance.paperSession,governance.signalSession,'Paper is stale versus published signal');
+ const paperArchiveStale=governance.paperSession!==governance.signalSession;
+ // Keep the health verdict RED, but do not abort all browser/Amplify UI coverage
+ // before charts, buttons, trade details and mobile navigation are exercised.
+ if(paperArchiveStale){
+   const reason=`Paper is stale versus published signal: PUBLISHED_PAPER_ARCHIVE_STALE:paper=${governance.paperSession}:signal=${governance.signalSession}`;
+   console.error(reason);
+   failures.push(reason);
+ }
  assert.equal(governance.historySession,governance.signalSession,'Historical ETF feed is stale');
  assert.equal(governance.riskSession,governance.signalSession,'Risk cohort is stale');
  assert.match(await page.locator('#health-list').textContent(),/תאריך נתוני האתר/);
@@ -49,6 +56,11 @@ try{
  assert.match(await page.locator('#staging-overview-status').textContent(),/Staging/);
  const feedBanner=await page.locator('#feed-status').textContent();
  assert.match(feedBanner,/GitHub|מיושנים|פער תאריכים|חסרים/);
+ if(paperArchiveStale){
+   assert.match(feedBanner,/פער תאריכים|מיושנים|חסרים/,'Stale Paper must be explicitly disclosed');
+   assert.equal(await page.locator('#feed-status').evaluate(e=>e.classList.contains('error')),true,
+     'Stale Paper archive must render a visible error state');
+ }
  const oldestPublished=[governance.signalSession,governance.paperSession,governance.historySession,governance.riskSession].sort()[0];
  const snapshotAge=Math.floor((Date.now()-Date.parse(oldestPublished+'T00:00:00Z'))/86400000);
  if(snapshotAge>4)assert.match(feedBanner,/מיושנים|פער תאריכים|חסרים/,'Stale dates must never appear as live');
@@ -113,7 +125,7 @@ try{
  await mobile.locator('button[data-page=paper]').click();
  assert.equal((await mobile.locator('.page.visible').getAttribute('data-view')),'paper');
  await mobile.screenshot({path:'/tmp/stocklens-mobile-'+screenshotSuffix+'.png',fullPage:true});
- assert.deepEqual(failures,[],'No uncaught client JS exceptions');
+ assert.deepEqual(failures,[],'Portal E2E or published Paper freshness unresolved');
  console.log('PORTAL_E2E_PASS: desktop/mobile, historic charts, paper ledger, Yahoo real-TQQQ simulator, cost and input recalculation');
 } finally{await browser.close()}
 })().catch(err=>{console.error('PORTAL_E2E_FAILURE',err);process.exitCode=1});
