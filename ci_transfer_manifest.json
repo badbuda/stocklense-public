@@ -11,6 +11,7 @@
     ".github/workflows/portal-browser-smoke.yml": "e4383a7fc97332b39dfdcddfc040c704f453077d",
     ".github/workflows/portal-history-build.yml": "2d731559dde6f3116cc349379190e74417a1ece9",
     ".github/workflows/shadow.yml": "234865debaa532a1c63f6dde697791607145a588",
+    ".github/workflows/st-3x-amplify-acceptance.yml": "8f1f5e33aeef673c373996e0ba9c1d64ce61a356",
     ".github/workflows/st-real-3x-research.yml": "e41cccc8bcb99922a1c9371fcd9f30a1bd18a6bd",
     "accel_mechanism_broad_megabatch.py": "aa9c3c2585a2505cdca95be3768f67a904c27e45",
     "accel_only_redteam_megabatch.py": "feeca1ca48096fc9c66d01a71ad844667dcc4125",
