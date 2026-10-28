@@ -157,12 +157,19 @@ fi
 # apply may not generate its own change sets; change review must be separate.
 for target in "$ST" "$PROD"; do
  aws cloudformation describe-change-set --stack-name "$target"    --change-set-name "$CHANGE" --output json > "$work/$target.json"
- python3 - "$work/$target.json" "$artifact_bucket" "$artifact_key" <<'PY'
+ python3 - "$work/$target.json" "$artifact_bucket" "$artifact_key" "$target" <<'PY'
 import json,sys
 x=json.load(open(sys.argv[1]))
 if x.get("Status")!="CREATE_COMPLETE" or x.get("ExecutionStatus")!="AVAILABLE":
  raise SystemExit("CHANGESET_NOT_READY")
-if x.get("ChangeSetType")!="CREATE":raise SystemExit("REFUSE_UPDATE_CHANGE_SET")
+# DescribeChangeSet omits ChangeSetType. A CREATE change set leaves a
+# REVIEW_IN_PROGRESS placeholder, validated for both targets before this loop.
+if x.get("StackName")!=sys.argv[4]:
+ raise SystemExit("CHANGE_SET_WRONG_STACK")
+if x.get("ChangeSetName")!="stocklens-create-isolated-v1":
+ raise SystemExit("CHANGE_SET_WRONG_NAME")
+if x.get("ImportExistingResources"):
+ raise SystemExit("REFUSE_IMPORT_CHANGE_SET")
 cs=x.get("Changes",[])
 if not cs or any(c.get("ResourceChange",{}).get("Action")!="Add" for c in cs):
  raise SystemExit("REFUSE_NON_ADDITIVE_CHANGE_SET")
