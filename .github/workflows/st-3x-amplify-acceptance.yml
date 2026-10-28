@@ -1,0 +1,64 @@
+name: StockLens ST 3x Research Amplify Acceptance
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/st-3x-amplify-acceptance.yml'
+      - 'docs/st-real-3x.html'
+      - 'docs/st-real-3x-results.json'
+      - 'docs/portal.html'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  acceptance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v7
+      - name: Verify observed research snapshot is explicitly non-live
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          x=json.loads(Path("docs/st-real-3x-results.json").read_text())
+          assert x["kind"]=="ST_REAL_3X_ETF_FROZEN_8_COMPARISON"
+          assert x["baseline_nav_parity"] and not x["broker_actions"]
+          assert not x["automatic_promotion"] and not x["prospective_paper_observed"]
+          assert len(x["experiments"])==9
+          assert x["period"]["sessions"]>=4000
+          assert "st-real-3x.html" in Path("docs/portal.html").read_text()
+          print("ST_HISTORY_ONLY_DASHBOARD_SOURCE_PASS")
+          PY
+      - name: Prove exact ST research HTML/JSON are deployed to Amplify
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="https://main.d20nvlvzjafg5m.amplifyapp.com"
+          assets=(st-real-3x.html st-real-3x-results.json portal.html)
+          matched=0
+          for attempt in $(seq 1 40); do
+            good=1
+            for asset in "${assets[@]}"; do
+              expected="$(sha256sum "docs/$asset" | cut -d' ' -f1)"
+              if ! curl -fLsS --max-time 15 "$base/$asset?st3x_probe=$attempt" -o /tmp/stocklens-st-live; then
+                good=0
+                echo "ST_AMPLIFY_HTTP_PENDING:$asset:$attempt"
+                break
+              fi
+              actual="$(sha256sum /tmp/stocklens-st-live | cut -d' ' -f1)"
+              if [ "$actual" != "$expected" ]; then
+                good=0
+                echo "ST_AMPLIFY_SHA_PENDING:$asset:$attempt"
+                break
+              fi
+            done
+            if [ "$good" = 1 ]; then matched=1; break; fi
+            sleep 8
+          done
+          test "$matched" = 1 || { echo "ST_AMPLIFY_RESEARCH_NOT_DEPLOYED"; exit 1; }
+          echo "ST_AMPLIFY_REAL_3X_RESEARCH_DEPLOYED=PASS"
+          echo "NO_CLAIM_OF_AWS_PRIVATE_ST_S3_OR_FORWARD_PAPER"
