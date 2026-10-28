@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>StockLens ST | מחקר ETF ממונפים</title>
+<style>
+:root{color-scheme:dark;font-family:Arial,system-ui,sans-serif;background:#0c1422;color:#eaf1ff}
+*{box-sizing:border-box}body{margin:0;line-height:1.6}
+main{max-width:1170px;margin:auto;padding:36px 20px 70px}
+a{color:#9dccff}h1{font-size:clamp(1.6rem,4vw,2.7rem);margin:.3em 0}
+p{color:#bac7dc}.eyebrow{color:#80b5ff;letter-spacing:.12em;font-size:.8rem}
+.hero{padding:28px;border-radius:20px;background:linear-gradient(125deg,#17263e,#0e192a);border:1px solid #324664}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:20px 0}
+article{background:#121e31;padding:18px;border-radius:14px;border:1px solid #33445e}
+article small{display:block;color:#a9bad0}article strong{display:block;font-size:1.5rem}
+.note{border-right:3px solid #80b5ff;padding:12px 18px;background:#142439;margin:22px 0}
+table{border-collapse:collapse;width:100%;min-width:760px}th,td{text-align:right;padding:13px;border-bottom:1px solid #304159}
+th{color:#a9bad0;font-weight:normal}tbody tr:hover{background:#1c2940}
+.tablewrap{overflow-x:auto;background:#121e31;border:1px solid #33445e;border-radius:14px;margin:18px 0}
+.positive{color:#91e2c1}.negative{color:#ffa9a9}
+.b{font-weight:bold}footer{color:#99a9c1;margin-top:20px;font-size:.85rem}
+.status{padding:16px;background:#202f48;border-radius:10px}
+</style>
+</head>
+<body>
+<main>
+<a href="./portal.html#research">חזרה למעבדת המחקר</a>
+<div class="hero"><span class="eyebrow">STOCKLENS / RESEARCH / ST / SL9-030</span>
+<h1>האם ETF ממונפים נוספים משפרים את StockLens 8.0?</h1>
+<p>השוואה מחקרית על מחירי ETF שנצפו בפועל, באמצעות קנייה ומכירה מדומות בפתיחת יום המסחר העוקב.</p>
+<strong>ניסוי היסטורי בלבד · ללא אישור למסחר או שינוי האלגוריתם</strong></div>
+<div id="status" class="status" role="status">טוען את תוצאות המחקר המאומתות מ־GitHub…</div>
+<section class="cards" id="summary" aria-label="סיכום"></section>
+<div class="note">בשמונת הניסויים החלפנו או שילבנו ETF אחר <b>רק במצב חשיפה 3×</b>.
+כל יתר ההחלטות נשארו כמו ב־StockLens 8.0. הרצת הליבה לא מלמדת מה היה קורה
+בסביבת ברוקר אמיתית. אל תפרשו תשואות היסטוריות כתשואות Paper בזמן אמת.</div>
+<h2>כל החלופות שנבדקו</h2>
+<div class="tablewrap"><table><thead><tr><th>חלופה</th><th>CAGR</th><th>MaxDD</th><th>Δ CAGR מול בסיס</th><th>Δ MaxDD</th><th>בדיקות רגישות</th></tr></thead><tbody id="comparison"></tbody></table></div>
+<p>השוואת רגישות: השהיית אות נוספת של 0/1 ימים; עלות החלקה 10/20 נקודות בסיס לכל צד, ועמלה 2 נקודות בסיס. סף מעבר למחקר נוסף: לפחות 0.5 נקודת אחוז שיפור שנתי, ללא החמרה של יותר מנקודת אחוז בירידה המקסימלית, בכל ארבע הבדיקות.</p>
+<footer id="details">מקור: StockLens GitHub Actions; מחירי Yahoo מותאמים היסטוריים. אימות עצמאי מול ספק שני עדיין חסר.</footer>
+</main>
+<script>
+(async()=>{
+const status=document.getElementById('status');
+const fmt=n=>(100*n).toFixed(2)+'%';
+const pp=n=>(n>=0?'+':'')+n.toFixed(2)+' נק׳';
+const labels={frozen:'StockLens 8.0 — בסיס',replace3_UPRO:'החלפה מלאה: UPRO',replace3_SOXL:'החלפה מלאה: SOXL',replace3_TECL:'החלפה מלאה: TECL',replace3_FAS:'החלפה מלאה: FAS',blend25_UPRO:'75% TQQQ + 25% UPRO',blend25_SOXL:'75% TQQQ + 25% SOXL',blend25_TECL:'75% TQQQ + 25% TECL',blend25_FAS:'75% TQQQ + 25% FAS'};
+function tile(label,value){
+const a=document.createElement('article'),s=document.createElement('small'),b=document.createElement('strong');
+s.textContent=label;b.textContent=value;a.append(s,b);return a;
+}
+try{
+const res=await fetch('./st-real-3x-results.json',{cache:'no-store'});
+if(!res.ok)throw Error('תוצאות המחקר טרם פורסמו בדשבורד');
+const d=await res.json();
+if(d.kind!=='ST_REAL_3X_ETF_FROZEN_8_COMPARISON'||!d.baseline_nav_parity||d.broker_actions!==false||
+ d.automatic_promotion!==false||!Array.isArray(d.experiments)||d.experiments.length!==9)throw Error('מקור המחקר לא עבר אימות');
+const b=d.experiments.find(x=>x.name==='frozen');
+if(!b)throw Error('אין ביקורת בסיס');
+document.getElementById('summary').append(
+tile('חלון מחקר',d.period.start+' – '+d.period.end),
+tile('ימי מסחר שנצפו',d.period.sessions.toLocaleString('en-US')),
+tile('CAGR בסיס',fmt(b.cagr)),
+tile('MaxDD בסיס',fmt(b.maxdd)));
+const tbody=document.getElementById('comparison');
+for(const x of d.experiments){
+if(!(x.name in labels)||!Number.isFinite(x.cagr)||!Number.isFinite(x.maxdd))throw Error('נתוני ניסוי לא תקינים');
+const tr=document.createElement('tr');
+const fields=[labels[x.name],fmt(x.cagr),fmt(x.maxdd),pp(x.cagr_delta_pp),pp(x.maxdd_gain_pp),x.name==='frozen'?'ביקורת':x.stress.filter(z=>z.continuation_screen).length+'/4'];
+fields.forEach((v,i)=>{const td=document.createElement('td');td.textContent=v;
+if(i===3||i===4)td.className=(Number(i===3?x.cagr_delta_pp:x.maxdd_gain_pp)>=0)?'positive':'negative';
+if(x.name==='frozen')td.classList.add('b');tr.appendChild(td)});
+tbody.appendChild(tr);
+}
+status.textContent='נתוני המחקר נטענו בהצלחה. כל החלופות שנבדקו נכשלו בסף ההמשך שהוגדר מראש; אין שינוי ב־PROD.';
+document.getElementById('details').textContent='מחירי ETF אמיתיים (Yahoo auto-adjusted), אך ביצוע מדומה בלבד · צילום נתונים '+d.captured_utc+' · מקור '+d.additional_real_etf_data_sha256.slice(0,16)+'… · אין אישור למסחר.';
+}catch(err){status.textContent='לא ניתן להציג תוצאות מאומתות: '+err.message;}
+})();
+</script>
+</body>
+</html>
