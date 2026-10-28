@@ -335,7 +335,7 @@
     "stocklens8_falsification_report.py": "11cd389e8a194aec5c9db26ddfd724db00e47e08",
     "stress_scenarios.py": "70c27a967122c9acdfbe61ded5e82a7278f7d568",
     "tail_risk_challengers.py": "705ad85beec36defde041e48052a89f069fe9ba7",
-    "tests/portal_browser_smoke.cjs": "dd26967f91979304009e46e04464ee88c9007ce0",
+    "tests/portal_browser_smoke.cjs": "6514dd74fb1616de08c1e3a7c2fd857af4dd2f2a",
     "tests/portal_freshness.test.mjs": "cd4b6791563b53d1cd4fe5e1f743ae9174081779",
     "tests/portal_insights_unit.cjs": "96615eaa8d0cba7b0c7ceb51665172287d0ff414",
     "tests/portal_live.test.mjs": "393e182258146865368741f70c2617356a93dbde",
@@ -449,6 +449,6 @@
     "workbench_selfcheck.py": "4f17be6d56ac7d3cc3637e1ef2b2af3ed9d880a8",
     "yahoo_eod_scorecard.py": "137465f3ff4d9a2b8c164bf4321480c0ea0869fd",
     "yahoo_long_history.py": "e7e51b5c2f5697da5d583316638b98ec13e6114c",
-    "tests/test_portal_stale_paper_e2e_coverage.py": "d164fadc31fbb189b7a15e03ab2992ba2e025bae"
+    "tests/test_portal_stale_paper_e2e_coverage.py": "8f76bad15c1c95bdaa418540d55aaa9549526c7f"
   }
 }

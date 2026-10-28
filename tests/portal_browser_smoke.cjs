@@ -65,7 +65,14 @@ try{
  const snapshotAge=Math.floor((Date.now()-Date.parse(oldestPublished+'T00:00:00Z'))/86400000);
  if(snapshotAge>4)assert.match(feedBanner,/מיושנים|פער תאריכים|חסרים/,'Stale dates must never appear as live');
 
- assert.match(await page.locator('#health-list').textContent(),/מאומת · /);
+ const healthText=await page.locator('#health-list').textContent();
+ if(paperArchiveStale){
+   assert.match(healthText,/פער תאריכים · Signal/,'Health dashboard must explain stale Paper mismatch');
+   assert.match(healthText,new RegExp('Paper '+governance.paperSession),
+     'Health dashboard must show the actual archived Paper session');
+ }else{
+   assert.match(healthText,/מאומת · /,'Healthy matching sources must be labeled verified');
+ }
  assert.equal((await page.locator('#real-paper-sessions').textContent()).trim(),
    new Intl.NumberFormat('en-US').format(governance.paper));
  assert.equal((await page.locator('#research-session-count').textContent()).trim(),

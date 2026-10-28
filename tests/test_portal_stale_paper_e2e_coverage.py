@@ -22,3 +22,10 @@ def test_mobile_and_simulator_are_exercised_before_final_red_verdict():
 def test_history_and_risk_freshness_still_hard_fail():
     assert "assert.equal(governance.historySession,governance.signalSession" in SCRIPT
     assert "assert.equal(governance.riskSession,governance.signalSession" in SCRIPT
+
+
+def test_stale_health_state_is_explicitly_red_not_falsely_verified():
+    assert "if(paperArchiveStale)" in SCRIPT
+    assert "Health dashboard must explain stale Paper mismatch" in SCRIPT
+    assert "Health dashboard must show the actual archived Paper session" in SCRIPT
+    assert "Healthy matching sources must be labeled verified" in SCRIPT
