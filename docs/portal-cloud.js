@@ -118,7 +118,7 @@ async function refreshStagingJournal(){
  const paper=response.sessions.filter(x=>x.status==='SIGNAL_PAPER_CONTINUITY_S3_SHA_BOUND');
  const invalid=response.sessions.filter(x=>x.status==='INVALID_EVIDENCE');
  notice.textContent='S3 Staging: '+signals.length+' סיגנלים, '+paper.length+' ימי Paper, '+invalid.length+' ראיות פסולות. אחרון: '+(signals.at(-1)?.session_date||'אין')+'. תצוגת SHA/גרסה, לא אימות מלא של שרשרת Paper או מסחר אמיתי.';
- stagingUpdated(rows);
+ stagingUpdated(response.sessions);
  container.hidden=false;
  container.innerHTML='<table><thead><tr><th>יום</th><th>מצב</th><th>רמת חשיפה</th><th>מינוף</th><th>שווי Paper מדומה</th><th>שמירת סיגנל ב־AWS</th></tr></thead><tbody>'+
  response.sessions.slice().reverse().map(x=>'<tr><td>'+html(x.session_date)+'</td><td>'+html(x.status)+'</td><td>'+
