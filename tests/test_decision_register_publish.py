@@ -81,3 +81,10 @@ def test_portal_source_contract():
     assert "innerHTML" not in html
     assert "stocklens-archived-shadow-decisions.csv" in html
     assert "stocklens-historical-modeled-decisions.csv" in html
+
+def test_published_current_register_matches_repository_sources():
+    from decision_register_publish import SHADOW, HISTORY, PAPER
+    report=build(sorted(SHADOW.glob("20??-??-??.json")),
+                 json.loads(HISTORY.read_text()),json.loads(PAPER.read_text()))
+    published=json.loads(Path("docs/decision-register.json").read_text(encoding="utf-8"))
+    assert report == published
