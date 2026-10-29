@@ -1,0 +1,129 @@
+{
+  "automated_live_trading_authorized": false,
+  "automatic_model_promotion": false,
+  "broker_orders": false,
+  "components": {
+    "aws_prod": {
+      "note": "Stack existence is NOT a qualified, active prospective Paper book.",
+      "status": "NOT_VERIFIED_FROM_GITHUB"
+    },
+    "aws_st": {
+      "note": "No verified ST S3 receipt, current Lambdas/schedules or research runner evidence available here.",
+      "status": "NOT_VERIFIED_FROM_GITHUB"
+    },
+    "dashboard": {
+      "note": "Browser CDNs passing does not resolve a stale Paper archive.",
+      "status": "STATIC_RESEARCH_ONLY_NOT_OPERATIONAL_GREEN"
+    },
+    "frozen_shadow": {
+      "observed_signal_asof": "2026-10-28",
+      "status": "SOURCE_PRESENT_NOT_AWS_EXECUTION"
+    },
+    "historical_combination_research": {
+      "arm_count": 56,
+      "continuation_screen_arms": 0,
+      "observed_ending_session": "2026-10-27",
+      "qualified_for_auto_promotion": 0,
+      "status": "HISTORICAL_CI_VERIFIED_NOT_FORWARD",
+      "stress_tests": 224,
+      "study": "SL9-031"
+    },
+    "legacy_paper": {
+      "accounting": "HISTORICAL_MODELLED_ONLY",
+      "calendar_days_behind_signal": 19,
+      "explicit_missed_execution_sessions": 13,
+      "independent_broker_fills": false,
+      "last_recorded_session": "2026-10-09",
+      "status": "STALE",
+      "verified_modelled_sessions": 2
+    },
+    "prospective_frozen_paper": {
+      "forward_sessions_reported": 2,
+      "no_backfill": true,
+      "paired_forward_sessions": 0,
+      "status": "BLOCKED_UNPAIRED"
+    },
+    "readiness": {
+      "blocked": 13,
+      "blocked_ids": [
+        "BROKER_SANDBOX_DRY_RUN",
+        "DECISION_MONITORING_AND_STALE_DATA",
+        "HUMAN_CAPITAL_AND_COMPLIANCE_APPROVAL",
+        "LIVE_EXECUTION_TIME_PARITY",
+        "PAPER_EXECUTION_SESSIONS",
+        "PAPER_REPLAY_PAIRED_ATTRIBUTION",
+        "POINT_IN_TIME_AND_PROVIDER_AUDIT",
+        "PRE_REGISTERED_INDEPENDENT_FORWARD",
+        "PROSPECTIVE_OBSERVED_MINUTE_QUOTE_JOURNAL",
+        "PROSPECTIVE_QQQ_BENCHMARK",
+        "RAW_LEAN_SAME_RUN_EXPORT",
+        "RESEARCH_SELECTION_AUDIT",
+        "RISK_LIMITS_AND_GAP_CONTROLS"
+      ],
+      "passed": 5,
+      "status": "BLOCKED_FOR_LIVE_TRADING",
+      "total": 18
+    }
+  },
+  "generated_at_utc": "2026-10-29T07:41:45.684827+00:00",
+  "kind": "STOCKLENS_EVIDENCE_CLOSEOUT",
+  "overall": "BLOCKED_OPERATIONAL_NOT_RESEARCH",
+  "schema_version": 1,
+  "source_sha256": {
+    "combinations": "1987828f586d120e65e17eee0794ee2baf72741cb81fff7cb713e8edbcf45726",
+    "forward": "2f201cbf96bb591a7d5a55020f07b410c5a43ff79c5b71daf6223b8489b6b241",
+    "paper": "c68a48a04bad35df80918f8de1a93ae442442c0141acfe446b7a0da0120bbd36",
+    "readiness": "dc45e182917f2874fd53c7de2c2a0f3952ee23b63eea54a7970c9b142a039c07",
+    "signals": "608f2207ab7feefb6454d1efb8f51927781680a150bed4ce5c49c18f5cf25384"
+  },
+  "work_items": [
+    {
+      "id": "PAPER_FORWARD_CHAIN",
+      "priority": "P0",
+      "required": "New independent genesis and future-only signal\u2192Paper receipts in ST; never backfill misses.",
+      "status": "BLOCKED"
+    },
+    {
+      "id": "ST_AWS_READBACK",
+      "priority": "P0",
+      "required": "Read-only S3 list/head/hash and EventBridge/Lambda checks in exact stocklens-st.",
+      "status": "AWAITING_INDEPENDENT_AWS_READ"
+    },
+    {
+      "id": "PROD_PAPER_ACCEPTANCE",
+      "priority": "P0",
+      "required": "No PROD schedule activation before provider parity, safe genesis, receipt/ledger and alerts.",
+      "status": "NOT_AUTHORIZED"
+    },
+    {
+      "id": "PORTAL_E2E_PAPER_FRESHNESS",
+      "priority": "P0",
+      "required": "New legitimate Paper archive must match completed sessions; do not suppress freshness checks.",
+      "status": "BLOCKED"
+    },
+    {
+      "id": "SECOND_SOURCE_AND_PIT",
+      "priority": "P1",
+      "required": "Independent vendor, corporate action and price-first-seen evidence.",
+      "status": "BLOCKED"
+    },
+    {
+      "id": "LEAN_AND_EXECUTION_PROOF",
+      "priority": "P1",
+      "required": "Same-run LEAN fills/equity plus minute executable quote provenance.",
+      "status": "BLOCKED"
+    },
+    {
+      "id": "FORWARD_OOS_ETF_MIXES",
+      "priority": "P1",
+      "required": "Register cohort before future sessions and compare lag-1 frozen vs fixed mixes with prospectively captured inputs.",
+      "status": "NOT_STARTED_CERTIFIED"
+    },
+    {
+      "id": "BROKER_SANDBOX_AND_RISK_POLICY",
+      "priority": "P2",
+      "required": "Authorized sandbox, kill switch, funding, spreads and human capital risk acceptance.",
+      "status": "BLOCKED"
+    }
+  ]
+}
