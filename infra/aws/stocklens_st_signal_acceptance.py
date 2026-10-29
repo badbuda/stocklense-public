@@ -184,6 +184,12 @@ def check(services, session: str, *, now=None):
     require(any(x.get("Protocol") == "email" and
                 x.get("SubscriptionArn") not in (None, "PendingConfirmation") for x in subscriptions),
             "ST_SNS_NOT_CONFIRMED")
+    isolated_names = {
+        "MissingOrLateScheduledSignalsAlarm", "MissedSessionsAlarm",
+        "BookHaltedAlarm", "SchedulerStateMismatchAlarm",
+        "InvalidContinuityRecordAlarm", "WatchdogConfigurationErrorAlarm",
+        "WatchdogFailClosedAlarm", "WatchdogHeartbeatDeadmanAlarm",
+    }
     alarms = []
     for logical in ALARM_IDS:
         item = cf.describe_stack_resource(StackName=ST, LogicalResourceId=logical)
@@ -195,6 +201,10 @@ def check(services, session: str, *, now=None):
         require(alarm.get("ActionsEnabled") is True and
                 topic in alarm.get("AlarmActions", []),
                 "ST_ALARM_NOT_CONNECTED_TO_EMAIL:" + logical)
+        if logical in isolated_names:
+            require(alarm.get("Namespace") == "StockLens/IsolatedST" and
+                    not alarm.get("Dimensions"),
+                    "ST_WATCHDOG_ALARM_STILL_SHARED_OR_MISCONFIGURED:" + logical)
         alarms.append({"name": logical, "state": alarm.get("StateValue")})
 
     severe = [x["name"] for x in alarms if x["state"] == "ALARM"]
