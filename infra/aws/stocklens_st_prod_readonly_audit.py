@@ -140,6 +140,13 @@ def inspect(reader=aws):
         st["problems"].append("CROSS_ENV_BUCKET_COLLISION")
         prod["problems"].append("CROSS_ENV_BUCKET_COLLISION")
         st["status"]=prod["status"]="BLOCKED"
+    for logical in FUNCTIONS:
+        left=st["functions"].get(logical,{}).get("code_sha256")
+        right=prod["functions"].get(logical,{}).get("code_sha256")
+        if not left or left!=right:
+            st["problems"].append("CODE_SHA_ENV_PARITY_MISSING:"+logical)
+            prod["problems"].append("CODE_SHA_ENV_PARITY_MISSING:"+logical)
+            st["status"]=prod["status"]="BLOCKED"
     return {
         "kind":"STOCKLENS_ST_PROD_READ_ONLY_AUDIT",
         "generated_at_utc":datetime.now(timezone.utc).isoformat(),
