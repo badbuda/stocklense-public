@@ -262,6 +262,11 @@ jobs:
           PYTHONPATH: ${{ github.workspace }}
         run: python paper_portfolio_integrity.py
 
+      - name: Publish source-separated historical and archived decision register
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: python decision_register_publish.py
+
       - name: Persist prospective signal
         id: persist
         env:

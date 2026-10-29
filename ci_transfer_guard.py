@@ -27,7 +27,7 @@ STATIC_DOCS = {
     "docs/index.html", "docs/legacy.html", "docs/workbench.html",
     "docs/execution.html", "docs/research.html", "docs/research-engine.js",
     "docs/manifest.webmanifest", "docs/sw.js",
-    "docs/portal.html", "docs/portal.css", "docs/portal.js",
+    "docs/portal.html", "docs/decisions.html", "docs/portal.css", "docs/portal.js",
     "docs/portal-insights.js", "docs/portal-cloud.js", "docs/portal-freshness.mjs", "docs/portal-live.mjs",
 }
 MANDATORY = (
@@ -38,7 +38,7 @@ MANDATORY = (
     "docs/execution.html",
     "docs/manifest.webmanifest",
     "docs/sw.js",
-    "docs/portal.html", "docs/portal.css", "docs/portal.js",
+    "docs/portal.html", "docs/decisions.html", "docs/portal.css", "docs/portal.js",
     "docs/portal-insights.js", "docs/portal-cloud.js",
     ".github/workflows/shadow.yml",
     "research/prospective/registry.json",
