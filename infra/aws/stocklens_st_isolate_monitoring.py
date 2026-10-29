@@ -125,6 +125,11 @@ def patch_template(original):
                 "UNSUPPORTED_YAML_TEMPLATE_LAYOUT")
         prefix,between=original.split("\nResources:\n",1)
         resources,outputs=between.rsplit("\nOutputs:\n",1)
+        # Splitting at the Outputs header consumes the preceding newline.
+        # Normalize a trailing newline so the last resource has the same
+        # boundary semantics as every earlier CloudFormation resource.
+        if not resources.endswith("\n"):
+            resources+="\n"
         require("  "+WATCHDOG_LOG+":\n" in resources,"WATCHDOG_LOG_GROUP_MISSING")
         for alarm,metric in METRICS.items():
             pattern=r"(?m)^  "+re.escape(alarm)+r":\n"
