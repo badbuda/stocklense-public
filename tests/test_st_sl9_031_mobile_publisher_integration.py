@@ -39,7 +39,7 @@ def setup_mocks(tmp_path, *, deny_head=False):
         elif op==["s3api","get-bucket-versioning"]:
             print("Enabled")
         elif op==["s3api","get-public-access-block"]:
-            print("True\\tTrue\\tTrue\\tTrue")
+            print(chr(9).join(["True"]*4))
         elif op==["events","describe-rule"]:
             print("DISABLED")
         elif op==["s3api","head-object"]:
