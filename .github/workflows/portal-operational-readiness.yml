@@ -1,0 +1,47 @@
+name: StockLens Published Paper Operational Readiness
+
+# Independent RED gate while the static Paper archive is stale.
+# Browser smoke may PASS if it visibly warns that old Paper is stale.
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows: ["StockLens 8.0 Shadow"]
+    types: [completed]
+  push:
+    branches: [main]
+    paths:
+      - 'portal_publication_readiness.py'
+      - 'tests/test_portal_publication_readiness.py'
+      - '.github/workflows/portal-operational-readiness.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: stocklens-publication-readiness
+  cancel-in-progress: true
+
+jobs:
+  public-paper:
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Check published Paper independently of browser rendering
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 portal_publication_readiness.py --summary "$RUNNER_TEMP/stocklens-paper-health.md"
+      - name: Preserve blocker in job summary on failure
+        if: always()
+        shell: bash
+        run: |
+          if [[ -f "$RUNNER_TEMP/stocklens-paper-health.md" ]]; then
+            cat "$RUNNER_TEMP/stocklens-paper-health.md" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo 'Published Paper operational readiness could not be evaluated.' >> "$GITHUB_STEP_SUMMARY"
+          fi
