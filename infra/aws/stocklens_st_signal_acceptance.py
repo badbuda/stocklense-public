@@ -89,17 +89,36 @@ def validate_signal(s3, session, now):
     manifest = read_s3(s3, BUCKET, manifest_key)
     require(market is not None and manifest is not None, "UNBOUND_SIGNAL_MISSING_SOURCE")
     signal, m = json.loads(sig["data"]), json.loads(manifest["data"])
+    market_audit = m.get("audit", {})
+    signal_audit = signal.get("data_audit", {})
     require(signal.get("mode") == "SHADOW_ONLY_NO_BROKER_ACTIONS" and
             signal.get("latest", {}).get("asof_date") == session and
             signal.get("execution_plan", {}).get("broker_actions_enabled") is False and
-            signal.get("data_audit", {}).get("source_sha256") == market["sha256"] and
+            signal_audit.get("source_sha256") == market["sha256"] and
             m.get("status") == "VERIFIED" and
             m.get("provider") == "YFINANCE_QQQ_AUTO_ADJUSTED" and
+            m.get("data_type") == "QQQ_ADJUSTED_DAILY" and
             m.get("input_key") == market_key and
             m.get("input_version_id") == market["version"] and
-            m.get("sha256") == market["sha256"],
-            "SIGNAL_SOURCE_HASH_OR_DATE_MISMATCH")
+            m.get("sha256") == market["sha256"] and
+            market_audit.get("csv_sha256") == market["sha256"] and
+            market_audit.get("last_session") == session and
+            market_audit.get("source_path") == "stocklens.data.load_qqq_history" and
+            market_audit.get("data_integrity_status") ==
+                "FROZEN_YFINANCE_SOURCE_VERIFIED_NOT_INDEPENDENT_VENDOR" and
+            market_audit.get("reference_feature_window_sha256") ==
+                signal_audit.get("feature_window_sha256") and
+            bool(signal_audit.get("feature_window_sha256")),
+            "SIGNAL_SOURCE_HASH_DATE_OR_FROZEN_FEATURE_MISMATCH")
     require(sig["saved_at"] <= now + timedelta(minutes=1), "SIGNAL_SAVED_IN_FUTURE")
+    # A manually pre-created signal is not evidence that the nightly
+    # EventBridge scheduled invocation happened. Preserve immutable
+    # content, but fail scheduled acceptance instead of back-dating it.
+    scheduled = datetime.combine(
+        date.fromisoformat(session) + timedelta(days=1),
+        time(2, 30), tzinfo=timezone.utc)
+    require(sig["saved_at"] >= scheduled,
+            "SIGNAL_ARCHIVED_BEFORE_SCHEDULE_NOT_AUTOMATIC_PROOF")
     return {"status": "SHA_VERSION_CHAIN_VERIFIED",
             "session": session,
             "signal_saved_at_utc": sig["saved_at"].isoformat(),
