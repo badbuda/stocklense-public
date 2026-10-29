@@ -161,3 +161,40 @@ def test_file_contains_no_write_or_broker_calls():
     for phrase in (".put_object(", ".put_item(", ".invoke(", ".enable_rule(",
                    ".put_metric_data(", ".start_execution(", ".create_stack("):
         assert phrase not in c
+
+
+def test_versioned_signal_market_manifest_chain_is_accepted():
+    import hashlib
+    from datetime import datetime, timezone
+    now=datetime(2026,10,30,4,0,tzinfo=timezone.utc)
+    class VerifiedS3(S3):
+        def get_object(self,Bucket,Key):
+            if Key==a.ACTIVATION:
+                return super().get_object(Bucket,Key)
+            market=b"Date,Close\n2026-10-29,720.1\n"
+            sha=hashlib.sha256(market).hexdigest()
+            if Key=="market/qqq/2026-10-29.csv":
+                body=market;version="ver-market"
+            elif Key=="manifests/qqq/2026-10-29.json":
+                body=json.dumps({"status":"VERIFIED",
+                    "provider":"YFINANCE_QQQ_AUTO_ADJUSTED",
+                    "input_key":"market/qqq/2026-10-29.csv",
+                    "input_version_id":"ver-market","sha256":sha}).encode()
+                version="ver-manifest"
+            elif Key=="signals/2026-10-29.json":
+                body=json.dumps({"mode":"SHADOW_ONLY_NO_BROKER_ACTIONS",
+                    "latest":{"asof_date":"2026-10-29","level":3,"target_leverage":3},
+                    "execution_plan":{"broker_actions_enabled":False},
+                    "data_audit":{"source_sha256":sha},
+                    "action":"NO_CHANGE"}).encode()
+                version="ver-signal"
+            else:
+                raise Missing()
+            return {"VersionId":version,
+                    "LastModified":datetime(2026,10,30,2,35,tzinfo=timezone.utc),
+                    "ContentLength":len(body),"Body":io.BytesIO(body)}
+    mock=services(now);mock["s3"]=VerifiedS3(now)
+    result=a.check(mock,"2026-10-29",now=now)
+    assert result["state"]=="ST_SIGNAL_ACCEPTED"
+    assert result["signal"]["signal_version_id"]=="ver-signal"
+    assert result["signal"]["broker_fills"] is False
