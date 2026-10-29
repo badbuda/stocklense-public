@@ -4,6 +4,8 @@ frontend:
     build:
       commands:
         - 'test -s docs/portal.html'
+        - 'test -s docs/decisions.html'
+        - 'test -s docs/decision-register.json'
         - 'test -s docs/portal.js'
         - 'test -s docs/portal.css'
         - 'test -s docs/data.json'
