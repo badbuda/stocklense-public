@@ -179,7 +179,7 @@
     "infra/aws/second_vendor_parity.py": "ae6b679966244368d4ef25559974561b23a4ac44",
     "infra/aws/stocklens_live_evidence_audit.py": "83031efaf2869772b9b72be90f51e2ac2c304c5d",
     "infra/aws/stocklens_st_alarm_forensics.py": "d4cb380c549583340776fd341d3c4a56a7379ddc",
-    "infra/aws/stocklens_st_isolate_monitoring.py": "5995f91adc637d1ded606abd3e513c3e7f3a856d",
+    "infra/aws/stocklens_st_isolate_monitoring.py": "52b620cd81f6d83bb22008c4178678e58c3c40cd",
     "infra/aws/stocklens_st_paper_bootstrap.py": "cd214e94b6ca3840a99ec2e391b8698afdf5c4d8",
     "infra/aws/stocklens_st_prod_readonly_audit.py": "80cef3947604cac7831727a04e506ec735b46a41",
     "infra/aws/stocklens_st_runtime_probe.py": "6137fc03287bc883a8bd12faa5a93cc87f7cc644",
