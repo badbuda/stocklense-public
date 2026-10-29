@@ -31,3 +31,41 @@ def test_runtime_probe_rejects_function_errors(monkeypatch,tmp_path):
     monkeypatch.setattr(p,"aws",fake)
     with pytest.raises(RuntimeError,match="UNVERIFIED"):
         p.probe("STAGING_IMPORT_SMOKE","STAGING_IMPORT_OK")
+
+
+def test_same_vendor_parity_never_proves_second_provider(monkeypatch):
+    import json
+    from pathlib import Path
+    def fake(service,op,*args):
+        assert (service,op)==("lambda","invoke")
+        Path(args[-1]).write_text(json.dumps({
+            "status":"STAGING_SAME_VENDOR_PATH_PARITY_PASS",
+            "provider":"YAHOO_CHART_VS_YFINANCE_YAHOO_AUTO_ADJUST",
+            "broker_actions":False,"market_data_written":False,
+            "second_provider_proven":False,
+            "calendar_equal":True,"numeric_rounding_compatible":True,
+            "feature_fingerprints_equal":True,"decisions_equal":True,
+            "latest_action_equal":True
+        }))
+        return {"StatusCode":200}
+    monkeypatch.setattr(p,"aws",fake)
+    p.same_vendor_parity()
+
+
+def test_same_vendor_parity_mismatch_is_blocker(monkeypatch):
+    import json
+    from pathlib import Path
+    def fake(service,op,*args):
+        Path(args[-1]).write_text(json.dumps({
+            "status":"STAGING_SAME_VENDOR_PATH_PARITY_MISMATCH",
+            "provider":"YAHOO_CHART_VS_YFINANCE_YAHOO_AUTO_ADJUST",
+            "broker_actions":False,"market_data_written":False,
+            "second_provider_proven":False,
+            "calendar_equal":True,"numeric_rounding_compatible":False,
+            "feature_fingerprints_equal":True,"decisions_equal":True,
+            "latest_action_equal":True
+        }))
+        return {"StatusCode":200}
+    monkeypatch.setattr(p,"aws",fake)
+    with pytest.raises(RuntimeError,match="ST_SAME_VENDOR_PARITY_BLOCKED"):
+        p.same_vendor_parity()
