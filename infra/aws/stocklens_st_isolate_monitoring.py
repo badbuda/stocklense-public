@@ -212,7 +212,7 @@ def preconditions(c):
 
 def check_live_metrics(c,st,status):
     logs=c["logs"]
-    name="/aws/lambda/"+ST+"-watchdog"
+    name="/aws/lambda/"+ST+"-session-watchdog"
     records=logs.describe_metric_filters(logGroupName=name,
                                          filterNamePrefix=ST+"-watchdog-").get("metricFilters",[])
     by_name={x["filterName"]:x for x in records}
