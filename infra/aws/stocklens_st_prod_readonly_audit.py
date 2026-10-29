@@ -87,7 +87,21 @@ def inspect_stack(label,reader=aws):
                 continue
             s=reader("events","describe-rule","--name",rule).get("State")
             o["rules"][key]=s
-            if s!="DISABLED":
+            # New ST Signal was explicitly enabled on 2026-10-29 after its
+            # independent alarm test. Do NOT conflate that with enabling Paper,
+            # PROD or the combined trading orchestrator. Require the immutable
+            # S3 activation anchor (server-managed version ID) when ON.
+            if label=="ST" and key=="CandidateSignalOnlyRuleName" and s=="ENABLED":
+                try:
+                    m=reader("s3api","head-object","--bucket",expected,
+                             "--key","monitoring/signal-only-activation.json")
+                    if not m.get("VersionId") or not m.get("LastModified"):
+                        bad.append("ST_SIGNAL_ACTIVATION_ANCHOR_UNVERIFIED")
+                    else:
+                        o["signal_activation"]="ENABLED_WITH_VERSIONED_ANCHOR_NO_PAPER"
+                except Blocked:
+                    bad.append("ST_SIGNAL_ACTIVATION_ANCHOR_UNVERIFIED")
+            elif s!="DISABLED":
                 bad.append("TRADING_SCHEDULE_NOT_DISABLED:"+key)
         for key in FUNCTIONS:
             fn=outputs.get(key)

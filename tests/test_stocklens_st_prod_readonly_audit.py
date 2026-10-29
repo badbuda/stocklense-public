@@ -26,10 +26,17 @@ def stub(*args,account=ACCOUNT,rules_state="DISABLED",wrong_bucket=False):
         return {"PublicAccessBlockConfiguration":{k:True for k in
             ("BlockPublicAcls","IgnorePublicAcls","BlockPublicPolicy","RestrictPublicBuckets")}}
     if (service,action)==("events","describe-rule"):
+        name=rest[rest.index("--name")+1]
+        if rules_state in ("ST_SIGNAL_ON","ST_SIGNAL_NO_ANCHOR"):
+            state="ENABLED" if name.startswith("stocklens-st-") and name.endswith("CandidateSignalOnlyRuleName") else "DISABLED"
+            return {"State":state}
         return {"State":rules_state}
     if (service,action)==("lambda","get-function-configuration"):
         return {"State":"Active","LastUpdateStatus":"Successful","CodeSha256":"fake"}
     if (service,action)==("s3api","head-object"):
+        key=rest[rest.index("--key")+1]
+        if rules_state=="ST_SIGNAL_ON" and key=="monitoring/signal-only-activation.json":
+            return {"VersionId":"immutable-v1","LastModified":"2026-10-29T18:00:00Z"}
         raise Blocked("EVIDENCE_NOT_YET_PUBLISHED")
     raise Blocked("TEST_UNEXPECTED_AWS_CALL")
 
@@ -74,3 +81,17 @@ def test_only_read_methods_whitelisted_and_git_blob_exact():
     payload=b"research historic only"
     expected=hashlib.sha1(b"blob "+str(len(payload)).encode()+b"\0"+payload).hexdigest()
     assert gitblob(payload)==expected
+
+def test_st_signal_enabled_only_with_activation_anchor_and_paper_disabled():
+    x=inspect(lambda *args:stub(*args,rules_state="ST_SIGNAL_ON"))
+    assert x["ST"]["status"]=="CONTROL_PLANE_PASS_NOT_PAPER"
+    assert x["ST"]["signal_activation"]=="ENABLED_WITH_VERSIONED_ANCHOR_NO_PAPER"
+    assert x["PROD"]["status"]=="CONTROL_PLANE_PASS_NOT_PAPER"
+    assert x["actual_forward_paper"]=="NOT_VERIFIED"
+    assert x["ST"]["rules"]["CandidatePaperOnlyRuleName"]=="DISABLED"
+
+def test_st_signal_enabled_without_anchor_is_blocked():
+    x=inspect(lambda *args:stub(*args,rules_state="ST_SIGNAL_NO_ANCHOR"))
+    assert x["ST"]["status"]=="BLOCKED"
+    assert "ST_SIGNAL_ACTIVATION_ANCHOR_UNVERIFIED" in x["ST"]["problems"]
+    assert x["PROD"]["status"]=="CONTROL_PLANE_PASS_NOT_PAPER"

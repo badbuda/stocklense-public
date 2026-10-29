@@ -1,0 +1,76 @@
+name: StockLens Published Decisions Dashboard Acceptance
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/decisions.html'
+      - 'docs/decision-register.json'
+      - 'docs/portal.html'
+      - 'docs/portal-cloud.js'
+      - '.github/workflows/portal-decisions-deployment.yml'
+  workflow_run:
+    workflows: ["StockLens 8.0 Shadow"]
+    types: [completed]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: stocklens-decisions-dashboard-published
+  cancel-in-progress: true
+
+jobs:
+  verify-published:
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prove the source decision register is evidence-separated
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          d=json.loads(Path("docs/decision-register.json").read_text(encoding="utf-8"))
+          assert d["kind"]=="STOCKLENS_SOURCE_SEPARATED_DECISION_REGISTER_V1"
+          assert d["automatic_trading_authorized"] is False
+          assert d["missing_signal_days_filled"] is False
+          assert d["broker_orders_executed_by_this_report"] is False
+          assert d["legacy_paper"]["broker_fills_observed"] is False
+          assert d["aws_st"]["status"]=="REQUIRES_AUTHENTICATED_AWS_READBACK"
+          assert d["historical_execution_proxy"]["sessions"]>=4000
+          assert d["archived_signal_count"]==len(d["archived_signals"])
+          assert d["source_cutoff_signal_session"]==d["archived_signals"][-1]["session"]
+          print("DECISION_DASHBOARD_PROVENANCE_PASS:historical_proxy_not_paper")
+          PY
+      - name: Verify deployed Amplify bytes (new dashboard and authenticated client)
+        env:
+          ORIGIN: https://main.d20nvlvzjafg5m.amplifyapp.com
+        run: |
+          set -euo pipefail
+          # The main deploy is asynchronous; only exact matching content passes.
+          files=(decisions.html decision-register.json portal.html portal-cloud.js)
+          match=0
+          for attempt in $(seq 1 40); do
+            match=1
+            for f in "${files[@]}"; do
+              if ! curl -fsSL --retry 1 --max-time 12 \
+                -H 'Cache-Control: no-cache' \
+                "$ORIGIN/$f?decision_acceptance=$GITHUB_SHA-$attempt" \
+                -o /tmp/stocklens-asset; then
+                match=0
+                break
+              fi
+              if ! cmp -s "docs/$f" /tmp/stocklens-asset; then
+                match=0
+                break
+              fi
+            done
+            if [[ "$match" == 1 ]]; then break; fi
+            sleep 8
+          done
+          [[ "$match" == 1 ]] || { echo "PUBLISHED_DECISIONS_ASSET_MISMATCH"; exit 1; }
+          echo "PUBLISHED_DECISIONS_ALL_4_ASSETS_IDENTICAL_PASS"
+          echo "IMPORTANT: This is static publication proof only; Paper freshness and AWS live authorization are NOT proven."
