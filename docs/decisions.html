@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#111c2e">
+<title>StockLens · יומן החלטות וביצועים</title>
+<style>
+:root{color-scheme:dark;font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif;color:#eef4fe;background:#0b1422}
+*{box-sizing:border-box}body{margin:0}a{color:#a1dcff}a:hover{text-decoration:underline}
+header{background:#14243a;border-bottom:1px solid #324b65;padding:20px max(18px,calc((100vw - 1120px)/2));display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+main{max-width:1120px;margin:auto;padding:22px 18px 64px}
+h1{font-size:clamp(1.4rem,4vw,2.2rem);margin:0 0 8px}h2{font-size:1.15rem;margin:0}p{line-height:1.65}
+small,.muted{color:#a5b8cd}.eyebrow{font-size:.74rem;letter-spacing:.12em;color:#8ec5ef;margin-bottom:8px}
+.card{background:#142237;border:1px solid #33485e;border-radius:14px;padding:18px;margin:16px 0}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.metric{border:1px solid #344c65;border-radius:11px;padding:12px;min-width:0}.metric b{display:block;font-size:1.25rem;margin:7px 0;overflow-wrap:anywhere}
+.tag{font-size:.78rem;border:1px solid #53657a;border-radius:16px;padding:4px 10px;display:inline-block}
+.warn{color:#ffce93}.ok{color:#a6e7bb}.subtle{font-size:.84rem;color:#bdcbdd}
+.row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.controls{display:flex;align-items:end;gap:12px;flex-wrap:wrap;margin:14px 0}
+label{font-size:.87rem;color:#c4d1e1}input,select,button{font:inherit;border-radius:9px;padding:8px 11px;border:1px solid #536d87;background:#0d1b2d;color:#edf3fd}label input,label select{display:block;margin-top:6px;max-width:100%}button{cursor:pointer;background:#21405f}button:hover{background:#295477}button:disabled{opacity:.5;cursor:default}
+.scroll{overflow:auto;max-width:100%;border:1px solid #33485e;border-radius:10px}
+table{border-collapse:collapse;width:100%;min-width:790px;font-variant-numeric:tabular-nums}
+th,td{padding:11px 10px;text-align:right;border-bottom:1px solid #2c4057;white-space:nowrap}
+th{position:sticky;top:0;background:#1a2c43;font-size:.8rem;color:#bad4eb}
+tbody tr:hover{background:#1c3046}
+.status{padding:12px;border-right:3px solid #ffbd76;background:#2a2530;border-radius:6px}
+footer{color:#9ab0c8;font-size:.85rem;line-height:1.6;margin-top:20px}
+@media(max-width:750px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}header{padding:16px}main{padding:15px 12px}th,td{padding:9px}}
+</style>
+</head>
+<body>
+<header>
+  <div><span class="eyebrow">STOCKLENS / EVIDENCE REGISTER</span><div><b>יומן החלטות, לא פקודות ברוקר</b></div></div>
+  <nav><a href="./portal.html">לוח בקרה ראשי</a> · <a href="./stocklens-closeout.html">סטטוס המערכת</a> · <a href="./st-combo.html">מחקר ETF</a></nav>
+</header>
+<main>
+  <h1>כל החלטה, עם המקור שלה</h1>
+  <p class="muted">החלטות Shadow שנשמרו במועד נבדלות משחזור היסטורי על מחירי QQQ ו־TQQQ אמיתיים. ביצועי Paper מוצגים רק אם יש קבלה מתועדת. אין כאן מסחר בברוקר או מילוי עסקאות שלא התרחשו.</p>
+  <div id="load" class="status" role="status" aria-live="polite">טוען רשומות ממקורות מאומתים…</div>
+  <div class="grid" aria-label="מספרי הוכחה">
+    <div class="metric"><small>החלטת Shadow אחרונה</small><b id="last-signal">—</b><span id="last-action" class="subtle">—</span></div>
+    <div class="metric"><small>רשומות Shadow שמורות</small><b id="saved">—</b><span class="subtle">לא בהכרח רצף מלא</span></div>
+    <div class="metric"><small>ימי שחזור היסטורי</small><b id="historical">—</b><span class="subtle">תמחור יומי מדומה</span></div>
+    <div class="metric"><small>יום Paper ישן אחרון</small><b id="paper-last">—</b><span class="subtle">ארכיון, לא מקור חי</span></div>
+  </div>
+
+  <section class="card">
+    <div class="row"><h2>1. החלטות Shadow שנשמרו בפועל</h2><button id="export-shadow" disabled>ייצוא Shadow ל־CSV</button></div>
+    <p class="subtle">תאריך ההחלטה, מועד יצירתה, רמת חשיפה, יעד והרשומה המקורית בגיטהאב. יום שאין לו קובץ ארכיון לא יופיע כאן ולא יושלם בדיעבד.</p>
+    <div class="scroll"><table><thead><tr><th>יום מסחר</th><th>מועד יצירה (UTC)</th><th>החלטה</th><th>רמה</th><th>מינוף יעד</th><th>TQQQ יעד</th><th>QQQ סגירה</th><th>ראיה</th></tr></thead><tbody id="actual-rows"><tr><td colspan="8">טוען…</td></tr></tbody></table></div>
+  </section>
+
+  <section class="card">
+    <div class="row"><h2>2. כל ימי השחזור ההיסטורי</h2><button id="export-history" disabled>ייצוא החלטות היסטוריות ל־CSV</button></div>
+    <p class="subtle">מ־2010 עם QQQ ו־TQQQ שנצפו בפועל. החשיפה והתיעוד של איזון הם <b>תוצאות מודל היסטורי</b>; המחיר לביצוע הוא פתיחה יומית מותאמת, ולא 09:31/09:32 או מחיר מילוי ברוקר.</p>
+    <div class="controls">
+      <label>מתאריך <input id="from" type="date"></label>
+      <label>עד תאריך <input id="to" type="date"></label>
+      <label>סינון <select id="kind"><option value="all">כל הימים</option><option value="rebalance">ימים עם איזון במודל</option><option value="changes">שינוי חשיפה לעומת היום הקודם</option></select></label>
+      <button id="apply" disabled>סנן</button>
+      <button id="reset" disabled>איפוס</button>
+    </div>
+    <p id="history-count" class="subtle">—</p>
+    <div class="scroll"><table><thead><tr><th>יום ביצוע במודל</th><th>תאריך הסיגנל ששימש</th><th>מינוף יעד</th><th>איזון במודל</th><th>QQQ פתיחה מותאמת</th><th>TQQQ פתיחה מותאמת</th><th>סיווג</th></tr></thead><tbody id="history-rows"><tr><td colspan="7">טוען…</td></tr></tbody></table></div>
+    <div class="controls"><button id="more" disabled>הצג עוד 100 ימים</button></div>
+  </section>
+
+  <section class="card">
+    <h2>3. מה קורה בסביבות AWS וב־Paper?</h2>
+    <p id="aws-st">ST: אין עדיין ראיית S3 מאומתת בדף הציבורי.</p>
+    <p id="aws-prod">PROD: לא אושרה להפעלה.</p>
+    <p id="paper-note" class="warn">Paper לא התעדכן — אין להמציא תשואה או הוראות.</p>
+    <p class="subtle">הקבלות הפרטיות ב־AWS דורשות קריאה מאומתת מחשבון AWS. אין כאן כפתור שמציג מצב PROD חי ללא אימות; ה־GitHub Shadow לא מהווה הוכחה שה־AWS הריץ מנוע Paper.</p>
+    <a href="./portal.html#paper">יומן Paper וקישור לקריאת AWS מאובטחת בלוח הראשי</a>
+  </section>
+  <footer>StockLens 8.0 Frozen · Research/Shadow/Paper מופרדים לפי מקור. הביצוע ההיסטורי הוא קירוב בלבד ואינו מהווה המלצת השקעה או תיעוד פקודות מסחר אמיתיות.</footer>
+</main>
+<script type="module">
+const $=s=>document.getElementById(s);
+let archived=[],history=[],filtered=[],visible=100;
+const fmt=n=>n==null||!Number.isFinite(Number(n))?'—':new Intl.NumberFormat('en-US',{maximumFractionDigits:3}).format(Number(n));
+const pct=n=>n==null?'—':(100*Number(n)).toFixed(1)+'%';
+function cell(row,text){const e=document.createElement('td');e.textContent=String(text??'—');row.append(e);return e}
+function clear(el){el.replaceChildren()}
+function csv(name,headers,rows){
+ const quote=v=>'"'+String(v==null?'':v).replaceAll('"','""')+'"';
+ const raw=[headers,...rows].map(r=>r.map(quote).join(',')).join('\r\n')+'\r\n';
+ const blob=new Blob(['\ufeff',raw],{type:'text/csv;charset=utf-8'});
+ const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+function renderArchived(){
+ const body=$('actual-rows');clear(body);
+ for(const d of archived.slice().reverse()){
+  const tr=document.createElement('tr');
+  [d.session,d.created_at_utc,d.action,d.defense?'הגנה':d.level,fmt(d.target_leverage)+'×',pct(d.target_tqqq_weight),fmt(d.qqq_adjusted_close)].forEach(v=>cell(tr,v));
+  const td=document.createElement('td'),a=document.createElement('a');a.textContent='קובץ מקור';a.href='https://github.com/badbuda/stocklense-public/blob/main/'+d.source;a.target='_blank';a.rel='noopener noreferrer';td.append(a);tr.append(td);body.append(tr);
+ }
+}
+function applyFilter(reset){
+ if(reset){$('from').value='';$('to').value='';$('kind').value='all'}
+ const from=$('from').value||'0000-01-01',to=$('to').value||'9999-12-31',mode=$('kind').value;
+ filtered=history.filter((d,i)=>{
+  if(d.date<from||d.date>to)return false;
+  if(mode==='rebalance'&&!d.rebalance)return false;
+  if(mode==='changes'&&i>0&&history[i-1].l===d.l)return false;
+  return true;
+ });
+ visible=100;renderHistory();
+}
+function renderHistory(){
+ const body=$('history-rows');clear(body);
+ const last=filtered.slice(-visible).reverse();
+ for(const d of last){const tr=document.createElement('tr');
+  [d.date,d.signal,fmt(d.l)+'×',d.rebalance?'כן (מודל)':'לא',fmt(d.qo),fmt(d.to),'שחזור היסטורי'].forEach(x=>cell(tr,x));body.append(tr);
+ }
+ if(!last.length){const tr=document.createElement('tr'),td=cell(tr,'אין ימים התואמים לסינון');td.colSpan=7;body.append(tr)}
+ $('history-count').textContent='מציג '+last.length+' מתוך '+filtered.length+' ימים מסוננים. הסדר: מהחדש לישן. אין כאן קבלות ביצוע אמיתיות.';
+ $('more').disabled=visible>=filtered.length;
+}
+async function load(){
+ try{
+ const [a,b]=await Promise.all(['./decision-register.json','./portal-history.json'].map(async u=>{
+  const r=await fetch(u,{cache:'no-store'});if(!r.ok)throw Error('HTTP_'+r.status+':'+u);return r.json();
+ }));
+ if(a.kind!=='STOCKLENS_SOURCE_SEPARATED_DECISION_REGISTER_V1'||a.schema_version!==1||
+    !Array.isArray(a.archived_signals)||!a.archived_signals.length||
+    a.broker_orders_executed_by_this_report!==false||a.automatic_trading_authorized!==false)
+    throw Error('INVALID_DECISION_REGISTER');
+ if(b.evidence!=='REAL_QQQ_TQQQ_ADJUSTED_DAILY_OPEN_EXECUTION_PROXY'||
+    b.live_trading_authorized!==false||!Array.isArray(b.daily)||
+    b.daily.length!==a.historical_execution_proxy.sessions)throw Error('HISTORICAL_FEED_MISMATCH');
+ archived=a.archived_signals;history=b.daily;filtered=history;
+ $('last-signal').textContent=a.source_cutoff_signal_session;
+ $('last-action').textContent=archived.at(-1).action+' · יעד '+fmt(archived.at(-1).target_leverage)+'×';
+ $('saved').textContent=fmt(archived.length);
+ $('historical').textContent=fmt(history.length);
+ $('paper-last').textContent=a.legacy_paper.last_recorded_session;
+ $('aws-st').textContent='ST: '+a.aws_st.status+' — '+a.aws_st.note;
+ $('aws-prod').textContent='PROD: '+a.aws_prod.status+' — '+a.aws_prod.note;
+ $('paper-note').textContent='Paper ישן אחרון: '+a.legacy_paper.last_recorded_session+'; שווי מודל שמור '+fmt(a.legacy_paper.last_recorded_equity_usd)+'$; אין מכאן ראיה לעסקאות מאוחרות או לעסקאות ברוקר.';
+ renderArchived();renderHistory();
+ for(const id of ['apply','reset','more','export-shadow','export-history'])$(id).disabled=false;
+ $('load').className='status';$('load').textContent='מקורות נטענו: '+archived.length+' קבלות Shadow שנשמרו, ו־'+history.length+' ימי שחזור היסטורי. ימי Shadow חסרים לא מולאו.';
+ }catch(err){$('load').textContent='לא ניתן לאמת את מקורות ההחלטות: '+err.message+'. התצוגה נחסמה כדי לא להציג נתונים מטעים.';console.error(err)}
+}
+$('apply').addEventListener('click',()=>applyFilter(false));$('reset').addEventListener('click',()=>applyFilter(true));
+$('more').addEventListener('click',()=>{visible+=100;renderHistory()});
+$('export-shadow').addEventListener('click',()=>csv('stocklens-archived-shadow-decisions.csv',['session','created_at_utc','action','level','defense','target_leverage','target_qqq_weight','target_tqqq_weight','source'],archived.map(r=>[r.session,r.created_at_utc,r.action,r.level,r.defense,r.target_leverage,r.target_qqq_weight,r.target_tqqq_weight,r.source])));
+$('export-history').addEventListener('click',()=>csv('stocklens-historical-modeled-decisions.csv',['execution_date','prior_signal_date','modeled_target_leverage','modeled_rebalance','qqq_adjusted_open','tqqq_adjusted_open','evidence'],filtered.map(r=>[r.date,r.signal,r.l,r.rebalance,r.qo,r.to,'HISTORICAL_MODELED_DAILY_OPEN_NOT_BROKER'])));
+load();
+</script>
+</body>
+</html>
