@@ -90,7 +90,7 @@ publish_one() {
    # A previous partial publication can be continued, but NEVER overwritten.
    verify_object "$key" "$src"
    echo "EXISTING_PINNED_ST_OBJECT_REUSED:$key"
- elif grep -Eqi '\\(404\\)|NoSuchKey|Not Found' "$err"; then
+ elif grep -Fq '(404)' "$err" || grep -Eqi 'NoSuchKey|Not Found' "$err"; then
    aws s3api put-object --bucket "$BUCKET" --key "$key" \
      --body "$src" --content-type "$content_type" --if-none-match '*' \
      --metadata "study=SL9-031,source=$REF" >/dev/null
