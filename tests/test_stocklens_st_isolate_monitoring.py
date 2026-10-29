@@ -145,7 +145,9 @@ def test_read_only_inspection_has_no_mutating_calls():
     assert "if args.mode==\"inspect\":" in text
     assert "cf.create_change_set(" in text
     assert "cf.execute_change_set(" in text
-    assert "CONSENT" in text
+    assert 'ap.add_argument("--yes",action="store_true"' in text
+    assert "require(approved," in text
+    assert "value=input(" not in text
     # There is deliberately no trading, Signal, S3, IAM, Lambda or alarm
     # direct mutation in this operator script. Update is reviewed CF only.
     for forbidden in (
@@ -155,3 +157,30 @@ def test_read_only_inspection_has_no_mutating_calls():
         "create_stack(", "delete_stack(", "delete_change_set(",
     ):
         assert forbidden not in text
+
+
+def test_apply_without_yes_fails_before_any_aws_calls():
+    with pytest.raises(RuntimeError, match="EXPLICIT_ST_ONLY_APPLY_--yes_REQUIRED"):
+        m.apply(None, None, None)
+
+
+def test_yes_not_allowed_for_inspect_or_prepare(monkeypatch):
+    monkeypatch.setattr("sys.argv", ["st", "inspect", "--yes"])
+    with pytest.raises(RuntimeError, match="--yes_ONLY_ALLOWED_WITH_apply"):
+        m.main()
+    monkeypatch.setattr("sys.argv", ["st", "prepare", "--yes"])
+    with pytest.raises(RuntimeError, match="--yes_ONLY_ALLOWED_WITH_apply"):
+        m.main()
+
+
+def test_apply_yes_without_verified_change_set_is_blocked():
+    class CloudFormation:
+        def describe_change_set(self, **kwargs):
+            return {"Status": "FAILED", "ExecutionStatus": "UNAVAILABLE"}
+    with pytest.raises(RuntimeError, match="CHANGE_SET_NOT_READY_OR_PAGED"):
+        m.apply(
+            {"cloudformation": CloudFormation()},
+            None,
+            {alarm: {"namespace": m.ORIGINAL_NAMESPACE} for alarm in m.METRICS},
+            approved=True,
+        )
