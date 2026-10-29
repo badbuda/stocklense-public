@@ -187,14 +187,20 @@ def test_versioned_signal_market_manifest_chain_is_accepted():
             elif Key=="manifests/qqq/2026-10-29.json":
                 body=json.dumps({"status":"VERIFIED",
                     "provider":"YFINANCE_QQQ_AUTO_ADJUSTED",
+                    "data_type":"QQQ_ADJUSTED_DAILY",
                     "input_key":"market/qqq/2026-10-29.csv",
-                    "input_version_id":"ver-market","sha256":sha}).encode()
+                    "input_version_id":"ver-market","sha256":sha,
+                    "audit":{"csv_sha256":sha,"last_session":"2026-10-29",
+                        "source_path":"stocklens.data.load_qqq_history",
+                        "data_integrity_status":"FROZEN_YFINANCE_SOURCE_VERIFIED_NOT_INDEPENDENT_VENDOR",
+                        "reference_feature_window_sha256":"frozen-feature-sha"}}).encode()
                 version="ver-manifest"
             elif Key=="signals/2026-10-29.json":
                 body=json.dumps({"mode":"SHADOW_ONLY_NO_BROKER_ACTIONS",
                     "latest":{"asof_date":"2026-10-29","level":3,"target_leverage":3},
                     "execution_plan":{"broker_actions_enabled":False},
-                    "data_audit":{"source_sha256":sha},
+                    "data_audit":{"source_sha256":sha,
+                        "feature_window_sha256":"frozen-feature-sha"},
                     "action":"NO_CHANGE"}).encode()
                 version="ver-signal"
             else:
@@ -213,3 +219,64 @@ def test_shared_custom_metric_namespace_never_accepted_as_st_healthy():
     now=datetime(2026,10,29,19,0,tzinfo=timezone.utc)
     with pytest.raises(RuntimeError,match="ST_WATCHDOG_ALARM_STILL_SHARED"):
         a.check(services(now,legacy_namespace=True),"2026-10-29",now=now)
+
+
+def signal_fixture(*, signal_time, feature="expected-feature", manifest_feature="expected-feature"):
+    """Full-fidelity immutable S3 triple for acceptance regression tests."""
+    import hashlib
+    from datetime import datetime, timezone
+    market=b"Date,Close\n2026-10-29,720.1\n"
+    digest=hashlib.sha256(market).hexdigest()
+    details={
+        "mode":"SHADOW_ONLY_NO_BROKER_ACTIONS",
+        "latest":{"asof_date":"2026-10-29","level":2,"target_leverage":2},
+        "execution_plan":{"broker_actions_enabled":False},
+        "data_audit":{"source_sha256":digest,"feature_window_sha256":feature}}
+    manifest={
+        "status":"VERIFIED","provider":"YFINANCE_QQQ_AUTO_ADJUSTED",
+        "data_type":"QQQ_ADJUSTED_DAILY",
+        "input_key":"market/qqq/2026-10-29.csv",
+        "input_version_id":"ver-market","sha256":digest,
+        "audit":{
+            "csv_sha256":digest,"last_session":"2026-10-29",
+            "source_path":"stocklens.data.load_qqq_history",
+            "data_integrity_status":"FROZEN_YFINANCE_SOURCE_VERIFIED_NOT_INDEPENDENT_VENDOR",
+            "reference_feature_window_sha256":manifest_feature}}
+    raw={
+        "market/qqq/2026-10-29.csv":market,
+        "manifests/qqq/2026-10-29.json":json.dumps(manifest).encode(),
+        "signals/2026-10-29.json":json.dumps(details).encode()}
+    def stub(s3,bucket,key,**kwargs):
+        b=raw[key]
+        return {
+            "data":b,"sha256":hashlib.sha256(b).hexdigest(),
+            "version":"ver-market" if key.startswith("market/") else "version-1",
+            "saved_at":signal_time}
+    return stub
+
+
+def test_manual_signal_before_schedule_not_accepted_as_automatic(monkeypatch):
+    monkeypatch.setattr(a,"read_s3",signal_fixture(
+        signal_time=datetime(2026,10,30,2,25,tzinfo=timezone.utc)))
+    with pytest.raises(RuntimeError,match="SIGNAL_ARCHIVED_BEFORE_SCHEDULE"):
+        a.validate_signal(None,"2026-10-29",
+                          datetime(2026,10,30,4,tzinfo=timezone.utc))
+
+
+def test_feature_fingerprint_mismatch_blocks_even_if_policy_looks_equal(monkeypatch):
+    monkeypatch.setattr(a,"read_s3",signal_fixture(
+        signal_time=datetime(2026,10,30,2,35,tzinfo=timezone.utc),
+        feature="different",manifest_feature="expected"))
+    with pytest.raises(RuntimeError,match="FROZEN_FEATURE_MISMATCH"):
+        a.validate_signal(None,"2026-10-29",
+                          datetime(2026,10,30,4,tzinfo=timezone.utc))
+
+
+def test_post_schedule_signal_with_matching_frozen_fingerprint_is_accepted(monkeypatch):
+    monkeypatch.setattr(a,"read_s3",signal_fixture(
+        signal_time=datetime(2026,10,30,2,35,tzinfo=timezone.utc)))
+    verified=a.validate_signal(None,"2026-10-29",
+                               datetime(2026,10,30,4,tzinfo=timezone.utc))
+    assert verified["status"]=="SHA_VERSION_CHAIN_VERIFIED"
+    assert verified["market_sha256"]
+    assert verified["broker_fills"] is False
