@@ -184,3 +184,35 @@ def test_apply_yes_without_verified_change_set_is_blocked():
             {alarm: {"namespace": m.ORIGINAL_NAMESPACE} for alarm in m.METRICS},
             approved=True,
         )
+
+
+def test_repeated_apply_is_readonly_after_exact_live_filter_verification(monkeypatch):
+    class Logs:
+        def describe_metric_filters(self, **kwargs):
+            assert kwargs["logGroupName"]=="/aws/lambda/stocklens-st-watchdog"
+            return {"metricFilters":[{
+                "filterName":m.filter_name(metric),
+                "logGroupName":"/aws/lambda/stocklens-st-watchdog",
+                "filterPattern":"{ $.metrics."+metric+" = * }",
+                "metricTransformations":[{
+                    "metricName":metric,"metricNamespace":m.NEW_NAMESPACE,
+                    "metricValue":"$.metrics."+metric}]
+            } for metric in m.METRICS.values()]}
+    status={k:{"namespace":m.NEW_NAMESPACE,"state":"OK"} for k in m.METRICS}
+    assert m.apply({"logs":Logs()},None,status,approved=True) is True
+
+
+def test_repeated_apply_partial_filters_fail_before_mutation():
+    class Logs:
+        def describe_metric_filters(self,**kwargs):
+            return {"metricFilters":[]}
+    status={k:{"namespace":m.NEW_NAMESPACE,"state":"OK"} for k in m.METRICS}
+    with pytest.raises(RuntimeError,match="ISOLATED_METRIC_FILTER_COUNT_WRONG"):
+        m.apply({"logs":Logs()},None,status,approved=True)
+
+
+def test_repeated_apply_partial_namespace_fails_closed():
+    status={k:{"namespace":m.NEW_NAMESPACE,"state":"OK"} for k in m.METRICS}
+    status[next(iter(status))]={"namespace":m.ORIGINAL_NAMESPACE,"state":"OK"}
+    with pytest.raises(RuntimeError,match="PARTIAL_OR_UNEXPECTED_MONITORING_STATE"):
+        m.apply({},None,status,approved=True)
