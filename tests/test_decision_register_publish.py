@@ -88,3 +88,13 @@ def test_published_current_register_matches_repository_sources():
                  json.loads(HISTORY.read_text()),json.loads(PAPER.read_text()))
     published=json.loads(Path("docs/decision-register.json").read_text(encoding="utf-8"))
     assert report == published
+
+def test_dashboard_inline_javascript_syntax(tmp_path):
+    import re
+    import subprocess
+    page=Path("docs/decisions.html").read_text(encoding="utf-8")
+    match=re.search(r'<script type="module">([\s\S]*?)</script>',page)
+    assert match
+    js=tmp_path/"decisions.mjs"
+    js.write_text(match.group(1),encoding="utf-8")
+    subprocess.run(["node","--check",str(js)],check=True)
