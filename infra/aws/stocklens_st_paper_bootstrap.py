@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """Prospective FIRST Paper book in the new isolated stocklens-st AWS stack.
 
+status: verify ST-only infrastructure and immutable candidate Signal S3 presence, no invokes.
 check: verify real previous/current ST Signals, minute-level observed Yahoo
 quotes and frozen model accounting using READ-ONLY dedicated preflight Lambda.
-bootstrap: same gate plus typed CLI consent then exactly ONE modeled Paper
+bootstrap --yes: same gate plus explicit CLI approval then exactly ONE modeled Paper
 receipt, immutable continuity and genesis, independently checked afterward.
 This script NEVER enables schedules, touches PROD, migrates old paper or trades.
 """
@@ -24,6 +25,7 @@ PROD = "stocklens-prod"
 SOURCE = "stocklens-independent-staging"
 BUCKET = "stocklens-st-candidatedata-6jj7i9fxjmfr"
 BOOK = "NEW_AWS_INDEPENDENT_STAGING_BOOK"
+FIRST_SESSION = "2026-10-30"  # First prospective Paper session after ST Signal activation
 CONSENT = "CREATE_PROSPECTIVE_ST_PAPER_ONLY_NO_BROKER"
 AUDIT = "PASS_MODELLED_PAPER_ACCOUNTING_NOT_BROKER_FILLS"
 
@@ -174,18 +176,77 @@ def bootstrap(paper_fn,session):
     print("ST_PAPER_SCHEDULE_REMAINS_DISABLED:NO_BROKER_NO_PROD")
 
 
+def safe_head(bucket, key):
+    """Read-only S3 presence. 404 is missing; IAM/other errors fail closed."""
+    p=subprocess.run(["aws","--region",REGION,"--no-cli-pager","--output","json",
+                      "s3api","head-object","--bucket",bucket,"--key",key],
+                     capture_output=True,text=True,timeout=30,check=False)
+    if p.returncode:
+        err=p.stderr
+        if "404" in err or "NoSuchKey" in err or "Not Found" in err:
+            return None
+        raise RuntimeError("ST_S3_HEAD_FAILED:"+key+":"+err[:220])
+    meta=json.loads(p.stdout)
+    if not meta.get("VersionId") or meta["VersionId"]=="null" or not meta.get("LastModified"):
+        raise RuntimeError("ST_UNVERSIONED_OR_UNTIMED_S3_OBJECT:"+key)
+    return meta
+
+
+def status(session):
+    """No Lambda invocation, no writable AWS calls, no fabricated records."""
+    # This already enforces account isolation, disabled Paper+PROD schedules,
+    # frozen function SHA, role provenance and confirmed ST alarm delivery.
+    preconditions()
+    # The first authorized session is explicitly the Oct 30 completed session.
+    # Other dates use a market calendar, not a weekend subtraction.
+    if session==FIRST_SESSION:
+        prior="2026-10-29"
+    else:
+        try:
+            import exchange_calendars as xcals
+            cal=xcals.get_calendar("XNYS")
+            if not cal.is_session(session):
+                raise RuntimeError("NOT_XNYS_SESSION:"+session)
+            prior=cal.previous_session(session).date().isoformat()
+        except ImportError as exc:
+            raise RuntimeError("CALENDAR_REQUIRED_FOR_CUSTOM_SESSION") from exc
+    keys=[f"signals/{prior}.json",f"signals/{session}.json"]
+    present=[safe_head(BUCKET,key) is not None for key in keys]
+    genesis=safe_head(BUCKET,f"paper/book/{BOOK}/genesis.json")
+    print("ST_PAPER_PROSPECTIVE_STATUS:"+session+
+          ":PRIOR_SIGNAL="+("PRESENT" if present[0] else "MISSING")+
+          ":CURRENT_SIGNAL="+("PRESENT" if present[1] else "MISSING")+
+          ":GENESIS="+("PRESENT" if genesis is not None else "ABSENT"))
+    if genesis is not None:
+        print("ST_PAPER_BOOK_ALREADY_EXISTS:NO_BOOTSTRAP_REVIEW_CONTINUITY_AND_SCHEDULE")
+    elif all(present):
+        print("ST_PAPER_SIGNALS_PRESENT:RUN_check_FOR_FULL_READ_ONLY_ACCOUNTING_PREFLIGHT")
+    else:
+        print("ST_PAPER_WAITING_FOR_TWO_VERSIONED_SIGNALS:NO_WRITES")
+    print("ST_PAPER_AND_PROD_SCHEDULES_REMAIN_DISABLED")
+
+
 def main():
     p=argparse.ArgumentParser()
-    p.add_argument("mode",choices=("check","bootstrap"))
-    p.add_argument("--session",required=True)
-    p.add_argument("--confirm",default="")
+    p.add_argument("mode",choices=("status","check","bootstrap"))
+    p.add_argument("--session",default=FIRST_SESSION,
+                   help="Prospective XNYS Paper execution day, default 2026-10-30")
+    p.add_argument("--yes",action="store_true",
+                   help="Explicitly authorize exactly one modeled ST Paper genesis, never schedules or brokerage")
+    p.add_argument("--confirm",default="",help=argparse.SUPPRESS)
     args=p.parse_args()
     if date.fromisoformat(args.session).isoformat()!=args.session:
         raise RuntimeError("BAD_SESSION_FORMAT")
-    if args.mode=="check" and args.confirm:
-        raise RuntimeError("READ_ONLY_CHECK_MUST_NOT_CONFIRM")
-    if args.mode=="bootstrap" and args.confirm!=CONSENT:
-        raise RuntimeError("EXPLICIT_ST_ONLY_BOOTSTRAP_CONSENT_REQUIRED")
+    if args.mode in ("status","check") and (args.yes or args.confirm):
+        raise RuntimeError("READ_ONLY_MODE_MUST_NOT_APPROVE_MUTATION")
+    if args.mode=="bootstrap":
+        if args.confirm and args.confirm!=CONSENT:
+            raise RuntimeError("INVALID_BOOTSTRAP_CONFIRMATION")
+        if not (args.yes or args.confirm==CONSENT):
+            raise RuntimeError("EXPLICIT_ST_ONLY_BOOTSTRAP_--yes_REQUIRED")
+    if args.mode=="status":
+        status(args.session)
+        return
     pf,paper=preconditions()
     reply=invoke(pf,{"mode":"STAGING_PAPER_BOOTSTRAP_PREFLIGHT",
                      "expected_session":args.session,"bootstrap":False})
@@ -193,8 +254,8 @@ def main():
     if args.mode=="check":
         print("READ_ONLY_FIRST_ST_PAPER_CHECK_PASS:NO_PAPER_CREATED")
         return
-    # Mutation permitted only after prior read-only approval and explicit
-    # caller consent; no automatic EventBridge or PROD operations.
+    # Mutation requires explicit operator-selected bootstrap --yes, still
+    # protected by every read-only AWS and observed Yahoo accounting check.
     bootstrap(paper,args.session)
 
 
