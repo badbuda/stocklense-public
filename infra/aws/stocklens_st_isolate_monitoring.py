@@ -10,7 +10,7 @@ schedules, data, broker state, PROD/legacy resources, or trading policy.
 inspect: read-only proof of exact AWS targets, alarm namespaces, state.
 prepare: creates a CloudFormation UPDATE change set ONLY (no execution).
 apply:   validates change set/template/16 allowable resource changes, requires
-         explicit typed human confirmation, and executes ST-only change set.
+         explicit --yes approval, and executes ST-only change set.
 The operator must review the change set and AWS cost of 8 new custom metrics.
 """
 from __future__ import annotations
@@ -33,7 +33,6 @@ PROD_BUCKET="stocklens-prod-candidatedata-c3yge4ymwb7u"
 ORIGINAL_NAMESPACE="StockLens/IndependentStaging"
 NEW_NAMESPACE="StockLens/IsolatedST"
 CHANGESET="stocklens-st-watchdog-isolated-metric-filters-v1"
-CONSENT="APPLY_ST_ONLY_WATCHDOG_METRIC_ISOLATION"
 WATCHDOG_LOG="CandidateSessionWatchdogLogs"
 
 METRICS={
