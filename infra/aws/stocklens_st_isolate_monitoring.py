@@ -212,7 +212,11 @@ def preconditions(c):
 
 def check_live_metrics(c,st,status):
     logs=c["logs"]
-    name="/aws/lambda/"+ST+"-session-watchdog"
+    name=c["cloudformation"].describe_stack_resource(
+        StackName=ST,LogicalResourceId=WATCHDOG_LOG
+    )["StackResourceDetail"]["PhysicalResourceId"]
+    require(name=="/aws/lambda/"+ST+"-session-watchdog",
+            "UNEXPECTED_ST_WATCHDOG_LOG_GROUP")
     records=logs.describe_metric_filters(logGroupName=name,
                                          filterNamePrefix=ST+"-watchdog-").get("metricFilters",[])
     by_name={x["filterName"]:x for x in records}
