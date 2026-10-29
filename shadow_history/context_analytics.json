@@ -1,11 +1,11 @@
 {
   "status": "ACTIVE",
-  "sessions": 3,
+  "sessions": 4,
   "vix_min": 14.84000015258789,
   "vix_max": 17.65999984741211,
-  "vix_average": 16.049999872843426,
+  "vix_average": 16.264999866485596,
   "regime_counts": {
-    "NORMAL": 2,
+    "NORMAL": 3,
     "LOW": 1
   },
   "observational_only": true
