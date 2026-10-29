@@ -114,7 +114,11 @@ def same_vendor_parity():
             "mismatch_count","outside_binary32_precision_count",
             "max_binary32_ulp_distance","numeric_rounding_compatible",
             "calendar_equal","feature_fingerprints_equal","decisions_equal",
-            "policy_mismatch_count","latest_action_equal","second_provider_proven")}
+            "policy_mismatch_count","latest_action_equal","second_provider_proven",
+            "max_absolute_price_difference","max_relative_price_difference",
+            "first_outside_precision_budget","latest_feature_absolute_differences",
+            "first_mismatches","last_date","vendor_feature_sha256",
+            "reference_feature_sha256")}
         print("ST_SAME_VENDOR_PARITY_DIAGNOSTIC:"+json.dumps(summary,sort_keys=True))
         if (data.get("status")!="STAGING_SAME_VENDOR_PATH_PARITY_PASS"
             or data.get("calendar_equal") is not True
