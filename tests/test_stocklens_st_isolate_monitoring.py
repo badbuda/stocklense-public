@@ -208,7 +208,7 @@ def test_repeated_apply_partial_filters_fail_before_mutation():
             return {"metricFilters":[]}
     status={k:{"namespace":m.NEW_NAMESPACE,"state":"OK"} for k in m.METRICS}
     with pytest.raises(RuntimeError,match="ISOLATED_METRIC_FILTER_COUNT_WRONG"):
-        m.apply({"logs":Logs()},None,status,approved=True)
+        m.apply({"logs":Logs(),"cloudformation":WatchdogCF()},None,status,approved=True)
 
 
 def test_repeated_apply_partial_namespace_fails_closed():
