@@ -35,7 +35,7 @@ def test_archived_oct09_paper_blocks_publication_but_not_browser_correctness():
     assert any(s.startswith("STALE_PUBLISHED_DATE:paper:") for s in d["issues"])
     js=Path("tests/portal_browser_smoke.cjs").read_text(encoding="utf-8")
     assert "PORTAL_ARCHIVAL_PAPER_DEGRADED_EXPECTED" in js
-    assert "Stale Paper must render a visible error state" in js
+    assert "Stale Paper archive must render a visible error state" in js
     assert "failures.push(reason)" not in js
 
 
