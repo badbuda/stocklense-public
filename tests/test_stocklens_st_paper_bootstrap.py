@@ -11,7 +11,8 @@ def test_activation_remains_disabled():
     txt=Path("infra/aws/stocklens_st_paper_bootstrap.py").read_text()
     assert 'STACK = "stocklens-st"' in txt
     assert 'PROD = "stocklens-prod"' in txt
-    assert 'choices=("check","bootstrap")' in txt
+    assert 'choices=("status","check","bootstrap")' in txt
+    assert 'p.add_argument("--yes",action="store_true"' in txt
     assert '"STAGING_PAPER_BOOTSTRAP_PREFLIGHT"' in txt
     assert '"STAGING_PAPER_SCHEDULE_READINESS"' in txt
     assert "CandidatePaperPreflightRole" in txt
