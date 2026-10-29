@@ -82,35 +82,46 @@ def watchdog_logs(client,fn,now):
     # The structured JSON printed by the watchdog is more useful than Lambda
     # START/REPORT lines. Search a full day to distinguish older metrics from
     # the latest post-activation report.
-    response=client.filter_log_events(
-        logGroupName="/aws/lambda/"+fn,
-        startTime=int((now-timedelta(hours=24)).timestamp()*1000),
-        endTime=int(now.timestamp()*1000),
-        limit=200
-    )
     records=[]
-    for evt in response.get("events",[]):
-        line=str(evt.get("message","")).strip()
-        if not line.startswith("{"): continue
-        try: obj=json.loads(line)
-        except ValueError: continue
-        if not isinstance(obj,dict) or "metrics" not in obj or "failures" not in obj:
-            continue
-        records.append({
-            "utc":datetime.fromtimestamp(evt["timestamp"]/1000,timezone.utc).isoformat(),
-            "status":obj.get("status"),
-            "mode":obj.get("mode"),
-            "failures":obj.get("failures",[])[:25],
-            "metrics":obj.get("metrics"),
-            "signal_missing":obj.get("missing_scheduled_signals"),
-            "paper_missing":obj.get("missed_sessions"),
-            "latest_due_signal":obj.get("latest_due_signal_session"),
-            "latest_due_status":obj.get("latest_due_signal_status")
-        })
+    pages=0
+    seen=set()
+    token=None
+    last_next=None
+    while pages<8:
+        args=dict(logGroupName="/aws/lambda/"+fn,
+                  startTime=int((now-timedelta(hours=24)).timestamp()*1000),
+                  endTime=int(now.timestamp()*1000),limit=200)
+        if token: args["nextToken"]=token
+        response=client.filter_log_events(**args)
+        pages+=1
+        for evt in response.get("events",[]):
+            if evt.get("eventId") in seen and evt.get("eventId") is not None: continue
+            if evt.get("eventId") is not None: seen.add(evt["eventId"])
+            line=str(evt.get("message","")).strip()
+            if not line.startswith("{"): continue
+            try: obj=json.loads(line)
+            except ValueError: continue
+            if not isinstance(obj,dict) or "metrics" not in obj or "failures" not in obj:
+                continue
+            records.append({
+                "utc":datetime.fromtimestamp(evt["timestamp"]/1000,timezone.utc).isoformat(),
+                "status":obj.get("status"),
+                "mode":obj.get("mode"),
+                "failures":obj.get("failures",[])[:25],
+                "metrics":obj.get("metrics"),
+                "signal_missing":obj.get("missing_scheduled_signals"),
+                "paper_missing":obj.get("missed_sessions"),
+                "latest_due_signal":obj.get("latest_due_signal_session"),
+                "latest_due_status":obj.get("latest_due_signal_status")
+            })
+        last_next=response.get("nextToken")
+        if not last_next or last_next==token: break
+        token=last_next
     return {
         "last_reports":records[-8:],
-        "reports_seen_in_page":len(records),
-        "pagination_incomplete":bool(response.get("nextToken")),
+        "reports_seen":len(records),
+        "pages":pages,
+        "pagination_incomplete":pages>=8 and bool(last_next),
         "note":"Log window is bounded; no reports does NOT imply watchdog healthy."
     }
 
@@ -138,8 +149,14 @@ def main():
                 "UNSAFE_PROD_RULE")
     cw=session.client("cloudwatch")
     logs=session.client("logs")
+    stack_params=cf.describe_stacks(StackName=ST)["Stacks"][0].get("Parameters",[])
+    selected={x["ParameterKey"]:x.get("ParameterValue","")
+              for x in stack_params if x["ParameterKey"] in (
+                  "MonitoringStartSession","ExpectedSchedulerState",
+                  "CandidateSignalScheduleState")}
     evidence={
         "kind":"STOCKLENS_ST_ALARM_READ_ONLY_FORENSICS",
+        "st_monitoring_parameters":selected,
         "checked_utc":now.isoformat(),
         "account":ACCOUNT,
         "st_paper":"DISABLED",
