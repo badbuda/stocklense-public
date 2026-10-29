@@ -189,17 +189,17 @@ def test_apply_yes_without_verified_change_set_is_blocked():
 def test_repeated_apply_is_readonly_after_exact_live_filter_verification(monkeypatch):
     class Logs:
         def describe_metric_filters(self, **kwargs):
-            assert kwargs["logGroupName"]=="/aws/lambda/stocklens-st-watchdog"
+            assert kwargs["logGroupName"]=="/aws/lambda/stocklens-st-session-watchdog"
             return {"metricFilters":[{
                 "filterName":m.filter_name(metric),
-                "logGroupName":"/aws/lambda/stocklens-st-watchdog",
+                "logGroupName":"/aws/lambda/stocklens-st-session-watchdog",
                 "filterPattern":"{ $.metrics."+metric+" = * }",
                 "metricTransformations":[{
                     "metricName":metric,"metricNamespace":m.NEW_NAMESPACE,
                     "metricValue":"$.metrics."+metric}]
             } for metric in m.METRICS.values()]}
     status={k:{"namespace":m.NEW_NAMESPACE,"state":"OK"} for k in m.METRICS}
-    assert m.apply({"logs":Logs()},None,status,approved=True) is True
+    assert m.apply({"logs":Logs(),"cloudformation":WatchdogCF()},None,status,approved=True) is True
 
 
 def test_repeated_apply_partial_filters_fail_before_mutation():
@@ -208,7 +208,7 @@ def test_repeated_apply_partial_filters_fail_before_mutation():
             return {"metricFilters":[]}
     status={k:{"namespace":m.NEW_NAMESPACE,"state":"OK"} for k in m.METRICS}
     with pytest.raises(RuntimeError,match="ISOLATED_METRIC_FILTER_COUNT_WRONG"):
-        m.apply({"logs":Logs()},None,status,approved=True)
+        m.apply({"logs":Logs(),"cloudformation":WatchdogCF()},None,status,approved=True)
 
 
 def test_repeated_apply_partial_namespace_fails_closed():
@@ -216,3 +216,22 @@ def test_repeated_apply_partial_namespace_fails_closed():
     status[next(iter(status))]={"namespace":m.ORIGINAL_NAMESPACE,"state":"OK"}
     with pytest.raises(RuntimeError,match="PARTIAL_OR_UNEXPECTED_MONITORING_STATE"):
         m.apply({},None,status,approved=True)
+
+class WatchdogCF:
+    def __init__(self, physical="/aws/lambda/stocklens-st-session-watchdog"):
+        self.physical=physical
+    def describe_stack_resource(self, **kwargs):
+        assert kwargs["StackName"] == m.ST
+        assert kwargs["LogicalResourceId"] == m.WATCHDOG_LOG
+        return {"StackResourceDetail": {"PhysicalResourceId": self.physical}}
+
+
+def test_watchdog_log_group_is_verified_against_cloudformation():
+    class UnusedLogs:
+        def describe_metric_filters(self, **kwargs):
+            raise AssertionError("SHOULD_NOT_READ_WRONG_LOG_GROUP")
+    status={k:{"namespace":m.NEW_NAMESPACE,"state":"OK"} for k in m.METRICS}
+    with pytest.raises(RuntimeError,match="UNEXPECTED_ST_WATCHDOG_LOG_GROUP"):
+        m.check_live_metrics(
+            {"cloudformation":WatchdogCF("/aws/lambda/unrelated"),
+             "logs":UnusedLogs()},None,status)
