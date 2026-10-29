@@ -145,7 +145,9 @@ def test_read_only_inspection_has_no_mutating_calls():
     assert "if args.mode==\"inspect\":" in text
     assert "cf.create_change_set(" in text
     assert "cf.execute_change_set(" in text
-    assert "CONSENT" in text
+    assert 'ap.add_argument("--yes",action="store_true"' in text
+    assert "require(approved," in text
+    assert "value=input(" not in text
     # There is deliberately no trading, Signal, S3, IAM, Lambda or alarm
     # direct mutation in this operator script. Update is reviewed CF only.
     for forbidden in (
@@ -155,3 +157,62 @@ def test_read_only_inspection_has_no_mutating_calls():
         "create_stack(", "delete_stack(", "delete_change_set(",
     ):
         assert forbidden not in text
+
+
+def test_apply_without_yes_fails_before_any_aws_calls():
+    with pytest.raises(RuntimeError, match="EXPLICIT_ST_ONLY_APPLY_--yes_REQUIRED"):
+        m.apply(None, None, None)
+
+
+def test_yes_not_allowed_for_inspect_or_prepare(monkeypatch):
+    monkeypatch.setattr("sys.argv", ["st", "inspect", "--yes"])
+    with pytest.raises(RuntimeError, match="--yes_ONLY_ALLOWED_WITH_apply"):
+        m.main()
+    monkeypatch.setattr("sys.argv", ["st", "prepare", "--yes"])
+    with pytest.raises(RuntimeError, match="--yes_ONLY_ALLOWED_WITH_apply"):
+        m.main()
+
+
+def test_apply_yes_without_verified_change_set_is_blocked():
+    class CloudFormation:
+        def describe_change_set(self, **kwargs):
+            return {"Status": "FAILED", "ExecutionStatus": "UNAVAILABLE"}
+    with pytest.raises(RuntimeError, match="CHANGE_SET_NOT_READY_OR_PAGED"):
+        m.apply(
+            {"cloudformation": CloudFormation()},
+            None,
+            {alarm: {"namespace": m.ORIGINAL_NAMESPACE} for alarm in m.METRICS},
+            approved=True,
+        )
+
+
+def test_repeated_apply_is_readonly_after_exact_live_filter_verification(monkeypatch):
+    class Logs:
+        def describe_metric_filters(self, **kwargs):
+            assert kwargs["logGroupName"]=="/aws/lambda/stocklens-st-watchdog"
+            return {"metricFilters":[{
+                "filterName":m.filter_name(metric),
+                "logGroupName":"/aws/lambda/stocklens-st-watchdog",
+                "filterPattern":"{ $.metrics."+metric+" = * }",
+                "metricTransformations":[{
+                    "metricName":metric,"metricNamespace":m.NEW_NAMESPACE,
+                    "metricValue":"$.metrics."+metric}]
+            } for metric in m.METRICS.values()]}
+    status={k:{"namespace":m.NEW_NAMESPACE,"state":"OK"} for k in m.METRICS}
+    assert m.apply({"logs":Logs()},None,status,approved=True) is True
+
+
+def test_repeated_apply_partial_filters_fail_before_mutation():
+    class Logs:
+        def describe_metric_filters(self,**kwargs):
+            return {"metricFilters":[]}
+    status={k:{"namespace":m.NEW_NAMESPACE,"state":"OK"} for k in m.METRICS}
+    with pytest.raises(RuntimeError,match="ISOLATED_METRIC_FILTER_COUNT_WRONG"):
+        m.apply({"logs":Logs()},None,status,approved=True)
+
+
+def test_repeated_apply_partial_namespace_fails_closed():
+    status={k:{"namespace":m.NEW_NAMESPACE,"state":"OK"} for k in m.METRICS}
+    status[next(iter(status))]={"namespace":m.ORIGINAL_NAMESPACE,"state":"OK"}
+    with pytest.raises(RuntimeError,match="PARTIAL_OR_UNEXPECTED_MONITORING_STATE"):
+        m.apply({},None,status,approved=True)

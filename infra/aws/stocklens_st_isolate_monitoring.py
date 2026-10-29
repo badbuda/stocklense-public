@@ -10,7 +10,7 @@ schedules, data, broker state, PROD/legacy resources, or trading policy.
 inspect: read-only proof of exact AWS targets, alarm namespaces, state.
 prepare: creates a CloudFormation UPDATE change set ONLY (no execution).
 apply:   validates change set/template/16 allowable resource changes, requires
-         explicit typed human confirmation, and executes ST-only change set.
+         explicit --yes approval, and executes ST-only change set.
 The operator must review the change set and AWS cost of 8 new custom metrics.
 """
 from __future__ import annotations
@@ -33,7 +33,6 @@ PROD_BUCKET="stocklens-prod-candidatedata-c3yge4ymwb7u"
 ORIGINAL_NAMESPACE="StockLens/IndependentStaging"
 NEW_NAMESPACE="StockLens/IsolatedST"
 CHANGESET="stocklens-st-watchdog-isolated-metric-filters-v1"
-CONSENT="APPLY_ST_ONLY_WATCHDOG_METRIC_ISOLATION"
 WATCHDOG_LOG="CandidateSessionWatchdogLogs"
 
 METRICS={
@@ -294,9 +293,18 @@ def prepare(c,stack,status):
     return sha
 
 
-def apply(c,stack,status):
+def apply(c,stack,status,*,approved=False):
+    # The command-line --yes flag is the operator's explicit approval.
+    # There is deliberately no free-form confirmation phrase to mistype.
+    require(approved, "EXPLICIT_ST_ONLY_APPLY_--yes_REQUIRED")
+    # A repeated apply succeeds as read-only verification ONLY when the
+    # complete deployed 8 alarm + 8 log metric filter contract is verified.
+    if all(v["namespace"]==NEW_NAMESPACE for v in status.values()):
+        check_live_metrics(c, None, status)
+        print("ST_ISOLATED_MONITORING_ALREADY_DEPLOYED_VERIFIED:NO_WRITES")
+        return True
     require(all(v["namespace"]==ORIGINAL_NAMESPACE for v in status.values()),
-            "ALREADY_PATCHED_OR_PARTIAL_REVIEW_FIRST")
+            "PARTIAL_OR_UNEXPECTED_MONITORING_STATE_REVIEW_FIRST")
     cf=c["cloudformation"]
     actual=cf.describe_change_set(StackName=ST,ChangeSetName=CHANGESET)
     changes=validate_changes(actual)
@@ -313,8 +321,7 @@ def apply(c,stack,status):
     print("NOTICE: 8 extra custom metrics can incur additional AWS cost; 20 USD budget is alert-only.")
     print("ST-only: alarms will temporarily have insufficient datapoints until ST emits isolated metrics.")
     print("PROD and paper schedules remain disabled; Lambda code and S3 objects unchanged.")
-    value=input("Type "+CONSENT+" to execute the ST-only CloudFormation update: ").strip()
-    require(value==CONSENT,"NO_APPROVAL_NO_EXECUTION")
+    print("EXPLICIT_ST_ONLY_--yes_APPROVAL_PRESENT:CHANGE_SET_VALIDATED")
     cf.execute_change_set(StackName=ST,ChangeSetName=CHANGESET)
     for attempt in range(80):
         result=cf.describe_stacks(StackName=ST)["Stacks"][0]["StackStatus"]
@@ -332,7 +339,10 @@ def apply(c,stack,status):
 def main():
     ap=argparse.ArgumentParser()
     ap.add_argument("mode",choices=("inspect","prepare","apply"))
+    ap.add_argument("--yes",action="store_true",
+                    help="Explicitly approve the exact verified ST-only change set; no typed confirmation")
     args=ap.parse_args()
+    require(not args.yes or args.mode=="apply", "--yes_ONLY_ALLOWED_WITH_apply")
     import boto3
     c=build_clients(boto3)
     stack,st,status=preconditions(c)
@@ -348,7 +358,7 @@ def main():
     if args.mode=="prepare":
         prepare(c,stack,status)
     else:
-        apply(c,stack,status)
+        apply(c,stack,status,approved=args.yes)
     return 0
 
 
