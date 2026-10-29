@@ -129,7 +129,35 @@ def watchdog_logs(client,fn,now):
     }
 
 
+def summarize(evidence):
+    print("ST_ALARM_FORENSICS:READ_ONLY")
+    print("MONITORING_PARAMETERS:",evidence.get("st_monitoring_parameters"))
+    print("SHARED_METRIC_RISK:",evidence["shared_metric_risk"]["status"],
+          ",".join(evidence["shared_metric_risk"]["unscoped_alarm_names"]))
+    for logical,data in evidence["alarms"].items():
+        print("ALARM:",logical,data.get("state",data.get("status")),
+              "updated="+str(data.get("state_updated_utc")),
+              "reason="+str(data.get("reason",data.get("message","")))[:350])
+        if data.get("state")=="ALARM":
+            print("  recent_metric_points:",data.get("latest_metrics",[])[-3:])
+            print("  state_change:",data.get("last_state_updates",[])[-1:])
+    for name,data in evidence.get("watchdogs_by_environment",{}).items():
+        print("WATCHDOG:",name,"reports_seen="+str(data.get("reports_seen")),
+              "truncated="+str(data.get("pagination_incomplete")),
+              "error="+str(data.get("message","")))
+        for report in data.get("last_reports",[])[-2:]:
+            print("  ",report["utc"],report.get("status"),
+                  "failures="+str(report.get("failures",[]))[:650],
+                  "metrics="+str(report.get("metrics",{}))[:500])
+    print("NO_AWS_MUTATIONS_NO_BROKER_NO_PAPER")
+
+
 def main():
+    import argparse
+    p=argparse.ArgumentParser()
+    p.add_argument("--summary",action="store_true")
+    p.add_argument("--output")
+    args=p.parse_args()
     import boto3
     now=datetime.now(timezone.utc)
     session=boto3.session.Session(region_name=REGION)
@@ -167,7 +195,6 @@ def main():
         "prod":"ALL_DISABLED",
         "alarms":{},
         "watchdogs_by_environment":{},
-        "shared_metric_risk":"ALARM_NAMESPACE_WITHOUT_STACK_DIMENSIONS_NOT_ISOLATED",
         "aws_mutations":False,
         "broker_orders":False
     }
@@ -177,6 +204,17 @@ def main():
         except Exception as exc:
             evidence["alarms"][logical]={"status":"READ_ERROR","type":type(exc).__name__,
                                          "message":str(exc)[:220]}
+    unscoped=[
+        logical for logical,item in evidence["alarms"].items()
+        if item.get("namespace")=="StockLens/IndependentStaging"
+        and not item.get("dimensions") and item.get("metric_name")
+    ]
+    evidence["shared_metric_risk"]={
+        "status":"POTENTIAL_CROSS_ENVIRONMENT_CONTAMINATION" if unscoped
+                 else "NO_UNSCOPED_ST_CUSTOM_METRICS_FOUND",
+        "unscoped_alarm_names":unscoped,
+        "note":"Shared namespace + no Dimensions means per-stack attribution is impossible from alarm datapoints alone."
+    }
     for label,stack in (("ST",st),("PROD",prod),("OLD_STAGING",old)):
         try:
             evidence["watchdogs_by_environment"][label]=watchdog_logs(
@@ -186,7 +224,12 @@ def main():
                 "status":"LOGS_UNREADABLE",
                 "error_type":type(exc).__name__,
                 "message":str(exc)[:220]}
-    print(json.dumps(evidence,ensure_ascii=False,indent=2,sort_keys=True,default=str))
+    rendered=json.dumps(evidence,ensure_ascii=False,indent=2,sort_keys=True,default=str)
+    if args.output:
+        with open(args.output,"w",encoding="utf-8") as file:
+            file.write(rendered+"\n")
+    if args.summary: summarize(evidence)
+    else: print(rendered)
     return 0
 
 
