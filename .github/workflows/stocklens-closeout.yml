@@ -1,0 +1,97 @@
+name: StockLens Evidence Closeout Report
+on:
+  pull_request:
+    paths:
+      - 'stocklens_closeout.py'
+      - 'tests/test_stocklens_closeout.py'
+      - 'docs/stocklens-closeout.html'
+      - '.github/workflows/stocklens-closeout.yml'
+      - 'docs/portal.html'
+  push:
+    branches: [main]
+    paths:
+      - 'stocklens_closeout.py'
+      - 'tests/test_stocklens_closeout.py'
+      - 'docs/stocklens-closeout.html'
+      - '.github/workflows/stocklens-closeout.yml'
+      - 'docs/portal.html'
+      - 'docs/portal-history.json'
+      - 'docs/paper_portfolio_integrity.json'
+      - 'docs/paper_forward_audit.json'
+      - 'docs/backtest_live_readiness.json'
+      - 'docs/st-combo-results.json'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+concurrency:
+  group: stocklens-evidence-closeout-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  closeout:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+      - name: Verify source transfer and fail-closed closeout regressions
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          python -m pip install pytest
+          python ci_transfer_guard.py
+          python -m pytest -q tests/test_stocklens_closeout.py
+      - name: Generate source-hashed public closeout, never silently mark AWS green
+        run: |
+          set -euo pipefail
+          python stocklens_closeout.py
+          test -s docs/stocklens-closeout.json
+          test -s docs/stocklens-closeout.md
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('docs/stocklens-closeout.json').read_text())
+          assert r['overall']=='BLOCKED_OPERATIONAL_NOT_RESEARCH'
+          assert r['components']['aws_st']['status']=='NOT_VERIFIED_FROM_GITHUB'
+          assert r['components']['aws_prod']['status']=='NOT_VERIFIED_FROM_GITHUB'
+          assert r['automated_live_trading_authorized'] is False
+          assert r['automatic_model_promotion'] is False
+          assert r['broker_orders'] is False
+          assert len(r['work_items'])>=6
+          print('FAIL_CLOSED_OPERATIONAL_REPORT_GENERATED')
+          PY
+      - name: Check browser script is valid JavaScript
+        run: |
+          python - <<'PY'
+          import re
+          from pathlib import Path
+          text=Path("docs/stocklens-closeout.html").read_text()
+          scripts=re.findall(r"<script>(.*?)</script>",text,re.S)
+          assert len(scripts)==1
+          Path("/tmp/stocklens-closeout-browser.js").write_text(scripts[0])
+          PY
+          node --check /tmp/stocklens-closeout-browser.js
+      - name: Retain evidence snapshot even when publication not permitted
+        uses: actions/upload-artifact@v4
+        with:
+          name: stocklens-evidence-closeout-${{ github.sha }}
+          path: |
+            docs/stocklens-closeout.json
+            docs/stocklens-closeout.md
+          retention-days: 30
+      - name: Publish current closeout after successful source checks (main only)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- docs/stocklens-closeout.json docs/stocklens-closeout.md
+          if ! git diff --cached --quiet; then
+            git commit -m "ops: publish source-hashed blocked-or-ready evidence closeout"
+            git push origin HEAD:main
+          fi
