@@ -63,6 +63,9 @@ def alarm_details(cf,cw,logical,*,now):
     return {
         "name":logical,
         "state":a.get("StateValue"),
+        "namespace":a.get("Namespace"),
+        "metric_name":a.get("MetricName"),
+        "dimensions":a.get("Dimensions",[]),
         "reason":str(a.get("StateReason",""))[:700],
         "reason_data":str(a.get("StateReasonData",""))[:700],
         "state_updated_utc":a["StateUpdatedTimestamp"].isoformat()
@@ -78,7 +81,7 @@ def alarm_details(cf,cw,logical,*,now):
 
 
 def watchdog_logs(client,fn,now):
-    # Log events are a single bounded read; a nextToken is explicitly disclosed.
+    # Read up to eight pages; disclose any truncation rather than hiding errors.
     # The structured JSON printed by the watchdog is more useful than Lambda
     # START/REPORT lines. Search a full day to distinguish older metrics from
     # the latest post-activation report.
@@ -135,6 +138,7 @@ def main():
     cf=session.client("cloudformation")
     st=stack_outputs(cf,ST)
     prod=stack_outputs(cf,PROD)
+    old=stack_outputs(cf,"stocklens-independent-staging")
     require(st.get("CandidateDataBucket")==ST_BUCKET and
             prod.get("CandidateDataBucket")!=ST_BUCKET,
             "UNEXPECTED_ST_OR_PROD_BUCKET")
@@ -162,7 +166,8 @@ def main():
         "st_paper":"DISABLED",
         "prod":"ALL_DISABLED",
         "alarms":{},
-        "watchdog":None,
+        "watchdogs_by_environment":{},
+        "shared_metric_risk":"ALARM_NAMESPACE_WITHOUT_STACK_DIMENSIONS_NOT_ISOLATED",
         "aws_mutations":False,
         "broker_orders":False
     }
@@ -172,13 +177,15 @@ def main():
         except Exception as exc:
             evidence["alarms"][logical]={"status":"READ_ERROR","type":type(exc).__name__,
                                          "message":str(exc)[:220]}
-    try:
-        evidence["watchdog"]=watchdog_logs(
-            logs,st["CandidateSessionWatchdogFunctionName"],now)
-    except Exception as exc:
-        evidence["watchdog"]={"status":"LOGS_UNREADABLE",
-                              "error_type":type(exc).__name__,
-                              "message":str(exc)[:220]}
+    for label,stack in (("ST",st),("PROD",prod),("OLD_STAGING",old)):
+        try:
+            evidence["watchdogs_by_environment"][label]=watchdog_logs(
+                logs,stack["CandidateSessionWatchdogFunctionName"],now)
+        except Exception as exc:
+            evidence["watchdogs_by_environment"][label]={
+                "status":"LOGS_UNREADABLE",
+                "error_type":type(exc).__name__,
+                "message":str(exc)[:220]}
     print(json.dumps(evidence,ensure_ascii=False,indent=2,sort_keys=True,default=str))
     return 0
 
