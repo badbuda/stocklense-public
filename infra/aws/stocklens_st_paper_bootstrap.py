@@ -91,7 +91,7 @@ def preconditions():
     if topic!=f"arn:aws:sns:{REGION}:{ACCOUNT}:{STACK}-candidate-alerts":
         raise RuntimeError("WRONG_ST_ALERT_TOPIC")
     subs=aws("sns","list-subscriptions-by-topic","--topic-arn",topic).get("Subscriptions",[])
-    if not any(s.get("Protocol")=="email" and s.get("SubscriptionArn")!="PendingConfirmation" for s in subs):
+    if not any(s.get("Protocol")=="email" and s.get("SubscriptionArn") not in (None,"PendingConfirmation") for s in subs):
         raise RuntimeError("ST_SNS_EMAIL_UNCONFIRMED")
     print("ST_PAPER_PREFLIGHT_INFRA_PASS:signal=ENABLED:paper=DISABLED:prod=DISABLED")
     return pf_name,paper_name
@@ -114,7 +114,8 @@ def invoke(name,event):
 
 def validate_preflight(report,session):
     if (report.get("status")!="STAGING_PAPER_BOOTSTRAP_PREFLIGHT_PASS_READ_ONLY"
-        or report.get("session")!=session or report.get("prior_session")>=session
+        or report.get("session")!=session or not isinstance(report.get("prior_session"),str)
+        or report.get("prior_session")>=session
         or report.get("market_source")!="YFINANCE_1M_RAW"
         or report.get("paper_accounting_audit")!=AUDIT):
         raise RuntimeError("PAPER_PREFLIGHT_NOT_PASS")
@@ -147,6 +148,7 @@ def bootstrap(paper_fn,session):
         or not result.get("paper_version_id")
         or not re.fullmatch("[0-9a-f]{64}",str(result.get("paper_sha256")))):
         raise RuntimeError("PAPER_MUTATION_RETURN_UNVERIFIED_REVIEW_PARTIAL_STATE_NO_BLIND_RETRY")
+    first = result
     try:
         result=invoke(paper_fn,{
             "mode":"STAGING_PAPER_SCHEDULE_READINESS",
@@ -159,6 +161,9 @@ def bootstrap(paper_fn,session):
         or result.get("session")!=session
         or result.get("genesis_session")!=session
         or result.get("chain_sessions")!=1
+        or result.get("paper_sha256")!=first.get("paper_sha256")
+        or result.get("paper_version_id")!=first.get("paper_version_id")
+        or result.get("continuity_status") not in ("ON_TIME_QUALIFIED","LATE_WITH_CONTEMPORANEOUS_EVIDENCE")
         or result.get("broker_actions") is not False
         or result.get("paper_data_written") is not False
         or result.get("paper_automation_authorized") is not False):
