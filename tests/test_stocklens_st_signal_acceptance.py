@@ -83,10 +83,18 @@ class SNS:
 
 
 class CW:
-    def __init__(self, active=False): self.active=active
+    def __init__(self, active=False, legacy_namespace=False):
+        self.active=active
+        self.legacy_namespace=legacy_namespace
     def describe_alarms(self,AlarmNames):
+        logical=AlarmNames[0].split("stocklens-st-",1)[-1]
+        ns=("AWS/Lambda" if logical in (
+             "CandidateSignalErrorsAlarm","CandidateSessionWatchdogErrorsAlarm")
+             else "StockLens/IndependentStaging" if self.legacy_namespace
+             else "StockLens/IsolatedST")
         return {"MetricAlarms":[{"AlarmName":AlarmNames[0],"ActionsEnabled":True,
                 "AlarmActions":[f"arn:aws:sns:{a.REGION}:{a.ACCOUNT}:stocklens-st-candidate-alerts"],
+                "Namespace":ns,"Dimensions":[],
                 "StateValue":"ALARM" if self.active else "OK"}]}
 
 
@@ -96,7 +104,8 @@ def services(now, **options):
             "events":Events(prod_on=options.get("prod_on",False)),
             "s3":S3(now),
             "sns":SNS(confirmed=options.get("confirmed",True)),
-            "cloudwatch":CW(active=options.get("alarm",False)),
+            "cloudwatch":CW(active=options.get("alarm",False),
+                             legacy_namespace=options.get("legacy_namespace",False)),
             "lambda":Lambda()}
 
 
@@ -198,3 +207,9 @@ def test_versioned_signal_market_manifest_chain_is_accepted():
     assert result["state"]=="ST_SIGNAL_ACCEPTED"
     assert result["signal"]["signal_version_id"]=="ver-signal"
     assert result["signal"]["broker_fills"] is False
+
+
+def test_shared_custom_metric_namespace_never_accepted_as_st_healthy():
+    now=datetime(2026,10,29,19,0,tzinfo=timezone.utc)
+    with pytest.raises(RuntimeError,match="ST_WATCHDOG_ALARM_STILL_SHARED"):
+        a.check(services(now,legacy_namespace=True),"2026-10-29",now=now)
