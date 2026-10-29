@@ -3,10 +3,19 @@
 # Does not invoke Lambdas, modify PROD, schedules, IAM, Paper or broker.
 set -euo pipefail
 export AWS_REGION=eu-central-1 AWS_DEFAULT_REGION=eu-central-1 AWS_PAGER=""
-mode=inspect
-if [[ "$#" -gt 0 ]];then mode="$1";fi
+mode="${1:-inspect}"
 case "$mode" in inspect|publish|verify) ;; *) echo "USE inspect|publish|verify";exit 2;; esac
-[[ "$#" -le 1 ]] || exit 2
+approval_mode=interactive
+if [[ "$mode" == publish && "${2:-}" == "--confirm" ]]; then
+  # Explicit one-line CLI consent avoids CloudShell mobile/embedded-TTY read bugs.
+  [[ "$#" == 3 && "${3:-}" == PUBLISH_ST_RESEARCH_ONLY ]] || {
+    echo "NOT_AUTHORIZED_NO_WRITES:INVALID_CLI_CONFIRMATION";exit 4;
+  }
+  approval_mode=command_line
+elif [[ "$#" -gt 1 ]]; then
+  echo "USAGE: inspect | verify | publish [--confirm PUBLISH_ST_RESEARCH_ONLY]"
+  exit 2
+fi
 for cmd in aws curl git python3 sha256sum; do command -v "$cmd" >/dev/null || exit 2;done
 ACCOUNT=634740393398
 ST=stocklens-st
@@ -74,20 +83,42 @@ verify_object() {
  [[ -n "$id" && "$id" != None ]] || { echo S3_VERSION_ID_MISSING;exit 4; }
  echo "ST_READBACK_SHA_VERIFIED:$key:version=$id"
 }
+publish_one() {
+ local key="$1" src="$2" content_type="$3"
+ local err="$root/head-$(basename "$src").stderr"
+ if aws s3api head-object --bucket "$BUCKET" --key "$key" >/dev/null 2>"$err"; then
+   # A previous partial publication can be continued, but NEVER overwritten.
+   verify_object "$key" "$src"
+   echo "EXISTING_PINNED_ST_OBJECT_REUSED:$key"
+ elif grep -Eqi '\\(404\\)|NoSuchKey|Not Found' "$err"; then
+   aws s3api put-object --bucket "$BUCKET" --key "$key" \
+     --body "$src" --content-type "$content_type" --if-none-match '*' \
+     --metadata "study=SL9-031,source=$REF" >/dev/null
+   echo "CREATED_NEW_PINNED_ST_OBJECT:$key"
+ else
+   echo "ST_S3_HEAD_DENIED_OR_UNKNOWN_NO_WRITE:$key" >&2
+   exit 4
+ fi
+}
 if [[ "$mode" == publish ]];then
- for key in "$PREFIX/results.json" "$PREFIX/curves.csv"; do
-   if aws s3api head-object --bucket "$BUCKET" --key "$key" >/dev/null 2>&1;then
-     echo "REFUSE_ALREADY_PUBLISHED:$key;run verify";exit 4
+ if [[ "$approval_mode" == interactive ]]; then
+   # Always read from the controlling terminal, never the enclosing multiline
+   # shell block. A mobile keyboard may send a trailing carriage return.
+   if [[ ! -r /dev/tty ]]; then
+     echo "NO_INTERACTIVE_TTY:USE_publish_--confirm_PUBLISH_ST_RESEARCH_ONLY"
+     exit 4
    fi
- done
- read -r -p 'Confirm only new historical ST S3 objects (AWS charges possible). Type PUBLISH_ST_RESEARCH_ONLY: ' approval
- [[ "$approval" == PUBLISH_ST_RESEARCH_ONLY ]] || { echo NOT_AUTHORIZED_NO_WRITES;exit 4; }
- aws s3api put-object --bucket "$BUCKET" --key "$PREFIX/results.json" \
-   --body "$root/st-combo-results.json" --content-type application/json \
-   --if-none-match '*' --metadata "study=SL9-031,source=$REF" >/dev/null
- aws s3api put-object --bucket "$BUCKET" --key "$PREFIX/curves.csv" \
-   --body "$root/st-combo-curves.csv" --content-type text/csv \
-   --if-none-match '*' --metadata "study=SL9-031,source=$REF" >/dev/null
+   approval=""
+   IFS= read -r -p 'Confirm ST-only new historical S3 research objects (AWS charges possible). Type PUBLISH_ST_RESEARCH_ONLY: ' approval </dev/tty || {
+     echo "NOT_AUTHORIZED_NO_WRITES:TTY_READ_FAILED";exit 4;
+   }
+   [[ "$approval" =~ ^[[:space:]]*PUBLISH_ST_RESEARCH_ONLY[[:space:]]*$ ]] || {
+     echo "NOT_AUTHORIZED_NO_WRITES:TTY_INPUT_MISMATCH";exit 4;
+   }
+ fi
+ echo "EXPLICIT_ST_ONLY_PUBLICATION_CONSENT_VERIFIED"
+ publish_one "$PREFIX/results.json" "$root/st-combo-results.json" application/json
+ publish_one "$PREFIX/curves.csv" "$root/st-combo-curves.csv" text/csv
 fi
 verify_object "$PREFIX/results.json" "$root/st-combo-results.json"
 verify_object "$PREFIX/curves.csv" "$root/st-combo-curves.csv"
