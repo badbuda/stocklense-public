@@ -148,8 +148,8 @@ def inspect(clients, now=None):
         (now-utc(latest_post["timestamp_ms"])).total_seconds()/60,1)
     if logscan["truncated"]:
         verdict="INCOMPLETE_PAGINATED_WATCHDOG_LOGS"
-    elif points and latest_post and
-            age is not None and age<=100 and alarm["StateValue"]=="OK":
+    elif (points and latest_post and age is not None and
+          age<=100 and alarm["StateValue"]=="OK"):
         verdict="HEARTBEAT_LIVE_AND_ALARM_OK"
     elif not latest_post and now < filter_created+timedelta(minutes=85):
         verdict="AWAITING_FIRST_POST_FILTER_HOURLY_WATCHDOG"
