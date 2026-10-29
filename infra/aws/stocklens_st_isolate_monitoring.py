@@ -297,8 +297,14 @@ def apply(c,stack,status,*,approved=False):
     # The command-line --yes flag is the operator's explicit approval.
     # There is deliberately no free-form confirmation phrase to mistype.
     require(approved, "EXPLICIT_ST_ONLY_APPLY_--yes_REQUIRED")
+    # A repeated apply succeeds as read-only verification ONLY when the
+    # complete deployed 8 alarm + 8 log metric filter contract is verified.
+    if all(v["namespace"]==NEW_NAMESPACE for v in status.values()):
+        check_live_metrics(c, None, status)
+        print("ST_ISOLATED_MONITORING_ALREADY_DEPLOYED_VERIFIED:NO_WRITES")
+        return True
     require(all(v["namespace"]==ORIGINAL_NAMESPACE for v in status.values()),
-            "ALREADY_PATCHED_OR_PARTIAL_REVIEW_FIRST")
+            "PARTIAL_OR_UNEXPECTED_MONITORING_STATE_REVIEW_FIRST")
     cf=c["cloudformation"]
     actual=cf.describe_change_set(StackName=ST,ChangeSetName=CHANGESET)
     changes=validate_changes(actual)
