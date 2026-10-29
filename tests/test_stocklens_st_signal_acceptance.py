@@ -1,0 +1,163 @@
+"""No-network adversarial tests for future ST acceptance and zero broker writes."""
+from datetime import datetime, timezone, timedelta
+import io
+import json
+import subprocess
+
+import pytest
+from infra.aws import stocklens_st_signal_acceptance as a
+
+
+class STS:
+    def __init__(self, account=a.ACCOUNT): self.account=account
+    def get_caller_identity(self): return {"Account":self.account}
+
+
+class CF:
+    def describe_stacks(self, StackName):
+        name=StackName
+        base={"CandidateDataBucket":
+                a.BUCKET if name==a.ST else a.PROD_BUCKET,
+              "CandidateFunctionName":name+"-candidate",
+              "CandidateSessionWatchdogFunctionName":name+"-watchdog"}
+        for k in ("CandidateSignalOnlyRuleName","CandidatePaperOnlyRuleName",
+                  "CandidateOrchestratorRuleName"):
+            base[k]=name+"-"+k
+        base["CandidateAlertsTopic"]=f"arn:aws:sns:{a.REGION}:{a.ACCOUNT}:stocklens-st-candidate-alerts"
+        return {"Stacks":[{"StackStatus":"CREATE_COMPLETE",
+                "Outputs":[{"OutputKey":k,"OutputValue":v} for k,v in base.items()]}]}
+    def describe_stack_resource(self, StackName, LogicalResourceId):
+        assert StackName==a.ST
+        return {"StackResourceDetail":{"PhysicalResourceId":a.ST+"-"+LogicalResourceId}}
+
+
+class Events:
+    def __init__(self, prod_on=False): self.prod_on=prod_on
+    def describe_rule(self, Name):
+        if Name.endswith("CandidateSignalOnlyRuleName"):
+            return {"State":"ENABLED" if Name.startswith(a.ST+"-") else
+                    "ENABLED" if self.prod_on else "DISABLED",
+                    "ScheduleExpression":a.SIGNAL_CRON}
+        if Name.endswith("CandidatePaperOnlyRuleName"):
+            return {"State":"DISABLED","ScheduleExpression":"cron(20 3 ? * TUE-SAT *)"}
+        if Name.endswith("CandidateOrchestratorRuleName"):
+            return {"State":"DISABLED","ScheduleExpression":"cron(10 0 ? * TUE-SAT *)"}
+        if Name.endswith("CandidateSessionWatchdogSchedule"):
+            return {"State":"ENABLED","ScheduleExpression":"rate(1 hour)"}
+        raise AssertionError("UNEXPECTED_RULE:"+Name)
+    def list_targets_by_rule(self, Rule):
+        kind="watchdog" if "Watchdog" in Rule else "candidate"
+        return {"Targets":[{"Arn":"arn:aws:lambda:eu-central-1:634740393398:function:stocklens-st-"+kind}]}
+
+
+class Lambda:
+    def get_function_configuration(self, FunctionName):
+        return {"State":"Active","LastUpdateStatus":"Successful",
+                "Handler":"infra.aws.independent_pipeline.handler",
+                "FunctionArn":f"arn:aws:lambda:eu-central-1:634740393398:function:{FunctionName}",
+                "Environment":{"Variables":{"STOCKLENS_DATA_BUCKET":a.BUCKET}}}
+
+
+class S3:
+    def __init__(self, now): self.now=now
+    def get_object(self, Bucket, Key):
+        assert Bucket==a.BUCKET
+        if Key!=a.ACTIVATION:
+            raise Missing()
+        value=json.dumps({"schema":"STOCKLENS_STAGING_SIGNAL_MONITOR_V1"}).encode()
+        return {"VersionId":"version-1","LastModified":
+                datetime(2026,10,29,18,0,tzinfo=timezone.utc),
+                "ContentLength":len(value),"Body":io.BytesIO(value)}
+
+
+class Missing(Exception):
+    response={"Error":{"Code":"NoSuchKey"}}
+
+
+class SNS:
+    def __init__(self, confirmed=True): self.confirmed=confirmed
+    def list_subscriptions_by_topic(self,TopicArn):
+        return {"Subscriptions":[{"Protocol":"email",
+                "SubscriptionArn":"arn:aws:sns:region:account:sub" if self.confirmed
+                else "PendingConfirmation"}]}
+
+
+class CW:
+    def __init__(self, active=False): self.active=active
+    def describe_alarms(self,AlarmNames):
+        return {"MetricAlarms":[{"AlarmName":AlarmNames[0],"ActionsEnabled":True,
+                "AlarmActions":[f"arn:aws:sns:{a.REGION}:{a.ACCOUNT}:stocklens-st-candidate-alerts"],
+                "StateValue":"ALARM" if self.active else "OK"}]}
+
+
+def services(now, **options):
+    return {"sts":STS(options.get("account",a.ACCOUNT)),
+            "cloudformation":CF(),
+            "events":Events(prod_on=options.get("prod_on",False)),
+            "s3":S3(now),
+            "sns":SNS(confirmed=options.get("confirmed",True)),
+            "cloudwatch":CW(active=options.get("alarm",False)),
+            "lambda":Lambda()}
+
+
+def test_script_compiles():
+    subprocess.run(["python","-m","py_compile","infra/aws/stocklens_st_signal_acceptance.py"],check=True)
+
+
+def test_future_signal_is_pending_and_no_alarm_is_not_a_trade():
+    now=datetime(2026,10,29,19,0,tzinfo=timezone.utc)
+    data=a.check(services(now),"2026-10-29",now=now)
+    assert data["state"]=="ST_SIGNAL_AWAITING_SCHEDULE"
+    assert data["expected_deadline_utc"]=="2026-10-30T03:30:00+00:00"
+    assert data["prod_schedules"]=="ALL_DISABLED"
+    assert data["st_paper_schedule"]=="DISABLED"
+    assert data["watchdog_schedule"]=="ENABLED_HOURLY"
+    assert data["alarm_count"]==len(a.ALARM_IDS)
+    assert data["broker_orders"] is False and data["aws_mutations"] is False
+
+
+def test_missing_after_deadline_fails_closed():
+    now=datetime(2026,10,30,4,0,tzinfo=timezone.utc)
+    d=a.check(services(now),"2026-10-29",now=now)
+    assert d["state"]=="ST_SIGNAL_MISSING_AFTER_DEADLINE"
+    assert d["signal"] is None
+
+
+def test_production_cannot_be_active():
+    now=datetime(2026,10,29,19,0,tzinfo=timezone.utc)
+    with pytest.raises(RuntimeError,match="UNSAFE_EVENTBRIDGE_STATE"):
+        a.check(services(now,prod_on=True),"2026-10-29",now=now)
+
+
+def test_alarm_not_erased_from_report():
+    now=datetime(2026,10,29,19,0,tzinfo=timezone.utc)
+    d=a.check(services(now,alarm=True),"2026-10-29",now=now)
+    assert len(d["alarms_active"])==len(a.ALARM_IDS)
+
+
+def test_sns_unconfirmed_blocks():
+    now=datetime(2026,10,29,19,0,tzinfo=timezone.utc)
+    with pytest.raises(RuntimeError,match="ST_SNS_NOT_CONFIRMED"):
+        a.check(services(now,confirmed=False),"2026-10-29",now=now)
+
+
+def test_wrong_account_blocks_first():
+    now=datetime(2026,10,29,19,0,tzinfo=timezone.utc)
+    with pytest.raises(RuntimeError,match="WRONG_AWS_ACCOUNT"):
+        a.check(services(now,account="000000000000"),"2026-10-29",now=now)
+
+
+def test_s3_denied_is_not_missing():
+    class DeniedS3:
+        def get_object(self,**kwargs):
+            raise PermissionError("denied")
+    with pytest.raises(RuntimeError,match="S3_READ_FAILED"):
+        a.read_s3(DeniedS3(),a.BUCKET,"signals/2026-10-29.json")
+
+
+def test_file_contains_no_write_or_broker_calls():
+    from pathlib import Path
+    c=Path("infra/aws/stocklens_st_signal_acceptance.py").read_text()
+    for phrase in (".put_object(", ".put_item(", ".invoke(", ".enable_rule(",
+                   ".put_metric_data(", ".start_execution(", ".create_stack("):
+        assert phrase not in c
