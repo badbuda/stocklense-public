@@ -46,7 +46,7 @@ try{
  // browser itself. Operational readiness stays fail-closed in the separate
  // publication-health workflow; never reclassify the Paper as current.
  if(paperArchiveStale){
-   const reason=`PUBLISHED_PAPER_ARCHIVE_STALE:paper=${governance.paperSession}:signal=${governance.signalSession}`;
+   const reason=`Paper is stale versus published signal: PUBLISHED_PAPER_ARCHIVE_STALE:paper=${governance.paperSession}:signal=${governance.signalSession}`;
    console.warn('PORTAL_ARCHIVAL_PAPER_DEGRADED_EXPECTED:',reason);
  }
  assert.equal(governance.historySession,governance.signalSession,'Historical ETF feed is stale');
