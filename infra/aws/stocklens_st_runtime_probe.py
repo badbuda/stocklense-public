@@ -7,6 +7,7 @@ any historical or current session Signal and never bootstraps Paper.
 """
 from __future__ import annotations
 import json
+import argparse
 from pathlib import Path
 import subprocess
 import tempfile
@@ -21,7 +22,7 @@ FUNCTION = STACK + "-candidate"
 
 
 def aws(service, op, *args):
-    p = subprocess.run(["aws","--region",REGION,"--no-cli-pager","--output","json",
+    p = subprocess.run(["aws","--region",REGION,"--no-cli-pager","--output","json","--cli-read-timeout","180",
                         service,op,*args],capture_output=True,text=True,timeout=150)
     if p.returncode:
         raise RuntimeError("AWS_PROBE_FAILED:"+service+"/"+op+":"+p.stderr[:250])
@@ -88,11 +89,54 @@ def probe(fn_mode, expected):
                   ":last_calendar_date="+str(data["last_vendor_calendar_date"]))
 
 
+def same_vendor_parity():
+    """Diagnostic comparison of two Yahoo-family paths, never a second vendor."""
+    with tempfile.TemporaryDirectory(prefix="stocklens-st-parity-") as d:
+        payload=Path(d)/"request.json"
+        output=Path(d)/"response.json"
+        payload.write_text(json.dumps({"mode":"STAGING_SAME_VENDOR_PATH_PARITY"}),
+                           encoding="utf-8")
+        meta=aws("lambda","invoke","--function-name",FUNCTION,
+                 "--cli-binary-format","raw-in-base64-out",
+                 "--payload","fileb://"+str(payload),str(output))
+        try:
+            data=json.loads(output.read_text(encoding="utf-8"))
+        except (OSError,ValueError) as exc:
+            raise RuntimeError("ST_PARITY_INVALID_LAMBDA_JSON") from exc
+        if (meta.get("StatusCode")!=200 or meta.get("FunctionError")
+            or data.get("broker_actions") is not False
+            or data.get("market_data_written") is not False
+            or data.get("second_provider_proven") is not False
+            or data.get("provider")!="YAHOO_CHART_VS_YFINANCE_YAHOO_AUTO_ADJUST"):
+            raise RuntimeError("ST_SAME_VENDOR_PARITY_NOT_TRUSTWORTHY:"+str(data)[:700])
+        summary={key:data.get(key) for key in (
+            "status","expected_completed_session","vendor_rows","reference_rows",
+            "mismatch_count","outside_binary32_precision_count",
+            "max_binary32_ulp_distance","numeric_rounding_compatible",
+            "calendar_equal","feature_fingerprints_equal","decisions_equal",
+            "policy_mismatch_count","latest_action_equal","second_provider_proven")}
+        print("ST_SAME_VENDOR_PARITY_DIAGNOSTIC:"+json.dumps(summary,sort_keys=True))
+        if (data.get("status")!="STAGING_SAME_VENDOR_PATH_PARITY_PASS"
+            or data.get("calendar_equal") is not True
+            or data.get("numeric_rounding_compatible") is not True
+            or data.get("feature_fingerprints_equal") is not True
+            or data.get("decisions_equal") is not True
+            or data.get("latest_action_equal") is not True):
+            raise RuntimeError("ST_SAME_VENDOR_PARITY_BLOCKED_NOT_SECOND_PROVIDER")
+        print("ST_SAME_VENDOR_PARITY_PASS:SECOND_INDEPENDENT_VENDOR_STILL_NOT_PROVEN")
+
+
 def main():
+    p=argparse.ArgumentParser()
+    p.add_argument("--parity",action="store_true",
+                   help="also compare Yahoo-chart versus yfinance paths, read-only")
+    args=p.parse_args()
     preconditions()
     probe("STAGING_IMPORT_SMOKE","STAGING_IMPORT_OK")
     probe("STAGING_VENDOR_NETWORK_PROBE","STAGING_VENDOR_NETWORK_OK")
-    print("ST_SIGNAL_IMPORT_AND_VENDOR_NETWORK_PASS:NO_SIGNAL_GENERATED:NO_PAPER:NO_PROD:NO_BROKER")
+    if args.parity:
+        same_vendor_parity()
+    print("ST_SIGNAL_IMPORT_AND_VENDOR_NETWORK_PASS:NO_SIGNAL_GENERATED:NO_PAPER_NO_PROD_NO_BROKER")
 
 
 if __name__=="__main__":
