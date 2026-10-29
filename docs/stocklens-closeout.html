@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>StockLens — Control Room & Evidence Closeout</title>
+<style>
+:root{color-scheme:dark;font-family:Arial,system-ui,sans-serif;background:#0d1421;color:#eef4ff}*{box-sizing:border-box}
+body{margin:0}main{max-width:1100px;margin:0 auto;padding:26px 18px 65px}
+header{padding:25px;border-radius:19px;border:1px solid #344861;background:linear-gradient(120deg,#162844,#111d2e)}
+h1{font-size:clamp(1.7rem,4vw,2.7rem);margin:8px 0}h2{font-size:1.2rem}
+p,small{color:#bbc8d9;line-height:1.6}a{color:#accfff}
+.notice{border-inline-start:4px solid #dba957;background:#352d27;padding:15px;margin:20px 0;border-radius:7px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:20px 0}
+.card{background:#152237;border:1px solid #34445e;border-radius:13px;padding:17px}
+.card h3{margin:2px 0;font-size:1rem}.status{font-size:.83rem;overflow-wrap:anywhere}
+.ok{color:#82e1bd}.blocked{color:#ffc29f}.unknown{color:#b9c9df}
+.card strong{font-size:1.3rem}.rows{background:#131f31;border:1px solid #37475e;border-radius:12px;overflow:hidden}
+.line{border-bottom:1px solid #324258;padding:15px}.line:last-child{border:0}
+.line h3{margin:0 0 6px;font-size:.98rem}.line small{display:block}
+footer{margin-top:28px;border-top:1px solid #384962;padding-top:18px;color:#aebcce}
+</style></head>
+<body><main>
+<a href="./portal.html#research">← מעבדת המחקר</a>
+<header><small>STOCKLENS / EVIDENCE CONTROL ROOM</small>
+<h1>מה סגור, ומה עדיין חסום?</h1>
+<p>דוח מכונה שעובר הצלבת מקורות: סיגנל, יומן Paper, סטטוס מחקר ETF משולבים ושערי מוכנות. אין הצגה של תוצאה היסטורית כאילו היא ביצוע מסחר חי.</p>
+<div id="head" role="status">טוען ראיות מעודכנות…</div></header>
+<div class="notice"><strong>מוכן למחקר ≠ מוכן למסחר.</strong> גם אם הדשבורד ו־GitHub ירוקים, חסר אימות מסירה עצמאית ל־AWS PROD/ST ויומן Paper קדימה. לא תתבצע כאן פעולה בברוקר.</div>
+<section class="grid" id="cards" aria-label="מצב רכיבי המערכת"></section>
+<h2>חסמים לסגירה, לפי עדיפות</h2>
+<div id="items" class="rows"></div>
+<footer>
+<a href="./stocklens-closeout.json">דוח JSON מבוסס מקורות</a> ·
+<a href="./stocklens-closeout.md">דוח Markdown מלא</a> ·
+<a href="./st-combo.html">224 בק־טסטים</a> ·
+<a href="https://github.com/badbuda/stocklense-public/actions">ריצות CI</a>.
+כל מקור שאינו זמין גורם לשגיאה, לא לסטטוס ירוק.
+</footer></main>
+<script>
+(async()=>{
+const head=document.getElementById("head"),card=document.getElementById("cards"),items=document.getElementById("items");
+function node(tag,str,cls){const n=document.createElement(tag);n.textContent=str;if(cls)n.className=cls;return n;}
+function showCard(title,status,detail){
+const el=node("article","","card");
+el.append(node("h3",title),node("div",status,(status.includes("BLOCKED")||status==="STALE")?"status blocked":"status unknown"),node("p",detail));
+card.append(el);
+}
+try{
+const resp=await fetch("./stocklens-closeout.json",{cache:"no-store"});
+if(!resp.ok)throw new Error("דוח מצב אוטומטי אינו זמין");
+const d=await resp.json();
+if(d.kind!=="STOCKLENS_EVIDENCE_CLOSEOUT"||d.overall!=="BLOCKED_OPERATIONAL_NOT_RESEARCH"||
+ d.automated_live_trading_authorized!==false||d.automatic_model_promotion!==false||
+ d.broker_orders!==false||!d.components||!Array.isArray(d.work_items))throw new Error("מקור הדוח לא עומד בחוזה הבטיחות");
+const c=d.components;
+if(!c.legacy_paper||!c.readiness||!c.aws_st||!c.aws_prod||!c.historical_combination_research)throw new Error("ראיות המערכת לא שלמות");
+head.textContent="סטטוס כללי: תפעולית חסום · עדכון "+d.generated_at_utc.slice(0,16).replace("T"," ")+" UTC";
+showCard("מחקר ETF משולבים",c.historical_combination_research.status,
+c.historical_combination_research.arm_count+" שילובים × 4 תרחישים. סוף נתונים "+c.historical_combination_research.observed_ending_session);
+showCard("יומן Paper",c.legacy_paper.status,
+"סיגנל "+c.frozen_shadow.observed_signal_asof+" · Paper "+c.legacy_paper.last_recorded_session+
+" · "+c.legacy_paper.verified_modelled_sessions+" ימי ביצוע מדומה מאומתים; "+
+c.legacy_paper.explicit_missed_execution_sessions+" ימים חסרים מדווחים");
+showCard("AWS — ST",c.aws_st.status,"קיום תשתית אינו ראיה להרצת Research Runner או receipt חדש ב־S3.");
+showCard("AWS — PROD",c.aws_prod.status,"לא קיים אישור מוכנות ל־Paper רציף או עסקאות ברוקר.");
+showCard("שערי מוכנות למסחר",c.readiness.status,
+c.readiness.passed+"/"+c.readiness.total+" עברו · "+c.readiness.blocked+" חסומים.");
+for(const i of d.work_items){
+const el=node("div","","line");
+el.append(node("h3",i.priority+" · "+i.id+" — "+i.status),node("small",i.required));
+items.append(el);
+}
+}catch(e){head.textContent="דוח אינו מאומת: "+e.message;}
+})();
+</script></body></html>
