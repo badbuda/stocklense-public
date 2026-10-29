@@ -1,4 +1,5 @@
 """Mocked AWS read-only control-plane acceptance; no AWS credentials."""
+import hashlib
 import pytest
 from infra.aws.stocklens_st_prod_readonly_audit import (
     ACCOUNT, READ_ONLY, Blocked, aws, gitblob, inspect, inspect_stack, ENV
