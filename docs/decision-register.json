@@ -1,0 +1,120 @@
+{
+  "schema_version": 1,
+  "kind": "STOCKLENS_SOURCE_SEPARATED_DECISION_REGISTER_V1",
+  "source_cutoff_signal_session": "2026-10-28",
+  "generated_at_utc": "2026-10-29T02:42:50.556253+00:00",
+  "archived_signal_count": 6,
+  "archived_signals": [
+    {
+      "session": "2026-10-07",
+      "created_at_utc": "2026-10-08T09:29:18.316198+00:00",
+      "action": "NO_CHANGE",
+      "level": 3,
+      "defense": false,
+      "target_leverage": 3,
+      "target_qqq_weight": 0,
+      "target_tqqq_weight": 0.985,
+      "qqq_adjusted_close": 757.72998046875,
+      "source": "shadow_history/2026-10-07.json",
+      "provenance": "ARCHIVED_GITHUB_SHADOW_SIGNAL_NOT_AWS_ORDER",
+      "broker_fills": false
+    },
+    {
+      "session": "2026-10-08",
+      "created_at_utc": "2026-10-09T04:36:08.864151+00:00",
+      "action": "NO_CHANGE",
+      "level": 3,
+      "defense": false,
+      "target_leverage": 3,
+      "target_qqq_weight": 0,
+      "target_tqqq_weight": 0.985,
+      "qqq_adjusted_close": 747.5800170898438,
+      "source": "shadow_history/2026-10-08.json",
+      "provenance": "ARCHIVED_GITHUB_SHADOW_SIGNAL_NOT_AWS_ORDER",
+      "broker_fills": false
+    },
+    {
+      "session": "2026-10-09",
+      "created_at_utc": "2026-10-10T02:31:59.926069+00:00",
+      "action": "NO_CHANGE",
+      "level": 3,
+      "defense": false,
+      "target_leverage": 3,
+      "target_qqq_weight": 0,
+      "target_tqqq_weight": 0.985,
+      "qqq_adjusted_close": 751.27001953125,
+      "source": "shadow_history/2026-10-09.json",
+      "provenance": "ARCHIVED_GITHUB_SHADOW_SIGNAL_NOT_AWS_ORDER",
+      "broker_fills": false
+    },
+    {
+      "session": "2026-10-26",
+      "created_at_utc": "2026-10-27T16:53:40.714559+00:00",
+      "action": "NO_CHANGE",
+      "level": 3,
+      "defense": false,
+      "target_leverage": 3,
+      "target_qqq_weight": 0,
+      "target_tqqq_weight": 0.985,
+      "qqq_adjusted_close": 712.2000122070312,
+      "source": "shadow_history/2026-10-26.json",
+      "provenance": "ARCHIVED_GITHUB_SHADOW_SIGNAL_NOT_AWS_ORDER",
+      "broker_fills": false
+    },
+    {
+      "session": "2026-10-27",
+      "created_at_utc": "2026-10-28T02:31:44.266693+00:00",
+      "action": "NO_CHANGE",
+      "level": 3,
+      "defense": false,
+      "target_leverage": 3,
+      "target_qqq_weight": 0,
+      "target_tqqq_weight": 0.985,
+      "qqq_adjusted_close": 721.25,
+      "source": "shadow_history/2026-10-27.json",
+      "provenance": "ARCHIVED_GITHUB_SHADOW_SIGNAL_NOT_AWS_ORDER",
+      "broker_fills": false
+    },
+    {
+      "session": "2026-10-28",
+      "created_at_utc": "2026-10-29T02:42:50.556253+00:00",
+      "action": "NO_CHANGE",
+      "level": 3,
+      "defense": false,
+      "target_leverage": 3,
+      "target_qqq_weight": 0,
+      "target_tqqq_weight": 0.985,
+      "qqq_adjusted_close": 725.6099853515625,
+      "source": "shadow_history/2026-10-28.json",
+      "provenance": "ARCHIVED_GITHUB_SHADOW_SIGNAL_NOT_AWS_ORDER",
+      "broker_fills": false
+    }
+  ],
+  "archive_is_contiguous": false,
+  "missing_signal_days_filled": false,
+  "historical_execution_proxy": {
+    "source": "portal-history.json",
+    "start": "2010-02-11",
+    "end": "2026-10-28",
+    "sessions": 4204,
+    "label": "HISTORICAL_MODELED_DAILY_OPEN_PROXY_NOT_OBSERVED_BROKER_FILLS",
+    "note": "These rows use observed QQQ/TQQQ adjusted daily OHLC and modeled next-open execution; not actual Shadow receipts or minute-level fills."
+  },
+  "legacy_paper": {
+    "source": "paper_portfolio/latest_session.json",
+    "last_recorded_session": "2026-10-09",
+    "last_recorded_equity_usd": 98696.78023845259,
+    "broker_fills_observed": false,
+    "status": "HISTORICAL_MODELLED_ARCHIVE_NOT_CURRENT"
+  },
+  "aws_st": {
+    "status": "REQUIRES_AUTHENTICATED_AWS_READBACK",
+    "note": "The ST Signal EventBridge rule was enabled by the operator on 2026-10-29, but this GitHub file cannot certify subsequent AWS invocations or S3 receipts."
+  },
+  "aws_prod": {
+    "status": "NOT_APPROVED_FOR_EXECUTION",
+    "note": "Resource provisioning does not imply active production Paper or brokerage access."
+  },
+  "automatic_trading_authorized": false,
+  "broker_orders_executed_by_this_report": false
+}
