@@ -92,29 +92,84 @@ def head(bucket: str, key: str):
 
 
 def logs(fn: str, session: str):
+    """Read bounded *complete* CloudWatch pages and retain actual app messages.
+
+    AWS filter-log-events can paginate; an unpaginated 35-event sample is NOT
+    evidence that a particular Lambda logged no error. We keep both application
+    messages and a count of runtime START/END/REPORT/INIT events, with no mutating
+    CloudWatch actions. Truncation is disclosed rather than hidden.
+    """
     day = date.fromisoformat(session)
     start = int(datetime(day.year, day.month, day.day,
                          tzinfo=timezone.utc).timestamp() * 1000)
-    # Include both the requested NYSE day and its next UTC date for nighttime
-    # scheduled execution and retries. Do not assume the next day is an XNYS day.
     end = start + 2 * 86400 * 1000
+    seen = set()
+    token = None
+    events = []
+    page_count = 0
+    more = False
     try:
-        o = cli("logs", "filter-log-events",
+        while page_count < 8:
+            args = [
                 "--log-group-name", "/aws/lambda/" + fn,
                 "--start-time", str(start), "--end-time", str(end),
-                "--limit", "35")
-        ev = o.get("events", [])
+                "--limit", "200",
+            ]
+            if token is not None:
+                args.extend(["--next-token", token])
+            response = cli("logs", "filter-log-events", *args)
+            page_count += 1
+            for event in response.get("events", []):
+                event_id = event.get("eventId")
+                if event_id is not None and event_id in seen:
+                    continue
+                if event_id is not None:
+                    seen.add(event_id)
+                events.append(event)
+            next_token = response.get("nextToken")
+            if not next_token or next_token == token:
+                token = None
+                more = False
+                break
+            token = next_token
+            more = True
+        formatted = [
+            {
+                "timestamp": datetime.fromtimestamp(
+                    e["timestamp"] / 1000, timezone.utc
+                ).isoformat(),
+                "message": str(e.get("message", ""))[:900],
+            }
+            for e in sorted(events, key=lambda e: (e.get("timestamp", 0), e.get("eventId", "")))
+        ]
+        noise_prefixes = ("START RequestId", "END RequestId", "REPORT RequestId",
+                          "INIT_START", "INIT_REPORT", "EXTENSION")
+        application = [
+            x for x in formatted
+            if not x["message"].lstrip().startswith(noise_prefixes)
+        ]
+        patterns = ("error", "exception", "failed", "runtimeerror",
+                    "traceback", "nosuchkey", "missing_", "stale", "denied", "halted")
+        alerts = [
+            x for x in application
+            if any(p in x["message"].lower() for p in patterns)
+        ]
         return {
-            "status": "EVENTS_PRESENT" if ev else "NO_LOG_EVENTS_IN_WINDOW",
-            "window_utc": [datetime.fromtimestamp(start / 1000, timezone.utc).isoformat(),
-                           datetime.fromtimestamp(end / 1000, timezone.utc).isoformat()],
-            "events_returned": len(ev), "has_more_pages": bool(o.get("nextToken")),
-            "last_events": [
-                {"timestamp": datetime.fromtimestamp(e["timestamp"] / 1000, timezone.utc).isoformat(),
-                 "message": str(e.get("message", ""))[:270]}
-                for e in ev[-12:]
+            "status": "EVENTS_PRESENT" if events else "NO_LOG_EVENTS_IN_WINDOW",
+            "window_utc": [
+                datetime.fromtimestamp(start / 1000, timezone.utc).isoformat(),
+                datetime.fromtimestamp(end / 1000, timezone.utc).isoformat()
             ],
-            "note": "Bounded read, not complete log-group proof; CloudWatch can paginate.",
+            "events_returned": len(events),
+            "pages_read": page_count,
+            "has_more_pages": more,
+            "truncated": more,
+            "application_events_count": len(application),
+            "potential_error_events_count": len(alerts),
+            "last_events": application[-40:],
+            "potential_error_events": alerts[-15:],
+            "runtime_event_tail": formatted[-8:],
+            "note": "Application logs exclude START/END/REPORT/INIT. If truncated, absence of an error is not proven.",
         }
     except RuntimeError as exc:
         return {"status": "LOGS_UNREADABLE", "detail": str(exc)}
@@ -170,22 +225,48 @@ def verify_signal(bucket: str, session: str):
         return {"status": "NOT_VERIFIED", "reason": str(exc)[:350]}
 
 
-def ddb(table: str, day: str):
+def ddb(table: str, day: str, *, client=None):
+    """Strongly consistent point reads through boto3, never DynamoDB Scan.
+
+    The AWS CLI can render an absent GetItem as an empty stdout, which is
+    not JSON. The old audit wrongly labeled that AWS_INVALID_JSON. boto3
+    returns a structured response, with no Item when the key is absent.
+    Neither absence nor permission errors are confused with one another.
+    No full items or confidential payloads are printed.
+    """
+    if client is None:
+        import boto3
+        client = boto3.client("dynamodb", region_name=REGION)
     rows = {}
     for suffix in ("", "#PAPER"):
         key = day + suffix
         try:
-            obj = cli("dynamodb", "get-item", "--table-name", table,
-                      "--key", json.dumps({"session_date": {"S": key}}),
-                      "--consistent-read")
+            obj = client.get_item(
+                TableName=table,
+                Key={"session_date": {"S": key}},
+                ConsistentRead=True,
+            )
+            if obj.get("ResponseMetadata", {}).get("HTTPStatusCode") != 200:
+                raise RuntimeError("DYNAMODB_HTTP_NOT_200")
             item = obj.get("Item")
+            if item is None:
+                rows[key] = {"status": "MISSING", "read_confirmed": True}
+            elif isinstance(item, dict):
+                rows[key] = {
+                    "status": "PRESENT", "read_confirmed": True,
+                    "fields": sorted(item.keys()),
+                    "paper_sha256": item.get("paper_sha256", {}).get("S"),
+                    "signal_sha256": item.get("signal_sha256", {}).get("S"),
+                }
+            else:
+                rows[key] = {"status": "INVALID_ITEM", "read_confirmed": False}
+        except Exception as exc:
+            # Include only service error code and exception type, never item data.
+            code = getattr(exc, "response", {}).get("Error", {}).get("Code")
             rows[key] = {
-                "status": "PRESENT" if item else "MISSING",
-                "fields": sorted(item.keys()) if item else [],
-                "paper_sha256": item.get("paper_sha256", {}).get("S") if item else None,
+                "status": "READ_ERROR", "read_confirmed": False,
+                "error_code": str(code or type(exc).__name__),
             }
-        except RuntimeError as exc:
-            rows[key] = {"status": "READ_ERROR", "detail": str(exc)}
     return rows
 
 
