@@ -469,7 +469,7 @@
     "tests/test_stocklens_st_alarm_forensics.py": "04cf79608d527de6b66fcf9a976de5ed7876a691",
     "tests/test_stocklens_st_heartbeat_readonly.py": "2d5f58fcfee71cb71a69bd8b2e54a45f4e00930e",
     "tests/test_stocklens_st_isolate_monitoring.py": "c9c0ea32f0a261db233c6bad85b77db644a24210",
-    "tests/test_stocklens_st_paper_bootstrap.py": "d1696fe9d29f588a81d1ed8ce71c0463a51eb501",
+    "tests/test_stocklens_st_paper_bootstrap.py": "b6f4c56430e742df9ec32dc826ffe928e66f6929",
     "tests/test_stocklens_st_prod_readonly_audit.py": "50c7dd811ead365340edd486a2d1e53b5254c278",
     "tests/test_stocklens_st_real_3x_research.py": "bf5dbd554e9d061e42fdef59ab00d80127032491",
     "tests/test_stocklens_st_runtime_probe.py": "22e7b9e92a0892ec25b583900e69a5afe11d230b",
