@@ -133,6 +133,64 @@ try{
  await mobile.locator('button[data-page=paper]').click();
  assert.equal((await mobile.locator('.page.visible').getAttribute('data-view')),'paper');
  await mobile.screenshot({path:'/tmp/stocklens-mobile-'+screenshotSuffix+'.png',fullPage:true});
+ // Authenticated S3 staging path is exercised using only synthetic, local
+ // browser-intercepted OAuth/API fixtures. No AWS credentials or API calls.
+ // This guards against UI exceptions hidden from the public unauthenticated E2E.
+ const authed=await browser.newPage({viewport:{width:390,height:844},deviceScaleFactor:1});
+ authed.on('pageerror',e=>failures.push('AUTHED_STAGING_RUNTIME:'+e.message));
+ await authed.addInitScript(()=>{
+   sessionStorage.setItem('stocklens-pkce',JSON.stringify({
+     verifier:'mock-ci-pkce-verifier',nonce:'ci-nonce',at:Date.now()
+   }));
+ });
+ const fixtureOrigin=new URL(base).origin;
+ const apiOrigin='https://c2r39dbwkg.execute-api.eu-central-1.amazonaws.com';
+ const cognitoOrigin='https://stocklens-portal-634740393398.auth.eu-central-1.amazoncognito.com';
+ await authed.route('**/cloud-config.json',route=>route.fulfill({
+   status:200,contentType:'application/json',
+   body:JSON.stringify({enabled:true,api_base_url:apiOrigin,cognito_domain:cognitoOrigin,
+     client_id:'mock-ci-client',redirect_uri:fixtureOrigin+'/portal.html'})
+ }));
+ await authed.route(cognitoOrigin+'/oauth2/token',route=>route.fulfill({
+   status:200,contentType:'application/json',
+   body:JSON.stringify({access_token:'mock-ci-token-only',token_type:'Bearer',expires_in:3600})
+ }));
+ const archivedDays=['2026-10-08','2026-10-09','2026-10-12','2026-10-13',
+   '2026-10-14','2026-10-15','2026-10-16'];
+ await authed.route('**/v1/sessions?*',route=>route.fulfill({
+   status:200,contentType:'application/json',
+   body:JSON.stringify({kind:'STOCKLENS_AUTHENTICATED_READ_ONLY_AWS_JOURNAL',
+     broker_orders_authorized:false,broker_fills_observed:false,
+     sessions:archivedDays.map(d=>({session_date:d,status:'MISSING_BOTH'}))})
+ }));
+ const isoDay=(offset)=>{
+   const d=new Date();d.setUTCHours(0,0,0,0);d.setUTCDate(d.getUTCDate()-offset);
+   return d.toISOString().slice(0,10);
+ };
+ const meta={sha256:'a'.repeat(64),version_id:'fixture-version',saved_at_utc:new Date().toISOString()};
+ const fakePaper=(day,equity,tradeCount)=>({
+   session_date:day,status:'SIGNAL_PAPER_CONTINUITY_S3_SHA_BOUND',
+   signal:{...meta,level:3,target_leverage:3},
+   paper:{...meta,sha256:'b'.repeat(64),equity,trade_count:tradeCount,
+     continuity_status:'ON_TIME_QUALIFIED'}
+ });
+ await authed.route('**/v1/staging?*',route=>route.fulfill({
+   status:200,contentType:'application/json',
+   body:JSON.stringify({kind:'STOCKLENS_AUTHENTICATED_STAGING_S3_READ_ONLY',
+     source:'PRIVATE_VERSIONED_STAGING_S3',broker_orders_authorized:false,
+     broker_fills_observed:false,full_chain_verified_by_portal:false,
+     production_cutover_authorized:false,
+     sessions:[fakePaper(isoDay(1),100050,1),fakePaper(isoDay(0),100100,2)]})
+ }));
+ await authed.goto(base+'/portal.html?code=ci-only&state=ci-nonce',
+   {waitUntil:'networkidle',timeout:60000});
+ await authed.waitForFunction(()=>
+   document.querySelector('#staging-overview-status')?.textContent.includes('Paper Staging S3'),
+   null,{timeout:15000});
+ assert.match(await authed.locator('#cloud-staging-status').textContent(),/2 ימי Paper/);
+ assert.match(await authed.locator('#kpi-trades').textContent(),/3 אירועי Paper/);
+ assert.match(await authed.locator('#kpi-nav-source').textContent(),/Staging S3/);
+ assert.equal((await authed.locator('#cloud-staging-results tr').count())>=3,true);
  assert.deepEqual(failures,[],'Portal JavaScript/runtime errors found');
  console.log('PORTAL_E2E_PASS: desktop/mobile, historic charts, paper ledger, Yahoo real-TQQQ simulator, cost and input recalculation');
 } finally{await browser.close()}
