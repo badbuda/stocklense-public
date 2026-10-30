@@ -144,6 +144,11 @@ try{
    }));
  });
  const fixtureOrigin=new URL(base).origin;
+ const mockCors={
+   'access-control-allow-origin':fixtureOrigin,
+   'access-control-allow-headers':'authorization,content-type',
+   'access-control-allow-methods':'GET,POST,OPTIONS'
+ };
  const apiOrigin='https://c2r39dbwkg.execute-api.eu-central-1.amazonaws.com';
  const cognitoOrigin='https://stocklens-portal-634740393398.auth.eu-central-1.amazoncognito.com';
  await authed.route('**/cloud-config.json',route=>route.fulfill({
@@ -152,13 +157,13 @@ try{
      client_id:'mock-ci-client',redirect_uri:fixtureOrigin+'/portal.html'})
  }));
  await authed.route(cognitoOrigin+'/oauth2/token',route=>route.fulfill({
-   status:200,contentType:'application/json',
+   status:200,contentType:'application/json',headers:mockCors,
    body:JSON.stringify({access_token:'mock-ci-token-only',token_type:'Bearer',expires_in:3600})
  }));
  const archivedDays=['2026-10-08','2026-10-09','2026-10-12','2026-10-13',
    '2026-10-14','2026-10-15','2026-10-16'];
  await authed.route('**/v1/sessions?*',route=>route.fulfill({
-   status:200,contentType:'application/json',
+   status:200,contentType:'application/json',headers:mockCors,
    body:JSON.stringify({kind:'STOCKLENS_AUTHENTICATED_READ_ONLY_AWS_JOURNAL',
      broker_orders_authorized:false,broker_fills_observed:false,
      sessions:archivedDays.map(d=>({session_date:d,status:'MISSING_BOTH'}))})
@@ -175,7 +180,7 @@ try{
      continuity_status:'ON_TIME_QUALIFIED'}
  });
  await authed.route('**/v1/staging?*',route=>route.fulfill({
-   status:200,contentType:'application/json',
+   status:200,contentType:'application/json',headers:mockCors,
    body:JSON.stringify({kind:'STOCKLENS_AUTHENTICATED_STAGING_S3_READ_ONLY',
      source:'PRIVATE_VERSIONED_STAGING_S3',broker_orders_authorized:false,
      broker_fills_observed:false,full_chain_verified_by_portal:false,
