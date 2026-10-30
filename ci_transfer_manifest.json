@@ -91,7 +91,6 @@
     "decision_journal.py": "c16da8b3741a5eab36fc580ff931fc45016b341e",
     "decision_register_publish.py": "d0aa0fdf1d804f3a0e7f3126d5a95cf8f435dcaa",
     "dependency_integrity.py": "d57277407eb14713b5780144692d0bab679761dd",
-    "docs/decision-register.json": "e5c2618817d1381e810018f122503217b62ba92c",
     "docs/decisions.html": "9dd2499435b64e3c6b035d292eeb0dc6eb54dada",
     "docs/execution.html": "eae3fda689531a800a26eeed4db802de30a31c73",
     "docs/index.html": "23f557a61f88770cc96919a5191482ba77f1234b",
