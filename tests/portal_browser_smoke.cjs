@@ -154,7 +154,7 @@ try{
  await authed.route('**/cloud-config.json',route=>route.fulfill({
    status:200,contentType:'application/json',
    body:JSON.stringify({enabled:true,api_base_url:apiOrigin,cognito_domain:cognitoOrigin,
-     client_id:'mock-ci-client',redirect_uri:fixtureOrigin+'/portal.html'})
+     client_id:'mockciclient',redirect_uri:fixtureOrigin+'/portal.html'})
  }));
  await authed.route(cognitoOrigin+'/oauth2/token',route=>route.fulfill({
    status:200,contentType:'application/json',headers:mockCors,
@@ -189,9 +189,19 @@ try{
  }));
  await authed.goto(base+'/portal.html?code=ci-only&state=ci-nonce',
    {waitUntil:'networkidle',timeout:60000});
- await authed.waitForFunction(()=>
-   document.querySelector('#staging-overview-status')?.textContent.includes('Paper Staging S3'),
-   null,{timeout:15000});
+ try{
+   await authed.waitForFunction(()=>
+     document.querySelector('#staging-overview-status')?.textContent.includes('Paper Staging S3'),
+     null,{timeout:15000});
+ }catch(error){
+   console.error('MOCK_AUTH_STAGING_DIAGNOSTICS',JSON.stringify({
+     cloudStatus:await authed.locator('#cloud-status').textContent(),
+     stagingStatus:await authed.locator('#cloud-staging-status').textContent(),
+     overviewStatus:await authed.locator('#staging-overview-status').textContent(),
+     runtimeErrors:failures
+   }));
+   throw error;
+ }
  assert.match(await authed.locator('#cloud-staging-status').textContent(),/2 ימי Paper/);
  assert.match(await authed.locator('#kpi-trades').textContent(),/3 אירועי Paper/);
  assert.match(await authed.locator('#kpi-nav-source').textContent(),/Staging S3/);
