@@ -1,6 +1,6 @@
 {
   "archive_is_contiguous": false,
-  "archived_signal_count": 6,
+  "archived_signal_count": 7,
   "archived_signals": [
     {
       "action": "NO_CHANGE",
@@ -12,8 +12,8 @@
       "qqq_adjusted_close": 757.72998046875,
       "session": "2026-10-07",
       "source": "shadow_history/2026-10-07.json",
-      "target_leverage": 3.0,
-      "target_qqq_weight": 0.0,
+      "target_leverage": 3,
+      "target_qqq_weight": 0,
       "target_tqqq_weight": 0.985
     },
     {
@@ -26,8 +26,8 @@
       "qqq_adjusted_close": 747.5800170898438,
       "session": "2026-10-08",
       "source": "shadow_history/2026-10-08.json",
-      "target_leverage": 3.0,
-      "target_qqq_weight": 0.0,
+      "target_leverage": 3,
+      "target_qqq_weight": 0,
       "target_tqqq_weight": 0.985
     },
     {
@@ -40,8 +40,8 @@
       "qqq_adjusted_close": 751.27001953125,
       "session": "2026-10-09",
       "source": "shadow_history/2026-10-09.json",
-      "target_leverage": 3.0,
-      "target_qqq_weight": 0.0,
+      "target_leverage": 3,
+      "target_qqq_weight": 0,
       "target_tqqq_weight": 0.985
     },
     {
@@ -54,8 +54,8 @@
       "qqq_adjusted_close": 712.2000122070312,
       "session": "2026-10-26",
       "source": "shadow_history/2026-10-26.json",
-      "target_leverage": 3.0,
-      "target_qqq_weight": 0.0,
+      "target_leverage": 3,
+      "target_qqq_weight": 0,
       "target_tqqq_weight": 0.985
     },
     {
@@ -68,8 +68,8 @@
       "qqq_adjusted_close": 721.25,
       "session": "2026-10-27",
       "source": "shadow_history/2026-10-27.json",
-      "target_leverage": 3.0,
-      "target_qqq_weight": 0.0,
+      "target_leverage": 3,
+      "target_qqq_weight": 0,
       "target_tqqq_weight": 0.985
     },
     {
@@ -82,8 +82,22 @@
       "qqq_adjusted_close": 725.6099853515625,
       "session": "2026-10-28",
       "source": "shadow_history/2026-10-28.json",
-      "target_leverage": 3.0,
-      "target_qqq_weight": 0.0,
+      "target_leverage": 3,
+      "target_qqq_weight": 0,
+      "target_tqqq_weight": 0.985
+    },
+    {
+      "action": "NO_CHANGE",
+      "broker_fills": false,
+      "created_at_utc": "2026-10-30T02:56:35.334669+00:00",
+      "defense": false,
+      "level": 3,
+      "provenance": "ARCHIVED_GITHUB_SHADOW_SIGNAL_NOT_AWS_ORDER",
+      "qqq_adjusted_close": 715.3400268554688,
+      "session": "2026-10-29",
+      "source": "shadow_history/2026-10-29.json",
+      "target_leverage": 3,
+      "target_qqq_weight": 0,
       "target_tqqq_weight": 0.985
     }
   ],
@@ -97,7 +111,7 @@
     "status": "REQUIRES_AUTHENTICATED_AWS_READBACK"
   },
   "broker_orders_executed_by_this_report": false,
-  "generated_at_utc": "2026-10-29T02:42:50.556253+00:00",
+  "generated_at_utc": "2026-10-30T02:56:35.334669+00:00",
   "historical_execution_proxy": {
     "end": "2026-10-29",
     "label": "HISTORICAL_MODELED_DAILY_OPEN_PROXY_NOT_OBSERVED_BROKER_FILLS",
@@ -116,5 +130,5 @@
   },
   "missing_signal_days_filled": false,
   "schema_version": 1,
-  "source_cutoff_signal_session": "2026-10-28"
+  "source_cutoff_signal_session": "2026-10-29"
 }

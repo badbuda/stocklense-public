@@ -98,3 +98,15 @@ def test_dashboard_inline_javascript_syntax(tmp_path):
     js=tmp_path/"decisions.mjs"
     js.write_text(match.group(1),encoding="utf-8")
     subprocess.run(["node","--check",str(js)],check=True)
+
+
+def test_shadow_register_publication_after_new_signal_is_persisted():
+    # Otherwise browser/dashboard shows new Signal but the decision register
+    # silently misses the newest day despite a successful GitHub Shadow run.
+    workflow=Path(".github/workflows/shadow.yml").read_text(encoding="utf-8")
+    assert workflow.index("      - name: Persist prospective signal") < workflow.index(
+        "      - name: Publish source-separated historical and archived decision register"
+    ) < workflow.index("      - name: Commit validated evidence only")
+    assert "python decision_register_publish.py" in workflow
+    assert "for feed in docs/*.json" in workflow
+

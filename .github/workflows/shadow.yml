@@ -262,16 +262,19 @@ jobs:
           PYTHONPATH: ${{ github.workspace }}
         run: python paper_portfolio_integrity.py
 
-      - name: Publish source-separated historical and archived decision register
-        env:
-          PYTHONPATH: ${{ github.workspace }}
-        run: python decision_register_publish.py
-
       - name: Persist prospective signal
         id: persist
         env:
           PYTHONPATH: ${{ github.workspace }}
         run: python persist_signal.py
+
+      # Rebuild the decision register AFTER the new immutable Shadow session
+      # is persisted. Running this before persist left public decisions 1 day
+      # behind data.json despite a green Shadow workflow.
+      - name: Publish source-separated historical and archived decision register
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: python decision_register_publish.py
 
       - name: Build one-year historical replay context
         env:

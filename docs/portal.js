@@ -143,7 +143,7 @@ function renderAuthenticatedStaging(){
  // holdings, fees, or trades. Old production balances cannot be reused.
  for(const id of ['paper-cash','paper-shares','paper-fees','paper-slip'])put(id,'—');
  put('kpi-days',number(days.length,0));put('prospective-count',number(days.length,0));
- put('kpi-trades',number(days.reduce((a,x)=>a+x.paper.trade_count,0),0)+' אירועי Paper נצפים ב־Staging');
+ put('kpi-trades',number(days.reduce((a,x)=>a+x.tradeCount,0),0)+' אירועי Paper נצפים ב־Staging');
  put('staging-overview-status','Paper Staging S3 — '+book.session_date+
      ' · תקינות קשרי SHA/גרסאות · לא הוכחת שרשרת מלאה או עסקאות ברוקר. ארכיון GitHub נשמר בנפרד.');
  if(days.length>=2){

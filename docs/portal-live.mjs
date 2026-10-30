@@ -64,7 +64,7 @@ export function stagingSnapshot(rows,now=new Date()){
  return {
    signal:currentSignal,
    paper:currentPaper,
-   paperSeries:currentPaper?paper.map(x=>({date:x.session_date,s:x.paper.equity})):[],
+   paperSeries:currentPaper?paper.map(x=>({date:x.session_date,s:x.paper.equity,tradeCount:x.paper.trade_count})):[],
    status:invalid.length?'INVALID_EVIDENCE':
      gap?'PAPER_CHAIN_GAP':
      currentPaper?'VERIFIED_RECENT_PAPER_SUMMARIES':
