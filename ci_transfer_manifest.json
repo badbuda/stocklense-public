@@ -363,7 +363,7 @@
     "stocklens8_falsification_report.py": "11cd389e8a194aec5c9db26ddfd724db00e47e08",
     "stress_scenarios.py": "70c27a967122c9acdfbe61ded5e82a7278f7d568",
     "tail_risk_challengers.py": "705ad85beec36defde041e48052a89f069fe9ba7",
-    "tests/portal_browser_smoke.cjs": "47b8ea2ae853a38e865502648781610b0a4b3fb6",
+    "tests/portal_browser_smoke.cjs": "f2e82f287e809e1b97d83cbec5c10450cb645fd8",
     "tests/portal_freshness.test.mjs": "cd4b6791563b53d1cd4fe5e1f743ae9174081779",
     "tests/portal_insights_unit.cjs": "96615eaa8d0cba7b0c7ceb51665172287d0ff414",
     "tests/portal_live.test.mjs": "714d205c0ddfddce66b7614bcad6448c8ed79f3b",
