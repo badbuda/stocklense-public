@@ -2,195 +2,195 @@
   "schema_version": 1,
   "items": [
     {
-      "short_sha": "5db4eeb",
-      "date": "2026-10-28T19:27:37+02:00",
-      "title": "CI: correctly await independent ST dashboard async chart on CDN",
+      "short_sha": "5bf54c2",
+      "date": "2026-10-29T23:15:56+02:00",
+      "title": "ops(ST): get first modeled Paper off the ground with safe two-signal status and bootstrap --yes (#130)",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "742d41d",
-      "date": "2026-10-28T19:25:42+02:00",
-      "title": "AWS ST: safe pinned SL9-031 historical research S3 publication utility",
+      "short_sha": "f7db1ff",
+      "date": "2026-10-29T23:06:04+02:00",
+      "title": "fix(portal): keep browser E2E green when stale Paper is correctly warned, gate Paper readiness separately (#129)",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "88bde98",
-      "date": "2026-10-28T19:23:25+02:00",
-      "title": "Dashboard: 224 ST observed ETF combination backtests with browser acceptance",
+      "short_sha": "fb18206",
+      "date": "2026-10-29T22:32:04+02:00",
+      "title": "guard(ST): validate first scheduled Signal against frozen-source fingerprint and cron receipt time (#128)",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "8fe5ebd",
-      "date": "2026-10-28T17:18:03Z",
-      "title": "research: publish fixed ST ETF combination history, not Paper",
+      "short_sha": "e3849a9",
+      "date": "2026-10-29T22:25:51+02:00",
+      "title": "ops(ST): verify real post-filter heartbeat and avoid mistaking new-metric warmup for an outage (#127)",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "7d1ab3d",
-      "date": "2026-10-28T19:17:19+02:00",
-      "title": "ST: run pinned 224 real ETF and risk overlay combined backtests",
+      "short_sha": "0c3b5e8",
+      "date": "2026-10-29T22:17:50+02:00",
+      "title": "fix(ST): read actual session-watchdog CloudWatch log group during isolation inspect (#126)",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "7fb266d",
-      "date": "2026-10-28T19:01:39+02:00",
-      "title": "CI: verify deployed ST real 3x ETF dashboard independent of stale Paper",
+      "short_sha": "3a0d292",
+      "date": "2026-10-29T22:07:08+02:00",
+      "title": "ops: short ST apply --yes, verify idempotently on repeat",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "956d3b0",
-      "date": "2026-10-28T18:57:03+02:00",
-      "title": "Dashboard: show real 3x ETF ST historical research",
+      "short_sha": "63f78cc",
+      "date": "2026-10-29T21:55:51+02:00",
+      "title": "fix(ST): isolate watchdog CloudWatch metrics via reviewed alarms-only change set",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "638bf81",
-      "date": "2026-10-28T16:52:56Z",
-      "title": "research: publish ST observed 3x ETF results (historical only)",
+      "short_sha": "50ec4b0",
+      "date": "2026-10-29T21:40:46+02:00",
+      "title": "fix: isolate ST watchdog alert origins and expose immutable parity outlier evidence",
+      "kind": "FIX",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "401817e",
+      "date": "2026-10-29T21:31:45+02:00",
+      "title": "ops: verify ST Signal and watchdog; safe provider path parity diagnostics",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "1dbf7ef",
-      "date": "2026-10-28T18:52:24+02:00",
-      "title": "ST: research real 3x ETF alternatives without changing frozen 8.0",
-      "kind": "PROJECT",
+      "short_sha": "7369fef",
+      "date": "2026-10-29T21:14:56+02:00",
+      "title": "fix: repair AWS DynamoDB GetItem evidence and paginated Paper logs",
+      "kind": "FIX",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "3a80088",
-      "date": "2026-10-28T18:30:30+02:00",
-      "title": "Fix isolated PROD/ST change-set apply preflight",
-      "kind": "PROJECT",
+      "short_sha": "298e5cc",
+      "date": "2026-10-29T20:51:32+02:00",
+      "title": "fix: surface authenticated ST sessions and validate deployed decisions dashboard",
+      "kind": "FIX",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "50756a6",
-      "date": "2026-10-28T17:39:22+02:00",
-      "title": "feat(aws): prepare isolated PROD and ST paper-only environment stacks",
-      "kind": "PROJECT",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "ff0f21e",
-      "date": "2026-10-28T17:15:18+02:00",
-      "title": "test(portal): correctly flag stale Paper in dashboard health E2E",
+      "short_sha": "99d995d",
+      "date": "2026-10-29T18:24:52Z",
+      "title": "ops: publish source-hashed blocked-or-ready evidence closeout",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     }
   ],
   "high_signal_items": [
     {
-      "short_sha": "5db4eeb",
-      "date": "2026-10-28T19:27:37+02:00",
-      "title": "CI: correctly await independent ST dashboard async chart on CDN",
+      "short_sha": "5bf54c2",
+      "date": "2026-10-29T23:15:56+02:00",
+      "title": "ops(ST): get first modeled Paper off the ground with safe two-signal status and bootstrap --yes (#130)",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "742d41d",
-      "date": "2026-10-28T19:25:42+02:00",
-      "title": "AWS ST: safe pinned SL9-031 historical research S3 publication utility",
+      "short_sha": "f7db1ff",
+      "date": "2026-10-29T23:06:04+02:00",
+      "title": "fix(portal): keep browser E2E green when stale Paper is correctly warned, gate Paper readiness separately (#129)",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "88bde98",
-      "date": "2026-10-28T19:23:25+02:00",
-      "title": "Dashboard: 224 ST observed ETF combination backtests with browser acceptance",
+      "short_sha": "fb18206",
+      "date": "2026-10-29T22:32:04+02:00",
+      "title": "guard(ST): validate first scheduled Signal against frozen-source fingerprint and cron receipt time (#128)",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "8fe5ebd",
-      "date": "2026-10-28T17:18:03Z",
-      "title": "research: publish fixed ST ETF combination history, not Paper",
+      "short_sha": "e3849a9",
+      "date": "2026-10-29T22:25:51+02:00",
+      "title": "ops(ST): verify real post-filter heartbeat and avoid mistaking new-metric warmup for an outage (#127)",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "7d1ab3d",
-      "date": "2026-10-28T19:17:19+02:00",
-      "title": "ST: run pinned 224 real ETF and risk overlay combined backtests",
+      "short_sha": "0c3b5e8",
+      "date": "2026-10-29T22:17:50+02:00",
+      "title": "fix(ST): read actual session-watchdog CloudWatch log group during isolation inspect (#126)",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "7fb266d",
-      "date": "2026-10-28T19:01:39+02:00",
-      "title": "CI: verify deployed ST real 3x ETF dashboard independent of stale Paper",
+      "short_sha": "3a0d292",
+      "date": "2026-10-29T22:07:08+02:00",
+      "title": "ops: short ST apply --yes, verify idempotently on repeat",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "956d3b0",
-      "date": "2026-10-28T18:57:03+02:00",
-      "title": "Dashboard: show real 3x ETF ST historical research",
+      "short_sha": "63f78cc",
+      "date": "2026-10-29T21:55:51+02:00",
+      "title": "fix(ST): isolate watchdog CloudWatch metrics via reviewed alarms-only change set",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "638bf81",
-      "date": "2026-10-28T16:52:56Z",
-      "title": "research: publish ST observed 3x ETF results (historical only)",
+      "short_sha": "50ec4b0",
+      "date": "2026-10-29T21:40:46+02:00",
+      "title": "fix: isolate ST watchdog alert origins and expose immutable parity outlier evidence",
+      "kind": "FIX",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "401817e",
+      "date": "2026-10-29T21:31:45+02:00",
+      "title": "ops: verify ST Signal and watchdog; safe provider path parity diagnostics",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "1dbf7ef",
-      "date": "2026-10-28T18:52:24+02:00",
-      "title": "ST: research real 3x ETF alternatives without changing frozen 8.0",
-      "kind": "PROJECT",
+      "short_sha": "7369fef",
+      "date": "2026-10-29T21:14:56+02:00",
+      "title": "fix: repair AWS DynamoDB GetItem evidence and paginated Paper logs",
+      "kind": "FIX",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "3a80088",
-      "date": "2026-10-28T18:30:30+02:00",
-      "title": "Fix isolated PROD/ST change-set apply preflight",
-      "kind": "PROJECT",
+      "short_sha": "298e5cc",
+      "date": "2026-10-29T20:51:32+02:00",
+      "title": "fix: surface authenticated ST sessions and validate deployed decisions dashboard",
+      "kind": "FIX",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "50756a6",
-      "date": "2026-10-28T17:39:22+02:00",
-      "title": "feat(aws): prepare isolated PROD and ST paper-only environment stacks",
-      "kind": "PROJECT",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "ff0f21e",
-      "date": "2026-10-28T17:15:18+02:00",
-      "title": "test(portal): correctly flag stale Paper in dashboard health E2E",
+      "short_sha": "99d995d",
+      "date": "2026-10-29T18:24:52Z",
+      "title": "ops: publish source-hashed blocked-or-ready evidence closeout",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     }
   ],
   "recent_summary": [
     {
-      "short_sha": "5db4eeb",
-      "date": "2026-10-28T19:27:37+02:00",
-      "title": "CI: correctly await independent ST dashboard async chart on CDN",
+      "short_sha": "5bf54c2",
+      "date": "2026-10-29T23:15:56+02:00",
+      "title": "ops(ST): get first modeled Paper off the ground with safe two-signal status and bootstrap --yes (#130)",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "742d41d",
-      "date": "2026-10-28T19:25:42+02:00",
-      "title": "AWS ST: safe pinned SL9-031 historical research S3 publication utility",
+      "short_sha": "f7db1ff",
+      "date": "2026-10-29T23:06:04+02:00",
+      "title": "fix(portal): keep browser E2E green when stale Paper is correctly warned, gate Paper readiness separately (#129)",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "88bde98",
-      "date": "2026-10-28T19:23:25+02:00",
-      "title": "Dashboard: 224 ST observed ETF combination backtests with browser acceptance",
+      "short_sha": "fb18206",
+      "date": "2026-10-29T22:32:04+02:00",
+      "title": "guard(ST): validate first scheduled Signal against frozen-source fingerprint and cron receipt time (#128)",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     }

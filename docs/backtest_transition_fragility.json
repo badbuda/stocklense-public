@@ -10,10 +10,10 @@
   },
   "non_transition_sessions": {
     "sessions": 247,
-    "mean_strategy_gross_return": 0.002136907684569284,
+    "mean_strategy_gross_return": 0.002116930603990453,
     "median_strategy_gross_return": 0.0028875837533381965,
     "positive_share": 0.5384615384615384,
-    "gross_return_sum": 0.5278161980886131
+    "gross_return_sum": 0.5228818591856419
   },
   "transition_pairs": {
     "1.25->3": {
