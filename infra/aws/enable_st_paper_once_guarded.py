@@ -59,7 +59,7 @@ def main():
     expected_arn=lam.get_function_configuration(FunctionName=paper_fn)["FunctionArn"]
     ensure(len(target)==1 and target[0].get("Arn")==expected_arn,"UNEXPECTED_PAPER_RULE_TARGETS")
     event=target[0].get("Input")
-    ensure(isinstance(event,str) and json.loads(event)=={"mode":"STAGING_PAPER_SCHEDULED"},"UNEXPECTED_SCHEDULED_EVENT")
+    ensure(isinstance(event,str) and json.loads(event)=={"mode":"STAGING_PAPER_SCHEDULED","bootstrap":False},"UNEXPECTED_SCHEDULED_EVENT")
     cf_p=lam.get_function_configuration(FunctionName=paper_fn)
     cf_pf=lam.get_function_configuration(FunctionName=st["CandidatePaperPreflightFunctionName"])
     ensure(cf_p.get("State")=="Active" and cf_p.get("LastUpdateStatus")=="Successful","PAPER_LAMBDA_NOT_READY")
