@@ -176,7 +176,7 @@
     "infra/aws/provision_isolated_prod_st.sh": "814dbee46fa273b87cf2ec05591fbca4fbc5165d",
     "infra/aws/publish_st_sl9_031_results.sh": "96ba5d74e3444c24525b3820ca72f87703ce4b32",
     "infra/aws/README.md": "4d5015d3a5efd79a23e368759279d5f406bc6c31",
-    "infra/aws/repair_st_paper_monitoring_and_enable.py": "c9a44d1bf71dedb4457e933aee690680dd930e16",
+    "infra/aws/repair_st_paper_monitoring_and_enable.py": "47a703b0ee1c8bbcaf15487ee930f18464a8a7b8",
     "infra/aws/retire_legacy_stocklens.sh": "697e534c409ba867cef4ceff3fef4f3b800d4ee7",
     "infra/aws/schedule-watchdog-handler.py": "12fd5f4941d81aa064317dfc1827032db5845339",
     "infra/aws/second_vendor_parity.py": "ae6b679966244368d4ef25559974561b23a4ac44",
