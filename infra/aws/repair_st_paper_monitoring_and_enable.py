@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """ST-only one-shot CloudFormation monitoring repair + guarded Paper schedule enablement.
 
-Exactly one narrowly reviewed CloudFormation change set (watchdog Lambda environment
-only) and then one ST-only EventBridge EnableRule via separately pinned guard.
+One narrowly reviewed CloudFormation change set (watchdog Lambda environment plus
+its CloudFormation-derived permission and scheduled target) and then one ST-only
+EventBridge EnableRule via separately pinned guard.
 No PROD/Signal/Broker/Paper-book writes, no legacy DynamoDB changes.
 Fails closed on every unknown template, planned resource, permission, or state.
 """
@@ -38,6 +39,7 @@ def main():
     cf=b.client("cloudformation")
     ev=b.client("events")
     lm=b.client("lambda")
+    from botocore.exceptions import ClientError
     require(sts.get_caller_identity()["Account"]==ACCOUNT,"WRONG_AWS_ACCOUNT")
     def describe(name):
         a=cf.describe_stacks(StackName=name)["Stacks"]
@@ -73,31 +75,77 @@ def main():
                 {"ParameterKey":k, "UsePreviousValue":True} for k in ps]
         require(sum(p["ParameterKey"]=="MonitoringStartSession" for p in params)==1,
                 "BAD_PARAMETER_DIFF")
-        print("CREATING_ST_MONITORING_CHANGE_SET:ONLY:"+SESSION,flush=True)
+        # This exact change set was already created by the first fail-closed
+        # run. Reuse and inspect it rather than automatically creating a second.
         try:
+            z=cf.describe_change_set(StackName=STACK,ChangeSetName=CHANGE)
+            print("REVIEW_EXISTING_ST_CHANGE_SET:"+CHANGE,flush=True)
+        except ClientError as exc:
+            code=exc.response.get("Error",{}).get("Code","")
+            require(code=="ChangeSetNotFoundException",
+                    "CANNOT_READ_EXISTING_CHANGE_SET:"+code)
+            print("CREATING_ST_MONITORING_CHANGE_SET:ONLY:"+SESSION,flush=True)
             cf.create_change_set(StackName=STACK,ChangeSetName=CHANGE,
                 ChangeSetType="UPDATE",UsePreviousTemplate=True,
                 Capabilities=["CAPABILITY_IAM","CAPABILITY_NAMED_IAM"],
                 Parameters=params,
                 Description="ST-only: set Paper monitoring genesis 2026-10-30; do not alter schedules")
-        except cf.exceptions.AlreadyExistsException:
-            raise RuntimeError("CHANGE_SET_ALREADY_EXISTS_REVIEW_MANUALLY")
-        deadline=time.monotonic()+180
-        while time.monotonic()<deadline:
-            z=cf.describe_change_set(StackName=STACK,ChangeSetName=CHANGE)
-            if z["Status"] in ("CREATE_COMPLETE","FAILED"): break
-            time.sleep(3)
-        require(z["Status"]=="CREATE_COMPLETE","CHANGE_SET_NOT_READY:"+z.get("Status","UNKNOWN")+":"+z.get("StatusReason",""))
-        changes=[c["ResourceChange"] for c in z.get("Changes",[]) if "ResourceChange" in c]
-        # Only Environment on the ST session watchdog Lambda may change.
-        require(len(changes)==1,"UNEXPECTED_NUMBER_OF_RESOURCE_CHANGES:"+str(changes))
-        c=changes[0]
-        require(c.get("LogicalResourceId")=="CandidateSessionWatchdogLambda"
-                and c.get("Action")=="Modify" and c.get("Replacement")=="False",
-                "CHANGE_SET_UNSAFE_RESOURCE:"+str(c))
-        require(all(d.get("Target",{}).get("Attribute")=="Properties"
-                    for d in c.get("Details",[])),"CHANGE_SET_NON_PROPERTY_CHANGE")
-        print("CHANGE_SET_APPROVED:WATCHDOG_LAMBDA_ONLY",flush=True)
+            deadline=time.monotonic()+180
+            while time.monotonic()<deadline:
+                z=cf.describe_change_set(StackName=STACK,ChangeSetName=CHANGE)
+                if z["Status"] in ("CREATE_COMPLETE","FAILED"): break
+                time.sleep(3)
+        require(z["Status"]=="CREATE_COMPLETE"
+                and z.get("ExecutionStatus")=="AVAILABLE",
+                "CHANGE_SET_NOT_EXECUTABLE:"+z.get("Status","")+":"+z.get("ExecutionStatus",""))
+        require(z.get("StackId")==s.get("StackId"),"CHANGE_SET_OTHER_STACK")
+        require(z.get("ChangeSetType")=="UPDATE","CHANGE_SET_NOT_UPDATE")
+        require(z.get("Description")==
+                "ST-only: set Paper monitoring genesis 2026-10-30; do not alter schedules",
+                "CHANGE_SET_DESCRIPTION_MISMATCH")
+        planned={p["ParameterKey"]:p for p in z.get("Parameters",[])}
+        require(set(planned)==set(ps),"CHANGE_SET_PARAMS_MISMATCH")
+        for k,v in planned.items():
+            if k=="MonitoringStartSession":
+                require(v.get("ParameterValue")==SESSION,"CHANGE_SET_MONITORING_DATE_WRONG")
+            else:
+                require(v.get("ParameterValue",ps[k])==ps[k],
+                        "CHANGE_SET_PARAMETER_CHANGED:"+k)
+        changes=[c["ResourceChange"] for c in z.get("Changes",[])
+                 if "ResourceChange" in c]
+        changes_by_id={c["LogicalResourceId"]:c for c in changes}
+        allowed={
+            "CandidateSessionWatchdogLambda":
+                ("AWS::Lambda::Function","False","Environment"),
+            "CandidateSessionWatchdogPermission":
+                ("AWS::Lambda::Permission","Conditional","SourceArn"),
+            "CandidateSessionWatchdogSchedule":
+                ("AWS::Events::Rule","False","Targets"),
+        }
+        require(len(changes)==3 and set(changes_by_id)==set(allowed),
+                "UNEXPECTED_CHANGE_SET_RESOURCES:"+str(changes))
+        for lid,(rtype,replacement,property_name) in allowed.items():
+            c=changes_by_id[lid]
+            require(c.get("Action")=="Modify" and c.get("ResourceType")==rtype
+                    and c.get("Replacement")==replacement
+                    and c.get("Scope")==["Properties"],
+                    "UNSAFE_CHANGE_SET_RESOURCE:"+str(c))
+            details=c.get("Details",[])
+            require(details and all(d.get("Target",{}).get("Attribute")=="Properties"
+                    and d.get("Target",{}).get("Name")==property_name
+                    for d in details),"UNSAFE_CHANGE_SET_PROPERTY:"+str(c))
+            require(any(d.get("Evaluation")=="Static" and
+                    d.get("CausingEntity")=="MonitoringStartSession"
+                    for d in details) if lid=="CandidateSessionWatchdogLambda"
+                    else all(d.get("Evaluation")=="Dynamic" for d in details),
+                    "UNEXPECTED_CHANGE_CAUSE:"+str(c))
+        # The existing watchdog EventBridge rule stays the same rule and keeps
+        # its hourly cadence and Lambda target. Reject unknown actual state.
+        watchdog_rule=out.get("CandidateSessionWatchdogRuleName")
+        if watchdog_rule:
+            wr=ev.describe_rule(Name=watchdog_rule)
+            require(wr.get("State")=="ENABLED","WATCHDOG_RULE_NOT_ENABLED")
+        print("CHANGE_SET_APPROVED:ST_WATCHDOG_LAMBDA_PERMISSION_SCHEDULE_ONLY",flush=True)
         cf.execute_change_set(StackName=STACK,ChangeSetName=CHANGE)
         cf.get_waiter("stack_update_complete").wait(StackName=STACK,
              WaiterConfig={"Delay":10,"MaxAttempts":60})
