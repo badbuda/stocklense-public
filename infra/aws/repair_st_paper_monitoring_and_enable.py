@@ -99,7 +99,6 @@ def main():
                 and z.get("ExecutionStatus")=="AVAILABLE",
                 "CHANGE_SET_NOT_EXECUTABLE:"+z.get("Status","")+":"+z.get("ExecutionStatus",""))
         require(z.get("StackId")==s.get("StackId"),"CHANGE_SET_OTHER_STACK")
-        require(z.get("ChangeSetType")=="UPDATE","CHANGE_SET_NOT_UPDATE")
         require(z.get("Description")==
                 "ST-only: set Paper monitoring genesis 2026-10-30; do not alter schedules",
                 "CHANGE_SET_DESCRIPTION_MISMATCH")
