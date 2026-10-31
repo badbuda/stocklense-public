@@ -1,6 +1,6 @@
 # StockLens Research — Latest Human Report
 
-Generated: 2026-10-30T02:56:56.506467+00:00
+Generated: 2026-10-31T02:39:13.276318+00:00
 
 ## שורה תחתונה
 StockLens 8.0 נשאר קפוא ולא שונה. אין קידום אוטומטי של אף challenger.
@@ -14,7 +14,7 @@ StockLens 8.0 נשאר קפוא ולא שונה. אין קידום אוטומט�
 ## מחקר פעיל
 - **SL9-007-UPSHIFT-CONFIRMATION** — PREDECLARED_OBJECTIVE_MET_NOT_PROMOTED.
   Holdout: excess CAGR 0.80%; MaxDD -41.66%; improvement vs baseline 2.15%.
-  Prospective tracking inception: 2026-09-26; כרגע 24 sessions עתידיים אמיתיים. רק completed XNYS sessions עם date > inception נספרים; אין backfill של יום ה-inception או קודם ואין pre-close ingest.
+  Prospective tracking inception: 2026-09-26; כרגע 25 sessions עתידיים אמיתיים. רק completed XNYS sessions עם date > inception נספרים; אין backfill של יום ה-inception או קודם ואין pre-close ingest.
   חשוב: היעד המוגדר מראש עשוי לעבור, אבל robustness מלא עדיין לא עבר ולכן אין promotion.
 
 ## ניסויים שנסגרו

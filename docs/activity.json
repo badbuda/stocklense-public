@@ -2,6 +2,27 @@
   "schema_version": 1,
   "items": [
     {
+      "short_sha": "a5eb8c7",
+      "date": "2026-10-30T07:33:44+02:00",
+      "title": "test(portal): correct mock Cognito client contract in authenticated S3 browser E2E (#132)",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "8f5bef5",
+      "date": "2026-10-30T07:29:24+02:00",
+      "title": "fix(portal): authenticated Staging S3 trade count crash and mock-credential E2E coverage (#131)",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "4c5025a",
+      "date": "2026-10-30T02:56:57Z",
+      "title": "shadow: record prospective evidence 2026-10-29",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
       "short_sha": "5bf54c2",
       "date": "2026-10-29T23:15:56+02:00",
       "title": "ops(ST): get first modeled Paper off the ground with safe two-signal status and bootstrap --yes (#130)",
@@ -61,33 +82,33 @@
       "short_sha": "401817e",
       "date": "2026-10-29T21:31:45+02:00",
       "title": "ops: verify ST Signal and watchdog; safe provider path parity diagnostics",
-      "kind": "PROJECT",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "7369fef",
-      "date": "2026-10-29T21:14:56+02:00",
-      "title": "fix: repair AWS DynamoDB GetItem evidence and paginated Paper logs",
-      "kind": "FIX",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "298e5cc",
-      "date": "2026-10-29T20:51:32+02:00",
-      "title": "fix: surface authenticated ST sessions and validate deployed decisions dashboard",
-      "kind": "FIX",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "99d995d",
-      "date": "2026-10-29T18:24:52Z",
-      "title": "ops: publish source-hashed blocked-or-ready evidence closeout",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     }
   ],
   "high_signal_items": [
     {
+      "short_sha": "a5eb8c7",
+      "date": "2026-10-30T07:33:44+02:00",
+      "title": "test(portal): correct mock Cognito client contract in authenticated S3 browser E2E (#132)",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "8f5bef5",
+      "date": "2026-10-30T07:29:24+02:00",
+      "title": "fix(portal): authenticated Staging S3 trade count crash and mock-credential E2E coverage (#131)",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "4c5025a",
+      "date": "2026-10-30T02:56:57Z",
+      "title": "shadow: record prospective evidence 2026-10-29",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
       "short_sha": "5bf54c2",
       "date": "2026-10-29T23:15:56+02:00",
       "title": "ops(ST): get first modeled Paper off the ground with safe two-signal status and bootstrap --yes (#130)",
@@ -149,48 +170,27 @@
       "title": "ops: verify ST Signal and watchdog; safe provider path parity diagnostics",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "7369fef",
-      "date": "2026-10-29T21:14:56+02:00",
-      "title": "fix: repair AWS DynamoDB GetItem evidence and paginated Paper logs",
-      "kind": "FIX",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "298e5cc",
-      "date": "2026-10-29T20:51:32+02:00",
-      "title": "fix: surface authenticated ST sessions and validate deployed decisions dashboard",
-      "kind": "FIX",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "99d995d",
-      "date": "2026-10-29T18:24:52Z",
-      "title": "ops: publish source-hashed blocked-or-ready evidence closeout",
-      "kind": "PROJECT",
-      "impact": "Repository change; CI validation is separate."
     }
   ],
   "recent_summary": [
     {
-      "short_sha": "5bf54c2",
-      "date": "2026-10-29T23:15:56+02:00",
-      "title": "ops(ST): get first modeled Paper off the ground with safe two-signal status and bootstrap --yes (#130)",
+      "short_sha": "a5eb8c7",
+      "date": "2026-10-30T07:33:44+02:00",
+      "title": "test(portal): correct mock Cognito client contract in authenticated S3 browser E2E (#132)",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "f7db1ff",
-      "date": "2026-10-29T23:06:04+02:00",
-      "title": "fix(portal): keep browser E2E green when stale Paper is correctly warned, gate Paper readiness separately (#129)",
+      "short_sha": "8f5bef5",
+      "date": "2026-10-30T07:29:24+02:00",
+      "title": "fix(portal): authenticated Staging S3 trade count crash and mock-credential E2E coverage (#131)",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "fb18206",
-      "date": "2026-10-29T22:32:04+02:00",
-      "title": "guard(ST): validate first scheduled Signal against frozen-source fingerprint and cron receipt time (#128)",
+      "short_sha": "4c5025a",
+      "date": "2026-10-30T02:56:57Z",
+      "title": "shadow: record prospective evidence 2026-10-29",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     }

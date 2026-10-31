@@ -3,38 +3,38 @@
   "alerts": [],
   "diagnostics": {
     "close": {
-      "relative_change": 0.014153551774949586,
+      "relative_change": 0.03473877553075132,
       "absolute_limit": 0.15,
       "rolling_median_change": 0.0065163844261609625,
-      "rolling_mad": 0.004155102248834609,
+      "rolling_mad": 0.004222052448793373,
       "effective_limit": 0.15
     },
     "sma50": {
-      "relative_change": 1.4983163706766189e-07,
+      "relative_change": 0.0005433736093059836,
       "absolute_limit": 0.05,
-      "rolling_median_change": 0.0003809588192483581,
-      "rolling_mad": 0.0002525899495207072,
+      "rolling_median_change": 0.000380959671991201,
+      "rolling_mad": 0.0002525908022635501,
       "effective_limit": 0.05
     },
     "sma200": {
-      "relative_change": 0.0006731978978736471,
+      "relative_change": 0.0005386560091154486,
       "absolute_limit": 0.02,
-      "rolling_median_change": 0.0008493021488784861,
-      "rolling_mad": 8.766682770034454e-05,
+      "rolling_median_change": 0.0008293452196849198,
+      "rolling_mad": 8.717355380470995e-05,
       "effective_limit": 0.02
     },
     "vol20": {
-      "relative_change": 0.024987178705746686,
+      "relative_change": 0.13127300614374254,
       "absolute_limit": 0.75,
-      "rolling_median_change": 0.021429638277502473,
-      "rolling_mad": 0.013690973263748622,
+      "rolling_median_change": 0.021924455883879534,
+      "rolling_mad": 0.01363172194696304,
       "effective_limit": 0.75
     },
     "mom12": {
-      "relative_change": 0.15657229497956876,
+      "relative_change": 0.32730502089513797,
       "absolute_limit": 0.75,
-      "rolling_median_change": 0.0381571141347625,
-      "rolling_mad": 0.02019324133474381,
+      "rolling_median_change": 0.038157613791405656,
+      "rolling_mad": 0.020192162944174027,
       "effective_limit": 0.75
     }
   },

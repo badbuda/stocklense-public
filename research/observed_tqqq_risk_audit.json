@@ -2,20 +2,20 @@
   "schema_version": 1,
   "kind": "OBSERVED_ETF_NAV_PATH_RISK_DIAGNOSTIC",
   "status": "PASS",
-  "source_report_sha256": "1d16475be42c120c15d129db6d68d67fbbdb53593bd119fe65dc87dc6bb70749",
+  "source_report_sha256": "5891b8a5a2c4fed2770cbd614dcf02d9c79b62fd1c5b9f868ac79cb20c3ff8fe",
   "evidence_scope": "OBSERVED_QQQ_TQQQ_DAILY_OPEN_EXECUTION_PROXY",
   "no_synthetic_leverage": true,
   "no_broker_fills_claimed": true,
   "period": {
     "start": "2010-02-11",
-    "end": "2026-10-29",
-    "sessions": 4205
+    "end": "2026-10-30",
+    "sessions": 4206
   },
   "full_path": {
-    "stocklens_max_drawdown": -0.49075669948264,
-    "qqq_max_drawdown": -0.35118708863663595,
-    "stocklens_cagr": 0.3855667520752617,
-    "qqq_cagr": 0.19329889343058015
+    "stocklens_max_drawdown": -0.49075673535389563,
+    "qqq_max_drawdown": -0.3511871376641489,
+    "stocklens_cagr": 0.3764970692517724,
+    "qqq_cagr": 0.1907429463899739
   },
   "rolling_windows": {
     "21_sessions": {
@@ -25,11 +25,11 @@
       "worst_stocklens_window": {
         "start": "2020-02-18",
         "end": "2020-03-18",
-        "stocklens_return": -0.44836255201303243,
-        "qqq_return": -0.2476458516983967,
-        "relative_return_pp": -20.071670031463572
+        "stocklens_return": -0.4483618160622742,
+        "qqq_return": -0.24764603339802538,
+        "relative_return_pp": -20.071578266424883
       },
-      "worst_relative_return_pp": -21.545346248098618,
+      "worst_relative_return_pp": -21.545434861606296,
       "interpretation": "Overlapping observed ETF NAV windows; not independent holdouts or statistical proof."
     },
     "63_sessions": {
@@ -39,11 +39,11 @@
       "worst_stocklens_window": {
         "start": "2010-04-14",
         "end": "2010-07-14",
-        "stocklens_return": -0.36480961259442635,
-        "qqq_return": -0.08362818769221458,
-        "relative_return_pp": -28.118142490221175
+        "stocklens_return": -0.36480971289482855,
+        "qqq_return": -0.08362832715646162,
+        "relative_return_pp": -28.118138573836692
       },
-      "worst_relative_return_pp": -28.118142490221175,
+      "worst_relative_return_pp": -28.118138573836692,
       "interpretation": "Overlapping observed ETF NAV windows; not independent holdouts or statistical proof."
     },
     "126_sessions": {
@@ -53,11 +53,11 @@
       "worst_stocklens_window": {
         "start": "2021-12-15",
         "end": "2022-06-16",
-        "stocklens_return": -0.441370824013566,
-        "qqq_return": -0.3147647656372722,
-        "relative_return_pp": -12.66060583762938
+        "stocklens_return": -0.44137166529767746,
+        "qqq_return": -0.3147648789785855,
+        "relative_return_pp": -12.660678631909194
       },
-      "worst_relative_return_pp": -29.54924447769268,
+      "worst_relative_return_pp": -29.549327717512664,
       "interpretation": "Overlapping observed ETF NAV windows; not independent holdouts or statistical proof."
     },
     "252_sessions": {
@@ -67,11 +67,11 @@
       "worst_stocklens_window": {
         "start": "2021-12-15",
         "end": "2022-12-15",
-        "stocklens_return": -0.441370824013566,
-        "qqq_return": -0.2982752701533621,
-        "relative_return_pp": -14.309555386020389
+        "stocklens_return": -0.44137166529767746,
+        "qqq_return": -0.2982752233206105,
+        "relative_return_pp": -14.309644197706694
       },
-      "worst_relative_return_pp": -37.86374920049751,
+      "worst_relative_return_pp": -37.863758578257,
       "interpretation": "Overlapping observed ETF NAV windows; not independent holdouts or statistical proof."
     },
     "756_sessions": {
@@ -81,11 +81,11 @@
       "worst_stocklens_window": {
         "start": "2010-04-14",
         "end": "2013-04-16",
-        "stocklens_return": 0.06979233636239424,
-        "qqq_return": 0.4374599787110245,
-        "relative_return_pp": -36.766764234863025
+        "stocklens_return": 0.06979308638587023,
+        "qqq_return": 0.43745998262810737,
+        "relative_return_pp": -36.766689624223716
       },
-      "worst_relative_return_pp": -36.766764234863025,
+      "worst_relative_return_pp": -36.766689624223716,
       "interpretation": "Overlapping observed ETF NAV windows; not independent holdouts or statistical proof."
     },
     "1260_sessions": {
@@ -95,11 +95,11 @@
       "worst_stocklens_window": {
         "start": "2015-03-17",
         "end": "2020-03-18",
-        "stocklens_return": 1.028073267723967,
-        "qqq_return": 0.7317277712495052,
-        "relative_return_pp": 29.634549647446185
+        "stocklens_return": 1.0280810189585736,
+        "qqq_return": 0.7317279693331677,
+        "relative_return_pp": 29.635304962540587
       },
-      "worst_relative_return_pp": 28.838391924828976,
+      "worst_relative_return_pp": 28.83887504297875,
       "interpretation": "Overlapping observed ETF NAV windows; not independent holdouts or statistical proof."
     }
   },
@@ -109,10 +109,10 @@
       "start": "2010-02-11",
       "end": "2010-12-31",
       "sessions": 225,
-      "stocklens_return": 0.380435751737789,
-      "qqq_return": 0.2586619795308629,
-      "stocklens_max_drawdown": -0.47303637010622146,
-      "qqq_max_drawdown": -0.15609293208788633,
+      "stocklens_return": 0.380436953521915,
+      "qqq_return": 0.2586612724661639,
+      "stocklens_max_drawdown": -0.4730358502631483,
+      "qqq_max_drawdown": -0.1560930186238848,
       "stocklens_better": true
     },
     {
@@ -120,10 +120,10 @@
       "start": "2011-01-03",
       "end": "2011-12-30",
       "sessions": 252,
-      "stocklens_return": -0.27888966312728714,
-      "qqq_return": 0.018855486419864453,
-      "stocklens_max_drawdown": -0.4231290284940128,
-      "qqq_max_drawdown": -0.16099209753265276,
+      "stocklens_return": -0.2788893023915354,
+      "qqq_return": 0.018855809395810663,
+      "stocklens_max_drawdown": -0.4231286010002837,
+      "qqq_max_drawdown": -0.16099259573388758,
       "stocklens_better": false
     },
     {
@@ -131,10 +131,10 @@
       "start": "2012-01-03",
       "end": "2012-12-31",
       "sessions": 250,
-      "stocklens_return": 0.3075707723878631,
-      "qqq_return": 0.1589134061759674,
-      "stocklens_max_drawdown": -0.3169688945348986,
-      "qqq_max_drawdown": -0.11637901619991953,
+      "stocklens_return": 0.30757039023408805,
+      "qqq_return": 0.15891407390921541,
+      "stocklens_max_drawdown": -0.31696873347565335,
+      "qqq_max_drawdown": -0.11637895764952921,
       "stocklens_better": true
     },
     {
@@ -142,10 +142,10 @@
       "start": "2013-01-02",
       "end": "2013-12-31",
       "sessions": 252,
-      "stocklens_return": 1.1731461766877374,
-      "qqq_return": 0.324252725376557,
-      "stocklens_max_drawdown": -0.1713812819044631,
-      "qqq_max_drawdown": -0.058538193533516636,
+      "stocklens_return": 1.1731502345791127,
+      "qqq_return": 0.3242524480261042,
+      "stocklens_max_drawdown": -0.17138163294962838,
+      "qqq_max_drawdown": -0.05853786615452705,
       "stocklens_better": true
     },
     {
@@ -153,10 +153,10 @@
       "start": "2014-01-02",
       "end": "2014-12-31",
       "sessions": 252,
-      "stocklens_return": 0.604778851756713,
-      "qqq_return": 0.2012367983635237,
-      "stocklens_max_drawdown": -0.23285617536582726,
-      "qqq_max_drawdown": -0.0824851652777081,
+      "stocklens_return": 0.6047797704347548,
+      "qqq_return": 0.20123673043907675,
+      "stocklens_max_drawdown": -0.23285644485668744,
+      "qqq_max_drawdown": -0.08248487619703093,
       "stocklens_better": true
     },
     {
@@ -164,10 +164,10 @@
       "start": "2015-01-02",
       "end": "2015-12-31",
       "sessions": 252,
-      "stocklens_return": 0.0006586772933023788,
-      "qqq_return": 0.09765480298063856,
-      "stocklens_max_drawdown": -0.38535159582290024,
-      "qqq_max_drawdown": -0.1394098736059447,
+      "stocklens_return": 0.000658184331414402,
+      "qqq_return": 0.09765474965966092,
+      "stocklens_max_drawdown": -0.38535217703856106,
+      "qqq_max_drawdown": -0.13941002368162903,
       "stocklens_better": false
     },
     {
@@ -175,10 +175,10 @@
       "start": "2016-01-04",
       "end": "2016-12-30",
       "sessions": 252,
-      "stocklens_return": -0.015666076671367213,
-      "qqq_return": 0.09406080519467852,
-      "stocklens_max_drawdown": -0.28665948005354736,
-      "qqq_max_drawdown": -0.12036507611556846,
+      "stocklens_return": -0.015665442907428884,
+      "qqq_return": 0.09406070513878184,
+      "stocklens_max_drawdown": -0.2866589334335421,
+      "qqq_max_drawdown": -0.12036519460123718,
       "stocklens_better": false
     },
     {
@@ -186,10 +186,10 @@
       "start": "2017-01-03",
       "end": "2017-12-29",
       "sessions": 251,
-      "stocklens_return": 1.1179462501067365,
-      "qqq_return": 0.31487154487252855,
-      "stocklens_max_drawdown": -0.1457552543791717,
-      "qqq_max_drawdown": -0.048819314955735105,
+      "stocklens_return": 1.1179487038868827,
+      "qqq_return": 0.3148717165646817,
+      "stocklens_max_drawdown": -0.14575529904516393,
+      "qqq_max_drawdown": -0.04881931351876656,
       "stocklens_better": true
     },
     {
@@ -197,10 +197,10 @@
       "start": "2018-01-02",
       "end": "2018-12-31",
       "sessions": 251,
-      "stocklens_return": -0.09371445925474386,
-      "qqq_return": -0.018465429926558086,
-      "stocklens_max_drawdown": -0.39142168180473713,
-      "qqq_max_drawdown": -0.2279663249598376,
+      "stocklens_return": -0.09371461354142396,
+      "qqq_return": -0.01846583848601191,
+      "stocklens_max_drawdown": -0.3914221032139935,
+      "qqq_max_drawdown": -0.22796648440783962,
       "stocklens_better": false
     },
     {
@@ -208,10 +208,10 @@
       "start": "2019-01-02",
       "end": "2019-12-31",
       "sessions": 252,
-      "stocklens_return": 0.5983866406813492,
-      "qqq_return": 0.3840522250067129,
-      "stocklens_max_drawdown": -0.3020085564300662,
-      "qqq_max_drawdown": -0.10983189755430867,
+      "stocklens_return": 0.5983879031114305,
+      "qqq_return": 0.3840520320583136,
+      "stocklens_max_drawdown": -0.30200923447252026,
+      "qqq_max_drawdown": -0.10983213666552205,
       "stocklens_better": true
     },
     {
@@ -219,10 +219,10 @@
       "start": "2020-01-02",
       "end": "2020-12-31",
       "sessions": 253,
-      "stocklens_return": 1.2089572485585656,
-      "qqq_return": 0.45968828498617653,
-      "stocklens_max_drawdown": -0.4860772248415073,
-      "qqq_max_drawdown": -0.28559355387462704,
+      "stocklens_return": 1.2089576228715782,
+      "qqq_return": 0.4596883099526796,
+      "stocklens_max_drawdown": -0.4860763231119889,
+      "qqq_max_drawdown": -0.28559353931079,
       "stocklens_better": true
     },
     {
@@ -230,10 +230,10 @@
       "start": "2021-01-04",
       "end": "2021-12-31",
       "sessions": 252,
-      "stocklens_return": 0.8339388956756411,
-      "qqq_return": 0.29244666870023805,
-      "stocklens_max_drawdown": -0.3016882316272391,
-      "qqq_max_drawdown": -0.10851529535866622,
+      "stocklens_return": 0.833939608115787,
+      "qqq_return": 0.2924463140191367,
+      "stocklens_max_drawdown": -0.301688320872173,
+      "qqq_max_drawdown": -0.10851538273329653,
       "stocklens_better": true
     },
     {
@@ -241,10 +241,10 @@
       "start": "2022-01-03",
       "end": "2022-12-30",
       "sessions": 251,
-      "stocklens_return": -0.45866796372297036,
-      "qqq_return": -0.33219868008884457,
-      "stocklens_max_drawdown": -0.45866796372297036,
-      "qqq_max_drawdown": -0.34827967952275785,
+      "stocklens_return": -0.4586687306898467,
+      "qqq_return": -0.33219853307093894,
+      "stocklens_max_drawdown": -0.4586687306898467,
+      "qqq_max_drawdown": -0.3482795758310666,
       "stocklens_better": false
     },
     {
@@ -252,10 +252,10 @@
       "start": "2023-01-03",
       "end": "2023-12-29",
       "sessions": 250,
-      "stocklens_return": 1.4949581089062227,
-      "qqq_return": 0.5590947610221197,
-      "stocklens_max_drawdown": -0.3293943585076611,
-      "qqq_max_drawdown": -0.10779910018219929,
+      "stocklens_return": 1.494959191792148,
+      "qqq_return": 0.5590944837676721,
+      "stocklens_max_drawdown": -0.3293943875402775,
+      "qqq_max_drawdown": -0.10779911208212278,
       "stocklens_better": true
     },
     {
@@ -263,10 +263,10 @@
       "start": "2024-01-02",
       "end": "2024-12-31",
       "sessions": 252,
-      "stocklens_return": 0.6632957633268644,
-      "qqq_return": 0.27739876040988043,
-      "stocklens_max_drawdown": -0.37249009780791276,
-      "qqq_max_drawdown": -0.13557734338571958,
+      "stocklens_return": 0.6632964424243686,
+      "qqq_return": 0.2773992168056827,
+      "stocklens_max_drawdown": -0.37249024216783966,
+      "qqq_max_drawdown": -0.13557746089507072,
       "stocklens_better": true
     },
     {
@@ -274,21 +274,21 @@
       "start": "2025-01-02",
       "end": "2025-12-31",
       "sessions": 250,
-      "stocklens_return": 0.2920882508945464,
-      "qqq_return": 0.2100924723136368,
-      "stocklens_max_drawdown": -0.4378950094399262,
-      "qqq_max_drawdown": -0.22768309915188523,
+      "stocklens_return": 0.2920866559208519,
+      "qqq_return": 0.21009247700186795,
+      "stocklens_max_drawdown": -0.4378945133282782,
+      "qqq_max_drawdown": -0.22768292773043697,
       "stocklens_better": true
     },
     {
       "year": 2026,
       "start": "2026-01-02",
-      "end": "2026-10-29",
-      "sessions": 208,
-      "stocklens_return": 0.2909801722793155,
-      "qqq_return": 0.17069450380422646,
-      "stocklens_max_drawdown": -0.32626813347541317,
-      "qqq_max_drawdown": -0.11723566514667616,
+      "end": "2026-10-30",
+      "sessions": 209,
+      "stocklens_return": 0.1577955247394709,
+      "qqq_return": 0.13002602136007546,
+      "stocklens_max_drawdown": -0.32626796195575736,
+      "qqq_max_drawdown": -0.11723566724455714,
       "stocklens_better": true
     }
   ],
@@ -297,20 +297,20 @@
       "start": "2020-02-03",
       "end": "2020-05-29",
       "sessions": 82,
-      "stocklens_return": -0.05640334534728064,
-      "qqq_return": 0.05161136177206327,
-      "stocklens_max_drawdown": -0.4860772248415073,
-      "qqq_max_drawdown": -0.2855935538746269,
+      "stocklens_return": -0.0564038024863347,
+      "qqq_return": 0.051611146761066706,
+      "stocklens_max_drawdown": -0.4860763231119888,
+      "qqq_max_drawdown": -0.28559353931079,
       "stocklens_better": false
     },
     "2022_RATE_SHOCK": {
       "start": "2022-01-03",
       "end": "2022-12-30",
       "sessions": 251,
-      "stocklens_return": -0.45866796372297036,
-      "qqq_return": -0.33219868008884457,
-      "stocklens_max_drawdown": -0.45866796372297036,
-      "qqq_max_drawdown": -0.34827967952275785,
+      "stocklens_return": -0.4586687306898467,
+      "qqq_return": -0.33219853307093894,
+      "stocklens_max_drawdown": -0.4586687306898467,
+      "qqq_max_drawdown": -0.3482795758310666,
       "stocklens_better": false
     }
   },

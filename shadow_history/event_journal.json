@@ -1,13 +1,13 @@
 {
   "latest": {
-    "date": "2026-10-29",
+    "date": "2026-10-30",
     "action": "NO_CHANGE",
     "level": 3,
     "target_leverage": 3.0,
     "reasons": [
-      "QQQ +5.51% vs SMA200",
-      "VOL20 20.01%",
-      "MOM12 +13.55%",
+      "QQQ +1.79% vs SMA200",
+      "VOL20 22.64%",
+      "MOM12 +9.12%",
       "Defense OFF"
     ]
   }
