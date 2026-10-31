@@ -165,6 +165,7 @@
     "hybrid_rolling_distribution.py": "1d5b0c8ad6836407b5394261afa7836cbebc5cec",
     "incident_state.py": "2e38de1c4b0076f9186f1815b11bd8aa2995df79",
     "independent_alpaca_evidence.py": "febed13c2a3168a14d8a30b4ad9972133bdf47b3",
+    "infra/aws/enable_st_paper_once_guarded.py": "f6af36b16fe5965cededb4757f2b8cc6f3bb81a1",
     "infra/aws/one_shot_staging_readonly_audit.sh": "55fc32c5b0913ad80bd421eeab93dc6d6283334d",
     "infra/aws/paper-evidence-handler.py": "0a967783e199fe6b0135deb974062e93982477c7",
     "infra/aws/paper-signal-journal.yaml": "78e1513a1a6b0152536e965f0a684e2b3473f596",
