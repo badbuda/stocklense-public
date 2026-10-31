@@ -138,12 +138,24 @@ def main():
                     for d in details) if lid=="CandidateSessionWatchdogLambda"
                     else all(d.get("Evaluation")=="Dynamic" for d in details),
                     "UNEXPECTED_CHANGE_CAUSE:"+str(c))
-        # The existing watchdog EventBridge rule stays the same rule and keeps
-        # its hourly cadence and Lambda target. Reject unknown actual state.
-        watchdog_rule=out.get("CandidateSessionWatchdogRuleName")
-        if watchdog_rule:
-            wr=ev.describe_rule(Name=watchdog_rule)
-            require(wr.get("State")=="ENABLED","WATCHDOG_RULE_NOT_ENABLED")
+        # Verify the actual existing resources, not only CFN's symbolic changes.
+        def physical(logical):
+            d=cf.describe_stack_resource(StackName=STACK,
+                LogicalResourceId=logical)["StackResourceDetail"]
+            require(d.get("ResourceStatus") in ("CREATE_COMPLETE","UPDATE_COMPLETE"),
+                    "WATCHDOG_RESOURCE_UNSTABLE:"+logical)
+            return d["PhysicalResourceId"]
+        watchdog_rule_name=physical("CandidateSessionWatchdogSchedule")
+        watchdog_function_name=physical("CandidateSessionWatchdogLambda")
+        require(watchdog_function_name==expected,"WATCHDOG_LAMBDA_ID_CHANGED")
+        wr=ev.describe_rule(Name=watchdog_rule_name)
+        require(wr.get("State")=="ENABLED" and wr.get("ScheduleExpression")=="rate(1 hour)",
+                "WATCHDOG_RULE_NOT_HOURLY_ENABLED")
+        targets=ev.list_targets_by_rule(Rule=watchdog_rule_name).get("Targets",[])
+        watch_fn_arn=lm.get_function_configuration(FunctionName=expected)["FunctionArn"]
+        require(len(targets)==1 and targets[0].get("Id")=="SessionWatchdog"
+                and targets[0].get("Arn")==watch_fn_arn,
+                "WATCHDOG_WRONG_TARGET")
         print("CHANGE_SET_APPROVED:ST_WATCHDOG_LAMBDA_PERMISSION_SCHEDULE_ONLY",flush=True)
         cf.execute_change_set(StackName=STACK,ChangeSetName=CHANGE)
         cf.get_waiter("stack_update_complete").wait(StackName=STACK,
@@ -155,6 +167,15 @@ def main():
                 .get("Environment",{}).get("Variables",{})
                 .get("MONITORING_START_SESSION")==SESSION,
                 "WATCHDOG_LAMBDA_ENV_NOT_UPDATED")
+        # The watchdog must remain scheduled after the derived CFN changes.
+        wr_after=ev.describe_rule(Name=watchdog_rule_name)
+        require(wr_after.get("State")=="ENABLED" and
+                wr_after.get("ScheduleExpression")=="rate(1 hour)",
+                "POST_UPDATE_WATCHDOG_NOT_ENABLED")
+        after=ev.list_targets_by_rule(Rule=watchdog_rule_name).get("Targets",[])
+        require(len(after)==1 and after[0].get("Id")=="SessionWatchdog"
+                and after[0].get("Arn")==watch_fn_arn,
+                "POST_UPDATE_WATCHDOG_TARGET_CHANGED")
         print("ST_MONITORING_REPAIRED:"+SESSION,flush=True)
     else:
         print("ST_MONITORING_ALREADY_CONFIGURED:"+SESSION,flush=True)
