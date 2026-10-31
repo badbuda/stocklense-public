@@ -1,0 +1,130 @@
+#!/usr/bin/env python3
+"""ST-only one-shot CloudFormation monitoring repair + guarded Paper schedule enablement.
+
+Exactly one narrowly reviewed CloudFormation change set (watchdog Lambda environment
+only) and then one ST-only EventBridge EnableRule via separately pinned guard.
+No PROD/Signal/Broker/Paper-book writes, no legacy DynamoDB changes.
+Fails closed on every unknown template, planned resource, permission, or state.
+"""
+import hashlib
+import json
+import subprocess
+import sys
+import time
+import urllib.request
+from pathlib import Path
+
+REGION="eu-central-1"
+ACCOUNT="634740393398"
+STACK="stocklens-st"
+PROD="stocklens-prod"
+SESSION="2026-10-30"
+BUCKET="stocklens-st-candidatedata-6jj7i9fxjmfr"
+RULE_CRON="cron(20 3 ? * TUE-SAT *)"
+GUARD_URL=("https://raw.githubusercontent.com/badbuda/stocklense-public/"
+           "73c8868fbdec1175c37d634a2fa70fe8104a3751/"
+           "infra/aws/enable_st_paper_once_guarded.py")
+GUARD_BLOB="f6af36b16fe5965cededb4757f2b8cc6f3bb81a1"
+CHANGE="stocklens-st-paper-monitoring-20261030"
+
+def require(test, reason):
+    if not test:
+        raise RuntimeError(reason)
+
+def main():
+    import boto3
+    b=boto3.Session(region_name=REGION)
+    sts=b.client("sts")
+    cf=b.client("cloudformation")
+    ev=b.client("events")
+    lm=b.client("lambda")
+    require(sts.get_caller_identity()["Account"]==ACCOUNT,"WRONG_AWS_ACCOUNT")
+    def describe(name):
+        a=cf.describe_stacks(StackName=name)["Stacks"]
+        require(len(a)==1 and a[0]["StackStatus"] in ("CREATE_COMPLETE","UPDATE_COMPLETE"),"STACK_NOT_STABLE:"+name)
+        s=a[0]
+        return s,{x["OutputKey"]:x["OutputValue"] for x in s.get("Outputs",[])}
+    s,out=describe(STACK)
+    _,pout=describe(PROD)
+    require(out.get("CandidateDataBucket")==BUCKET and pout.get("CandidateDataBucket")!=BUCKET,
+            "ST_PROD_BUCKET_ISOLATION_FAILED")
+    for outs,key,state in ((out,"CandidateSignalOnlyRuleName","ENABLED"),
+                           (out,"CandidateOrchestratorRuleName","DISABLED"),
+                           (pout,"CandidateSignalOnlyRuleName","DISABLED"),
+                           (pout,"CandidatePaperOnlyRuleName","DISABLED"),
+                           (pout,"CandidateOrchestratorRuleName","DISABLED")):
+        require(ev.describe_rule(Name=outs[key])["State"]==state,
+                "UNSAFE_RULE:"+key)
+    paper_rule=ev.describe_rule(Name=out["CandidatePaperOnlyRuleName"])
+    require(paper_rule["State"] in ("DISABLED","ENABLED")
+            and paper_rule.get("ScheduleExpression")==RULE_CRON,
+            "UNSAFE_ST_PAPER_RULE")
+    ps={p["ParameterKey"]:p.get("ParameterValue","") for p in s.get("Parameters",[])}
+    require("MonitoringStartSession" in ps,"MONITORING_PARAMETER_NOT_IN_DEPLOYED_TEMPLATE")
+    require(ps["MonitoringStartSession"] in ("",SESSION),
+            "MONITORING_CONFIG_HAS_OTHER_START_DATE:"+ps["MonitoringStartSession"])
+    expected=out.get("CandidateSessionWatchdogFunctionName")
+    require(bool(expected),"WATCHDOG_FUNCTION_OUTPUT_MISSING")
+    if ps["MonitoringStartSession"]!=SESSION:
+        # Use the deployed template; all other parameters retain their values.
+        # Deliberately refuse to update a stack that already drifted in the rule states.
+        params=[{"ParameterKey":k, "ParameterValue":SESSION}
+                if k=="MonitoringStartSession" else
+                {"ParameterKey":k, "UsePreviousValue":True} for k in ps]
+        require(sum(p["ParameterKey"]=="MonitoringStartSession" for p in params)==1,
+                "BAD_PARAMETER_DIFF")
+        print("CREATING_ST_MONITORING_CHANGE_SET:ONLY:"+SESSION,flush=True)
+        try:
+            cf.create_change_set(StackName=STACK,ChangeSetName=CHANGE,
+                ChangeSetType="UPDATE",UsePreviousTemplate=True,
+                Capabilities=["CAPABILITY_IAM","CAPABILITY_NAMED_IAM"],
+                Parameters=params,
+                Description="ST-only: set Paper monitoring genesis 2026-10-30; do not alter schedules")
+        except cf.exceptions.AlreadyExistsException:
+            raise RuntimeError("CHANGE_SET_ALREADY_EXISTS_REVIEW_MANUALLY")
+        deadline=time.monotonic()+180
+        while time.monotonic()<deadline:
+            z=cf.describe_change_set(StackName=STACK,ChangeSetName=CHANGE)
+            if z["Status"] in ("CREATE_COMPLETE","FAILED"): break
+            time.sleep(3)
+        require(z["Status"]=="CREATE_COMPLETE","CHANGE_SET_NOT_READY:"+z.get("Status","UNKNOWN")+":"+z.get("StatusReason",""))
+        changes=[c["ResourceChange"] for c in z.get("Changes",[]) if "ResourceChange" in c]
+        # Only Environment on the ST session watchdog Lambda may change.
+        require(len(changes)==1,"UNEXPECTED_NUMBER_OF_RESOURCE_CHANGES:"+str(changes))
+        c=changes[0]
+        require(c.get("LogicalResourceId")=="CandidateSessionWatchdogLambda"
+                and c.get("Action")=="Modify" and c.get("Replacement")=="False",
+                "CHANGE_SET_UNSAFE_RESOURCE:"+str(c))
+        require(all(d.get("Target",{}).get("Attribute")=="Properties"
+                    for d in c.get("Details",[])),"CHANGE_SET_NON_PROPERTY_CHANGE")
+        print("CHANGE_SET_APPROVED:WATCHDOG_LAMBDA_ONLY",flush=True)
+        cf.execute_change_set(StackName=STACK,ChangeSetName=CHANGE)
+        cf.get_waiter("stack_update_complete").wait(StackName=STACK,
+             WaiterConfig={"Delay":10,"MaxAttempts":60})
+        s,out=describe(STACK)
+        ps={p["ParameterKey"]:p.get("ParameterValue","") for p in s.get("Parameters",[])}
+        require(ps.get("MonitoringStartSession")==SESSION,"PARAMETER_UPDATE_NOT_VERIFIED")
+        require(lm.get_function_configuration(FunctionName=expected)
+                .get("Environment",{}).get("Variables",{})
+                .get("MONITORING_START_SESSION")==SESSION,
+                "WATCHDOG_LAMBDA_ENV_NOT_UPDATED")
+        print("ST_MONITORING_REPAIRED:"+SESSION,flush=True)
+    else:
+        print("ST_MONITORING_ALREADY_CONFIGURED:"+SESSION,flush=True)
+    # Guard is fixed by full commit and verified git object hash before execution.
+    target=Path.home()/"stocklens_enable_st_paper_guarded_verified.py"
+    with urllib.request.urlopen(GUARD_URL,timeout=30) as response:
+        raw=response.read()
+    gitblob=hashlib.sha1(b"blob "+str(len(raw)).encode()+b"\\0"+raw).hexdigest()
+    require(gitblob==GUARD_BLOB,"PINNED_GUARD_CHECKSUM_MISMATCH")
+    target.write_bytes(raw)
+    print("STARTING_ST_ONLY_GUARDED_PAPER_ENABLEMENT",flush=True)
+    result=subprocess.run([sys.executable,str(target),"--apply"],check=False)
+    require(result.returncode==0,"ST_PAPER_GUARD_REFUSED_ACTIVATION")
+    print("ST_PAPER_MONITORING_AND_SCHEDULE_ENABLED:NO_PROD:NO_BROKER",flush=True)
+
+if __name__=="__main__":
+    try: main()
+    except Exception as exc:
+        print("SAFE_STOP:"+str(exc),file=sys.stderr)
+        sys.exit(2)
