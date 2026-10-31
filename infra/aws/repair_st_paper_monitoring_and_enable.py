@@ -115,7 +115,7 @@ def main():
     target=Path.home()/"stocklens_enable_st_paper_guarded_verified.py"
     with urllib.request.urlopen(GUARD_URL,timeout=30) as response:
         raw=response.read()
-    gitblob=hashlib.sha1(b"blob "+str(len(raw)).encode()+b"\\0"+raw).hexdigest()
+    gitblob=hashlib.sha1(b"blob "+str(len(raw)).encode()+bytes([0])+raw).hexdigest()
     require(gitblob==GUARD_BLOB,"PINNED_GUARD_CHECKSUM_MISMATCH")
     target.write_bytes(raw)
     print("STARTING_ST_ONLY_GUARDED_PAPER_ENABLEMENT",flush=True)
