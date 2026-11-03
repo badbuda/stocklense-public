@@ -11,7 +11,9 @@ def service_mocks(*, prod_enabled=False, paper_enabled=True, continuity=True):
     names = ("CandidateSignalOnlyRuleName", "CandidatePaperOnlyRuleName",
              "CandidateOrchestratorRuleName")
     st = {"CandidateDataBucket": mod.BUCKET,
-          "CandidatePaperFunctionName": "st-paper"}
+          "CandidatePaperFunctionName": "st-paper",
+          "CandidateFunctionName": "st-signal",
+          "CandidateAlertsTopic": "arn:aws:sns:eu-central-1:634740393398:stocklens-st-candidate-alerts"}
     prod = {"CandidateDataBucket": mod.PROD_BUCKET}
     for i, name in enumerate(names):
         st[name] = "st-" + str(i)
@@ -46,13 +48,22 @@ def service_mocks(*, prod_enabled=False, paper_enabled=True, continuity=True):
     return {
         "sts": SimpleNamespace(get_caller_identity=lambda: {"Account": mod.ACCOUNT}),
         "cloudformation": SimpleNamespace(describe_stacks=describe_stacks),
-        "events": SimpleNamespace(describe_rule=describe_rule),
+        "events": SimpleNamespace(
+            describe_rule=describe_rule,
+            list_targets_by_rule=lambda Rule: {"Targets": [{
+                "Arn": "arn:st-paper" if Rule == "st-1" else "arn:st-signal"}]}),
         "s3": SimpleNamespace(get_bucket_versioning=lambda **_: {"Status": "Enabled"}),
         "cloudwatch": SimpleNamespace(describe_alarms=lambda **_:
-                                     {"MetricAlarms": [{"AlarmName": "st-watchdog", "StateValue": "OK"}]}),
+                                     {"MetricAlarms": [{
+                                         "AlarmName": "st-watchdog", "StateValue": "OK",
+                                         "ActionsEnabled": True,
+                                         "AlarmActions": [st["CandidateAlertsTopic"]]}]}),
+        "sns": SimpleNamespace(list_subscriptions_by_topic=lambda **_:
+                               {"Subscriptions": [{"Protocol": "email", "SubscriptionArn": "confirmed"}]}),
         "lambda": SimpleNamespace(
-            get_function_configuration=lambda **_: {
+            get_function_configuration=lambda FunctionName: {
                 "State": "Active", "LastUpdateStatus": "Successful",
+                "FunctionArn": "arn:st-paper" if FunctionName == "st-paper" else "arn:st-signal",
                 "Environment": {"Variables": {"STOCKLENS_DATA_BUCKET": mod.BUCKET}}},
             invoke=invoke)
     }, calls
