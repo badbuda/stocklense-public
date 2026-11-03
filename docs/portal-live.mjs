@@ -57,7 +57,7 @@ export function stagingSnapshot(rows,now=new Date()){
    // Every returned session from the first Paper receipt THROUGH the newest
    // verified signal must be backed by Paper. A valid old Paper receipt cannot
    // turn green merely because it is younger than a generic 4-day age limit.
-   const high=newestSignal?.session_date||lastPaper.session_date;
+   const high=rows.at(-1).session_date;
    gap=rows.some(r=>r.session_date>=low&&r.session_date<=high&&
         r.status!=='SIGNAL_PAPER_CONTINUITY_S3_SHA_BOUND');
  }
