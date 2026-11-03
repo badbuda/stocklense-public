@@ -38,6 +38,28 @@ const withTrades=stagingSnapshot([paper('2026-10-16',100500),activeWithTrades],n
 assert.equal(withTrades.paperSeries.reduce((sum,row)=>sum+row.tradeCount,0),3);
 assert.deepEqual(withTrades.paperSeries[1],{date:'2026-10-19',s:102000,tradeCount:3});
 
+// Fail-closed when a new Signal arrived but its own Paper has not.
+const trailingSignal=stagingSnapshot([
+ paper('2026-10-16',100500),paper('2026-10-19',102000),signal('2026-10-20')
+],now);
+assert.equal(trailingSignal.status,'PAPER_CHAIN_GAP');
+assert.equal(trailingSignal.paper,null);
+assert.deepEqual(trailingSignal.paperSeries,[]);
+assert.equal(trailingSignal.signal.session_date,'2026-10-20');
+const trailingMissing=stagingSnapshot([
+ paper('2026-10-19',102000),empty('2026-10-20')
+],now);
+assert.equal(trailingMissing.status,'PAPER_CHAIN_GAP');
+assert.equal(trailingMissing.paper,null);
+
+// This is still recent by wall-clock time, but a later verified Signal means
+// the older NAV cannot be presented as the CURRENT ST book.
+assert.equal(stagingSnapshot([paper('2026-10-19',102000),
+ signal('2026-10-20')],now).paper,null);
+// A no-trade day with SHA-bound Paper is valid and must not become a gap.
+assert.equal(stagingSnapshot([paper('2026-10-19',102000),
+ paper('2026-10-20',102000)],now).paperSeries[1].tradeCount,0);
+
 const gap=stagingSnapshot([
  paper('2026-10-15',100500),empty('2026-10-16'),paper('2026-10-19',102000)
 ],now);
