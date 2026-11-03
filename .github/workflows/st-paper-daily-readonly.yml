@@ -1,0 +1,75 @@
+name: StockLens ST Paper Daily Read-Only Acceptance
+
+# Runs after the market-data Shadow publisher. Does NOT activate ST schedules,
+# create Paper receipts, deploy PROD or send broker orders. A red check is a
+# genuine missing/denied AWS acceptance, never an excuse to backfill.
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows: ["StockLens 8.0 Shadow"]
+    types: [completed]
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: stocklens-st-paper-daily-readonly
+  cancel-in-progress: true
+
+jobs:
+  st-readonly:
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify configured AWS read-only identity
+        shell: bash
+        env:
+          ROLE_ARN: ${{ vars.AWS_STOCKLENS_AUDIT_ROLE_ARN }}
+        run: |
+          set -euo pipefail
+          test -n "$ROLE_ARN" || {
+            echo "::error::Read-only AWS audit role not configured; ST NOT VERIFIED."
+            exit 1
+          }
+      - name: Assume existing read-only AWS audit role via OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: eu-central-1
+          role-to-assume: ${{ vars.AWS_STOCKLENS_AUDIT_ROLE_ARN }}
+          role-session-name: stocklens-st-daily-readonly
+      - name: Check actual latest completed Shadow date against live ST Paper
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --quiet boto3
+          session="$(python - <<'PY'
+          import json
+          from pathlib import Path
+          print(json.loads(Path('docs/data.json').read_text())['signal']['asof_date'])
+          PY
+          )"
+          set +e
+          python infra/aws/st_paper_closeout_readonly.py --session "$session" > "$RUNNER_TEMP/st-readonly.json"
+          result="$?"
+          set -e
+          python - "$RUNNER_TEMP/st-readonly.json" "$GITHUB_STEP_SUMMARY" <<'PY'
+          import json,sys
+          from pathlib import Path
+          o=json.loads(Path(sys.argv[1]).read_text())
+          status=o.get('status','BLOCKED')
+          reason=o.get('reason','')
+          print(status,reason)
+          with Path(sys.argv[2]).open('a') as out:
+              out.write('### StockLens ST — authenticated daily readback\n')
+              out.write('Session: '+str(o.get('session'))+'\n\n')
+              out.write('**'+status+'** (modeled Paper only; never broker fills)\n\n')
+              if reason: out.write('Blocker: '+reason+'\n')
+              out.write('PROD is never mutated. Missing Paper is not backfilled.\n')
+          PY
+          exit "$result"
