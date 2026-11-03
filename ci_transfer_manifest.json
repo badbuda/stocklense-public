@@ -15,7 +15,7 @@
     ".github/workflows/shadow.yml": "ec3c59e952830c4457df0fd0b380b79e4f961e5b",
     ".github/workflows/st-3x-amplify-acceptance.yml": "8f1f5e33aeef673c373996e0ba9c1d64ce61a356",
     ".github/workflows/st-combo-amplify-acceptance.yml": "e40a54512ab00b52d8d4f56beb0a7b4d8349368c",
-    ".github/workflows/st-paper-daily-readonly.yml": "9ee8e8120659f7b3ed158acad1a747326327d577",
+    ".github/workflows/st-paper-daily-readonly.yml": "c3edbdf6f555f43d2eb174d4b464868b69b5f535",
     ".github/workflows/st-real-3x-research.yml": "e41cccc8bcb99922a1c9371fcd9f30a1bd18a6bd",
     ".github/workflows/st-real-etf-combinations.yml": "cafb10db543f024314353b5a07e8b456b27e23df",
     ".github/workflows/stocklens-closeout.yml": "e1d8fa550b83914367f8f9f2f84a85627f10482c",
