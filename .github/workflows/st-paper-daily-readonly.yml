@@ -5,6 +5,11 @@ name: StockLens ST Paper Daily Read-Only Acceptance
 # genuine missing/denied AWS acceptance, never an excuse to backfill.
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/st-paper-daily-readonly.yml'
+      - 'infra/aws/st_paper_closeout_readonly.py'
   workflow_run:
     workflows: ["StockLens 8.0 Shadow"]
     types: [completed]
