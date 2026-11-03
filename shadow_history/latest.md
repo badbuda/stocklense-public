@@ -1,6 +1,6 @@
 # StockLens 8.0 Shadow Signal
 
-**As of completed QQQ close:** 2026-10-30  
+**As of completed QQQ close:** 2026-11-02  
 **Action:** NO_CHANGE  
 **Changed vs prior session:** NO
 
@@ -15,11 +15,11 @@
 
 ## Features
 
-- QQQ adjusted close: **690.4900**
-- SMA50: **724.7038**
-- SMA200: **678.3753**
-- VOL20 annualized: **22.64%**
-- MOM12: **9.12%**
+- QQQ adjusted close: **681.0900**
+- SMA50: **724.0717**
+- SMA200: **678.6825**
+- VOL20 annualized: **22.35%**
+- MOM12: **9.30%**
 
 ## Frozen execution plan
 
@@ -33,11 +33,11 @@ If the target changed:
 
 ## Data audit
 
-- Rows: 4738
+- Rows: 4739
 - First date: 2008-01-02
-- Last date: 2026-10-30
+- Last date: 2026-11-02
 - Source: QQQ adjusted daily data
-- Raw last date: 2026-10-30
-- Last completed date used: 2026-10-30
+- Raw last date: 2026-11-02
+- Last completed date used: 2026-11-02
 - Dropped incomplete current session: **False**
-- NY validation time: 2026-10-30T22:38:57.175771-04:00
+- NY validation time: 2026-11-02T23:14:24.348478-05:00

@@ -2,6 +2,13 @@
   "schema_version": 1,
   "items": [
     {
+      "short_sha": "84e3bb9",
+      "date": "2026-10-31T02:39:13Z",
+      "title": "shadow: record prospective evidence 2026-10-30",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
       "short_sha": "a5eb8c7",
       "date": "2026-10-30T07:33:44+02:00",
       "title": "test(portal): correct mock Cognito client contract in authenticated S3 browser E2E (#132)",
@@ -76,18 +83,18 @@
       "date": "2026-10-29T21:40:46+02:00",
       "title": "fix: isolate ST watchdog alert origins and expose immutable parity outlier evidence",
       "kind": "FIX",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "401817e",
-      "date": "2026-10-29T21:31:45+02:00",
-      "title": "ops: verify ST Signal and watchdog; safe provider path parity diagnostics",
-      "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     }
   ],
   "high_signal_items": [
     {
+      "short_sha": "84e3bb9",
+      "date": "2026-10-31T02:39:13Z",
+      "title": "shadow: record prospective evidence 2026-10-30",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
       "short_sha": "a5eb8c7",
       "date": "2026-10-30T07:33:44+02:00",
       "title": "test(portal): correct mock Cognito client contract in authenticated S3 browser E2E (#132)",
@@ -163,16 +170,16 @@
       "title": "fix: isolate ST watchdog alert origins and expose immutable parity outlier evidence",
       "kind": "FIX",
       "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "401817e",
-      "date": "2026-10-29T21:31:45+02:00",
-      "title": "ops: verify ST Signal and watchdog; safe provider path parity diagnostics",
-      "kind": "PROJECT",
-      "impact": "Repository change; CI validation is separate."
     }
   ],
   "recent_summary": [
+    {
+      "short_sha": "84e3bb9",
+      "date": "2026-10-31T02:39:13Z",
+      "title": "shadow: record prospective evidence 2026-10-30",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
     {
       "short_sha": "a5eb8c7",
       "date": "2026-10-30T07:33:44+02:00",
@@ -184,13 +191,6 @@
       "short_sha": "8f5bef5",
       "date": "2026-10-30T07:29:24+02:00",
       "title": "fix(portal): authenticated Staging S3 trade count crash and mock-credential E2E coverage (#131)",
-      "kind": "PROJECT",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "4c5025a",
-      "date": "2026-10-30T02:56:57Z",
-      "title": "shadow: record prospective evidence 2026-10-29",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     }
