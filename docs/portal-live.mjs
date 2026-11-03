@@ -53,13 +53,20 @@ export function stagingSnapshot(rows,now=new Date()){
  const lastPaper=paper.at(-1)||null;
  let gap=false;
  if(paper.length){
-   const low=paper[0].session_date,high=lastPaper.session_date;
+   const low=paper[0].session_date;
+   // Every returned session from the first Paper receipt THROUGH the newest
+   // verified signal must be backed by Paper. A valid old Paper receipt cannot
+   // turn green merely because it is younger than a generic 4-day age limit.
+   const high=rows.at(-1).session_date;
    gap=rows.some(r=>r.session_date>=low&&r.session_date<=high&&
         r.status!=='SIGNAL_PAPER_CONTINUITY_S3_SHA_BOUND');
  }
  const ageOf=(row)=>row?Math.floor((currentDay-dateMs(row.session_date))/86400000):Infinity;
- // Do not silently turn a stale or incomplete Paper series into current NAV.
- const currentPaper=!gap&&!invalid.length&&lastPaper&&ageOf(lastPaper)<=4?lastPaper:null;
+ const paperAligned=!!lastPaper&&!!newestSignal&&
+                    lastPaper.session_date===newestSignal.session_date;
+ // The client validates the returned S3 summary window, not full account-chain
+ // continuity. Missing sessions omitted by the server must be caught upstream.
+ const currentPaper=!gap&&paperAligned&&!invalid.length&&ageOf(lastPaper)<=4?lastPaper:null;
  const currentSignal=!invalid.length&&newestSignal&&ageOf(newestSignal)<=4?newestSignal:null;
  return {
    signal:currentSignal,
@@ -67,6 +74,7 @@ export function stagingSnapshot(rows,now=new Date()){
    paperSeries:currentPaper?paper.map(x=>({date:x.session_date,s:x.paper.equity,tradeCount:x.paper.trade_count})):[],
    status:invalid.length?'INVALID_EVIDENCE':
      gap?'PAPER_CHAIN_GAP':
+     lastPaper&&!paperAligned?'PAPER_BEHIND_LATEST_SIGNAL':
      currentPaper?'VERIFIED_RECENT_PAPER_SUMMARIES':
      currentSignal?'SIGNAL_ONLY_NO_RECENT_PAPER':
      'NO_RECENT_VERIFIED_RECEIPTS',
