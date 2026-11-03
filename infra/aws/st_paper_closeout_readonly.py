@@ -79,8 +79,8 @@ def receipt_key_for_version(s3, version):
 
 def audit(services, session):
     require(date.fromisoformat(session).isoformat() == session, "BAD_ISO_SESSION")
-    sts, cf, ev, s3, lam, cw = (
-        services[x] for x in ("sts", "cloudformation", "events", "s3", "lambda", "cloudwatch")
+    sts, cf, ev, s3, lam, cw, sns = (
+        services[x] for x in ("sts", "cloudformation", "events", "s3", "lambda", "cloudwatch", "sns")
     )
     # Account is checked before reading *any* account resource.
     require(sts.get_caller_identity().get("Account") == ACCOUNT, "WRONG_AWS_ACCOUNT")
@@ -106,11 +106,17 @@ def audit(services, session):
     require(state["ST:CandidateSignalOnlyRuleName"] == "ENABLED" and
             state["ST:CandidateOrchestratorRuleName"] == "DISABLED",
             "ST_SIGNAL_OR_ORCHESTRATOR_UNSAFE")
+    topic = st["CandidateAlertsTopic"]
+    subscriptions = sns.list_subscriptions_by_topic(TopicArn=topic).get("Subscriptions", [])
+    require(any(x.get("Protocol") == "email" and
+                x.get("SubscriptionArn") not in (None, "PendingConfirmation")
+                for x in subscriptions), "ST_SNS_EMAIL_UNCONFIRMED")
     alarms = cw.describe_alarms(AlarmNamePrefix="stocklens-st").get("MetricAlarms", [])
     require(bool(alarms), "NO_ST_ALARMS")
-    alarm_names = [x["AlarmName"] for x in alarms if x.get("StateValue") == "ALARM"]
     unknown = [x["AlarmName"] for x in alarms if x.get("StateValue") != "OK"]
     require(not unknown, "ST_ALARM_OR_INSUFFICIENT_DATA:" + ",".join(unknown))
+    require(all(x.get("ActionsEnabled") is True and topic in x.get("AlarmActions", [])
+                for x in alarms), "ST_ALARM_EMAIL_ACTIONS_UNVERIFIED")
     signal, signal_version, signal_sha = read_versioned_json(s3, f"signals/{session}.json")
     require(signal.get("mode") == "SHADOW_ONLY_NO_BROKER_ACTIONS" and
             signal.get("latest", {}).get("asof_date") == session and
@@ -132,10 +138,20 @@ def audit(services, session):
     require(state["ST:CandidatePaperOnlyRuleName"] == "ENABLED",
             "ST_RECURRING_PAPER_SCHEDULE_DISABLED")
     config = lam.get_function_configuration(FunctionName=st["CandidatePaperFunctionName"])
+    signal_config = lam.get_function_configuration(FunctionName=st["CandidateFunctionName"])
     require(config.get("State") == "Active" and
             config.get("LastUpdateStatus") == "Successful" and
             config.get("Environment", {}).get("Variables", {}).get("STOCKLENS_DATA_BUCKET") == BUCKET,
             "ST_PAPER_FUNCTION_NOT_READY")
+    require(signal_config.get("State") == "Active" and
+            signal_config.get("LastUpdateStatus") == "Successful" and
+            signal_config.get("Environment", {}).get("Variables", {}).get("STOCKLENS_DATA_BUCKET") == BUCKET,
+            "ST_SIGNAL_FUNCTION_NOT_READY")
+    for key, cfg in (("CandidatePaperOnlyRuleName", config),
+                     ("CandidateSignalOnlyRuleName", signal_config)):
+        targets = ev.list_targets_by_rule(Rule=st[key]).get("Targets", [])
+        require(len(targets) == 1 and targets[0].get("Arn") == cfg.get("FunctionArn"),
+                "ST_SCHEDULE_TARGET_MISMATCH:" + key)
     event = {"mode": "STAGING_PAPER_SCHEDULE_READINESS",
              "expected_session": session, "bootstrap": False}
     response = lam.invoke(FunctionName=st["CandidatePaperFunctionName"],
@@ -181,7 +197,7 @@ def main():
         import boto3
         client = boto3.session.Session(region_name=REGION)
         services = {name: client.client(name) for name in
-                    ("sts", "cloudformation", "events", "s3", "lambda", "cloudwatch")}
+                    ("sts", "cloudformation", "events", "s3", "lambda", "cloudwatch", "sns")}
         report = audit(services, args.session)
     except Exception as exc:
         report = {"status": "ST_READ_ONLY_ACCEPTANCE_BLOCKED",
