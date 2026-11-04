@@ -2,6 +2,27 @@
   "schema_version": 1,
   "items": [
     {
+      "short_sha": "be5e6eb",
+      "date": "2026-11-03T07:04:52+02:00",
+      "title": "ops(ST): publish guarded Paper scheduling and monitoring repair tools (#135)",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "11eb29b",
+      "date": "2026-11-03T07:01:04+02:00",
+      "title": "fix(ST): daily authenticated Paper acceptance and source-honest NAV (#136)",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "ba2f478",
+      "date": "2026-11-03T04:14:45Z",
+      "title": "shadow: record prospective evidence 2026-11-02",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
       "short_sha": "84e3bb9",
       "date": "2026-10-31T02:39:13Z",
       "title": "shadow: record prospective evidence 2026-10-30",
@@ -62,32 +83,32 @@
       "date": "2026-10-29T22:17:50+02:00",
       "title": "fix(ST): read actual session-watchdog CloudWatch log group during isolation inspect (#126)",
       "kind": "PROJECT",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "3a0d292",
-      "date": "2026-10-29T22:07:08+02:00",
-      "title": "ops: short ST apply --yes, verify idempotently on repeat",
-      "kind": "PROJECT",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "63f78cc",
-      "date": "2026-10-29T21:55:51+02:00",
-      "title": "fix(ST): isolate watchdog CloudWatch metrics via reviewed alarms-only change set",
-      "kind": "PROJECT",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "50ec4b0",
-      "date": "2026-10-29T21:40:46+02:00",
-      "title": "fix: isolate ST watchdog alert origins and expose immutable parity outlier evidence",
-      "kind": "FIX",
       "impact": "Repository change; CI validation is separate."
     }
   ],
   "high_signal_items": [
     {
+      "short_sha": "be5e6eb",
+      "date": "2026-11-03T07:04:52+02:00",
+      "title": "ops(ST): publish guarded Paper scheduling and monitoring repair tools (#135)",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "11eb29b",
+      "date": "2026-11-03T07:01:04+02:00",
+      "title": "fix(ST): daily authenticated Paper acceptance and source-honest NAV (#136)",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "ba2f478",
+      "date": "2026-11-03T04:14:45Z",
+      "title": "shadow: record prospective evidence 2026-11-02",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
       "short_sha": "84e3bb9",
       "date": "2026-10-31T02:39:13Z",
       "title": "shadow: record prospective evidence 2026-10-30",
@@ -149,48 +170,27 @@
       "title": "fix(ST): read actual session-watchdog CloudWatch log group during isolation inspect (#126)",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "3a0d292",
-      "date": "2026-10-29T22:07:08+02:00",
-      "title": "ops: short ST apply --yes, verify idempotently on repeat",
-      "kind": "PROJECT",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "63f78cc",
-      "date": "2026-10-29T21:55:51+02:00",
-      "title": "fix(ST): isolate watchdog CloudWatch metrics via reviewed alarms-only change set",
-      "kind": "PROJECT",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "50ec4b0",
-      "date": "2026-10-29T21:40:46+02:00",
-      "title": "fix: isolate ST watchdog alert origins and expose immutable parity outlier evidence",
-      "kind": "FIX",
-      "impact": "Repository change; CI validation is separate."
     }
   ],
   "recent_summary": [
     {
-      "short_sha": "84e3bb9",
-      "date": "2026-10-31T02:39:13Z",
-      "title": "shadow: record prospective evidence 2026-10-30",
+      "short_sha": "be5e6eb",
+      "date": "2026-11-03T07:04:52+02:00",
+      "title": "ops(ST): publish guarded Paper scheduling and monitoring repair tools (#135)",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "a5eb8c7",
-      "date": "2026-10-30T07:33:44+02:00",
-      "title": "test(portal): correct mock Cognito client contract in authenticated S3 browser E2E (#132)",
+      "short_sha": "11eb29b",
+      "date": "2026-11-03T07:01:04+02:00",
+      "title": "fix(ST): daily authenticated Paper acceptance and source-honest NAV (#136)",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "8f5bef5",
-      "date": "2026-10-30T07:29:24+02:00",
-      "title": "fix(portal): authenticated Staging S3 trade count crash and mock-credential E2E coverage (#131)",
+      "short_sha": "ba2f478",
+      "date": "2026-11-03T04:14:45Z",
+      "title": "shadow: record prospective evidence 2026-11-02",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     }

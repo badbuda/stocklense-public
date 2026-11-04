@@ -18,17 +18,17 @@
     },
     {
       "path": "shadow_history/health.json",
-      "sha256": "8962d5c35c42adbac088c82cb63e5d574af79153cf8c20aaa2ffac8756b97390",
-      "bytes": 185
+      "sha256": "0843527c3339adfc490b02945d948c25fb3c6801f411f336abf4371bbe764afb",
+      "bytes": 186
     },
     {
       "path": "shadow_history/readiness.json",
-      "sha256": "f71f516d0063c66cc8d83d6fd465aa2a37427af344460fd113443114da7a0fd0",
+      "sha256": "9ec8f5e744d6ad57a288c82ec00897fa47d5c8db74f789e28907368d38f0246a",
       "bytes": 779
     },
     {
       "path": "shadow_history/qc_daily_parity.json",
-      "sha256": "cf777aef7608f03067a73d9e4b09b8f73088befe0385bd72c3999ce0ab6bae74",
+      "sha256": "fab57b31fed251fd1d725f30e5e7c5fd8c10baa19cd2bbe0e2cd310a88553d88",
       "bytes": 34783
     },
     {
@@ -38,12 +38,12 @@
     },
     {
       "path": "shadow_history/data_provenance.json",
-      "sha256": "804cc99564ef4d5ff46e103965be2faa06d3c8f97db67d2b88c1787fc8b8cea8",
+      "sha256": "49986080287d1281935183e39ada9db3c8954f9b53e10a7f8d62721a5735c08d",
       "bytes": 330
     },
     {
       "path": "shadow_history/anomalies.json",
-      "sha256": "3b794794e0d762936a66582c4a5774ab3aa54cda7bad360ca64a04ee155adb23",
+      "sha256": "557b9f129f6bd546b7f707f10547acbdcf362b574e619bd066fc82b57af38f81",
       "bytes": 1319
     },
     {
@@ -58,17 +58,17 @@
     },
     {
       "path": "shadow_history/market_context.json",
-      "sha256": "135ced2e13d841c16a2a62062fab2ada53430efffc400ea8818c6835d4a54eec",
+      "sha256": "2c2757cf39ae9523de119998d64c74d417cc13c8eeaa588e8b65c6c2ed030bf6",
       "bytes": 533
     },
     {
       "path": "shadow_history/context_quality.json",
-      "sha256": "0f7e8aec5e62616ee867896c1c6da51098157bbcdfe554e55a97493fc442e005",
+      "sha256": "2cb76b8ada7f24ab9297a4589d849023dff0f37bbe149b259a467ad4408a42c0",
       "bytes": 267
     },
     {
       "path": "shadow_history/context_analytics.json",
-      "sha256": "07f9c32310a94aebb7bc302a1bafa58e15832dca85d7547f75e44f152e5912f9",
+      "sha256": "13d47e7bfcb9a4babb3ea489e974b1dd7564229de46b35e95f78e6d14295362f",
       "bytes": 230
     }
   ],

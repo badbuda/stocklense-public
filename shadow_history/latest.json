@@ -1,10 +1,26 @@
 {
   "version": "8.0.2-shadow-completed-session-guard",
-  "generated_at_utc": "2026-11-03T04:14:24.759684+00:00",
+  "generated_at_utc": "2026-11-04T03:19:04.260380+00:00",
   "mode": "SHADOW_ONLY_NO_BROKER_ACTIONS",
   "signal_source": "QQQ_ADJUSTED_DAILY_CLOSE",
   "state_replay": "EXACT_FROM_2009_09_01_WITH_PRESTART_WARMUP",
   "latest": {
+    "asof_date": "2026-11-03",
+    "level": 3,
+    "defense_active": false,
+    "target_leverage": 3.0,
+    "qqq_weight": 0.0,
+    "tqqq_weight": 0.985,
+    "invested_fraction": 0.985,
+    "features": {
+      "close": 685.280029296875,
+      "sma50": 723.6655859375,
+      "sma200": 679.0130935668946,
+      "vol20": 0.22450305762277678,
+      "mom12": 0.09447243861763588
+    }
+  },
+  "previous": {
     "asof_date": "2026-11-02",
     "level": 3,
     "defense_active": false,
@@ -17,23 +33,7 @@
       "sma50": 724.0716809082031,
       "sma200": 678.6824502563477,
       "vol20": 0.2235280695583286,
-      "mom12": 0.09302793010445942
-    }
-  },
-  "previous": {
-    "asof_date": "2026-10-30",
-    "level": 3,
-    "defense_active": false,
-    "target_leverage": 3.0,
-    "qqq_weight": 0.0,
-    "tqqq_weight": 0.985,
-    "invested_fraction": 0.985,
-    "features": {
-      "close": 690.489990234375,
-      "sma50": 724.703828125,
-      "sma200": 678.3753482055664,
-      "vol20": 0.22639919251016324,
-      "mom12": 0.09117172368180815
+      "mom12": 0.09302803716713703
     }
   },
   "action": "NO_CHANGE",
@@ -44,19 +44,19 @@
     "broker_actions_enabled": false
   },
   "data_audit": {
-    "rows": 4739,
+    "rows": 4740,
     "first_date": "2008-01-02",
-    "last_date": "2026-11-02",
-    "last_close": 681.0900268554688,
+    "last_date": "2026-11-03",
+    "last_close": 685.280029296875,
     "source": "YFINANCE_QQQ_AUTO_ADJUSTED",
-    "raw_rows": 4739,
-    "completed_rows": 4739,
+    "raw_rows": 4740,
+    "completed_rows": 4740,
     "feature_window_sessions": 253,
-    "feature_window_sha256": "cb26e4f47ebd0e79d2439a6b8d72630be00515f454fd9c4e1e3d864c54c2eae1",
-    "raw_last_date": "2026-11-02",
-    "last_completed_date": "2026-11-02",
+    "feature_window_sha256": "f88051a610e58324581357ff9c129eb6cde1dae62e741aa41e185d073cc357b3",
+    "raw_last_date": "2026-11-03",
+    "last_completed_date": "2026-11-03",
     "dropped_incomplete_current_session": false,
-    "ny_time_at_validation": "2026-11-02T23:14:24.348478-05:00",
+    "ny_time_at_validation": "2026-11-03T22:19:03.837805-05:00",
     "safe_after_ny_time": "18:00"
   }
 }
