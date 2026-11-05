@@ -75,3 +75,25 @@ def test_different_years_not_claimed_as_tax_return():
     assert Decimal(row["loss_offset_ils"])==70
     assert b.summary()["mode"]=="RESEARCH_PRETAX_PAPER_UNCHANGED"
     assert b.summary()["tax_was_withheld"] is False
+
+
+def test_split_preserves_total_fifo_basis_and_position():
+    b=TaxBook()
+    b.buy("2026-01-02","TQQQ",10,100,2,3.5)
+    original=Decimal("1002")
+    b.split("2026-01-03","TQQQ",2,1)
+    assert b.quantity("TQQQ")==20
+    assert b.lots["TQQQ"][0].basis_usd*20==original
+    x=b.sell("2026-01-04","TQQQ",10,60,0,3.5)
+    assert Decimal(x["realized_usd"])==Decimal("99")
+
+
+def test_split_fractional_and_lookahead_rejected_without_mutation():
+    b=TaxBook()
+    b.buy("2026-01-03","QQQ",1,100,0,3.5)
+    with pytest.raises(ValueError,match="FRACTIONAL"):
+        b.split("2026-01-04","QQQ",1,2)
+    assert b.quantity("QQQ")==1
+    with pytest.raises(ValueError,match="NONCHRONOLOGICAL"):
+        b.sell("2026-01-02","QQQ",1,101,0,3.5)
+    assert b.quantity("QQQ")==1
