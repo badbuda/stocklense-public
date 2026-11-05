@@ -112,12 +112,51 @@ def replay(events, no_change_band=0.005, immediate_tax_withholding=False):
             "fee_usd":round(fees,2),"slippage_usd":round(slippage,2),
             "estimated_tax_assessed_ils":taxes.summary()["tax_assessed_ils"],
             "estimated_withheld_usd":round(estimated_withheld_usd,4),
-            "counts":counts,"ledger":ledger,"tax_book":taxes.summary()}
+            "counts":counts,"ledger":ledger,"tax_book":taxes.summary(),
+            "tax_events":taxes.events}
+
+
+def monthly_broker_tax_projection(tax_events, rate=0.25):
+    """Illustrative monthly settlement / within-year credit, not broker ledger.
+
+    Uses taxable capital-gain scenarios only; excludes real FX debits and
+    transaction cash feedback. Does not carry credits to a new year silently.
+    """
+    by_month = {}
+    for event in tax_events:
+        if event.get("side") != "SELL":
+            continue
+        month = event["date"][:7]
+        row = by_month.setdefault(month, {"gain_ils":0.0, "loss_ils":0.0})
+        row["gain_ils"] += float(event["eligible_gain_ils"])
+        row["loss_ils"] += float(event["eligible_loss_ils"])
+    prev_year = None
+    ytd_net = ytd_paid = 0.0
+    settlements = []
+    for month in sorted(by_month):
+        year = month[:4]
+        if year != prev_year:
+            prev_year, ytd_net, ytd_paid = year, 0.0, 0.0
+        x = by_month[month]
+        ytd_net += x["gain_ils"] - x["loss_ils"]
+        liability = max(0.0, ytd_net) * float(rate)
+        delta = liability - ytd_paid
+        ytd_paid += delta
+        settlements.append({"month":month,"estimated_settlement_ils":round(delta,2),
+                            "gain_ils":round(x["gain_ils"],2),
+                            "loss_ils":round(x["loss_ils"],2),
+                            "year_to_date_liability_ils":round(ytd_paid,2)})
+    return {"model":"EXCELLENCE_MONTHLY_NETTING_PROJECTION_NOT_ACTUAL_WITHHOLDING",
+            "settlements":settlements,
+            "excluded":"FX_CONVERSION_OF_CASH_AND_BROKER_TIMING_NOT_REPLAYED"}
 
 
 def compare(events):
-    return {"inputs":"MUST_BE_POINT_IN_TIME","comparison":{
-        "baseline_pre_tax":replay(events),
+    baseline = replay(events)
+    return {"inputs":"MUST_BE_POINT_IN_TIME",
+            "monthly_broker_tax_projection":monthly_broker_tax_projection(baseline["tax_events"]),
+            "comparison":{
+        "baseline_pre_tax":baseline,
         "baseline_with_immediate_tax_scenario":replay(events,immediate_tax_withholding=True),
         "wider_1pct_with_immediate_tax_scenario":replay(events,0.01,True),
         "wider_2pct_with_immediate_tax_scenario":replay(events,0.02,True),
