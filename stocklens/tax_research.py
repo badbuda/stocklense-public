@@ -36,6 +36,8 @@ class TaxBook:
     def _check(self, day, symbol, qty, price, fee, fx):
         if date.fromisoformat(day).isoformat() != day or not symbol:
             raise ValueError("INVALID_EVENT")
+        if self.events and day < self.events[-1]["date"]:
+            raise ValueError("NONCHRONOLOGICAL_TAX_EVENT")
         if type(qty) is not int or qty <= 0:
             raise ValueError("INVALID_QTY")
         if D(price) <= 0 or D(fee) < 0 or D(fx) <= 0:
@@ -95,6 +97,25 @@ class TaxBook:
                   "fifo_consumed":consumed}
         self.events.append(result)
         return result
+
+    def split(self, day, symbol, numerator, denominator=1):
+        """Research-only split: conserve total cost, refuse fractional positions."""
+        if date.fromisoformat(day).isoformat() != day or not symbol:
+            raise ValueError("INVALID_SPLIT_EVENT")
+        if self.events and day < self.events[-1]["date"]:
+            raise ValueError("NONCHRONOLOGICAL_TAX_EVENT")
+        if (type(numerator) is not int or type(denominator) is not int
+                or numerator <= 0 or denominator <= 0):
+            raise ValueError("INVALID_SPLIT_RATIO")
+        lots = self.lots.get(symbol, [])
+        for lot in lots:
+            if (lot.qty*numerator) % denominator:
+                raise ValueError("FRACTIONAL_SPLIT_REQUIRES_BROKER_CASH_IN_LIEU")
+        for lot in lots:
+            lot.qty = lot.qty*numerator//denominator
+            lot.basis_usd *= D(denominator)/D(numerator)
+        self.events.append({"date":day,"symbol":symbol,"side":"SPLIT",
+                            "ratio":str(numerator)+"/"+str(denominator)})
 
     def summary(self):
         return {"mode":"RESEARCH_PRETAX_PAPER_UNCHANGED",
