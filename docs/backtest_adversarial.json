@@ -2,88 +2,88 @@
   "schema_version": 1,
   "status": "PASS",
   "baseline": {
-    "end_equity": 104980.8959754739,
-    "cagr": 0.04998316085686283,
-    "max_drawdown": -0.32675377419498175
+    "end_equity": 106918.41297300752,
+    "cagr": 0.06923165015198496,
+    "max_drawdown": -0.3267537741949811
   },
   "stresses": [
     {
       "id": "COST_10BPS",
       "cost_bps": 10,
-      "end_equity": 104692.27573328027,
-      "cagr": 0.04708663953799119,
-      "max_drawdown": -0.3274271887323008,
-      "delta_end_equity_vs_base": -288.6202421936323
+      "end_equity": 106624.46598426727,
+      "cagr": 0.0662900992850397,
+      "max_drawdown": -0.32742718873230126,
+      "delta_end_equity_vs_base": -293.946988740252
     },
     {
       "id": "COST_25BPS",
       "cost_bps": 25,
-      "end_equity": 103829.89651073559,
-      "cagr": 0.03843217778594843,
-      "max_drawdown": -0.32944541058432697,
-      "delta_end_equity_vs_base": -1150.9994647383137
+      "end_equity": 105746.17077637618,
+      "cagr": 0.05750096152775441,
+      "max_drawdown": -0.32944541058432686,
+      "delta_end_equity_vs_base": -1172.2421966313414
     },
     {
       "id": "COST_50BPS",
       "cost_bps": 50,
-      "end_equity": 102404.15735540629,
-      "cagr": 0.02412462058180931,
-      "max_drawdown": -0.33280237447126393,
-      "delta_end_equity_vs_base": -2576.738620067612
+      "end_equity": 104294.11832069032,
+      "cagr": 0.04297031698924969,
+      "max_drawdown": -0.33280237447126404,
+      "delta_end_equity_vs_base": -2624.2946523171995
     },
     {
       "id": "COST_100BPS",
       "cost_bps": 100,
-      "end_equity": 99595.68740275348,
-      "cagr": -0.004056898994854619,
-      "max_drawdown": -0.3394910302459896,
-      "delta_end_equity_vs_base": -5385.208572720425
+      "end_equity": 101433.81552531155,
+      "cagr": 0.014347749301945933,
+      "max_drawdown": -0.3394910302459899,
+      "delta_end_equity_vs_base": -5484.597447695967
     },
     {
       "id": "COST_150BPS",
       "cost_bps": 150,
-      "end_equity": 96843.93521055089,
-      "cagr": -0.03166665494655774,
-      "max_drawdown": -0.34614599002185,
-      "delta_end_equity_vs_base": -8136.9607649230165
+      "end_equity": 98631.27726774113,
+      "cagr": -0.013696258331317712,
+      "max_drawdown": -0.3461459900218501,
+      "delta_end_equity_vs_base": -8287.135705266395
     },
     {
       "id": "COST_200BPS",
       "cost_bps": 200,
-      "end_equity": 94148.15294989284,
-      "cagr": -0.05871223909614909,
-      "max_drawdown": -0.3527672537988453,
-      "delta_end_equity_vs_base": -10832.743025581061
+      "end_equity": 95885.7419172172,
+      "cagr": -0.04116934472946332,
+      "max_drawdown": -0.35276725379884544,
+      "delta_end_equity_vs_base": -11032.671055790328
     },
     {
       "id": "1_EXTRA_SESSION_EXECUTION_DELAY",
       "extra_delay_sessions": 1,
       "effective_signal_age_sessions": 2,
       "cost_bps": 5,
-      "end_equity": 107186.75349199113,
-      "cagr": 0.07212149333441764,
-      "max_drawdown": -0.31804383368380673,
-      "delta_end_equity_vs_base": 2205.8575165172224
+      "end_equity": 109165.00095345761,
+      "cagr": 0.09171361092594821,
+      "max_drawdown": -0.3180438336838073,
+      "delta_end_equity_vs_base": 2246.5879804500873
     },
     {
       "id": "2_EXTRA_SESSION_EXECUTION_DELAY",
       "extra_delay_sessions": 2,
       "effective_signal_age_sessions": 3,
       "cost_bps": 5,
-      "end_equity": 108145.42409964789,
-      "cagr": 0.08174334884228673,
-      "max_drawdown": -0.30178529886419747,
-      "delta_end_equity_vs_base": 3164.5281241739867
+      "end_equity": 110141.36486401067,
+      "cagr": 0.1014843350006025,
+      "max_drawdown": -0.301785298864198,
+      "delta_end_equity_vs_base": 3222.9518910031475
     },
     {
       "id": "3_EXTRA_SESSION_EXECUTION_DELAY",
       "extra_delay_sessions": 3,
       "effective_signal_age_sessions": 4,
       "cost_bps": 5,
-      "end_equity": 105827.8307856901,
-      "cagr": 0.05848294564013745,
-      "max_drawdown": -0.312387627896902,
-      "delta_end_equity_vs_base": 846.9348102161894
+      "end_equity": 107780.99785889518,
+      "cagr": 0.07786363658983797,
+      "max_drawdown": -0.3123876278969018,
+      "delta_end_equity_vs_base": 862.5848858876561
     }
   ],
   "interpretation": "Adversarial sensitivity only. Frozen baseline already uses the prior completed-session exposure. Delay stresses add 1/2/3 EXTRA sessions beyond that baseline timing. No stress result retunes or promotes the frozen model.",

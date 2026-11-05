@@ -1,10 +1,26 @@
 {
   "version": "8.0.2-shadow-completed-session-guard",
-  "generated_at_utc": "2026-11-04T03:19:04.260380+00:00",
+  "generated_at_utc": "2026-11-05T03:49:05.335332+00:00",
   "mode": "SHADOW_ONLY_NO_BROKER_ACTIONS",
   "signal_source": "QQQ_ADJUSTED_DAILY_CLOSE",
   "state_replay": "EXACT_FROM_2009_09_01_WITH_PRESTART_WARMUP",
   "latest": {
+    "asof_date": "2026-11-04",
+    "level": 3,
+    "defense_active": false,
+    "target_leverage": 3.0,
+    "qqq_weight": 0.0,
+    "tqqq_weight": 0.985,
+    "invested_fraction": 0.985,
+    "features": {
+      "close": 691.9500122070312,
+      "sma50": 723.3049829101562,
+      "sma200": 679.4428622436524,
+      "vol20": 0.2304657769947411,
+      "mom12": 0.09986253790782285
+    }
+  },
+  "previous": {
     "asof_date": "2026-11-03",
     "level": 3,
     "defense_active": false,
@@ -15,25 +31,9 @@
     "features": {
       "close": 685.280029296875,
       "sma50": 723.6655859375,
-      "sma200": 679.0130935668946,
+      "sma200": 679.013092956543,
       "vol20": 0.22450305762277678,
-      "mom12": 0.09447243861763588
-    }
-  },
-  "previous": {
-    "asof_date": "2026-11-02",
-    "level": 3,
-    "defense_active": false,
-    "target_leverage": 3.0,
-    "qqq_weight": 0.0,
-    "tqqq_weight": 0.985,
-    "invested_fraction": 0.985,
-    "features": {
-      "close": 681.0900268554688,
-      "sma50": 724.0716809082031,
-      "sma200": 678.6824502563477,
-      "vol20": 0.2235280695583286,
-      "mom12": 0.09302803716713703
+      "mom12": 0.09447254530713756
     }
   },
   "action": "NO_CHANGE",
@@ -44,19 +44,19 @@
     "broker_actions_enabled": false
   },
   "data_audit": {
-    "rows": 4740,
+    "rows": 4741,
     "first_date": "2008-01-02",
-    "last_date": "2026-11-03",
-    "last_close": 685.280029296875,
+    "last_date": "2026-11-04",
+    "last_close": 691.9500122070312,
     "source": "YFINANCE_QQQ_AUTO_ADJUSTED",
-    "raw_rows": 4740,
-    "completed_rows": 4740,
+    "raw_rows": 4741,
+    "completed_rows": 4741,
     "feature_window_sessions": 253,
-    "feature_window_sha256": "f88051a610e58324581357ff9c129eb6cde1dae62e741aa41e185d073cc357b3",
-    "raw_last_date": "2026-11-03",
-    "last_completed_date": "2026-11-03",
+    "feature_window_sha256": "80853582ed32edf91fa6c5e093512efc6aa98f3c52045dadf17a07592a52b954",
+    "raw_last_date": "2026-11-04",
+    "last_completed_date": "2026-11-04",
     "dropped_incomplete_current_session": false,
-    "ny_time_at_validation": "2026-11-03T22:19:03.837805-05:00",
+    "ny_time_at_validation": "2026-11-04T22:49:04.934120-05:00",
     "safe_after_ny_time": "18:00"
   }
 }

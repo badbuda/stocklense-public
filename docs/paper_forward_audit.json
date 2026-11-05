@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
   "status": "MISSED_EXECUTION_REVIEW",
-  "current_signal_date": "2026-11-03",
-  "persisted_signal_date": "2026-11-02",
+  "current_signal_date": "2026-11-04",
+  "persisted_signal_date": "2026-11-03",
   "paper_sessions": 2,
-  "explicit_missed_sessions": 17,
+  "explicit_missed_sessions": 18,
   "errors": [],
   "live_trading_authorized": false,
   "backfill_authorized": false,

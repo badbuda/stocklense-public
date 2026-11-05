@@ -31,12 +31,12 @@
     "evidence_class": "RETROACTIVE_RESEARCH_EXTENSION_NOT_FROZEN_BASELINE",
     "baseline_mutated": false,
     "start": "2008-12-31",
-    "end": "2026-11-03",
-    "sessions": 4488,
-    "strategy_cagr": 0.45026354041226524,
-    "strategy_max_drawdown": -0.5053235345196814,
-    "qqq_cagr": 0.20228540559333807,
-    "qqq_max_drawdown": -0.35118736618377133,
+    "end": "2026-11-04",
+    "sessions": 4489,
+    "strategy_cagr": 0.4525220036928821,
+    "strategy_max_drawdown": -0.5053232028253546,
+    "qqq_cagr": 0.20290424196825585,
+    "qqq_max_drawdown": -0.3511872767702512,
     "warning": "Applies frozen decision rules before their canonical 2009 trading start. Research only; not LEAN parity or original StockLens 8.0 evidence."
   },
   "retroactive_subperiods": [],
@@ -45,25 +45,25 @@
     "actual_start": "2008-12-31",
     "partial_initial_period": true
   },
-  "sessions": 4320,
+  "sessions": 4321,
   "start": "2009-09-01",
-  "end": "2026-11-03",
+  "end": "2026-11-04",
   "strategy_no_contributions": {
-    "end_equity": 61927720.15333955,
-    "cagr": 0.45405932337124133,
-    "max_drawdown": -0.5053235345196812,
-    "estimated_cost": 293679.71543644404
+    "end_equity": 63736031.06178609,
+    "cagr": 0.456411199487639,
+    "max_drawdown": -0.5053232028253543,
+    "estimated_cost": 293679.9555804852
   },
   "qqq_buy_hold_no_contributions": {
-    "end_equity": 2019618.8603089242,
-    "cagr": 0.19127168795506777,
-    "max_drawdown": -0.35118736618377233
+    "end_equity": 2039276.030512041,
+    "cagr": 0.19191045801705897,
+    "max_drawdown": -0.3511872767702525
   },
   "qqq_with_monthly_3500": {
-    "end_equity": 6477629.453559809,
+    "end_equity": 6540677.468504653,
     "paid_capital": 821000.0,
-    "profit_loss": 5656629.453559809,
-    "max_drawdown": -0.3511873661837732,
+    "profit_loss": 5719677.468504653,
+    "max_drawdown": -0.35118727677024986,
     "cagr": null,
     "cagr_reason": "Monthly external contributions make endpoint CAGR misleading; intentionally omitted."
   },
@@ -71,52 +71,52 @@
     "strategy_cost_bps": 5,
     "qqq_cost_bps": 5,
     "matched_cost_assumption": true,
-    "strategy_minus_qqq_end_equity": 129779044.55024537,
-    "strategy_to_qqq_end_equity_ratio": 21.034959622292803
+    "strategy_minus_qqq_end_equity": 133694614.49254863,
+    "strategy_to_qqq_end_equity_ratio": 21.44048420615888
   },
   "strategy_with_monthly_3500": {
-    "end_equity": 136256674.0038052,
+    "end_equity": 140235291.96105328,
     "paid_capital": 821000.0,
-    "profit_loss": 135435674.0038052,
-    "max_drawdown": -0.5053235345196814,
+    "profit_loss": 139414291.96105328,
+    "max_drawdown": -0.5053232028253546,
     "cagr": null,
     "cagr_reason": "Monthly external contributions make endpoint CAGR misleading; intentionally omitted."
   },
   "source_audit": {
     "source": "YFINANCE_QQQ_AUTO_ADJUSTED",
-    "raw_rows": 4740,
-    "completed_rows": 4740,
+    "raw_rows": 4741,
+    "completed_rows": 4741,
     "feature_window_sessions": 253,
-    "feature_window_sha256": "27e7d67e0a097b2f91f47276f163373d480722fb8621b58caf079b7d83b293e1",
-    "raw_last_date": "2026-11-03",
-    "last_completed_date": "2026-11-03",
+    "feature_window_sha256": "795a6863c7e3abd192372c7bdcedf4be8daaf85429665b2885ad90ec78d0eeba",
+    "raw_last_date": "2026-11-04",
+    "last_completed_date": "2026-11-04",
     "dropped_incomplete_current_session": false,
-    "ny_time_at_validation": "2026-11-03T22:01:18.870591-05:00",
+    "ny_time_at_validation": "2026-11-04T22:31:47.962258-05:00",
     "safe_after_ny_time": "18:00"
   },
   "provenance": {
     "adapter": "STOCKLENS_8_FROZEN_REPLAY",
     "evidence_class": "REPLAY_APPROXIMATION",
-    "pure_ledger_sha256": "33a19e6b8a1e5680d57370d4caaac463cee3e2fff4537f42b28f71a1e336e051",
-    "contributed_ledger_sha256": "33065a3a874640fad93b8b75703894402d1c5429bfdfcf585ff75b4554d6d03c",
-    "qqq_ledger_sha256": "b4ca79066b701e17ef60427c5dd95dde91774d43f5f02bb1dc073c88f700791e"
+    "pure_ledger_sha256": "fcefe7c18ccdbf040377075bc9845155ec98d50acd63f560c91197f4132f20eb",
+    "contributed_ledger_sha256": "3588e9c06eee061a4b64b186a208cbfcd30e42e2878788328aa84c872d0d15a9",
+    "qqq_ledger_sha256": "c387d9350ee7b75b1c8db2c3a1060f3f3e1e1ca4b43d88db884fda639d3c3543"
   },
   "comparison": {
-    "strategy_minus_qqq_cagr": 0.26278763541617356,
-    "strategy_minus_qqq_max_drawdown": -0.15413616833590882,
-    "strategy_to_qqq_ending_equity_ratio": 30.663072805661454
+    "strategy_minus_qqq_cagr": 0.26450074147058,
+    "strategy_minus_qqq_max_drawdown": -0.15413592605510174,
+    "strategy_to_qqq_ending_equity_ratio": 31.25424420635329
   },
   "transition_count": 74,
   "drawdown_profile": {
     "strategy": {
-      "max_drawdown": -0.5053235345196812,
+      "max_drawdown": -0.5053232028253543,
       "trough_date": "2020-03-16",
       "recovery_date": "2020-07-06",
       "recovered": true,
       "underwater_sessions_after_trough": 77
     },
     "qqq": {
-      "max_drawdown": -0.35118736618377233,
+      "max_drawdown": -0.3511872767702525,
       "trough_date": "2022-11-03",
       "recovery_date": "2023-12-13",
       "recovered": true,
@@ -126,25 +126,25 @@
   "downside_windows": {
     "strategy": {
       "1m": {
-        "return": -0.48651203683312394,
+        "return": -0.48651212951236356,
         "start": "2020-02-20",
         "end": "2020-03-20",
         "sessions": 21
       },
       "3m": {
-        "return": -0.4223858083553219,
+        "return": -0.42238576316803267,
         "start": "2018-10-03",
         "end": "2019-01-04",
         "sessions": 63
       },
       "6m": {
-        "return": -0.4574007121086966,
+        "return": -0.45740047340562195,
         "start": "2021-11-19",
         "end": "2022-05-23",
         "sessions": 126
       },
       "12m": {
-        "return": -0.4574007121086966,
+        "return": -0.45740047340562195,
         "start": "2021-11-19",
         "end": "2022-11-21",
         "sessions": 252
@@ -152,25 +152,25 @@
     },
     "qqq": {
       "1m": {
-        "return": -0.2764029495253454,
+        "return": -0.2764030101800792,
         "start": "2020-02-13",
         "end": "2020-03-16",
         "sessions": 21
       },
       "3m": {
-        "return": -0.235013755166411,
+        "return": -0.23501380044784814,
         "start": "2022-03-30",
         "end": "2022-06-30",
         "sessions": 63
       },
       "6m": {
-        "return": -0.3147649659372359,
+        "return": -0.31476480755181613,
         "start": "2021-12-15",
         "end": "2022-06-16",
         "sessions": 126
       },
       "12m": {
-        "return": -0.3475839721755667,
+        "return": -0.3475838005273687,
         "start": "2021-12-28",
         "end": "2022-12-28",
         "sessions": 252
@@ -179,13 +179,13 @@
   },
   "underwater": {
     "strategy": {
-      "underwater_sessions": 3858,
-      "underwater_fraction": 0.8930555555555556,
+      "underwater_sessions": 3859,
+      "underwater_fraction": 0.8930803054848415,
       "longest_underwater_run_sessions": 393
     },
     "qqq": {
-      "underwater_sessions": 3665,
-      "underwater_fraction": 0.8483796296296297,
+      "underwater_sessions": 3666,
+      "underwater_fraction": 0.8484147188150891,
       "longest_underwater_run_sessions": 493
     }
   },
@@ -194,41 +194,41 @@
       "start": "2009-09-01",
       "end": "2014-12-31",
       "sessions": 1343,
-      "strategy_cagr": 0.47364472476817787,
-      "strategy_max_drawdown": -0.4603635810389475,
-      "qqq_cagr": 0.21243976541893628,
-      "qqq_max_drawdown": -0.1609928151306338,
-      "excess_cagr": 0.2612049593492416
+      "strategy_cagr": 0.47364510692941386,
+      "strategy_max_drawdown": -0.46036188013125157,
+      "qqq_cagr": 0.21243968490453824,
+      "qqq_max_drawdown": -0.1609927891703682,
+      "excess_cagr": 0.2612054220248756
     },
     {
       "start": "2015-01-02",
       "end": "2019-12-31",
       "sessions": 1258,
-      "strategy_cagr": 0.30445071669075907,
-      "strategy_max_drawdown": -0.4752913246971733,
-      "qqq_cagr": 0.16721334089892825,
-      "qqq_max_drawdown": -0.22796637004092324,
-      "excess_cagr": 0.13723737579183082
+      "strategy_cagr": 0.3044504383276718,
+      "strategy_max_drawdown": -0.47529224560501615,
+      "qqq_cagr": 0.16721335977607565,
+      "qqq_max_drawdown": -0.22796667507561874,
+      "excess_cagr": 0.13723707855159617
     },
     {
       "start": "2020-01-02",
       "end": "2024-12-31",
       "sessions": 1258,
-      "strategy_cagr": 0.6386961849897375,
-      "strategy_max_drawdown": -0.5053235345196814,
-      "qqq_cagr": 0.19531033798344022,
-      "qqq_max_drawdown": -0.351187366183773,
-      "excess_cagr": 0.44338584700629724
+      "strategy_cagr": 0.6386962609253732,
+      "strategy_max_drawdown": -0.5053232028253545,
+      "qqq_cagr": 0.19531037310328614,
+      "qqq_max_drawdown": -0.3511872767702513,
+      "excess_cagr": 0.4433858878220871
     },
     {
       "start": "2025-01-02",
-      "end": "2026-11-03",
-      "sessions": 461,
-      "strategy_cagr": 0.33682632696873593,
-      "strategy_max_drawdown": -0.4356421700435371,
-      "qqq_cagr": 0.1798748036392137,
-      "qqq_max_drawdown": -0.2276830764396881,
-      "excess_cagr": 0.15695152332952222
+      "end": "2026-11-04",
+      "sessions": 462,
+      "strategy_cagr": 0.357347302151801,
+      "strategy_max_drawdown": -0.4356421435232458,
+      "qqq_cagr": 0.18581968061609722,
+      "qqq_max_drawdown": -0.227683133484487,
+      "excess_cagr": 0.17152762153570378
     }
   ],
   "calendar_years": [
@@ -238,11 +238,11 @@
       "start": "2009-09-01",
       "end": "2009-12-31",
       "sessions": 85,
-      "strategy_cagr": 2.77212341290467,
-      "strategy_max_drawdown": -0.15879261247854914,
-      "qqq_cagr": 0.5971280531255776,
-      "qqq_max_drawdown": -0.05426019566218365,
-      "excess_cagr": 2.1749953597790928
+      "strategy_cagr": 2.772124452442304,
+      "strategy_max_drawdown": -0.1587916938867182,
+      "qqq_cagr": 0.5971279752515821,
+      "qqq_max_drawdown": -0.05425989006735299,
+      "excess_cagr": 2.1749964771907218
     },
     {
       "year": 2010,
@@ -250,11 +250,11 @@
       "start": "2010-01-04",
       "end": "2010-12-31",
       "sessions": 252,
-      "strategy_cagr": 0.20386703568530784,
-      "strategy_max_drawdown": -0.46036358103894726,
-      "qqq_cagr": 0.18645029723976303,
-      "qqq_max_drawdown": -0.15609351241101654,
-      "excess_cagr": 0.01741673844554481
+      "strategy_cagr": 0.20387061076000546,
+      "strategy_max_drawdown": -0.4603618801312527,
+      "qqq_cagr": 0.1864502364676368,
+      "qqq_max_drawdown": -0.15609327833271636,
+      "excess_cagr": 0.017420374292368646
     },
     {
       "year": 2011,
@@ -262,11 +262,11 @@
       "start": "2011-01-03",
       "end": "2011-12-30",
       "sessions": 252,
-      "strategy_cagr": -0.23901080520368567,
-      "strategy_max_drawdown": -0.3892272252184068,
-      "qqq_cagr": 0.019079397038448187,
-      "qqq_max_drawdown": -0.1609928151306339,
-      "excess_cagr": -0.25809020224213386
+      "strategy_cagr": -0.2390132650980441,
+      "strategy_max_drawdown": -0.38922885462393264,
+      "qqq_cagr": 0.019078994809873517,
+      "qqq_max_drawdown": -0.16099278917036763,
+      "excess_cagr": -0.2580922599079176
     },
     {
       "year": 2012,
@@ -274,11 +274,11 @@
       "start": "2012-01-03",
       "end": "2012-12-31",
       "sessions": 250,
-      "strategy_cagr": 0.34683123662553883,
-      "strategy_max_drawdown": -0.3187251706646147,
-      "qqq_cagr": 0.15997041938254597,
-      "qqq_max_drawdown": -0.11637925603252841,
-      "excess_cagr": 0.18686081724299286
+      "strategy_cagr": 0.34683403848754235,
+      "strategy_max_drawdown": -0.3187255677733841,
+      "qqq_cagr": 0.15997058458583213,
+      "qqq_max_drawdown": -0.11637949358291355,
+      "excess_cagr": 0.18686345390171022
     },
     {
       "year": 2013,
@@ -286,11 +286,11 @@
       "start": "2013-01-02",
       "end": "2013-12-31",
       "sessions": 252,
-      "strategy_cagr": 1.2355754684204303,
-      "strategy_max_drawdown": -0.17086188999822172,
-      "qqq_cagr": 0.3265531250867819,
-      "qqq_max_drawdown": -0.05853883137473037,
-      "excess_cagr": 0.9090223433336484
+      "strategy_cagr": 1.2355742282890922,
+      "strategy_max_drawdown": -0.17086097104095688,
+      "qqq_cagr": 0.32655286889713997,
+      "qqq_max_drawdown": -0.058538487340991874,
+      "excess_cagr": 0.9090213593919523
     },
     {
       "year": 2014,
@@ -298,11 +298,11 @@
       "start": "2014-01-02",
       "end": "2014-12-31",
       "sessions": 252,
-      "strategy_cagr": 0.6411554103550192,
-      "strategy_max_drawdown": -0.23454266865973317,
-      "qqq_cagr": 0.20259851425081155,
-      "qqq_max_drawdown": -0.08248555410894587,
-      "excess_cagr": 0.43855689610420767
+      "strategy_cagr": 0.6411532911972986,
+      "strategy_max_drawdown": -0.23454183363182501,
+      "qqq_cagr": 0.20259810489946628,
+      "qqq_max_drawdown": -0.08248523420815579,
+      "excess_cagr": 0.4385551862978323
     },
     {
       "year": 2015,
@@ -310,11 +310,11 @@
       "start": "2015-01-02",
       "end": "2015-12-31",
       "sessions": 252,
-      "strategy_cagr": 0.12837415156362053,
-      "strategy_max_drawdown": -0.3222011422433526,
-      "qqq_cagr": 0.0982868128250971,
-      "qqq_max_drawdown": -0.13941042028848827,
-      "excess_cagr": 0.030087338738523428
+      "strategy_cagr": 0.12837425248097167,
+      "strategy_max_drawdown": -0.3222006285278203,
+      "qqq_cagr": 0.0982868207655998,
+      "qqq_max_drawdown": -0.13941060599602761,
+      "excess_cagr": 0.03008743171537187
     },
     {
       "year": 2016,
@@ -322,11 +322,11 @@
       "start": "2016-01-04",
       "end": "2016-12-30",
       "sessions": 252,
-      "strategy_cagr": 0.03520470583139912,
-      "strategy_max_drawdown": -0.2619766328792881,
-      "qqq_cagr": 0.09521776685458772,
-      "qqq_max_drawdown": -0.12036531542024309,
-      "excess_cagr": -0.060013061023188596
+      "strategy_cagr": 0.035203061023370674,
+      "strategy_max_drawdown": -0.26197719151294907,
+      "qqq_cagr": 0.09521729575105753,
+      "qqq_max_drawdown": -0.1203655228249565,
+      "excess_cagr": -0.060014234727686855
     },
     {
       "year": 2017,
@@ -334,11 +334,11 @@
       "start": "2017-01-03",
       "end": "2017-12-29",
       "sessions": 251,
-      "strategy_cagr": 1.225916067027828,
-      "strategy_max_drawdown": -0.145238862859299,
-      "qqq_cagr": 0.3201238622670699,
-      "qqq_max_drawdown": -0.04881938164078048,
-      "excess_cagr": 0.9057922047607581
+      "strategy_cagr": 1.2259157414436146,
+      "strategy_max_drawdown": -0.14523908257738039,
+      "qqq_cagr": 0.3201237710642646,
+      "qqq_max_drawdown": -0.04881947822733501,
+      "excess_cagr": 0.90579197037935
     },
     {
       "year": 2018,
@@ -346,11 +346,11 @@
       "start": "2018-01-02",
       "end": "2018-12-31",
       "sessions": 251,
-      "strategy_cagr": -0.08195626713306714,
-      "strategy_max_drawdown": -0.40325710058510444,
-      "qqq_cagr": -0.018578355821104564,
-      "qqq_max_drawdown": -0.22796637004092357,
-      "excess_cagr": -0.06337791131196258
+      "strategy_cagr": -0.08195652751610416,
+      "strategy_max_drawdown": -0.4032573451186675,
+      "qqq_cagr": -0.018578865977382786,
+      "qqq_max_drawdown": -0.2279666750756183,
+      "excess_cagr": -0.06337766153872137
     },
     {
       "year": 2019,
@@ -358,11 +358,11 @@
       "start": "2019-01-02",
       "end": "2019-12-31",
       "sessions": 252,
-      "strategy_cagr": 0.5848282043365074,
-      "strategy_max_drawdown": -0.303378391574079,
-      "qqq_cagr": 0.38683462909999644,
-      "qqq_max_drawdown": -0.10983221312197311,
-      "excess_cagr": 0.19799357523651095
+      "strategy_cagr": 0.5848263448360571,
+      "strategy_max_drawdown": -0.3033780810385339,
+      "qqq_cagr": 0.3868346290999978,
+      "qqq_max_drawdown": -0.10983213874099751,
+      "excess_cagr": 0.19799171573605934
     },
     {
       "year": 2020,
@@ -370,11 +370,11 @@
       "start": "2020-01-02",
       "end": "2020-12-31",
       "sessions": 253,
-      "strategy_cagr": 1.2925367565391355,
-      "strategy_max_drawdown": -0.5053235345196814,
-      "qqq_cagr": 0.4615733524513146,
-      "qqq_max_drawdown": -0.2855938038176904,
-      "excess_cagr": 0.8309634040878209
+      "strategy_cagr": 1.292540685604358,
+      "strategy_max_drawdown": -0.5053232028253545,
+      "qqq_cagr": 0.46157401025843026,
+      "qqq_max_drawdown": -0.28559357423932175,
+      "excess_cagr": 0.8309666753459277
     },
     {
       "year": 2021,
@@ -382,11 +382,11 @@
       "start": "2021-01-04",
       "end": "2021-12-31",
       "sessions": 252,
-      "strategy_cagr": 0.9253392254686394,
-      "strategy_max_drawdown": -0.30331215750364404,
-      "qqq_cagr": 0.29634932870407216,
-      "qqq_max_drawdown": -0.10851543021607757,
-      "excess_cagr": 0.6289898967645673
+      "strategy_cagr": 0.9253379639447197,
+      "strategy_max_drawdown": -0.30331160064755136,
+      "qqq_cagr": 0.2963491949011938,
+      "qqq_max_drawdown": -0.10851524264203283,
+      "excess_cagr": 0.6289887690435259
     },
     {
       "year": 2022,
@@ -394,11 +394,11 @@
       "start": "2022-01-03",
       "end": "2022-12-30",
       "sessions": 251,
-      "strategy_cagr": -0.44408974024247627,
-      "strategy_max_drawdown": -0.4402854388536688,
-      "qqq_cagr": -0.33536015011305775,
-      "qqq_max_drawdown": -0.3482798557203265,
-      "excess_cagr": -0.10872959012941852
+      "strategy_cagr": -0.4440895753455272,
+      "strategy_max_drawdown": -0.4402852747567477,
+      "qqq_cagr": -0.3353599662442345,
+      "qqq_max_drawdown": -0.34827971472729624,
+      "excess_cagr": -0.1087296091012927
     },
     {
       "year": 2023,
@@ -406,11 +406,11 @@
       "start": "2023-01-03",
       "end": "2023-12-29",
       "sessions": 250,
-      "strategy_cagr": 1.768698071193894,
-      "strategy_max_drawdown": -0.3075591019701278,
-      "qqq_cagr": 0.5692108174869632,
-      "qqq_max_drawdown": -0.10779930508103086,
-      "excess_cagr": 1.1994872537069308
+      "strategy_cagr": 1.7686972457460932,
+      "strategy_max_drawdown": -0.30755905296905117,
+      "qqq_cagr": 0.5692111927921106,
+      "qqq_max_drawdown": -0.10779930508103153,
+      "excess_cagr": 1.1994860529539826
     },
     {
       "year": 2024,
@@ -418,11 +418,11 @@
       "start": "2024-01-02",
       "end": "2024-12-31",
       "sessions": 252,
-      "strategy_cagr": 0.8949470662131636,
-      "strategy_max_drawdown": -0.3672733932646154,
-      "qqq_cagr": 0.27846709410235326,
-      "qqq_max_drawdown": -0.1355773322317534,
-      "excess_cagr": 0.6164799721108103
+      "strategy_cagr": 0.8949475395023803,
+      "strategy_max_drawdown": -0.367273526557533,
+      "qqq_cagr": 0.27846709410235126,
+      "qqq_max_drawdown": -0.13557739360792898,
+      "excess_cagr": 0.616480445400029
     },
     {
       "year": 2025,
@@ -430,23 +430,23 @@
       "start": "2025-01-02",
       "end": "2025-12-31",
       "sessions": 250,
-      "strategy_cagr": 0.44998083062816097,
-      "strategy_max_drawdown": -0.4356421700435371,
-      "qqq_cagr": 0.2115189440015144,
-      "qqq_max_drawdown": -0.2276830764396881,
-      "excess_cagr": 0.23846188662664658
+      "strategy_cagr": 0.4499808440251283,
+      "strategy_max_drawdown": -0.4356421435232458,
+      "qqq_cagr": 0.21151894400151328,
+      "qqq_max_drawdown": -0.227683133484487,
+      "excess_cagr": 0.238461900023615
     },
     {
       "year": 2026,
       "full_year": false,
       "start": "2026-01-02",
-      "end": "2026-11-03",
-      "sessions": 211,
-      "strategy_cagr": 0.22443329087599784,
-      "strategy_max_drawdown": -0.3267537741949813,
-      "qqq_cagr": 0.1471898390206281,
-      "qqq_max_drawdown": -0.11723559697786967,
-      "excess_cagr": 0.07724345185536974
+      "end": "2026-11-04",
+      "sessions": 212,
+      "strategy_cagr": 0.2663897471071799,
+      "strategy_max_drawdown": -0.3267537476013723,
+      "qqq_cagr": 0.16000929660909624,
+      "qqq_max_drawdown": -0.11723577907285887,
+      "excess_cagr": 0.10638045049808365
     }
   ],
   "annual_summary": {
@@ -461,11 +461,11 @@
       "start": "2023-01-03",
       "end": "2023-12-29",
       "sessions": 250,
-      "strategy_cagr": 1.768698071193894,
-      "strategy_max_drawdown": -0.3075591019701278,
-      "qqq_cagr": 0.5692108174869632,
-      "qqq_max_drawdown": -0.10779930508103086,
-      "excess_cagr": 1.1994872537069308
+      "strategy_cagr": 1.7686972457460932,
+      "strategy_max_drawdown": -0.30755905296905117,
+      "qqq_cagr": 0.5692111927921106,
+      "qqq_max_drawdown": -0.10779930508103153,
+      "excess_cagr": 1.1994860529539826
     },
     "worst_strategy_year": {
       "year": 2022,
@@ -473,27 +473,27 @@
       "start": "2022-01-03",
       "end": "2022-12-30",
       "sessions": 251,
-      "strategy_cagr": -0.44408974024247627,
-      "strategy_max_drawdown": -0.4402854388536688,
-      "qqq_cagr": -0.33536015011305775,
-      "qqq_max_drawdown": -0.3482798557203265,
-      "excess_cagr": -0.10872959012941852
+      "strategy_cagr": -0.4440895753455272,
+      "strategy_max_drawdown": -0.4402852747567477,
+      "qqq_cagr": -0.3353599662442345,
+      "qqq_max_drawdown": -0.34827971472729624,
+      "excess_cagr": -0.1087296091012927
     },
     "best_worst_excludes_partial_years": true
   },
   "exposure_mix": {
-    "sessions": 4320,
+    "sessions": 4321,
     "counts": {
-      "3.0": 3513,
+      "3.0": 3514,
       "2.0": 91,
       "1.25": 442,
       "0.0": 274
     },
     "fractions": {
-      "3.0": 0.8131944444444444,
-      "2.0": 0.021064814814814814,
-      "1.25": 0.10231481481481482,
-      "0.0": 0.06342592592592593
+      "3.0": 0.8132376764637815,
+      "2.0": 0.021059939828743348,
+      "1.25": 0.10229113631103912,
+      "0.0": 0.06341124739643601
     }
   },
   "exposure_attribution": {
@@ -503,72 +503,72 @@
     },
     "1.25": {
       "sessions": 442,
-      "compounded_market_return": 0.9278475948154221
+      "compounded_market_return": 0.9278428847775524
     },
     "2.0": {
       "sessions": 91,
-      "compounded_market_return": -0.23178345648983922
+      "compounded_market_return": -0.23178316845184654
     },
     "3.0": {
-      "sessions": 3512,
-      "compounded_market_return": 439.915537799232
+      "sessions": 3513,
+      "compounded_market_return": 452.79136297549354
     }
   },
   "cost_stress": [
     {
       "cost_bps": 0,
-      "end_equity": 65299785.84329351,
-      "cagr": 0.4585558249773962,
-      "max_drawdown": -0.504890406458381,
+      "end_equity": 67206562.239506,
+      "cagr": 0.46091425491402904,
+      "max_drawdown": -0.5048900744736298,
       "estimated_cost": 0.0
     },
     {
       "cost_bps": 5,
-      "end_equity": 61927720.15333955,
-      "cagr": 0.45405932337124133,
-      "max_drawdown": -0.5053235345196812,
-      "estimated_cost": 293679.71543644404
+      "end_equity": 63736031.06178609,
+      "cagr": 0.456411199487639,
+      "max_drawdown": -0.5053232028253543,
+      "estimated_cost": 293679.9555804852
     },
     {
       "cost_bps": 10,
-      "end_equity": 58727334.6841287,
-      "cagr": 0.4495731587010574,
-      "max_drawdown": -0.5057564769148837,
-      "estimated_cost": 560243.2456835185
+      "end_equity": 60442193.2268028,
+      "cagr": 0.4519184938514873,
+      "max_drawdown": -0.5057561455108572,
+      "estimated_cost": 560243.704928279
     },
     {
       "cost_bps": 25,
-      "end_equity": 50072210.029646225,
-      "cagr": 0.4361765247215914,
-      "max_drawdown": -0.5070541901039058,
-      "estimated_cost": 1215582.5445815776
+      "end_equity": 51534335.93033262,
+      "cagr": 0.43850231394852224,
+      "max_drawdown": -0.507053859570032,
+      "estimated_cost": 1215583.5486900674
     },
     {
       "cost_bps": 50,
-      "end_equity": 38355285.79912731,
-      "cagr": 0.41405403407903374,
-      "max_drawdown": -0.5189863240130745,
-      "estimated_cost": 1920699.48179885
+      "end_equity": 39475273.44820298,
+      "cagr": 0.41634750244168317,
+      "max_drawdown": -0.51898716823252,
+      "estimated_cost": 1920701.0903113135
     }
   ],
   "rolling_windows": {
     "1y": {
       "samples": 194,
       "strategy_above_qqq": 148,
-      "worst_excess_cagr": -0.3449712810299739,
-      "best_excess_cagr": 1.782013376266621
+      "worst_excess_cagr": -0.34497180539937167,
+      "best_excess_cagr": 1.7820127928382492
     },
     "3y": {
       "samples": 170,
       "strategy_above_qqq": 166,
-      "worst_excess_cagr": -0.05340275200034661,
-      "best_excess_cagr": 0.6374278137859473
+      "worst_excess_cagr": -0.0534019753293542,
+      "best_excess_cagr": 0.6374281434712203
     },
     "5y": {
       "samples": 146,
       "strategy_above_qqq": 146,
-      "worst_excess_cagr": 0.08498255143204703,
-      "best_excess_cagr": 0.5256401712870624
+      "worst_excess_cagr": 0.08498224755034234,
+      "best_excess_cagr": 0.5256401232012378
     }
   },
   "research_verdict": {

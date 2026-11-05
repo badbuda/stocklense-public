@@ -2,6 +2,13 @@
   "schema_version": 1,
   "items": [
     {
+      "short_sha": "2142d2b",
+      "date": "2026-11-04T03:19:24Z",
+      "title": "shadow: record prospective evidence 2026-11-03",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
       "short_sha": "be5e6eb",
       "date": "2026-11-03T07:04:52+02:00",
       "title": "ops(ST): publish guarded Paper scheduling and monitoring repair tools (#135)",
@@ -75,19 +82,19 @@
       "short_sha": "e3849a9",
       "date": "2026-10-29T22:25:51+02:00",
       "title": "ops(ST): verify real post-filter heartbeat and avoid mistaking new-metric warmup for an outage (#127)",
-      "kind": "PROJECT",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "0c3b5e8",
-      "date": "2026-10-29T22:17:50+02:00",
-      "title": "fix(ST): read actual session-watchdog CloudWatch log group during isolation inspect (#126)",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     }
   ],
   "high_signal_items": [
     {
+      "short_sha": "2142d2b",
+      "date": "2026-11-04T03:19:24Z",
+      "title": "shadow: record prospective evidence 2026-11-03",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
       "short_sha": "be5e6eb",
       "date": "2026-11-03T07:04:52+02:00",
       "title": "ops(ST): publish guarded Paper scheduling and monitoring repair tools (#135)",
@@ -163,16 +170,16 @@
       "title": "ops(ST): verify real post-filter heartbeat and avoid mistaking new-metric warmup for an outage (#127)",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "0c3b5e8",
-      "date": "2026-10-29T22:17:50+02:00",
-      "title": "fix(ST): read actual session-watchdog CloudWatch log group during isolation inspect (#126)",
-      "kind": "PROJECT",
-      "impact": "Repository change; CI validation is separate."
     }
   ],
   "recent_summary": [
+    {
+      "short_sha": "2142d2b",
+      "date": "2026-11-04T03:19:24Z",
+      "title": "shadow: record prospective evidence 2026-11-03",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
     {
       "short_sha": "be5e6eb",
       "date": "2026-11-03T07:04:52+02:00",
@@ -184,13 +191,6 @@
       "short_sha": "11eb29b",
       "date": "2026-11-03T07:01:04+02:00",
       "title": "fix(ST): daily authenticated Paper acceptance and source-honest NAV (#136)",
-      "kind": "PROJECT",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "ba2f478",
-      "date": "2026-11-03T04:14:45Z",
-      "title": "shadow: record prospective evidence 2026-11-02",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     }
