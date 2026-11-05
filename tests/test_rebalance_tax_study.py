@@ -1,7 +1,8 @@
 """SL-51 scenarios: exact target shares, guarded risk exits and tax drag."""
 import pytest
 from decimal import Decimal
-from research.rebalance_tax_study import replay, compare, target
+from research.rebalance_tax_study import replay, compare, target, monthly_broker_tax_projection
+from stocklens.tax_research import TaxBook
 
 
 def session(day, lev, action="REBALANCE_NEXT_SESSION", q=100, t=100, fx=3.5):
@@ -74,3 +75,26 @@ def test_unsorted_and_missing_fx_fail_closed():
     e=session("2026-10-30",3,fx=0)
     with pytest.raises(ValueError,match="FX"):
         replay([e])
+
+
+def test_monthly_broker_projection_credits_later_loss_in_same_year():
+    book=TaxBook()
+    book.buy("2026-10-30","TQQQ",10,100,0,3.5)
+    book.sell("2026-11-02","TQQQ",5,120,0,3.5)
+    book.sell("2026-12-02","TQQQ",5,80,0,3.5)
+    settlement=monthly_broker_tax_projection(book.events)["settlements"]
+    assert len(settlement)==2
+    assert settlement[0]["month"]=="2026-11"
+    assert settlement[0]["estimated_settlement_ils"]==87.5
+    assert settlement[1]["estimated_settlement_ils"]==-87.5
+    assert settlement[1]["year_to_date_liability_ils"]==0
+
+
+def test_monthly_netting_does_not_claim_cross_year_refund():
+    book=TaxBook()
+    book.buy("2026-10-30","TQQQ",10,100,0,3.5)
+    book.sell("2026-12-02","TQQQ",5,120,0,3.5)
+    book.sell("2027-01-04","TQQQ",5,80,0,3.5)
+    rows=monthly_broker_tax_projection(book.events)["settlements"]
+    assert rows[0]["estimated_settlement_ils"]==87.5
+    assert rows[1]["estimated_settlement_ils"]==0
