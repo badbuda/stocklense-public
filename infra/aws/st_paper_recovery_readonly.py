@@ -33,7 +33,7 @@ def require(condition, reason):
 
 
 def git_blob_sha(content: bytes) -> str:
-    return hashlib.sha1(b"blob " + str(len(content)).encode() + b"\\0" + content).hexdigest()
+    return hashlib.sha1(b"blob " + str(len(content)).encode() + b"\0" + content).hexdigest()
 
 
 def inspect_archive(payload: bytes, expected_code_sha: str) -> dict:
@@ -55,6 +55,7 @@ def inspect_archive(payload: bytes, expected_code_sha: str) -> dict:
                 "entrypoint_git_blob": None,
             }
             if paper_module in names:
+                require(z.getinfo(paper_module).file_size <= 2_000_000, "OVERSIZED_PAPER_MODULE")
                 raw = z.read(paper_module)
                 blob_sha = git_blob_sha(raw)
                 outcome["paper_engine_git_blob"] = blob_sha
@@ -62,6 +63,7 @@ def inspect_archive(payload: bytes, expected_code_sha: str) -> dict:
                     blob_sha == VERIFIED_PUBLIC_PAPER_GIT_BLOB
                 )
             if independent in names:
+                require(z.getinfo(independent).file_size <= 2_000_000, "OVERSIZED_PAPER_ENTRYPOINT")
                 outcome["entrypoint_git_blob"] = git_blob_sha(z.read(independent))
             return outcome
     except (BadZipFile, OSError, KeyError, ValueError) as exc:
