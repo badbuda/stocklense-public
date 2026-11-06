@@ -84,3 +84,65 @@ def test_guarded_st_paper_is_not_falsely_reported_disabled():
     assert '"UNSAFE_ST_ORCHESTRATOR_RULE"' in source
     assert '"UNSAFE_ST_PAPER_OR_ORCHESTRATOR_RULE"' not in source
     assert '"st_paper":"DISABLED"' not in source
+
+
+def test_watchdog_bounded_recent_window_does_not_claim_old_pass_as_latest():
+    now=datetime(2026,11,6,20,0,tzinfo=timezone.utc)
+    class Pages:
+        def __init__(self):
+            self.calls=[]
+        def filter_log_events(self,**kwargs):
+            self.calls.append(kwargs)
+            if kwargs["startTime"] < int((now.timestamp()-7*3600)*1000):
+                return {"events":[{"eventId":"old-"+str(len(self.calls)),
+                                   "timestamp":1793970000000,
+                                   "message":'{"metrics":{"WatchdogFailClosed":0},"failures":[],"status":"PASS"}'}],
+                        "nextToken":str(len(self.calls))}
+            return {"events":[{"eventId":"recent","timestamp":1793995200000,
+                               "message":'{"metrics":{"WatchdogFailClosed":1},"failures":["MISSING_RECEIPT"],"status":"FAIL_CLOSED"}'}]}
+    client=Pages()
+    out=f.watchdog_logs(client,"stocklens-st-watchdog",now)
+    assert out["pagination_incomplete"] is False
+    assert out["window_hours"] == 6
+    assert out["last_reports"][-1]["status"] == "FAIL_CLOSED"
+    assert "MISSING_RECEIPT" in out["last_reports"][-1]["failures"]
+    assert len(client.calls)==9
+
+
+def test_watchdog_all_windows_paginated_reports_unknown_not_old_pass():
+    now=datetime(2026,11,6,20,0,tzinfo=timezone.utc)
+    class AlwaysTruncated:
+        calls=0
+        def filter_log_events(self,**kwargs):
+            self.calls+=1
+            return {"events":[],"nextToken":str(self.calls)}
+    client=AlwaysTruncated()
+    out=f.watchdog_logs(client,"stocklens-st-watchdog",now)
+    assert out["pagination_incomplete"] is True
+    assert out["last_reports"] == []
+    assert out["latest_structured_utc"] is None
+    assert client.calls == 32
+
+
+def test_st_metric_provenance_requires_isolated_log_group_and_namespace():
+    class MetricFilters:
+        def __init__(self,group=None):
+            self.group=group
+        def describe_metric_filters(self,**kwargs):
+            assert kwargs["logGroupName"]=="/aws/lambda/stocklens-st-session-watchdog"
+            expected=("MissedSessions","WatchdogFailClosed","WatchdogHeartbeat",
+                      "MissingOrLateScheduledSignals","BookHalted",
+                      "SchedulerStateMismatch","InvalidReceipts","ConfigurationError")
+            group=self.group or kwargs["logGroupName"]
+            return {"metricFilters":[{
+                "logGroupName":group,
+                "filterPattern":"{ $.metrics."+name+" = * }",
+                "metricTransformations":[{
+                    "metricName":name,"metricNamespace":"StockLens/IsolatedST",
+                    "metricValue":"$.metrics."+name,
+                }]
+            } for name in expected]}
+    good=f.isolated_metric_origins(MetricFilters(),"stocklens-st-session-watchdog")
+    assert good["status"]=="ISOLATED_ST_FILTERS_VERIFIED"
+    bad=f.isolated_metric_origins(MetricFilters("/aws/lambda/old-staging"),"stocklens-st-session-watchdog")
+    assert bad["status"]=="ST_ISOLATION_INCOMPLETE_OR_UNVERIFIED"
