@@ -74,3 +74,13 @@ def test_no_alarm_mutations_or_broker_methods():
         assert forbidden not in source
     assert '"PROD","ALL_DISABLED"' not in source  # never proclaim production from unverified literal
     assert "POTENTIAL_CROSS_ENVIRONMENT_CONTAMINATION" in source
+
+
+def test_guarded_st_paper_is_not_falsely_reported_disabled():
+    source=Path("infra/aws/stocklens_st_alarm_forensics.py").read_text()
+    assert '"CandidatePaperErrorsAlarm"' in source
+    assert 'st_schedules[name]=state' in source
+    assert 'st_schedules["CandidatePaperOnlyRuleName"]' in source
+    assert '"UNSAFE_ST_ORCHESTRATOR_RULE"' in source
+    assert '"UNSAFE_ST_PAPER_OR_ORCHESTRATOR_RULE"' not in source
+    assert '"st_paper":"DISABLED"' not in source
