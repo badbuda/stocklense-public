@@ -64,7 +64,7 @@ def _normalize_intraday(df: pd.DataFrame, symbol: str) -> pd.DataFrame:
     return out
 
 
-def _fetch_intraday(symbol: str, start: date, end_exclusive: date) -> pd.DataFrame:
+def _fetch_intraday(symbol: str, start: date, end_exclusive: date, *, expected_session: str | None = None) -> pd.DataFrame:
     import yfinance as yf
     last: Exception | None = None
     for attempt in range(3):
@@ -80,7 +80,13 @@ def _fetch_intraday(symbol: str, start: date, end_exclusive: date) -> pd.DataFra
                 progress=False,
                 threads=False,
             )
-            return _normalize_intraday(raw, symbol)
+            normalized = _normalize_intraday(raw, symbol)
+            # A nonempty Yahoo response can still contain a truncated session.
+            # Validate *inside* the retry loop so transient partial 1m data
+            # is re-fetched without ever using its last bar as a true close.
+            if expected_session is not None:
+                _eod_close(normalized, expected_session, symbol)
+            return normalized
         except Exception as exc:
             last = exc
             if attempt < 2:
@@ -161,7 +167,8 @@ def fetch_execution_market(signal_date: str, current_completed_date: str) -> Ses
         raise PaperIntegrityError("NO_NEW_COMPLETED_SESSION")
     start = start_signal + timedelta(days=1)
     end = current + timedelta(days=1)
-    frames = {s: _fetch_intraday(s, start, end) for s in SYMBOLS}
+    frames = {s: _fetch_intraday(s, start, end, expected_session=current_completed_date)
+              for s in SYMBOLS}
     common = sorted(set(_session_dates(frames["QQQ"])) & set(_session_dates(frames["TQQQ"])))
     common = [d for d in common if d > signal_date]
     if not common:

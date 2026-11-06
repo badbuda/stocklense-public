@@ -81,7 +81,7 @@ def alarm_details(cf,cw,logical,*,now):
     }
 
 
-def watchdog_logs(client,fn,now):
+def _watchdog_logs_window(client,fn,now,hours):
     # Read up to eight pages; disclose any truncation rather than hiding errors.
     # The structured JSON printed by the watchdog is more useful than Lambda
     # START/REPORT lines. Search a full day to distinguish older metrics from
@@ -93,7 +93,7 @@ def watchdog_logs(client,fn,now):
     last_next=None
     while pages<8:
         args=dict(logGroupName="/aws/lambda/"+fn,
-                  startTime=int((now-timedelta(hours=24)).timestamp()*1000),
+                  startTime=int((now-timedelta(hours=hours)).timestamp()*1000),
                   endTime=int(now.timestamp()*1000),limit=200)
         if token: args["nextToken"]=token
         response=client.filter_log_events(**args)
@@ -122,6 +122,7 @@ def watchdog_logs(client,fn,now):
         if not last_next or last_next==token: break
         token=last_next
     return {
+        "window_hours":hours,
         "last_reports":records[-8:],
         "reports_seen":len(records),
         "pages":pages,
@@ -130,15 +131,58 @@ def watchdog_logs(client,fn,now):
     }
 
 
+
+def watchdog_logs(client,fn,now):
+    """Never mistake the oldest page of a truncated day for the latest status."""
+    for hours in (24,6,2,1):
+        result=_watchdog_logs_window(client,fn,now,hours)
+        if not result["pagination_incomplete"]:
+            result["latest_structured_utc"]=(result["last_reports"][-1]["utc"]
+                                             if result["last_reports"] else None)
+            return result
+    return {"last_reports":[],"reports_seen":None,"pages":8,"window_hours":1,
+            "latest_structured_utc":None,"pagination_incomplete":True,
+            "note":"INCOMPLETE_EVEN_LAST_HOUR_NO_LATEST_STATE_CLAIM"}
+
+
+def isolated_metric_origins(logs,watchdog_name):
+    """Check ST metric filters are scoped to ST's own CloudWatch log group."""
+    group="/aws/lambda/"+watchdog_name
+    expected={"MissedSessions","WatchdogFailClosed","WatchdogHeartbeat",
+              "MissingOrLateScheduledSignals","BookHalted","SchedulerStateMismatch",
+              "InvalidReceipts","ConfigurationError"}
+    try:
+        rows=logs.describe_metric_filters(
+            logGroupName=group,filterNamePrefix="stocklens-st-watchdog-"
+        ).get("metricFilters",[])
+    except Exception as exc:
+        return {"status":"UNVERIFIED_METRIC_FILTER_READ","error_type":type(exc).__name__}
+    matched=set()
+    for row in rows:
+        tt=row.get("metricTransformations",[])
+        if row.get("logGroupName")!=group or len(tt)!=1:continue
+        t=tt[0];name=t.get("metricName")
+        if (name in expected and t.get("metricNamespace")=="StockLens/IsolatedST"
+            and t.get("metricValue")=="$.metrics."+name
+            and row.get("filterPattern")=="{ $.metrics."+name+" = * }"):
+            matched.add(name)
+    return {"status":"ISOLATED_ST_FILTERS_VERIFIED" if matched==expected
+                     else "ST_ISOLATION_INCOMPLETE_OR_UNVERIFIED",
+            "matched":len(matched),"expected":len(expected),"log_group":group,
+            "note":"Metric origin verification does not prove Paper receipts."}
+
+
 def summarize(evidence):
     print("ST_ALARM_FORENSICS:READ_ONLY")
     print("MONITORING_PARAMETERS:",evidence.get("st_monitoring_parameters"))
     print("ST_SCHEDULES:", evidence.get("st_schedules"))
+    print("ISOLATED_METRIC_ORIGINS:",evidence.get("isolated_metric_origins"))
     print("SHARED_METRIC_RISK:",evidence["shared_metric_risk"]["status"],
           ",".join(evidence["shared_metric_risk"]["unscoped_alarm_names"]))
     for logical,data in evidence["alarms"].items():
         print("ALARM:",logical,data.get("state",data.get("status")),
               "updated="+str(data.get("state_updated_utc")),
+              "namespace="+str(data.get("namespace")),
               "reason="+str(data.get("reason",data.get("message","")))[:350])
         if data.get("state")=="ALARM":
             print("  recent_metric_points:",data.get("latest_metrics",[])[-3:])
@@ -146,6 +190,8 @@ def summarize(evidence):
     for name,data in evidence.get("watchdogs_by_environment",{}).items():
         print("WATCHDOG:",name,"reports_seen="+str(data.get("reports_seen")),
               "truncated="+str(data.get("pagination_incomplete")),
+              "window_hours="+str(data.get("window_hours")),
+              "latest_report_utc="+str(data.get("latest_structured_utc")),
               "error="+str(data.get("message","")))
         for report in data.get("last_reports",[])[-2:]:
             print("  ",report["utc"],report.get("status"),
@@ -213,6 +259,8 @@ def main():
         except Exception as exc:
             evidence["alarms"][logical]={"status":"READ_ERROR","type":type(exc).__name__,
                                          "message":str(exc)[:220]}
+    evidence["isolated_metric_origins"]=isolated_metric_origins(
+        logs,st["CandidateSessionWatchdogFunctionName"])
     unscoped=[
         logical for logical,item in evidence["alarms"].items()
         if item.get("namespace")=="StockLens/IndependentStaging"

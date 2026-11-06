@@ -46,3 +46,65 @@ def test_duplicate_minute_prices_cannot_inflate_completeness():
     x=bars("2026-10-09",390)
     with pytest.raises(PaperIntegrityError, match="DUPLICATE_MINUTE_BARS"):
         _eod_close(pd.concat([x, x.iloc[:1]]),"2026-10-09","TQQQ")
+
+
+def test_partial_yahoo_minute_response_retries_before_accepting(monkeypatch):
+    from datetime import date
+    from types import SimpleNamespace
+    import sys
+    import stocklens.paper as paper
+
+    seen = []
+    def download(symbol, **kwargs):
+        seen.append((symbol, kwargs))
+        return bars("2026-11-05", 289 if len(seen) == 1 else 390, 81.25)
+    monkeypatch.setitem(sys.modules, "yfinance", SimpleNamespace(download=download))
+    monkeypatch.setattr(paper._time, "sleep", lambda _: None)
+    observed = paper._fetch_intraday(
+        "QQQ", date(2026, 11, 5), date(2026, 11, 6),
+        expected_session="2026-11-05",
+    )
+    assert len(seen) == 2
+    assert len(observed) == 390
+    assert paper._eod_close(observed, "2026-11-05", "QQQ") == 81.25
+
+
+def test_permanently_partial_yahoo_minute_response_fails_closed(monkeypatch):
+    from datetime import date
+    from types import SimpleNamespace
+    import sys
+    import stocklens.paper as paper
+
+    calls = []
+    def download(symbol, **kwargs):
+        calls.append(symbol)
+        return bars("2026-11-05", 289)
+    monkeypatch.setitem(sys.modules, "yfinance", SimpleNamespace(download=download))
+    monkeypatch.setattr(paper._time, "sleep", lambda _: None)
+    with pytest.raises(PaperIntegrityError, match=r"INTRADAY_FETCH_FAILED:QQQ:TOO_FEW_MINUTE_BARS:QQQ:2026-11-05:289:required=385"):
+        paper._fetch_intraday(
+            "QQQ", date(2026, 11, 5), date(2026, 11, 6),
+            expected_session="2026-11-05",
+        )
+    assert calls == ["QQQ", "QQQ", "QQQ"]
+
+
+def test_missing_market_close_not_accepted_by_retries(monkeypatch):
+    from datetime import date
+    from types import SimpleNamespace
+    import sys
+    import stocklens.paper as paper
+
+    attempts = []
+    full = bars("2026-11-05", 390)
+    def download(symbol, **kwargs):
+        attempts.append(symbol)
+        return full.iloc[:389].drop(index=full.index[-2])
+    monkeypatch.setitem(sys.modules, "yfinance", SimpleNamespace(download=download))
+    monkeypatch.setattr(paper._time, "sleep", lambda _: None)
+    with pytest.raises(PaperIntegrityError, match="INTRADAY_FETCH_FAILED:QQQ:MISSING_NEAR_SESSION_CLOSE"):
+        paper._fetch_intraday(
+            "QQQ", date(2026, 11, 5), date(2026, 11, 6),
+            expected_session="2026-11-05",
+        )
+    assert len(attempts) == 3
