@@ -2,48 +2,69 @@
   "schema_version": 1,
   "publication_identity": {
     "schema_version": 2,
-    "git_sha": "2142d2b8c7c84c53b823161b9bcb8164cf069712",
+    "git_sha": "b88ec93b1d222a914c553b9f9f5ef54fd5d52d1a",
     "signal_asof": null,
     "replay_dataset_sha256": "db0889da31af43b1b75e005c1f4ab2cad421dfb55a6c55a77a223e0623950d95",
-    "replay_rows_sha256": "fd52cd7b4ce2e9e5f50b3fcb7cbed519fa6384b213395b0fc214a054c19d62c4",
+    "replay_rows_sha256": "9ca790deb31d2ff1abd6d1dee57c12ec100b79e6ea5aa24e281dc825195c013e",
     "simulator_contract_sha256": "80745a3640c6fe667a3c500571fb15abee1d532a5b720fb6efc8b52f291dfc68",
-    "generation_id": "08b97994c9f10e942e9dcacc178202b802a9d0b60d00906e84a1f6eae7c24927"
+    "generation_id": "40f02bc5d1c9270f3526f1077858862dd4ecba1e78fa2e584e2c8143b51100a6"
   },
   "status": "PASS",
-  "episode_count": 10,
+  "episode_count": 13,
   "deepest_episode": {
     "peak_date": "2026-06-02",
     "trough_date": "2026-07-29",
-    "max_drawdown": -0.32608002269767344,
+    "max_drawdown": -0.3260799960774511,
     "recovery_date": "2026-10-06",
     "underwater_sessions": 87
   },
   "longest_episode": {
-    "peak_date": "2025-11-03",
-    "trough_date": "2026-03-30",
-    "max_drawdown": -0.27839424694224857,
-    "recovery_date": "2026-04-22",
-    "underwater_sessions": 116
+    "peak_date": "2026-06-02",
+    "trough_date": "2026-07-29",
+    "max_drawdown": -0.3260799960774511,
+    "recovery_date": "2026-10-06",
+    "underwater_sessions": 87
   },
   "open_underwater_episode": {
     "peak_date": "2026-10-06",
     "trough_date": "2026-11-02",
-    "max_drawdown": -0.2890276607807869,
+    "max_drawdown": -0.2890276607807871,
     "recovery_date": null,
-    "underwater_sessions": 20
+    "underwater_sessions": 21
   },
   "episodes": [
     {
-      "peak_date": "2025-11-03",
+      "peak_date": "2025-11-05",
+      "trough_date": "2025-11-20",
+      "max_drawdown": -0.1756498462291083,
+      "recovery_date": "2025-12-05",
+      "underwater_sessions": 21
+    },
+    {
+      "peak_date": "2025-12-05",
+      "trough_date": "2025-12-08",
+      "max_drawdown": -0.0057553285367687446,
+      "recovery_date": "2025-12-10",
+      "underwater_sessions": 3
+    },
+    {
+      "peak_date": "2025-12-10",
+      "trough_date": "2025-12-17",
+      "max_drawdown": -0.126527015186642,
+      "recovery_date": "2026-01-27",
+      "underwater_sessions": 31
+    },
+    {
+      "peak_date": "2026-01-28",
       "trough_date": "2026-03-30",
-      "max_drawdown": -0.27839424694224857,
+      "max_drawdown": -0.27179836939419644,
       "recovery_date": "2026-04-22",
-      "underwater_sessions": 116
+      "underwater_sessions": 58
     },
     {
       "peak_date": "2026-04-22",
       "trough_date": "2026-04-23",
-      "max_drawdown": -0.01689800146194642,
+      "max_drawdown": -0.016898279986330866,
       "recovery_date": "2026-04-24",
       "underwater_sessions": 2
     },
@@ -57,51 +78,51 @@
     {
       "peak_date": "2026-05-01",
       "trough_date": "2026-05-04",
-      "max_drawdown": -0.005651777657912915,
+      "max_drawdown": -0.005651505979496485,
       "recovery_date": "2026-05-05",
       "underwater_sessions": 2
     },
     {
       "peak_date": "2026-05-06",
       "trough_date": "2026-05-07",
-      "max_drawdown": -0.0035788605122634154,
+      "max_drawdown": -0.0035788605122631933,
       "recovery_date": "2026-05-08",
       "underwater_sessions": 2
     },
     {
       "peak_date": "2026-05-11",
       "trough_date": "2026-05-12",
-      "max_drawdown": -0.02544564566516505,
+      "max_drawdown": -0.025445390591757766,
       "recovery_date": "2026-05-13",
       "underwater_sessions": 2
     },
     {
       "peak_date": "2026-05-14",
       "trough_date": "2026-05-19",
-      "max_drawdown": -0.07500838802678289,
+      "max_drawdown": -0.07500838254665465,
       "recovery_date": "2026-05-26",
       "underwater_sessions": 7
     },
     {
       "peak_date": "2026-05-26",
       "trough_date": "2026-05-27",
-      "max_drawdown": -0.0034097385012830106,
+      "max_drawdown": -0.003409738215694569,
       "recovery_date": "2026-05-28",
       "underwater_sessions": 2
     },
     {
       "peak_date": "2026-06-02",
       "trough_date": "2026-07-29",
-      "max_drawdown": -0.32608002269767344,
+      "max_drawdown": -0.3260799960774511,
       "recovery_date": "2026-10-06",
       "underwater_sessions": 87
     },
     {
       "peak_date": "2026-10-06",
       "trough_date": "2026-11-02",
-      "max_drawdown": -0.2890276607807869,
+      "max_drawdown": -0.2890276607807871,
       "recovery_date": null,
-      "underwater_sessions": 20
+      "underwater_sessions": 21
     }
   ],
   "semantics": "Gross frozen-replay underwater episodes measured in replay sessions. Recovery means prior NAV peak regained; no execution-parity claim.",

@@ -2,6 +2,20 @@
   "schema_version": 1,
   "items": [
     {
+      "short_sha": "b88ec93",
+      "date": "2026-11-05T15:24:36+02:00",
+      "title": "research(SL-50 SL-51): tax-lot scenarios and rebalance tax-drag audit",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "32d7474",
+      "date": "2026-11-05T03:49:24Z",
+      "title": "shadow: record prospective evidence 2026-11-04",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
       "short_sha": "2142d2b",
       "date": "2026-11-04T03:19:24Z",
       "title": "shadow: record prospective evidence 2026-11-03",
@@ -68,26 +82,26 @@
       "short_sha": "f7db1ff",
       "date": "2026-10-29T23:06:04+02:00",
       "title": "fix(portal): keep browser E2E green when stale Paper is correctly warned, gate Paper readiness separately (#129)",
-      "kind": "PROJECT",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "fb18206",
-      "date": "2026-10-29T22:32:04+02:00",
-      "title": "guard(ST): validate first scheduled Signal against frozen-source fingerprint and cron receipt time (#128)",
-      "kind": "PROJECT",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "e3849a9",
-      "date": "2026-10-29T22:25:51+02:00",
-      "title": "ops(ST): verify real post-filter heartbeat and avoid mistaking new-metric warmup for an outage (#127)",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     }
   ],
   "high_signal_items": [
     {
+      "short_sha": "b88ec93",
+      "date": "2026-11-05T15:24:36+02:00",
+      "title": "research(SL-50 SL-51): tax-lot scenarios and rebalance tax-drag audit",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "32d7474",
+      "date": "2026-11-05T03:49:24Z",
+      "title": "shadow: record prospective evidence 2026-11-04",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
       "short_sha": "2142d2b",
       "date": "2026-11-04T03:19:24Z",
       "title": "shadow: record prospective evidence 2026-11-03",
@@ -156,41 +170,27 @@
       "title": "fix(portal): keep browser E2E green when stale Paper is correctly warned, gate Paper readiness separately (#129)",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "fb18206",
-      "date": "2026-10-29T22:32:04+02:00",
-      "title": "guard(ST): validate first scheduled Signal against frozen-source fingerprint and cron receipt time (#128)",
-      "kind": "PROJECT",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "e3849a9",
-      "date": "2026-10-29T22:25:51+02:00",
-      "title": "ops(ST): verify real post-filter heartbeat and avoid mistaking new-metric warmup for an outage (#127)",
-      "kind": "PROJECT",
-      "impact": "Repository change; CI validation is separate."
     }
   ],
   "recent_summary": [
     {
+      "short_sha": "b88ec93",
+      "date": "2026-11-05T15:24:36+02:00",
+      "title": "research(SL-50 SL-51): tax-lot scenarios and rebalance tax-drag audit",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "32d7474",
+      "date": "2026-11-05T03:49:24Z",
+      "title": "shadow: record prospective evidence 2026-11-04",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
       "short_sha": "2142d2b",
       "date": "2026-11-04T03:19:24Z",
       "title": "shadow: record prospective evidence 2026-11-03",
-      "kind": "PROJECT",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "be5e6eb",
-      "date": "2026-11-03T07:04:52+02:00",
-      "title": "ops(ST): publish guarded Paper scheduling and monitoring repair tools (#135)",
-      "kind": "PROJECT",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "11eb29b",
-      "date": "2026-11-03T07:01:04+02:00",
-      "title": "fix(ST): daily authenticated Paper acceptance and source-honest NAV (#136)",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     }

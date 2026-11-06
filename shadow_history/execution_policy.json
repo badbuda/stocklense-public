@@ -1,9 +1,12 @@
 {
   "schema_version": 1,
-  "generated_at_utc": "2026-11-05T03:49:17.924711+00:00",
-  "status": "NO_ACTION_REQUIRED",
-  "next_action": "WAIT_FOR_NEXT_SIGNAL",
-  "window_statuses": {},
+  "generated_at_utc": "2026-11-06T03:37:55.363787+00:00",
+  "status": "PAPER_PLAN_READY",
+  "next_action": "OBSERVE_SCHEDULED_WINDOWS",
+  "window_statuses": {
+    "sell": "UPCOMING",
+    "buy": "UPCOMING"
+  },
   "blocked_sides": [],
   "automatic_catchup": false,
   "catchup_policy": "NEVER_AUTO_EXECUTE_AFTER_MISSED_OR_LATE_WINDOW",

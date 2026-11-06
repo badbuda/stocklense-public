@@ -1,15 +1,15 @@
 {
   "status": "PLAN_READY",
-  "signal_date": "2026-11-04",
-  "signal_action": "NO_CHANGE",
+  "signal_date": "2026-11-05",
+  "signal_action": "REBALANCE_NEXT_SESSION",
   "bootstrap": false,
-  "execution_required": false,
+  "execution_required": true,
   "target": {
-    "level": 3,
+    "level": 1,
     "defense": false,
-    "leverage": 3.0,
-    "qqq_weight": 0.0,
-    "tqqq_weight": 0.985
+    "leverage": 1.25,
+    "qqq_weight": 0.861875,
+    "tqqq_weight": 0.123125
   },
   "prior_paper_session": "2026-10-09",
   "policy": {

@@ -1,14 +1,14 @@
 {
   "schema_version": 1,
   "kind": "STOCKLENS_WORKBENCH_CANONICAL_EVIDENCE_BUNDLE",
-  "generated_at_utc": "2026-11-05T03:49:18.657128+00:00",
+  "generated_at_utc": "2026-11-06T03:37:55.985085+00:00",
   "model": "StockLens 8.0 FROZEN",
   "self_check": {
     "status": "PASS",
     "errors": [],
     "replay_sessions": 252,
     "transition_count": 67,
-    "manifest_sha256": "a8c1fb9bf99ca3e66f6dcdb588ae44b139931044b1b0cc74bf79f8e9799a74a3",
+    "manifest_sha256": "9b0590d598275e13cdc88dcd2ad9afcc88639a04bc15a91748fa3852073c44f8",
     "automatic_model_change": false
   },
   "evidence_manifest": {
@@ -18,7 +18,7 @@
     "automatic_model_change": false,
     "automatic_promotion": false,
     "artifacts": {
-      "historical_replay/daily_states.csv": "471e639daf2a8baa17a8eddecccd3066a857ea9897b4588af81b547f7ccf591e",
+      "historical_replay/daily_states.csv": "2d059c3c2108b308acd740a683c7945bd49b78f2e8e85f68c81dbb30754ad5a2",
       "governance/qc_724_leverage_transitions.json": "e2d5851aed6688ae27cb6590a9adfac3ece449818d7ca923d7d011147b3a553e",
       "governance/qc_724_order_golden_master.json": "153edd0a5c8ebeed408b5d3b7d6a79af508c6f3f5ee8ed1868a3a65fc0fe17fb",
       "governance/qc_724_daily_state_manifest.json": "4a7e0757834866b90ccc14c53bf42123da2e530b01cca8d827f2144d5c5b6256",
@@ -31,17 +31,17 @@
       "lean_daily_state": "VERIFIED_FINGERPRINT_RAW_ROWS_MISSING",
       "prospective": "IMMATURE_FUTURE_ONLY"
     },
-    "manifest_sha256": "a8c1fb9bf99ca3e66f6dcdb588ae44b139931044b1b0cc74bf79f8e9799a74a3"
+    "manifest_sha256": "9b0590d598275e13cdc88dcd2ad9afcc88639a04bc15a91748fa3852073c44f8"
   },
   "live": {
-    "asof_date": "2026-11-03",
+    "asof_date": "2026-11-04",
     "action": "NO_CHANGE",
     "level": 3,
     "target_leverage": 3.0
   },
   "replay": {
-    "start": "2025-11-03",
-    "end": "2026-11-03",
+    "start": "2025-11-04",
+    "end": "2026-11-04",
     "sessions": 252,
     "dataset_sha256": "db0889da31af43b1b75e005c1f4ab2cad421dfb55a6c55a77a223e0623950d95"
   },

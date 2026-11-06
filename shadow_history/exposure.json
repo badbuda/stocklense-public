@@ -1,15 +1,15 @@
 {
   "target": {
-    "qqq_weight": 0.0,
-    "tqqq_weight": 0.985,
-    "cash_weight": 0.015000000000000013,
-    "effective_beta_proxy": 2.955
+    "qqq_weight": 0.861875,
+    "tqqq_weight": 0.123125,
+    "cash_weight": 0.015000000000000055,
+    "effective_beta_proxy": 1.23125
   },
   "paper_status": "ACTIVE",
   "drift": {
-    "qqq_weight": 0.0,
-    "tqqq_weight": 0.0007683128442422804,
-    "max_abs_weight_drift": 0.0007683128442422804
+    "qqq_weight": -0.861875,
+    "tqqq_weight": 0.8626433128442422,
+    "max_abs_weight_drift": 0.8626433128442422
   },
-  "rebalance_required": false
+  "rebalance_required": true
 }

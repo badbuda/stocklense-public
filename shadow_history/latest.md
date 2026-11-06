@@ -1,25 +1,25 @@
 # StockLens 8.0 Shadow Signal
 
-**As of completed QQQ close:** 2026-11-04  
-**Action:** NO_CHANGE  
-**Changed vs prior session:** NO
+**As of completed QQQ close:** 2026-11-05  
+**Action:** REBALANCE_NEXT_SESSION  
+**Changed vs prior session:** YES
 
 ## Current state
 
-- Level: **3**
+- Level: **1**
 - Defense: **OFF**
-- Target leverage: **3.00x**
-- QQQ target weight: **0.00%**
-- TQQQ target weight: **98.50%**
+- Target leverage: **1.25x**
+- QQQ target weight: **86.19%**
+- TQQQ target weight: **12.31%**
 - Cash / buffer: **1.50%**
 
 ## Features
 
-- QQQ adjusted close: **691.9500**
-- SMA50: **723.3050**
-- SMA200: **679.4429**
-- VOL20 annualized: **23.05%**
-- MOM12: **9.99%**
+- QQQ adjusted close: **647.0500**
+- SMA50: **722.0334**
+- SMA200: **679.6072**
+- VOL20 annualized: **31.43%**
+- MOM12: **4.98%**
 
 ## Frozen execution plan
 
@@ -33,11 +33,11 @@ If the target changed:
 
 ## Data audit
 
-- Rows: 4741
+- Rows: 4742
 - First date: 2008-01-02
-- Last date: 2026-11-04
+- Last date: 2026-11-05
 - Source: QQQ adjusted daily data
-- Raw last date: 2026-11-04
-- Last completed date used: 2026-11-04
+- Raw last date: 2026-11-05
+- Last completed date used: 2026-11-05
 - Dropped incomplete current session: **False**
-- NY validation time: 2026-11-04T22:49:04.934120-05:00
+- NY validation time: 2026-11-05T22:37:46.095170-05:00
