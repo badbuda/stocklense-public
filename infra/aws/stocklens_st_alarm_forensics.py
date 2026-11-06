@@ -23,6 +23,7 @@ ALARMS=(
     "WatchdogConfigurationErrorAlarm",
     "WatchdogHeartbeatDeadmanAlarm",
     "CandidateSessionWatchdogErrorsAlarm",
+    "CandidatePaperErrorsAlarm",
 )
 
 
@@ -132,6 +133,7 @@ def watchdog_logs(client,fn,now):
 def summarize(evidence):
     print("ST_ALARM_FORENSICS:READ_ONLY")
     print("MONITORING_PARAMETERS:",evidence.get("st_monitoring_parameters"))
+    print("ST_SCHEDULES:", evidence.get("st_schedules"))
     print("SHARED_METRIC_RISK:",evidence["shared_metric_risk"]["status"],
           ",".join(evidence["shared_metric_risk"]["unscoped_alarm_names"]))
     for logical,data in evidence["alarms"].items():
@@ -171,10 +173,16 @@ def main():
             prod.get("CandidateDataBucket")!=ST_BUCKET,
             "UNEXPECTED_ST_OR_PROD_BUCKET")
     events=session.client("events")
-    for name in ("CandidatePaperOnlyRuleName","CandidateOrchestratorRuleName"):
-        rule=st[name]
-        require(events.describe_rule(Name=rule)["State"]=="DISABLED",
-                "UNSAFE_ST_PAPER_OR_ORCHESTRATOR_RULE")
+    # ST Paper is allowed to be ENABLED in the guarded recurring-Paper phase.
+    # Capture its *actual* state instead of aborting forensics or claiming it is disabled.
+    st_schedules={}
+    for name in ("CandidateSignalOnlyRuleName","CandidatePaperOnlyRuleName",
+                 "CandidateOrchestratorRuleName"):
+        state=events.describe_rule(Name=st[name]).get("State")
+        require(state in ("ENABLED","DISABLED"), "ST_RULE_STATE_UNKNOWN:"+name)
+        st_schedules[name]=state
+    require(st_schedules["CandidateOrchestratorRuleName"]=="DISABLED",
+            "UNSAFE_ST_ORCHESTRATOR_RULE")
     for name in ("CandidatePaperOnlyRuleName","CandidateOrchestratorRuleName",
                  "CandidateSignalOnlyRuleName"):
         require(events.describe_rule(Name=prod[name])["State"]=="DISABLED",
@@ -191,7 +199,8 @@ def main():
         "st_monitoring_parameters":selected,
         "checked_utc":now.isoformat(),
         "account":ACCOUNT,
-        "st_paper":"DISABLED",
+        "st_paper":st_schedules["CandidatePaperOnlyRuleName"],
+        "st_schedules":st_schedules,
         "prod":"ALL_DISABLED",
         "alarms":{},
         "watchdogs_by_environment":{},
