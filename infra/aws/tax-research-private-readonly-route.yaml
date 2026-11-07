@@ -1,0 +1,143 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >
+  Optional strictly read-only JWT-protected StockLens tax research report endpoint.
+  Never changes ST/PROD strategies, Paper journals, brokers, or live NAV.
+Parameters:
+  PortalApiId:
+    Type: String
+    AllowedPattern: '[a-z0-9]+'
+    Description: Existing PortalApiId output from the Cognito-authenticated portal stack.
+  PortalAuthorizerId:
+    Type: String
+    AllowedPattern: '[a-zA-Z0-9]+'
+    Description: Existing PortalAuthorizerId output; NEVER create public route.
+  PrivateStBucketName:
+    Type: String
+    AllowedPattern: '[a-z0-9.-]+'
+    Description: Existing private, versioned StockLens ST bucket; no new bucket.
+Resources:
+  TaxReaderRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: private-tax-report-getobject-only
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: s3:GetObject
+                Resource: !Sub 'arn:${AWS::Partition}:s3:::${PrivateStBucketName}/tax-research/private/*'
+  TaxReaderFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub '${AWS::StackName}-readonly-tax'
+      Runtime: python3.12
+      Handler: index.handler
+      Timeout: 8
+      MemorySize: 128
+      Role: !GetAtt TaxReaderRole.Arn
+      Environment:
+        Variables:
+          PRIVATE_ST_BUCKET: !Ref PrivateStBucketName
+      Code:
+        ZipFile: |
+          import hashlib
+          import json
+          import os
+          import re
+          import boto3
+          from botocore.exceptions import ClientError
+
+          S3=boto3.client("s3")
+          DATE=re.compile(r"20\d\d-\d\d-\d\d\Z")
+          HASH=re.compile(r"[0-9a-f]{64}\Z")
+
+          def respond(code,payload):
+              return {"statusCode":code,
+                "headers":{"content-type":"application/json",
+                           "cache-control":"no-store, private"},
+                "body":json.dumps(payload,separators=(",",":"))}
+
+          def safe_report(v,day):
+              if not isinstance(v,dict) or v.get("kind")!="STOCKLENS_TAX_STATUS_V1" or v.get("schema_version")!=1:
+                  return False
+              if v.get("asof_date")!=day or v.get("status")!="RESEARCH_COMPLETE" or v.get("source")!="PRIVATE_SHA_VERIFIED_ST_PAPER":
+                  return False
+              if not HASH.fullmatch(str(v.get("receipt_sha256",""))):
+                  return False
+              if any(v.get(k) is not expected for k,expected in (
+                  ("fx_verified",True),("lot_history_verified",True),
+                  ("broker_withholding_verified",False),("capital_trading_authorized",False))):
+                  return False
+              try:
+                  g=float(v["gross_paper_nav_usd"])
+                  n=float(v["estimated_after_tax_liquidation_usd"])
+                  t=float(v["estimated_tax_assessed_ils"])
+                  return 0<=n<=g<1e13 and 0<=t<1e13
+              except (TypeError,ValueError,KeyError):
+                  return False
+
+          def handler(event,context):
+              if event.get("requestContext",{}).get("http",{}).get("method")!="GET":
+                  return respond(405,{"error":"METHOD_NOT_ALLOWED"})
+              day=(event.get("queryStringParameters") or {}).get("date","")
+              if not isinstance(day,str) or not DATE.fullmatch(day):
+                  return respond(400,{"error":"INVALID_DATE"})
+              try:
+                  obj=S3.get_object(Bucket=os.environ["PRIVATE_ST_BUCKET"],
+                      Key="tax-research/private/"+day+".json")
+              except ClientError as e:
+                  if e.response.get("Error",{}).get("Code") in ("NoSuchKey","404","NotFound"):
+                      return respond(404,{"error":"TAX_REPORT_NOT_AVAILABLE"})
+                  return respond(503,{"error":"TAX_READ_UNAVAILABLE"})
+              if obj.get("ContentLength",0)>65536:
+                  return respond(422,{"error":"OVERSIZE_TAX_REPORT"})
+              raw=obj["Body"].read(65537)
+              actual=hashlib.sha256(raw).hexdigest()
+              meta=obj.get("Metadata",{}).get("report-sha256")
+              if len(raw)>65536 or meta!=actual:
+                  return respond(422,{"error":"TAX_REPORT_HASH_MISMATCH"})
+              try:
+                  report=json.loads(raw)
+              except (ValueError,UnicodeDecodeError):
+                  return respond(422,{"error":"INVALID_TAX_JSON"})
+              if not safe_report(report,day):
+                  return respond(422,{"error":"TAX_REPORT_NOT_VERIFIED"})
+              return respond(200,report)
+  TaxReaderIntegration:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId: !Ref PortalApiId
+      IntegrationType: AWS_PROXY
+      IntegrationUri: !GetAtt TaxReaderFunction.Arn
+      PayloadFormatVersion: '2.0'
+  TaxReaderRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref PortalApiId
+      RouteKey: GET /v1/tax
+      AuthorizationType: JWT
+      AuthorizerId: !Ref PortalAuthorizerId
+      Target: !Join ['', ['integrations/', !Ref TaxReaderIntegration]]
+  PermitPortalTaxRead:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref TaxReaderFunction
+      Action: lambda:InvokeFunction
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub 'arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${PortalApiId}/*/GET/v1/tax'
+Outputs:
+  Route:
+    Value: GET /v1/tax
+    Description: Existing Cognito JWT authorizer; no unauthenticated path.
+  SourceBucket:
+    Value: !Ref PrivateStBucketName
