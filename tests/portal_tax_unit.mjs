@@ -27,6 +27,14 @@ assert.equal(Math.round(first.tax*100)/100,24.5);
 assert.equal(t.lots.TQQQ.reduce((n,x)=>n+x.qty,0),5);
 const terminal=nominalTerminalLiquidation(t,{QQQ:0,TQQQ:5},{QQQ:100,TQQQ:120},0,10,.25);
 assert.ok(terminal.value<600&&terminal.value>500);
+assert.ok(Number.isFinite(terminal.netFriction)&&terminal.netFriction>0,
+  'real liquidation helper must return its sale friction, not just a fixture');
+const linked=reconcileNominalTaxScenario(700,{
+  strategy:600,modeled_tax_paid_usd:t.paid,terminal_strategy:terminal
+});
+assert.ok(Number.isFinite(linked.capitalPathEffect));
+assert.ok(Math.abs(linked.untaxedNav-linked.modeledTaxesPaid-linked.capitalPathEffect-
+  linked.terminalExitCosts-linked.terminalTax-linked.afterTaxExitValue)<.01);
 assert.equal(t.lots.TQQQ[0].qty,5,'hypothetical final sale cannot mutate actual lots');
 const loss=recordNominalSale(t,'TQQQ',5,80,0,.25);
 assert.equal(loss.tax,0);

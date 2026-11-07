@@ -67,7 +67,7 @@ export function recordNominalSale(book,symbol,qty,fill,fee,rate=.25){
 }
 export function nominalTerminalLiquidation(book,shares,close,cash,slipBps=10,rate=.25){
  if(!amt(cash)||!amt(slipBps)||slipBps>=10000||!amt(rate)||rate>1)throw Error('BAD_TERMINAL_TAX');
- let netSale=0,remainingGain=0;
+ let netSale=0,remainingGain=0,netFriction=0;
  for(const symbol of ['QQQ','TQQQ']){
   const qty=shares[symbol],px=close[symbol],lots=book.lots[symbol];
   if(!Number.isInteger(qty)||qty<0||!amt(px)||px===0)throw Error('BAD_TERMINAL_POSITIONS');
@@ -75,11 +75,12 @@ export function nominalTerminalLiquidation(book,shares,close,cash,slipBps=10,rat
   const proceeds=qty*px*(1-slipBps/10000)*(1-0.0002);
   const basis=lots.reduce((v,l)=>v+l.qty*l.basis,0);
   remainingGain+=proceeds-basis;netSale+=proceeds;
+  netFriction+=qty*px-proceeds;
  }
  // Terminal netting is simplified; actual Israeli taxation uses FX and
  // broker-specific lot/annual-offset rules. This is NOT exact tax liability.
  const additionalTax=Math.max(0,remainingGain-book.lossCarry)*rate;
- return {value:cash+netSale-additionalTax,additionalTax,modeledCashTaxPaid:book.paid,
+ return {value:cash+netSale-additionalTax,additionalTax,netFriction,modeledCashTaxPaid:book.paid,
    saleCount:book.sales,realizedUsd:book.realized,
    label:'המחשת 25% דולרית בלבד — לא מס רווחי הון ישראלי מאומת'};
 }
