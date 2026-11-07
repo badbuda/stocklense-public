@@ -54,7 +54,8 @@ def test_verified_s3_receipt_prints_schema_not_cash_holdings():
     assert evidence["s3_version_verified"] is True
     assert evidence["status"]=="VERSIONED_JSON_READ_NOT_LEDGER_ACCEPTANCE"
     assert evidence["safe_identifiers"]["genesis_session"]=="2026-10-30"
-    assert "cash" not in str(evidence)
+    assert "cash" in evidence["schema"]["nested_fields"]["state"]
+    assert "cash" not in evidence["safe_identifiers"]
     assert "123456" not in str(evidence)
     assert len(evidence["sha256"])==64
 
