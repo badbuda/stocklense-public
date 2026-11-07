@@ -33,7 +33,8 @@ def complete():
         "book":epoch.NEW_BOOK,"status":"MISSED_UNRECOVERABLE_NO_BACKFILL",
         "old_receipt_keys_unchanged":True,
         "missed_sessions":list(epoch.MISSED),
-        "new_genesis_sha256":g.sha256})
+        "new_genesis_sha256":g.sha256,
+        "original_anchor_sha256":dict(epoch.HISTORIC_SHA256)})
     prior_paper=g.sha256
     prior_cont=g.sha256
     prior_day=epoch.PREVIOUS_SIGNAL_DAY
@@ -52,7 +53,7 @@ def complete():
         },version="paper-"+d)
         c=reader.add(storage.Epoch2Store.continuity_key(d),{
             "book":epoch.NEW_BOOK,"session":d,
-            "status":"ON_TIME_QUALIFIED",
+            "status":"STRUCTURAL_ONLY_NOT_ECONOMICALLY_QUALIFIED",
             "paper_key":p.key,
             "paper_sha256":p.sha256,
             "paper_version_id":p.version,
