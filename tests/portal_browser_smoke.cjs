@@ -113,6 +113,133 @@ try{
  assert.ok(await page.locator('#experiments .experiment').count()>=1,'Research experiments populated');
  assert.match(await page.locator('#tax-research-status').textContent(),/לא חושב/);
  await page.locator('button[data-page=simulator]').click();
+ // Separate 1986 index research must load real historical source and remain
+ // distinct from observed QQQ/TQQQ ETF execution and tax panels.
+ await page.waitForFunction(()=>document.querySelector('#ndx86-strategy')?.textContent?.startsWith('return text && text.charAt(0)===String.fromCharCode(36)},{timeout:15000});
+ await page.locator('#sim-form button[type=submit]').click();
+ const first=await page.locator('#sim-strategy').textContent();
+ assert.match(first,/\$/);
+ assert.match(await page.locator('#tax-sim-strategy').textContent(),/\$/);
+ assert.match(await page.locator('#tax-sim-qqq').textContent(),/\$/);
+ assert.match(await page.locator('#tax-sim-label').textContent(),/דולרי/);
+ assert.equal(await page.locator('#tax-sim-chart polyline').count(),2,'Gross and USD-tax StockLens paths must both render');
+ const bridgeGross=await page.locator('#tax-bridge-gross').textContent();
+ const bridgeNet=await page.locator('#tax-bridge-net').textContent();
+ assert.match(bridgeGross,/\$/);
+ assert.match(bridgeNet,/\$/);
+ assert.equal(bridgeNet,(await page.locator('#tax-sim-strategy').textContent()),'terminal after-tax value agrees with tax card');
+ assert.match(await page.locator('#tax-bridge-paid').textContent(),/−\$/);
+ assert.match(await page.locator('#tax-bridge-path').textContent(),/−\$/);
+ assert.match(await page.locator('#tax-bridge-exit-cost').textContent(),/−\$/);
+
+ assert.ok(await page.locator('#sim-chart polyline').count()===2,'Scenario compares real modeled StockLens and QQQ');
+ assert.ok(await page.locator('#sim-events tr').count()>1,'Scenario produces simulated trade receipts');
+ assert.ok(await page.locator('#scenario-compare-body tr').count()>=6,'Scenario B comparison populated');
+ assert.ok(await page.locator('#scenario-compare-chart polyline').count()===2,'Scenario A and B are plotted independently');
+ const priorComparison=await page.locator('#scenario-compare-body').textContent();
+ await page.locator('#scenario-b-monthly').fill('9000');
+ await page.locator('#scenario-b-form button[type=submit]').click();
+ assert.notEqual(priorComparison,await page.locator('#scenario-compare-body').textContent(),'B contribution change must recompute comparison');
+ await page.locator('#sim-initial').fill('150000');
+ await page.locator('#sim-form button[type=submit]').click();
+ const second=await page.locator('#sim-strategy').textContent();
+ assert.notEqual(first,second,'Changing capital must change output');
+ await page.screenshot({path:'/tmp/stocklens-desktop-'+screenshotSuffix+'.png',fullPage:true});
+ const mobile=await browser.newPage({viewport:{width:390,height:844},deviceScaleFactor:1});
+ mobile.on('pageerror',e=>failures.push(e.message));
+ await mobile.goto(base+'/portal.html',{waitUntil:'networkidle',timeout:60000});
+ await mobile.waitForFunction(()=>document.querySelector('#kpi-days')?.textContent!=='—',{timeout:25000});
+ await mobile.locator('#menu-toggle').click();
+ assert.equal(await mobile.locator('#menu-toggle').getAttribute('aria-expanded'),'true');
+ await mobile.locator('button[data-page=paper]').click();
+ assert.equal((await mobile.locator('.page.visible').getAttribute('data-view')),'paper');
+ await mobile.screenshot({path:'/tmp/stocklens-mobile-'+screenshotSuffix+'.png',fullPage:true});
+ // Authenticated S3 staging path is exercised using only synthetic, local
+ // browser-intercepted OAuth/API fixtures. No AWS credentials or API calls.
+ // This guards against UI exceptions hidden from the public unauthenticated E2E.
+ const authed=await browser.newPage({viewport:{width:390,height:844},deviceScaleFactor:1});
+ authed.on('pageerror',e=>failures.push('AUTHED_STAGING_RUNTIME:'+e.message));
+ await authed.addInitScript(()=>{
+   sessionStorage.setItem('stocklens-pkce',JSON.stringify({
+     verifier:'mock-ci-pkce-verifier',nonce:'ci-nonce',at:Date.now()
+   }));
+ });
+ const fixtureOrigin=new URL(base).origin;
+ const mockCors={
+   'access-control-allow-origin':fixtureOrigin,
+   'access-control-allow-headers':'authorization,content-type',
+   'access-control-allow-methods':'GET,POST,OPTIONS'
+ };
+ const apiOrigin='https://c2r39dbwkg.execute-api.eu-central-1.amazonaws.com';
+ const cognitoOrigin='https://stocklens-portal-634740393398.auth.eu-central-1.amazoncognito.com';
+ await authed.route('**/cloud-config.json',route=>route.fulfill({
+   status:200,contentType:'application/json',
+   body:JSON.stringify({enabled:true,api_base_url:apiOrigin,cognito_domain:cognitoOrigin,
+     client_id:'mockciclient',redirect_uri:fixtureOrigin+'/portal.html'})
+ }));
+ await authed.route(cognitoOrigin+'/oauth2/token',route=>route.fulfill({
+   status:200,contentType:'application/json',headers:mockCors,
+   body:JSON.stringify({access_token:'mock-ci-token-only',token_type:'Bearer',expires_in:3600})
+ }));
+ const archivedDays=['2026-10-08','2026-10-09','2026-10-12','2026-10-13',
+   '2026-10-14','2026-10-15','2026-10-16'];
+ await authed.route('**/v1/sessions?*',route=>route.fulfill({
+   status:200,contentType:'application/json',headers:mockCors,
+   body:JSON.stringify({kind:'STOCKLENS_AUTHENTICATED_READ_ONLY_AWS_JOURNAL',
+     broker_orders_authorized:false,broker_fills_observed:false,
+     sessions:archivedDays.map(d=>({session_date:d,status:'MISSING_BOTH'}))})
+ }));
+ const isoDay=(offset)=>{
+   const d=new Date();d.setUTCHours(0,0,0,0);d.setUTCDate(d.getUTCDate()-offset);
+   return d.toISOString().slice(0,10);
+ };
+ const meta={sha256:'a'.repeat(64),version_id:'fixture-version',saved_at_utc:new Date().toISOString()};
+ const fakePaper=(day,equity,tradeCount)=>({
+   session_date:day,status:'SIGNAL_PAPER_CONTINUITY_S3_SHA_BOUND',
+   signal:{...meta,level:3,target_leverage:3},
+   paper:{...meta,sha256:'b'.repeat(64),equity,trade_count:tradeCount,
+     continuity_status:'ON_TIME_QUALIFIED'}
+ });
+ await authed.route('**/v1/staging?*',route=>route.fulfill({
+   status:200,contentType:'application/json',headers:mockCors,
+   body:JSON.stringify({kind:'STOCKLENS_AUTHENTICATED_STAGING_S3_READ_ONLY',
+     source:'PRIVATE_VERSIONED_STAGING_S3',broker_orders_authorized:false,
+     broker_fills_observed:false,full_chain_verified_by_portal:false,
+     production_cutover_authorized:false,
+     sessions:[fakePaper(isoDay(1),100050,1),fakePaper(isoDay(0),100100,2)]})
+ }));
+ await authed.goto(base+'/portal.html?code=ci-only&state=ci-nonce',
+   {waitUntil:'networkidle',timeout:60000});
+ try{
+   await authed.waitForFunction(()=>
+     document.querySelector('#staging-overview-status')?.textContent.includes('Paper Staging S3'),
+     null,{timeout:15000});
+ }catch(error){
+   console.error('MOCK_AUTH_STAGING_DIAGNOSTICS',JSON.stringify({
+     cloudStatus:await authed.locator('#cloud-status').textContent(),
+     stagingStatus:await authed.locator('#cloud-staging-status').textContent(),
+     overviewStatus:await authed.locator('#staging-overview-status').textContent(),
+     runtimeErrors:failures
+   }));
+   throw error;
+ }
+ assert.match(await authed.locator('#cloud-staging-status').textContent(),/2 ימי Paper/);
+ assert.match(await authed.locator('#kpi-trades').textContent(),/3 אירועי Paper/);
+ assert.match(await authed.locator('#kpi-nav-source').textContent(),/Staging S3/);
+ assert.equal((await authed.locator('#cloud-staging-results tr').count())>=3,true);
+ assert.deepEqual(failures,[],'Portal JavaScript/runtime errors found');
+ console.log('PORTAL_E2E_PASS: desktop/mobile, historic charts, paper ledger, Yahoo real-TQQQ simulator, cost and input recalculation');
+} finally{await browser.close()}
+})().catch(err=>{console.error('PORTAL_E2E_FAILURE',err);process.exitCode=1});
+),null,{timeout:25000});
+ assert.match(await page.locator('#ndx86-status').textContent(),/1986/);
+ assert.match(await page.locator('#ndx86-status').textContent(),/1987/,'253-session warmup prevents fictional 1986 trades');
+ assert.equal(await page.locator('#ndx86-chart path').count(),2,'Separate 1986 index proxy must chart two modeled paths');
+ assert.match(await page.locator('#ndx86-source-link').textContent(),/FRED|Yahoo/);
+ const ndxDefault=await page.locator('#ndx86-strategy').textContent();
+ await page.locator('#ndx86-drag').selectOption('8');
+ await page.locator('#ndx86-form button[type=submit]').click();
+ assert.notEqual(await page.locator('#ndx86-strategy').textContent(),ndxDefault,'Synthetic 3x financing drag sensitivity must change result');
  await page.waitForFunction(()=>{const text=document.querySelector('#sim-strategy')?.textContent;return text && text.charAt(0)===String.fromCharCode(36)},{timeout:15000});
  await page.locator('#sim-form button[type=submit]').click();
  const first=await page.locator('#sim-strategy').textContent();
