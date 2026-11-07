@@ -163,3 +163,23 @@ def test_source_never_mutates_cfn_lambda_s3_alarms_broker():
         ".enable_rule(", ".create_change_set(", ".put_metric_alarm(",
     )
     assert all(fragment not in source for fragment in banned)
+
+
+def test_exact_nov9_official_calendar_pin_when_cloudshell_lacks_xnys_package(monkeypatch):
+    import sys
+    monkeypatch.setitem(sys.modules,"exchange_calendars",None)
+    result=m.next_market_session_proof()
+    assert result["status"]=="OFFICIAL_NYSE_2026_NOV09_NARROW_DATE_PIN_ONLY"
+    assert result["last_missing_session"]=="2026-11-06"
+    assert result["proposed_first_session"]=="2026-11-09"
+    assert result["general_xnys_calendar_unavailable"] is True
+    assert result["new_epoch_scheduling_authorized"] is False
+    assert result["source"]=="https://www.nyse.com/trade/hours-calendars"
+
+
+def test_no_general_calendar_dates_silently_claimed_by_date_pin(monkeypatch):
+    import sys
+    monkeypatch.setitem(sys.modules,"exchange_calendars",None)
+    monkeypatch.setattr(m,"PROPOSED_FIRST_SESSION","2026-11-10")
+    with pytest.raises(RuntimeError,match="PINNED_XNYS_NOV09_REFERENCE_DIFFERS"):
+        m.next_market_session_proof()
