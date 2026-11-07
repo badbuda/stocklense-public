@@ -19,6 +19,8 @@ on:
       - 'docs/portal-insights.js'
       - 'docs/portal.html'
       - 'docs/portal.css'
+      - 'docs/portal-tax.mjs'
+      - 'docs/tax-status.json'
       - 'tests/portal_browser_smoke.cjs'
 
 permissions:
@@ -67,7 +69,7 @@ jobs:
           # can be served even if portal.html did not change between commits.
           # Require the SAME main artifact bytes for UI, observed ETF history
           # and all the dashboard's core production JSON inputs.
-          assets=(portal.html portal.js portal.css portal-cloud.js portal-live.mjs portal-freshness.mjs portal-insights.js cloud-config.json data.json timeseries.json portal-history.json observed_tqqq_risk_audit.json)
+          assets=(portal.html portal.js portal.css portal-tax.mjs tax-status.json portal-cloud.js portal-live.mjs portal-freshness.mjs portal-insights.js cloud-config.json data.json timeseries.json portal-history.json observed_tqqq_risk_audit.json)
           ready=0
           for attempt in $(seq 1 45); do
             matched=1
