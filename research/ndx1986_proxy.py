@@ -125,7 +125,7 @@ def main():
             rows = [(day.date().isoformat(), float(value))
                     for day, value in close.items()
                     if day.date().isoformat() >= "1986-01-02" and math.isfinite(float(value)) and float(value)>0]
-            payload = ("DATE,NASDAQ100\\n"+"".join(f"{day},{value:.12g}\\n" for day,value in rows)).encode("utf-8")
+            payload = ("DATE,NASDAQ100"+chr(10)+"".join(f"{day},{value:.12g}"+chr(10) for day,value in rows)).encode("utf-8")
             source_meta = {"publisher": "Yahoo Finance / Nasdaq, Inc.", "series": "^NDX",
                            "url": "https://finance.yahoo.com/quote/%5ENDX/history/",
                            "download_sha256": hashlib.sha256(payload).hexdigest(),
