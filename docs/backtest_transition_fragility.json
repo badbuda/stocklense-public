@@ -2,18 +2,18 @@
   "schema_version": 1,
   "status": "PASS",
   "transition_sessions": {
-    "sessions": 4,
-    "mean_strategy_gross_return": -0.030621489979414884,
-    "median_strategy_gross_return": -0.030432019421791523,
-    "positive_share": 0.25,
-    "gross_return_sum": -0.12248595991765954
+    "sessions": 5,
+    "mean_strategy_gross_return": -0.06343066141510272,
+    "median_strategy_gross_return": -0.05544496152146916,
+    "positive_share": 0.2,
+    "gross_return_sum": -0.3171533070755136
   },
   "non_transition_sessions": {
-    "sessions": 247,
-    "mean_strategy_gross_return": 0.0018115170694887643,
-    "median_strategy_gross_return": 0.002743821844576777,
-    "positive_share": 0.5344129554655871,
-    "gross_return_sum": 0.4474447161637248
+    "sessions": 246,
+    "mean_strategy_gross_return": 0.0017395139299264247,
+    "median_strategy_gross_return": 0.0026166597222757604,
+    "positive_share": 0.532520325203252,
+    "gross_return_sum": 0.42792042676190045
   },
   "transition_pairs": {
     "1.25->3": {
@@ -31,11 +31,11 @@
       "gross_return_sum": -0.0054190773221138855
     },
     "3->1.25": {
-      "sessions": 1,
-      "mean_strategy_gross_return": -0.05544496152146916,
-      "median_strategy_gross_return": -0.05544496152146916,
+      "sessions": 2,
+      "mean_strategy_gross_return": -0.1250561543396616,
+      "median_strategy_gross_return": -0.1250561543396616,
       "positive_share": 0.0,
-      "gross_return_sum": -0.05544496152146916
+      "gross_return_sum": -0.2501123086793232
     },
     "3->2": {
       "sessions": 1,
@@ -77,6 +77,14 @@
       "transition": true,
       "from_exposure": 2.0,
       "to_exposure": 3.0
+    },
+    {
+      "date": "2026-11-05",
+      "strategy_gross_return": -0.19466734715785405,
+      "qqq_return": -0.06488911571928468,
+      "transition": true,
+      "from_exposure": 3.0,
+      "to_exposure": 1.25
     }
   ],
   "semantics": "Descriptive attribution of frozen replay returns on sessions where target exposure changes versus sessions where it does not. It does not infer causality, alpha or execution parity.",

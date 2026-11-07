@@ -2,18 +2,18 @@
   "schema_version": 1,
   "publication_identity": {
     "schema_version": 2,
-    "git_sha": "b88ec93b1d222a914c553b9f9f5ef54fd5d52d1a",
+    "git_sha": "cae83ac8b028188c827b00c3d8a6268d755df18e",
     "signal_asof": null,
     "replay_dataset_sha256": "db0889da31af43b1b75e005c1f4ab2cad421dfb55a6c55a77a223e0623950d95",
-    "replay_rows_sha256": "9ca790deb31d2ff1abd6d1dee57c12ec100b79e6ea5aa24e281dc825195c013e",
+    "replay_rows_sha256": "e052c29bd22b0ea1fd1e885200a9dc2e06a6ba356a1f9f61631279148f8394af",
     "simulator_contract_sha256": "80745a3640c6fe667a3c500571fb15abee1d532a5b720fb6efc8b52f291dfc68",
-    "generation_id": "40f02bc5d1c9270f3526f1077858862dd4ecba1e78fa2e584e2c8143b51100a6"
+    "generation_id": "3fcfff3839ff7dad6406cc6650f0ddda75c75f255fd9073fe40d1dfcad83687a"
   },
   "status": "PASS",
-  "transition_count": 4,
+  "transition_count": 5,
   "upshift_count": 2,
-  "downshift_count": 2,
-  "upshift_avg_next_session_qqq_return": -0.004837903805950838,
+  "downshift_count": 3,
+  "upshift_avg_next_session_qqq_return": -0.004837954265368705,
   "downshift_avg_next_session_qqq_return": 0.0036165725722427933,
   "transitions": [
     {
@@ -29,7 +29,7 @@
       "from_exposure": 1.25,
       "to_exposure": 3.0,
       "same_session_qqq_return": 0.029732056399946583,
-      "next_session_qqq_return": 0.006764690477389479,
+      "next_session_qqq_return": 0.006764589558553746,
       "direction": "UP"
     },
     {
@@ -47,6 +47,14 @@
       "same_session_qqq_return": -0.0027095386610569427,
       "next_session_qqq_return": -0.016440498089291156,
       "direction": "UP"
+    },
+    {
+      "date": "2026-11-05",
+      "from_exposure": 3.0,
+      "to_exposure": 1.25,
+      "same_session_qqq_return": -0.06488911571928468,
+      "next_session_qqq_return": null,
+      "direction": "DOWN"
     }
   ],
   "semantics": "Descriptive transition timing audit only. Same/next-session averages are not causal estimates and must not be used to retune frozen 8.0.",

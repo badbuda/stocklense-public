@@ -2,6 +2,34 @@
   "schema_version": 1,
   "items": [
     {
+      "short_sha": "cae83ac",
+      "date": "2026-11-06T22:52:33+02:00",
+      "title": "feat(SL-43): read-only ST Lambda ZIP and continuity source attestation",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "dcc6b49",
+      "date": "2026-11-06T22:33:13+02:00",
+      "title": "fix(SL-32,SL-23): safe partial-minute retry and latest ST watchdog forensics",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "7fa7e4c",
+      "date": "2026-11-06T22:03:39+02:00",
+      "title": "fix(SL-43): safe ST Paper alarm forensics and full alarm coverage",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "bfa98a4",
+      "date": "2026-11-06T03:38:01Z",
+      "title": "shadow: record prospective evidence 2026-11-05",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
       "short_sha": "b88ec93",
       "date": "2026-11-05T15:24:36+02:00",
       "title": "research(SL-50 SL-51): tax-lot scenarios and rebalance tax-drag audit",
@@ -54,40 +82,40 @@
       "short_sha": "a5eb8c7",
       "date": "2026-10-30T07:33:44+02:00",
       "title": "test(portal): correct mock Cognito client contract in authenticated S3 browser E2E (#132)",
-      "kind": "PROJECT",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "8f5bef5",
-      "date": "2026-10-30T07:29:24+02:00",
-      "title": "fix(portal): authenticated Staging S3 trade count crash and mock-credential E2E coverage (#131)",
-      "kind": "PROJECT",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "4c5025a",
-      "date": "2026-10-30T02:56:57Z",
-      "title": "shadow: record prospective evidence 2026-10-29",
-      "kind": "PROJECT",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "5bf54c2",
-      "date": "2026-10-29T23:15:56+02:00",
-      "title": "ops(ST): get first modeled Paper off the ground with safe two-signal status and bootstrap --yes (#130)",
-      "kind": "PROJECT",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "f7db1ff",
-      "date": "2026-10-29T23:06:04+02:00",
-      "title": "fix(portal): keep browser E2E green when stale Paper is correctly warned, gate Paper readiness separately (#129)",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     }
   ],
   "high_signal_items": [
     {
+      "short_sha": "cae83ac",
+      "date": "2026-11-06T22:52:33+02:00",
+      "title": "feat(SL-43): read-only ST Lambda ZIP and continuity source attestation",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "dcc6b49",
+      "date": "2026-11-06T22:33:13+02:00",
+      "title": "fix(SL-32,SL-23): safe partial-minute retry and latest ST watchdog forensics",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "7fa7e4c",
+      "date": "2026-11-06T22:03:39+02:00",
+      "title": "fix(SL-43): safe ST Paper alarm forensics and full alarm coverage",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "bfa98a4",
+      "date": "2026-11-06T03:38:01Z",
+      "title": "shadow: record prospective evidence 2026-11-05",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
       "short_sha": "b88ec93",
       "date": "2026-11-05T15:24:36+02:00",
       "title": "research(SL-50 SL-51): tax-lot scenarios and rebalance tax-drag audit",
@@ -142,55 +170,27 @@
       "title": "test(portal): correct mock Cognito client contract in authenticated S3 browser E2E (#132)",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "8f5bef5",
-      "date": "2026-10-30T07:29:24+02:00",
-      "title": "fix(portal): authenticated Staging S3 trade count crash and mock-credential E2E coverage (#131)",
-      "kind": "PROJECT",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "4c5025a",
-      "date": "2026-10-30T02:56:57Z",
-      "title": "shadow: record prospective evidence 2026-10-29",
-      "kind": "PROJECT",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "5bf54c2",
-      "date": "2026-10-29T23:15:56+02:00",
-      "title": "ops(ST): get first modeled Paper off the ground with safe two-signal status and bootstrap --yes (#130)",
-      "kind": "PROJECT",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "f7db1ff",
-      "date": "2026-10-29T23:06:04+02:00",
-      "title": "fix(portal): keep browser E2E green when stale Paper is correctly warned, gate Paper readiness separately (#129)",
-      "kind": "PROJECT",
-      "impact": "Repository change; CI validation is separate."
     }
   ],
   "recent_summary": [
     {
-      "short_sha": "b88ec93",
-      "date": "2026-11-05T15:24:36+02:00",
-      "title": "research(SL-50 SL-51): tax-lot scenarios and rebalance tax-drag audit",
+      "short_sha": "cae83ac",
+      "date": "2026-11-06T22:52:33+02:00",
+      "title": "feat(SL-43): read-only ST Lambda ZIP and continuity source attestation",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "32d7474",
-      "date": "2026-11-05T03:49:24Z",
-      "title": "shadow: record prospective evidence 2026-11-04",
+      "short_sha": "dcc6b49",
+      "date": "2026-11-06T22:33:13+02:00",
+      "title": "fix(SL-32,SL-23): safe partial-minute retry and latest ST watchdog forensics",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "2142d2b",
-      "date": "2026-11-04T03:19:24Z",
-      "title": "shadow: record prospective evidence 2026-11-03",
+      "short_sha": "7fa7e4c",
+      "date": "2026-11-06T22:03:39+02:00",
+      "title": "fix(SL-43): safe ST Paper alarm forensics and full alarm coverage",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     }

@@ -1,9 +1,9 @@
 {
   "status": "PLAN_READY",
-  "signal_date": "2026-11-05",
-  "signal_action": "REBALANCE_NEXT_SESSION",
+  "signal_date": "2026-11-06",
+  "signal_action": "NO_CHANGE",
   "bootstrap": false,
-  "execution_required": true,
+  "execution_required": false,
   "target": {
     "level": 1,
     "defense": false,

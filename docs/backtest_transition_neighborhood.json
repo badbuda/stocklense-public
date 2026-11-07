@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "PASS",
-  "transition_count": 4,
+  "transition_count": 5,
   "radius_sessions": 3,
   "events": [
     {
@@ -85,19 +85,19 @@
         {
           "offset": 1,
           "date": "2026-04-09",
-          "qqq_return": 0.006764690477389479,
+          "qqq_return": 0.006764589558553746,
           "applied_exposure": 3.0
         },
         {
           "offset": 2,
           "date": "2026-04-10",
-          "qqq_return": 0.0014421634998613708,
+          "qqq_return": 0.0014421636444248431,
           "applied_exposure": 3.0
         },
         {
           "offset": 3,
           "date": "2026-04-13",
-          "qqq_return": 0.010342458753533679,
+          "qqq_return": 0.010342659981562141,
           "applied_exposure": 3.0
         }
       ]
@@ -110,13 +110,13 @@
         {
           "offset": -3,
           "date": "2026-06-17",
-          "qqq_return": -0.010070425515599668,
+          "qqq_return": -0.010070341710618935,
           "applied_exposure": 3.0
         },
         {
           "offset": -2,
           "date": "2026-06-18",
-          "qqq_return": 0.025065482590181487,
+          "qqq_return": 0.02506539581068923,
           "applied_exposure": 3.0
         },
         {
@@ -196,6 +196,37 @@
           "offset": 3,
           "date": "2026-07-20",
           "qqq_return": 0.0010498726409937653,
+          "applied_exposure": 3.0
+        }
+      ]
+    },
+    {
+      "transition_date": "2026-11-05",
+      "from_exposure": 3.0,
+      "to_exposure": 1.25,
+      "window": [
+        {
+          "offset": -3,
+          "date": "2026-11-02",
+          "qqq_return": -0.013613467989181949,
+          "applied_exposure": 3.0
+        },
+        {
+          "offset": -2,
+          "date": "2026-11-03",
+          "qqq_return": 0.006151906908329119,
+          "applied_exposure": 3.0
+        },
+        {
+          "offset": -1,
+          "date": "2026-11-04",
+          "qqq_return": 0.009733222368963457,
+          "applied_exposure": 3.0
+        },
+        {
+          "offset": 0,
+          "date": "2026-11-05",
+          "qqq_return": -0.06488911571928468,
           "applied_exposure": 3.0
         }
       ]
