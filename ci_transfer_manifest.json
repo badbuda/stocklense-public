@@ -444,7 +444,7 @@
     "tests/test_one_shot_staging_readonly_audit.py": "0cf951168193ad1dbc3139e67945bf20e4a55a18",
     "tests/test_p0_evidence_labels.py": "1c146ff36b74a115394d01742efd022abd9772f1",
     "tests/test_paper_eod_completeness.py": "3a4d0402b016cfb7ea425dbda18ef208b3bef1fe",
-    "tests/test_paper_epoch.py": "673d061779789a4a1b64127f94199a37106c610b",
+    "tests/test_paper_epoch.py": "f614eb90ce37262d5d3c487b9b501abb2546426f",
     "tests/test_paper_execution_contract.py": "f6072b6c2ac43e2f94d1156552988fd27f7590ff",
     "tests/test_paper_forward_audit.py": "91110461f6f9913c069c7945b84b4dd7ae395952",
     "tests/test_paper_portfolio_integrity.py": "01155af38434cda2a32943380657887dff7f75d1",
