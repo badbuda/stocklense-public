@@ -11,7 +11,7 @@ the actual live Watchdog follows this policy.
 """
 from __future__ import annotations
 
-from datetime import date, datetime, timezone, time
+from datetime import date, datetime, timezone, time, timedelta
 import hashlib
 import json
 import math
@@ -60,7 +60,7 @@ def read_utc(value: str) -> datetime:
         dt = datetime.fromisoformat(value.replace("Z", "+00:00"))
     except (ValueError, TypeError) as exc:
         raise EpochPolicyError("INVALID_UTC_TIMESTAMP") from exc
-    ensure(dt.utcoffset() == __import__("datetime").timedelta(0),
+    ensure(dt.utcoffset() == timedelta(0),
            "NON_UTC_TIMESTAMP")
     return dt.astimezone(UTC)
 
@@ -249,7 +249,7 @@ def monitor_partition(*, original_missing: bool, prospective_receipt_qualified: 
     return {
         "original_epoch_status":("FAIL_CLOSED_HISTORIC_GAP"
                                  if original_missing else "UNKNOWN_NOT_ASSESSED"),
-        "new_epoch_status":("QUALIFIED_FORWARD_ONLY"
+        "new_epoch_status":("INPUT_FLAGS_SAY_QUALIFIED_BUT_NOT_LIVE_ATTESTED"
                             if prospective_receipt_qualified and new_genesis_verified
                             else "NOT_QUALIFIED"),
         "cross_epoch_aggregate_nav_authorized":False,
