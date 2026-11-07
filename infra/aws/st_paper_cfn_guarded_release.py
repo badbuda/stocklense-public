@@ -212,6 +212,94 @@ def validate_change_set(desc, state):
     return sorted(seen)
 
 
+
+def review_existing_change_set(c):
+    """Read existing ST change set without creating, executing or deleting it.
+
+    CloudFormation may emit multiple Details for the same target, including
+    ParameterReference + Dynamic/Static pairs. Preserve every field necessary
+    to diagnose why the strict Code-only gate rejected the change, but never
+    print BeforeValue, AfterValue, full template or artifact/S3 coordinates.
+    """
+    state = safe_state(c)
+    cf = c["cloudformation"]
+    rows = []
+    first = None
+    next_token = None
+    for page in range(10):
+        request = {"StackName": ST, "ChangeSetName": CHANGE_NAME}
+        if next_token:
+            request["NextToken"] = next_token
+        result = cf.describe_change_set(**request)
+        if first is None:
+            first = result
+        else:
+            require(result.get("StackName") == first.get("StackName") and
+                    result.get("ChangeSetName") == first.get("ChangeSetName"),
+                    "CFN_CHANGE_SET_PAGINATION_DRIFT")
+        rows.extend(result.get("Changes", []))
+        next_token = result.get("NextToken")
+        if not next_token:
+            break
+    else:
+        raise RuntimeError("CFN_CHANGE_SET_MORE_THAN_TEN_PAGES_REVIEW_IN_CONSOLE")
+    desc = {**first, "Changes": rows, "NextToken": None}
+    try:
+        verified = validate_change_set(desc, state)
+        verdict = "EXACT_FIVE_CODE_ONLY_VALIDATED_NOT_EXECUTED"
+        reason = None
+    except Exception as exc:
+        verdict = "BLOCKED_PENDING_MANUAL_REVIEW"
+        reason = str(exc)[:170]
+        verified = []
+    summary = []
+    for item in rows:
+        rc = item.get("ResourceChange", {})
+        details = []
+        for d in rc.get("Details", []):
+            target = d.get("Target") or {}
+            causing = str(d.get("CausingEntity") or "")
+            # CausingEntity normally contains a parameter/resource name. Do not
+            # disclose unexpected text, ARN, external URL or secret-like values.
+            if causing and not (len(causing) <= 90 and
+                                causing.replace("_", "").replace("-", "").isalnum()):
+                causing = "REDACTED"
+            details.append({
+                "attribute": target.get("Attribute"),
+                "property": target.get("Name"),
+                "recreation": target.get("RequiresRecreation"),
+                "evaluation": d.get("Evaluation"),
+                "source": d.get("ChangeSource"),
+                "causing_entity": causing or None,
+            })
+        summary.append({
+            "logical_id": rc.get("LogicalResourceId"),
+            "type": rc.get("ResourceType"),
+            "action": rc.get("Action"),
+            "replacement": rc.get("Replacement"),
+            "scope": rc.get("Scope", []),
+            "details": details,
+        })
+    return {
+        "status": verdict,
+        "validator_block_reason": reason,
+        "change_set_name": CHANGE_NAME,
+        "change_set_status": first.get("Status"),
+        "change_set_execution_status": first.get("ExecutionStatus"),
+        "change_count": len(rows),
+        "resource_changes": summary,
+        "validated_lambda_code_resources": verified,
+        "signal_schedule_parameter_drift_still_present": True,
+        "prod_schedules_all_disabled": True,
+        "lambda_code_unchanged_by_this_review": True,
+        "change_set_executed": False,
+        "aws_mutations": False,
+        "paper_backfill": False,
+        "broker_orders": False,
+        "warning": "Do not run apply until Code-only proof is accepted and approved.",
+    }
+
+
 def inspect(c):
     state = safe_state(c)
     current = set(state["lambdas"].values())
@@ -322,7 +410,7 @@ def apply(c, *, approved=False):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("mode", choices=("inspect","prepare","apply"))
+    ap.add_argument("mode", choices=("inspect","review","prepare","apply"))
     ap.add_argument("--yes",action="store_true",
                     help="Explicit approval to execute previously reviewed ST-only change set")
     args=ap.parse_args()
@@ -331,6 +419,7 @@ def main():
     import boto3
     c=sdk_clients(boto3)
     if args.mode=="inspect": result=inspect(c)
+    elif args.mode=="review": result=review_existing_change_set(c)
     elif args.mode=="prepare": result=prepare(c)
     else: result=apply(c,approved=args.yes)
     print(json.dumps(result,sort_keys=True,indent=2))
