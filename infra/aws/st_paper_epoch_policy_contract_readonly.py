@@ -64,7 +64,7 @@ def approved_module(module):
     # infra.aws namespace. The ZIP's SHA is independently pinned; arbitrary
     # imports, paths and modules outside this namespace are prohibited.
     return (module in SAFE_MODULES or
-            re.fullmatch(r"infra\\.aws\\.[A-Za-z0-9_]{1,64}",module) is not None)
+            re.fullmatch(r"infra\.aws\.[A-Za-z0-9_]{1,64}",module) is not None)
 
 def require(ok,msg):
     if not ok:raise RuntimeError(msg)
