@@ -4,6 +4,7 @@ from __future__ import annotations
 from copy import deepcopy
 from datetime import datetime, timezone
 import pytest
+from pathlib import Path
 
 from stocklens import paper_epoch as ep
 
