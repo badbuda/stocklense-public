@@ -82,6 +82,9 @@ try{
    (100*governance.cum).toFixed(2)+'%');
  assert.equal(governance.technical,false,'Technical capital gate remains blocked');
  assert.match(await page.locator('#model-parity-state').textContent(),/טרם הוכח/);
+ assert.match(await page.locator('#tax-global-signal').textContent(),/מס: חישוב חסום/);
+ assert.match(await page.locator('#tax-overview-status').textContent(),/לא חושב/);
+ assert.match(await page.locator('#tax-hero-signal').textContent(),/איתות מס/);
  if(await page.locator('#paper-chart-empty').isVisible()) assert.match(await page.locator('#paper-chart-empty').textContent(),/יום מדומה אחד|אין ימי Paper/);
  await page.locator('button[data-page=paper]').click();
  assert.match(await page.locator('#trades-body').textContent(),/TQQQ/);
@@ -90,6 +93,7 @@ try{
  assert.match(await page.locator('#paper-trade-detail').textContent(),/מחיר מקור|מחיר מדומה/);
  assert.match(await page.locator('#paper-trade-detail').textContent(),/עלות החלקה/);
  assert.match(await page.locator('#journal-status').textContent(),/יומן Paper|אין חורים|פרסום|רצף/);
+ assert.match(await page.locator('#tax-paper-status').textContent(),/לא חושב/);
  const cloudConfig=await page.evaluate(()=>fetch('cloud-config.json',{cache:'no-store'}).then(r=>r.json()));
  const approvedOrigin=new URL(cloudConfig.redirect_uri).origin;
  const onApprovedOrigin=new URL(page.url()).origin===approvedOrigin;
@@ -104,13 +108,18 @@ try{
  await page.locator('button[data-page=performance]').click();
  assert.ok(await page.locator('#performance-chart polyline').count()===2,'Both observed ETF curves drawn');
  assert.match(await page.locator('#perf-period').textContent(),/2010/);
+ assert.match(await page.locator('#tax-performance-status').textContent(),/אינן מאומתות/);
  await page.locator('button[data-page=research]').click();
  assert.ok(await page.locator('#experiments .experiment').count()>=1,'Research experiments populated');
+ assert.match(await page.locator('#tax-research-status').textContent(),/לא חושב/);
  await page.locator('button[data-page=simulator]').click();
  await page.waitForFunction(()=>{const text=document.querySelector('#sim-strategy')?.textContent;return text && text.charAt(0)===String.fromCharCode(36)},{timeout:15000});
  await page.locator('#sim-form button[type=submit]').click();
  const first=await page.locator('#sim-strategy').textContent();
  assert.match(first,/\$/);
+ assert.match(await page.locator('#tax-sim-strategy').textContent(),/\$/);
+ assert.match(await page.locator('#tax-sim-qqq').textContent(),/\$/);
+ assert.match(await page.locator('#tax-sim-label').textContent(),/דולרי/);
  assert.ok(await page.locator('#sim-chart polyline').count()===2,'Scenario compares real modeled StockLens and QQQ');
  assert.ok(await page.locator('#sim-events tr').count()>1,'Scenario produces simulated trade receipts');
  assert.ok(await page.locator('#scenario-compare-body tr').count()>=6,'Scenario B comparison populated');
