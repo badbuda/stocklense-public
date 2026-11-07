@@ -190,3 +190,46 @@ def test_source_contains_no_broker_or_cfn_stack_mutators():
     assert 'DryRun=True' in text
     assert "S3ObjectVersion" in text
     assert "delete_change_set" in text
+
+
+def test_postdeploy_inspect_accepts_retired_changeset_only_when_all_five_sha_match(monkeypatch):
+    class NotFound(Exception):
+        def __init__(self):
+            self.response={"Error":{"Code":"ValidationError",
+                                   "Message":"ChangeSet does not exist"}}
+    sdk=patch_services(monkeypatch)
+    for fn in sdk["lambda"].codes:
+        sdk["lambda"].codes[fn]=m.NEW
+    monkeypatch.setattr(m,"unsafe_changeset_summary",lambda c: (_ for _ in ()).throw(NotFound()))
+    result=m.check_readonly(sdk)
+    assert result["current_all_candidate"] is True
+    assert result["blocked_cfn_change_set"]["status"]=="RETIRED_NOT_EXECUTED"
+    assert result["aws_mutations"] is False
+
+
+def test_old_or_partial_code_must_not_hide_missing_cfn_changeset(monkeypatch):
+    class NotFound(Exception):
+        def __init__(self):
+            self.response={"Error":{"Code":"ValidationError",
+                                   "Message":"ChangeSet does not exist"}}
+    sdk=patch_services(monkeypatch)
+    monkeypatch.setattr(m,"unsafe_changeset_summary",lambda c: (_ for _ in ()).throw(NotFound()))
+    with pytest.raises(RuntimeError,match="DANGEROUS_CHANGE_SET_UNVERIFIED"):
+        m.check_readonly(sdk)
+    first=next(iter(sdk["lambda"].codes))
+    sdk["lambda"].codes[first]=m.NEW
+    with pytest.raises(RuntimeError,match="DANGEROUS_CHANGE_SET_UNVERIFIED"):
+        m.check_readonly(sdk)
+
+
+def test_postdeploy_inspect_does_not_ignore_access_denied(monkeypatch):
+    class Denied(Exception):
+        def __init__(self):
+            self.response={"Error":{"Code":"AccessDenied",
+                                   "Message":"Read denied"}}
+    sdk=patch_services(monkeypatch)
+    for fn in sdk["lambda"].codes:
+        sdk["lambda"].codes[fn]=m.NEW
+    monkeypatch.setattr(m,"unsafe_changeset_summary",lambda c: (_ for _ in ()).throw(Denied()))
+    with pytest.raises(RuntimeError,match="DANGEROUS_CHANGE_SET_UNVERIFIED"):
+        m.check_readonly(sdk)
