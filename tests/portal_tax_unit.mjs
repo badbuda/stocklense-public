@@ -9,12 +9,13 @@ const complete={kind:'STOCKLENS_TAX_STATUS_V1',schema_version:1,
  fx_verified:true,lot_history_verified:true,broker_withholding_verified:false,
  capital_trading_authorized:false,gross_paper_nav_usd:100000,
  estimated_after_tax_liquidation_usd:99000,estimated_tax_assessed_ils:3000};
-assert.equal(taxFeedView(complete,'2026-11-04').ready,true);
-assert.equal(taxFeedView(complete,'2026-11-05').ready,false,'stale tax data cannot be attached to another Paper day');
-assert.equal(taxFeedView({...complete,fx_verified:false},'2026-11-04').ready,false);
-assert.equal(taxFeedView({...complete,receipt_sha256:'wrong'},'2026-11-04').ready,false);
-assert.equal(taxFeedView({...complete,broker_withholding_verified:true},'2026-11-04').ready,false);
-assert.equal(taxFeedView({...complete,estimated_after_tax_liquidation_usd:110000},'2026-11-04').ready,false);
+assert.equal(taxFeedView(complete,'2026-11-04',100000).ready,true);
+assert.equal(taxFeedView(complete,'2026-11-04',100001).ready,false,'mismatched Paper NAV blocks private net estimate');
+assert.equal(taxFeedView(complete,'2026-11-05',100000).ready,false,'stale tax data cannot be attached to another Paper day');
+assert.equal(taxFeedView({...complete,fx_verified:false},'2026-11-04',100000).ready,false);
+assert.equal(taxFeedView({...complete,receipt_sha256:'wrong'},'2026-11-04',100000).ready,false);
+assert.equal(taxFeedView({...complete,broker_withholding_verified:true},'2026-11-04',100000).ready,false);
+assert.equal(taxFeedView({...complete,estimated_after_tax_liquidation_usd:110000},'2026-11-04',100000).ready,false);
 assert.match(TAX_PLACEHOLDER,/לא חושב/);
 assert.match(taxActionSignal({defense_active:true}),/ממש/);
 assert.match(taxActionSignal({action:'NO_CHANGE'}),/איזון/);
