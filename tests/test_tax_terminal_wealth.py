@@ -1,3 +1,4 @@
+from decimal import Decimal
 """Research-only after-tax net-worth views; no broker/AWS mutation."""
 import pytest
 from research.rebalance_tax_study import replay, compare
@@ -16,7 +17,7 @@ def test_initial_purchase_has_no_realized_tax_but_final_sale_has_cost():
     result = replay([session("2026-10-30", 3)])
     terminal = result["terminal_liquidation_research"]
     assert result["estimated_tax_assessed_ils"] == "0"
-    assert terminal["additional_liquidation_tax_ils"] == "0"
+    assert Decimal(terminal["additional_liquidation_tax_ils"]) == 0
     assert terminal["additional_liquidation_cost_usd"] > 0
     assert terminal["estimated_after_tax_value_if_liquidated_usd"] < result["nav_usd"]
     assert result["ledger"][0]["estimated_cumulative_tax_assessed_ils"] == "0"
@@ -33,7 +34,7 @@ def test_sell_profit_tax_reduces_reinvestable_cash():
     assert gross["nav_usd"] > immediate["nav_usd"]
     assert terminal_gross["unpaid_past_assessed_tax_ils"] != "0"
     assert terminal_immediate["unpaid_past_assessed_tax_ils"] == "0"
-    assert terminal_immediate["additional_liquidation_tax_ils"] == "0"
+    assert Decimal(terminal_immediate["additional_liquidation_tax_ils"]) == 0
     assert terminal_immediate["estimated_after_tax_value_if_liquidated_usd"] == pytest.approx(immediate["nav_usd"],abs=1e-3)
     assert terminal_gross["estimated_after_tax_value_if_liquidated_usd"] == pytest.approx(immediate["nav_usd"], abs=1e-3)
 
