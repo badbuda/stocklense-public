@@ -1,0 +1,59 @@
+name: Build NDX 1986 Research-Only Index Proxy
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/ndx-1986-research.yml'
+      - 'research/ndx1986_proxy.py'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ndx1986-research-publish
+  cancel-in-progress: false
+
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Test retroactive decision and source validation
+        run: |
+          python -m unittest discover -s tests -p 'test_ndx1986_proxy.py' -v
+          node --check docs/ndx1986-sim.mjs
+      - name: Download actual FRED Nasdaq-100 index history and build research-only feed
+        run: python research/ndx1986_proxy.py --out docs/ndx1986-research.json
+      - name: Fail closed if coverage or semantics drift
+        run: |
+          python - <<'PY'
+          import json
+          d=json.load(open('docs/ndx1986-research.json'))
+          assert d['period']['source_start']=='1986-01-02'
+          assert d['period']['first_investable'][:4]=='1987'
+          assert d['period']['source_rows']>=9000
+          assert d['strategy_semantics']=='RETROACTIVE_RULE_APPLICATION_NOT_FROZEN_2009_REPLAY'
+          assert d['execution_semantics']=='DAILY_CLOSE_TO_CLOSE_SYNTHETIC_EXPOSURE_NO_ETF_OHLC'
+          assert d['rows'][0]['l'] is None
+          assert all(r['signal']<r['date'] for r in d['rows'] if r['signal'])
+          print('NDX_1986_SOURCE_AND_NO_LOOKAHEAD_PASS')
+          PY
+      - name: Publish only public research index feed (no private data)
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- docs/ndx1986-research.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'research: publish FRED NDX 1986 price-index-only study feed'
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
