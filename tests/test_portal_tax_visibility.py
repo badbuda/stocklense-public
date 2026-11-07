@@ -44,7 +44,7 @@ def test_public_site_defaults_to_blocked_tax_not_fake_after_tax_nav():
     assert feed["broker_withholding_verified"] is False
     js = Path("docs/portal.js").read_text()
     cloud = Path("docs/portal-cloud.js").read_text()
-    assert "taxFeedView(feed,currentSession)" in js
+    assert "taxFeedView(feed,currentSession,sourceEquity)" in js
     assert "state.privateTax||state.tax" in js
     assert "renderTaxPanels()" in js
     assert "onTaxChange:report=>" in js
