@@ -120,6 +120,7 @@ try{
  assert.match(await page.locator('#tax-sim-strategy').textContent(),/\$/);
  assert.match(await page.locator('#tax-sim-qqq').textContent(),/\$/);
  assert.match(await page.locator('#tax-sim-label').textContent(),/דולרי/);
+ assert.equal(await page.locator('#tax-sim-chart polyline').count(),2,'Gross and USD-tax StockLens paths must both render');
  assert.ok(await page.locator('#sim-chart polyline').count()===2,'Scenario compares real modeled StockLens and QQQ');
  assert.ok(await page.locator('#sim-events tr').count()>1,'Scenario produces simulated trade receipts');
  assert.ok(await page.locator('#scenario-compare-body tr').count()>=6,'Scenario B comparison populated');
