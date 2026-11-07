@@ -141,7 +141,9 @@ async function refreshStagingJournal(){
  // Only an aligned, SHA-bound current Paper session can authorize a tax read.
  let aligned=null;
  try{aligned=stagingSnapshot(response.sessions).paper?.session_date||null}catch(_){aligned=null}
- await refreshPrivateTax(aligned);
+ // Optional tax API failures MUST NOT conceal a valid SHA-bound Paper session.
+ // Authenticated S3 Paper remains readable even before the tax route exists.
+ await refreshPrivateTax(aligned).catch(()=>taxUpdated(null));
  container.hidden=false;
  container.innerHTML='<table><thead><tr><th>יום</th><th>מצב</th><th>רמת חשיפה</th><th>מינוף</th><th>שווי Paper מדומה</th><th>שמירת סיגנל ב־AWS</th></tr></thead><tbody>'+
  response.sessions.slice().reverse().map(x=>'<tr><td>'+html(x.session_date)+'</td><td>'+html(x.status)+'</td><td>'+
