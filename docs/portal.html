@@ -127,6 +127,17 @@
   <div class="metrics-strip four"><div><small>שווי סופי StockLens</small><strong id="sim-strategy">—</strong></div><div><small>שווי סופי QQQ</small><strong id="sim-benchmark">—</strong></div><div><small>סך הפקדות</small><strong id="sim-paid">—</strong></div><div><small>ירידה מרבית</small><strong id="sim-dd">—</strong></div></div>
   <div class="panel tax-panel" id="tax-sim-panel"><div class="section-title"><div><h2>תרחיש מס — איך משתנה הכסף שנשאר?</h2><p>הרצה נוספת על אותן החלטות ומחירים עם 25% מס דולרי משוער על מכירות ברווח. ממודל בלבד, לא חבות מס בישראל.</p></div><span class="subtle-tag">USD TAX STRESS</span></div>
     <div class="tax-metrics"><div><small>StockLens · מימוש אחרי מס משוער ($)</small><strong id="tax-sim-strategy">—</strong></div><div><small>QQQ · מימוש אחרי מס משוער ($)</small><strong id="tax-sim-qqq">—</strong></div><div><small>מס מצטבר על מכירות StockLens במהלך התקופה ($)</small><strong id="tax-sim-paid">—</strong></div></div>
+    <div class="tax-reconciliation" id="tax-bridge-panel" aria-label="פירוק הפער בין שתי הרצות הסימולציה">
+      <h3>למה $17 מיליון בלי מס יכולים להפוך לסכום נמוך בהרבה?</h3>
+      <p class="chart-caption">אלה שתי הרצות נפרדות: עם מס וללא מס. לא מחסרים רק את המס המצטבר מהתשואה הגבוהה.</p>
+      <div class="tax-bridge-row"><span>שווי תיק ללא ניכוי מס שוטף</span><strong id="tax-bridge-gross">—</strong></div>
+      <div class="tax-bridge-row"><span>פחות: מס משוער שנוכה ממזומן בעת מכירות לאורך הדרך</span><strong id="tax-bridge-paid">—</strong></div>
+      <div class="tax-bridge-row"><span>פחות: השפעת צמיחה, שינויי הקצאה והבדלי מסחר לאורך השנים</span><strong id="tax-bridge-path">—</strong></div>
+      <div class="tax-bridge-row"><span>פחות: עלויות מכירה סופית (החלקה ועמלה)</span><strong id="tax-bridge-exit-cost">—</strong></div>
+      <div class="tax-bridge-row"><span>פחות: מס נוסף על מכירה סופית</span><strong id="tax-bridge-exit-tax">—</strong></div>
+      <div class="tax-bridge-row tax-bridge-total"><span>שווי סופי בתרחיש המס</span><strong id="tax-bridge-net">—</strong></div>
+      <p class="chart-caption">הפרש הצבירה הוא יתרה מאזנת בין שתי ההרצות, לא חיוב מס נוסף או מדידה עצמאית של תשואה אבודה. כל המסים כאן בהנחת 25% על רווח דולרי, לא חישוב מס ישראלי.</p>
+    </div>
     <div class="legend"><span><i class="legend-sky"></i>StockLens לפני מס</span><span><i class="legend-gold"></i>StockLens בתרחיש מס דולרי</span></div><div class="chart-area"><svg id="tax-sim-chart" role="img" aria-label="המחשת השפעת מיסוי דולרי על שווי StockLens לאורך תקופת הסימולציה" viewBox="0 0 900 260" preserveAspectRatio="none"></svg><div id="tax-sim-chart-empty" class="chart-empty">הריצי סימולציה להצגת הגרף.</div></div>
     <p id="tax-sim-label" class="chart-caption">הריצי את הסימולטור כדי לראות המחשה. דרוש FX מתוארך לחישוב מס ישראלי.</p>
   </div>
