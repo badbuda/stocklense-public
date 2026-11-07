@@ -243,7 +243,7 @@ class Epoch2Store:
             require(prior_paper is not None and prior_continuity is not None and
                     prior_continuity.record.get("paper_sha256")==prior_paper.sha256 and
                     prior_continuity.record.get("paper_version_id")==prior_paper.version and
-                    prior_continuity.record.get("status")=="ON_TIME_QUALIFIED",
+                    prior_continuity.record.get("status")=="STRUCTURAL_ONLY_NOT_ECONOMICALLY_QUALIFIED",
                     "PREVIOUS_PAPER_CONTINUITY_UNQUALIFIED")
             prior_sha = prior_paper.sha256
         require(paper.get("previous_receipt_sha256")==prior_sha and
@@ -258,7 +258,7 @@ class Epoch2Store:
                 "PAPER_WRITE_INCOMPLETE")
         continuity = {
             "schema":"stocklens-epoch2-continuity-v1",
-            "book":epoch.NEW_BOOK,"session":day,"status":"ON_TIME_QUALIFIED",
+            "book":epoch.NEW_BOOK,"session":day,"status":"STRUCTURAL_ONLY_NOT_ECONOMICALLY_QUALIFIED",
             "paper_key":pkey,"paper_sha256":current.sha256,
             "paper_version_id":current.version,
             "genesis_sha256":genesis.sha256,
