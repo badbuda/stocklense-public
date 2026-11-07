@@ -202,7 +202,7 @@ def test_genesis_rejects_modified_old_sha_and_invalid_epoch_contract():
 
 
 def test_existing_genesis_with_different_bytes_must_not_be_overwritten():
-    book,s3,_=initialized()
+    book,s3,_,_=initialized()
     p=policy()
     p["candidate_manifest"]["starting_cash_usd"]=200000
     p["candidate_manifest_sha256"]=epoch.sha(p["candidate_manifest"])
