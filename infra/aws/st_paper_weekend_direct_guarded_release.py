@@ -209,8 +209,26 @@ def ensure_versioned_st_artifact(c, package):
 
 def check_readonly(c):
     state, configs, schedule = trusted_inventory(c)
-    change = unsafe_changeset_summary(c)
     live = {key: config["CodeSha256"] for key, config in configs.items()}
+    # Once the five audited ST code updates finish, the unsafe CFN change set
+    # has been retired deliberately. Post-deploy inspect must recognize only
+    # this precisely defined success state, never conceal a missing change set
+    # before a release or during a partially updated Lambda fleet.
+    try:
+        change = unsafe_changeset_summary(c)
+    except Exception as exc:
+        response = getattr(exc, "response", {}) or {}
+        code = str(response.get("Error", {}).get("Code", ""))
+        msg = str(response.get("Error", {}).get("Message", ""))
+        not_found = code == "ChangeSetNotFound" or (
+            code == "ValidationError" and
+            ("does not exist" in msg.lower() or "not found" in msg.lower())
+        )
+        require(not_found and set(live.values()) == {NEW},
+                "DANGEROUS_CHANGE_SET_UNVERIFIED_OR_MISSING_BEFORE_COMPLETE_DEPLOY")
+        change = {"name": ORIGINAL_CF_CHANGESET_NAME,
+                  "status": "RETIRED_NOT_EXECUTED",
+                  "unsafe_resource_count": 0}
     return {
         "status": "ST_DIRECT_CODE_RELEASE_READ_ONLY",
         "current_lambdas": len(configs),
