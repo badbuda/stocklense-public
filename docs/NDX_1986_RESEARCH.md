@@ -17,8 +17,9 @@ This model **does not** include: historical borrowing/financing rates, actual TQ
 
 ## Source and publishing
 
-- [FRED NASDAQ100](https://fred.stlouisfed.org/series/NASDAQ100), original source Nasdaq, Inc.; FRED series starts 1986-01-02.
-- `research/ndx1986_proxy.py` downloads CSV, checks date/price integrity, records SHA256 and produces `docs/ndx1986-research.json`. Missing values are excluded rather than filled.
+- Primary: [FRED NASDAQ100](https://fred.stlouisfed.org/series/NASDAQ100), original source Nasdaq, Inc.; FRED series starts 1986-01-02.
+- If FRED times out on GitHub Actions, the builder may fall back to [Yahoo Finance ^NDX historical daily closes](https://finance.yahoo.com/quote/%5ENDX/history/) using yfinance. The published report MUST label Yahoo as the source and SHA256 its canonical dated close snapshot. No source may be silently substituted.
+- `research/ndx1986_proxy.py` downloads FRED CSV or separately attributed Yahoo ^NDX, checks date/price integrity, records SHA256 and produces `docs/ndx1986-research.json`. Missing values are excluded rather than filled.
 - `.github/workflows/ndx-1986-research.yml` verifies the source, 253-day warmup and prior-close signal alignment before publishing the research-only feed.
 - `docs/ndx1986-sim.mjs` loads that separate feed. Missing/unverified data -> **blocked**, without affecting the observed-ETF simulator.
 - Check data license and redistribution permissions before any commercial/public redistribution beyond this research use; Nasdaq retains rights to its index series.
