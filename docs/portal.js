@@ -294,7 +294,7 @@ function svgElement(tag,attributes={},textValue){
  if(textValue!=null)n.textContent=textValue;
  return n;
 }
-function drawChart(id,rows,series=['s','q'],normalize=true){
+function drawChart(id,rows,series=['s','q'],normalize=true,seriesLabels={s:'StockLens',q:'QQQ'}){
  const svg=byId(id);svg.replaceChildren();if(rows.length<2)return false;
  const box=svg.viewBox.baseVal,W=box.width||900,H=box.height||340;
  const pad={t:23,r:18,b:32,l:72};
@@ -316,7 +316,7 @@ function drawChart(id,rows,series=['s','q'],normalize=true){
  svg.appendChild(cursor);
  const tip=svgElement('text',{x:pad.l,y:pad.t+9,opacity:0,'text-anchor':'start'});
  svg.appendChild(tip);
- const point=e=>{const r=svg.getBoundingClientRect();const px=(e.clientX-r.left)/r.width*W;const i=Math.round((px-pad.l)/(W-pad.l-pad.r)*(rows.length-1));const idx=Math.max(0,Math.min(rows.length-1,i));cursor.setAttribute('x1',x(idx));cursor.setAttribute('x2',x(idx));cursor.setAttribute('opacity','1');tip.setAttribute('opacity','1');tip.setAttribute('x',Math.min(W-220,Math.max(pad.l,x(idx))));tip.textContent=rows[idx].date+' · '+series.map(k=>(k==='q'?'QQQ ':'StockLens ')+money(mapped[idx][k])).join(' / ')};
+ const point=e=>{const r=svg.getBoundingClientRect();const px=(e.clientX-r.left)/r.width*W;const i=Math.round((px-pad.l)/(W-pad.l-pad.r)*(rows.length-1));const idx=Math.max(0,Math.min(rows.length-1,i));cursor.setAttribute('x1',x(idx));cursor.setAttribute('x2',x(idx));cursor.setAttribute('opacity','1');tip.setAttribute('opacity','1');tip.setAttribute('x',Math.min(W-220,Math.max(pad.l,x(idx))));tip.textContent=rows[idx].date+' · '+series.map(k=>(seriesLabels[k]||k)+' '+money(mapped[idx][k])).join(' / ')};
  svg.addEventListener('pointermove',point,{signal:chartAbort.signal});svg.addEventListener('pointerleave',()=>{cursor.setAttribute('opacity',0);tip.setAttribute('opacity',0)},{signal:chartAbort.signal});
  return true;
 }
@@ -427,6 +427,11 @@ function runSimulation(e){
   state.lastSimulation=result;
   // Parallel illustrative USD model, not claimed as Israeli after-tax performance.
   state.lastTaxSimulation=simulateRealETF(rows,initial,monthly,slip,0.25);
+  const taxPath=result.path.map((p,i)=>({date:p.date,s:p.s,q:state.lastTaxSimulation.path[i].s}));
+  if(taxPath.length>=2){
+    drawChart('tax-sim-chart',taxPath,['s','q'],false,{s:'StockLens לפני מס',q:'StockLens תרחיש מס'});
+    byId('tax-sim-chart-empty').hidden=true;
+  }
   renderTaxPanels();
   put('sim-strategy',money(result.strategy));put('sim-benchmark',money(result.benchmark));put('sim-paid',money(result.paid));put('sim-dd',percentage(result.dd,1));
   drawChart('sim-chart',result.path,['s','q'],false);byId('sim-chart-empty').hidden=true;
