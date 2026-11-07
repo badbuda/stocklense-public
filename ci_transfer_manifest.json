@@ -534,7 +534,6 @@
     "workbench_evidence_manifest.py": "7e290add5dcb861b0d4bdbed81cc7e4308ff4683",
     "workbench_selfcheck.py": "4f17be6d56ac7d3cc3637e1ef2b2af3ed9d880a8",
     "yahoo_eod_scorecard.py": "137465f3ff4d9a2b8c164bf4321480c0ea0869fd",
-    "yahoo_long_history.py": "e7e51b5c2f5697da5d583316638b98ec13e6114c",
-    "docs/portal-tax.mjs": "b2dcac761e9d922f2577d07f0ebd3fe39ac7b5f5"
+    "yahoo_long_history.py": "e7e51b5c2f5697da5d583316638b98ec13e6114c"
   }
 }
