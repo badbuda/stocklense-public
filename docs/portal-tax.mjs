@@ -83,3 +83,31 @@ export function nominalTerminalLiquidation(book,shares,close,cash,slipBps=10,rat
    saleCount:book.sales,realizedUsd:book.realized,
    label:'המחשת 25% דולרית בלבד — לא מס רווחי הון ישראלי מאומת'};
 }
+
+/* Bridge two DISTINCT paths rather than subtracting "tax paid" from the
+   untaxed path. The residual represents forgone compounding AND changes in
+   allocations/transaction costs due to lower available capital. It is not
+   a separately estimated tax bill and must never be labeled one. */
+export function reconcileNominalTaxScenario(untaxedNav, taxedResult){
+  const terminal=taxedResult?.terminal_strategy;
+  const paid=taxedResult?.modeled_tax_paid_usd;
+  if(!amt(untaxedNav)||!terminal||!amt(terminal.value)||!amt(paid)||
+    !amt(terminal.additionalTax)||!amt(terminal.netFriction)||
+    !amt(taxedResult.strategy)){
+    throw Error('INVALID_TAX_BRIDGE_INPUT');
+  }
+  const totalGap=untaxedNav-terminal.value;
+  const capitalPathEffect=totalGap-paid-terminal.additionalTax-terminal.netFriction;
+  const reconciled=untaxedNav-paid-terminal.additionalTax-terminal.netFriction-capitalPathEffect;
+  if(!Number.isFinite(capitalPathEffect)||
+    Math.abs(reconciled-terminal.value)>Math.max(0.005,1e-10*Math.max(untaxedNav,terminal.value))){
+    throw Error('TAX_BRIDGE_DID_NOT_RECONCILE');
+  }
+  return {
+    untaxedNav,modeledTaxesPaid:paid,
+    capitalPathEffect,terminalExitCosts:terminal.netFriction,
+    terminalTax:terminal.additionalTax,taxedNavBeforeFinalSale:taxedResult.strategy,
+    afterTaxExitValue:terminal.value,totalGap,
+    explanatoryScope:'RESIDUAL_COMPOUNDING_ALLOCATION_DIFFERENCES_NOT_SEPARATE_TAX'
+  };
+}

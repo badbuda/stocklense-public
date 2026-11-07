@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {taxFeedView,taxActionSignal,createNominalTaxBook,recordNominalBuy,recordNominalSale,nominalTerminalLiquidation,TAX_PLACEHOLDER} from '../docs/portal-tax.mjs';
+import {taxFeedView,taxActionSignal,createNominalTaxBook,recordNominalBuy,recordNominalSale,nominalTerminalLiquidation,reconcileNominalTaxScenario,TAX_PLACEHOLDER} from '../docs/portal-tax.mjs';
 
 assert.equal(taxFeedView(null).ready,false);
 assert.equal(taxFeedView({kind:'STOCKLENS_TAX_STATUS_V1',schema_version:1,status:'BLOCKED'}).ready,false);
@@ -35,4 +35,16 @@ recordNominalBuy(t,'QQQ',1,100,0);
 const offset=recordNominalSale(t,'QQQ',1,110,0,.25);
 assert.equal(offset.tax,0,'eligible loss offsets later gain in research stress');
 assert.throws(()=>recordNominalSale(createNominalTaxBook(),'QQQ',1,100,0),/TAX_LOTS_INCOMPLETE/);
+const large=17688959.18810451,scenario={
+ strategy:6516182.823296777,modeled_tax_paid_usd:2445509.9277704824,
+ terminal_strategy:{value:6508466.5425494,additionalTax:0,netFriction:7716.2807473775465}
+};
+const bridge=reconcileNominalTaxScenario(large,scenario);
+assert.equal(Math.round(bridge.capitalPathEffect),8727266);
+assert.equal(Math.round(bridge.totalGap),11180493);
+assert.equal(Math.round(bridge.afterTaxExitValue),6508467);
+assert.equal(bridge.terminalTax,0,'never invent a second exit-tax charge');
+assert.ok(Math.abs(large-bridge.modeledTaxesPaid-bridge.capitalPathEffect-
+    bridge.terminalExitCosts-bridge.terminalTax-bridge.afterTaxExitValue)<.01);
+assert.throws(()=>reconcileNominalTaxScenario(large,{...scenario,terminal_strategy:{...scenario.terminal_strategy,netFriction:NaN}}),/INVALID_TAX_BRIDGE_INPUT/);
 console.log('PORTAL_TAX_FAIL_CLOSED_AND_NOMINAL_USD_TESTS_PASS');

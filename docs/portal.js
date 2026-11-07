@@ -3,7 +3,7 @@ import {bindTradeInspector,showGapReport,updateScenarioComparison} from './porta
 import {initCloudJournal,refreshCloudJournal} from './portal-cloud.js';
 import {publicationFreshness,publicationMessage} from './portal-freshness.mjs';
 import {stagingSnapshot} from './portal-live.mjs';
-import {taxFeedView,taxActionSignal,createNominalTaxBook,recordNominalBuy,recordNominalSale,nominalTerminalLiquidation,TAX_PLACEHOLDER} from './portal-tax.mjs';
+import {taxFeedView,taxActionSignal,createNominalTaxBook,recordNominalBuy,recordNominalSale,nominalTerminalLiquidation,reconcileNominalTaxScenario,TAX_PLACEHOLDER} from './portal-tax.mjs';
 const byId=id=>document.getElementById(id);
 const shell=document.getElementById('sidebar');
 const fmt=new Intl.NumberFormat('en-US',{maximumFractionDigits:2});
@@ -133,6 +133,14 @@ function renderTaxPanels(){
  put('tax-sim-qqq',scenario?money(scenario.terminal_benchmark.value):'—');
  put('tax-sim-paid',scenario?money(scenario.modeled_tax_paid_usd):'—');
  put('tax-sim-label',scenario?'תרחיש 25% על רווחים דולריים ממומשים; כולל מס משוער בעת מימוש יתרת התיק. אינו חישוב מס ישראלי, ללא שערי USD/ILS או קיזוז שנתי אמיתי.':'הריצי סימולציה להצגת תרחיש מס דולרי משוער. נתון זה אינו מחליף חישוב מס ישראלי.');
+ const bridge=scenario&&state.lastSimulation?reconcileNominalTaxScenario(state.lastSimulation.strategy,scenario):null;
+ const negative=v=>v==null?'—':v<0?'−'+money(-v):money(v);
+ put('tax-bridge-gross',bridge?money(bridge.untaxedNav):'—');
+ put('tax-bridge-paid',bridge?negative(bridge.modeledTaxesPaid):'—');
+ put('tax-bridge-path',bridge?negative(bridge.capitalPathEffect):'—');
+ put('tax-bridge-exit-cost',bridge?negative(bridge.terminalExitCosts):'—');
+ put('tax-bridge-exit-tax',bridge?negative(bridge.terminalTax):'—');
+ put('tax-bridge-net',bridge?money(bridge.afterTaxExitValue):'—');
 }
 function renderAuthenticatedStaging(){
  if(!state.data||!state.stagingRows)return;

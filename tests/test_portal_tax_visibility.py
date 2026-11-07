@@ -24,6 +24,8 @@ def test_tax_panels_cover_all_existing_stocklens_screens():
         "tax-hero-signal", "tax-paper-panel", "tax-paper-assessed",
         "tax-performance-panel", "tax-performance-status",
         "tax-sim-panel", "tax-sim-strategy", "tax-sim-qqq", "tax-sim-paid", "tax-sim-chart",
+        "tax-bridge-panel", "tax-bridge-gross", "tax-bridge-paid", "tax-bridge-path",
+        "tax-bridge-exit-cost", "tax-bridge-exit-tax", "tax-bridge-net",
         "tax-research-panel", "tax-evidence-panel", "tax-evidence-status"
     }
     assert needed <= p.ids
