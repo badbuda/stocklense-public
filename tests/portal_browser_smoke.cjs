@@ -115,7 +115,16 @@ try{
  await page.locator('button[data-page=simulator]').click();
  // Separate 1986 index research must load real historical source and remain
  // distinct from observed QQQ/TQQQ ETF execution and tax panels.
- await page.waitForFunction(()=>document.querySelector('#ndx86-strategy')?.textContent?.startsWith('return text && text.charAt(0)===String.fromCharCode(36)},{timeout:15000});
+ await page.waitForFunction(()=>document.querySelector('#ndx86-strategy')?.textContent?.startsWith(String.fromCharCode(36)),null,{timeout:25000});
+ assert.match(await page.locator('#ndx86-status').textContent(),/1986/);
+ assert.match(await page.locator('#ndx86-status').textContent(),/1987/,'253-session warmup prevents fictional 1986 trades');
+ assert.equal(await page.locator('#ndx86-chart path').count(),2,'Separate 1986 index proxy must chart two modeled paths');
+ assert.match(await page.locator('#ndx86-source-link').textContent(),/FRED|Yahoo/);
+ const ndxDefault=await page.locator('#ndx86-strategy').textContent();
+ await page.locator('#ndx86-drag').selectOption('8');
+ await page.locator('#ndx86-form button[type=submit]').click();
+ assert.notEqual(await page.locator('#ndx86-strategy').textContent(),ndxDefault,'Synthetic 3x drag sensitivity must change result');
+ await page.waitForFunction(()=>{const text=document.querySelector('#sim-strategy')?.textContent;return text && text.charAt(0)===String.fromCharCode(36)},{timeout:15000});
  await page.locator('#sim-form button[type=submit]').click();
  const first=await page.locator('#sim-strategy').textContent();
  assert.match(first,/\$/);
