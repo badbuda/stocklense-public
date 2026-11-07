@@ -17,7 +17,7 @@ const setHtml=(id,value)=>{const e=byId(id);if(e)e.innerHTML=value};
 const dateText=s=>s?new Intl.DateTimeFormat('he-IL',{year:'numeric',month:'short',day:'numeric',timeZone:'UTC'}).format(new Date(s+'T12:00:00Z')):'—';
 const signed=v=>v>0?'positive':v<0?'negative':'';
 const PAGE_NAMES={overview:'תמונת מצב',paper:'העסקאות והתיק',performance:'ביצועים וסיכון',simulator:'סימולטור',research:'מעבדת מחקר',evidence:'נתונים ואמינות'};
-const state={data:null,series:null,history:null,risk:null,workbench:null,quality:null,exposure:null,lastSimulation:null,lastTaxSimulation:null,stagingRows:null,tax:null};
+const state={data:null,series:null,history:null,risk:null,workbench:null,quality:null,exposure:null,lastSimulation:null,lastTaxSimulation:null,stagingRows:null,tax:null,privateTax:null};
 const DATA_ENDPOINTS={data:'data.json',series:'timeseries.json',history:'portal-history.json',risk:'observed_tqqq_risk_audit.json',workbench:'workbench.json',quality:'site_health.json',exposure:'lean-exposure-evidence.json',tax:'tax-status.json'};
 function navigate(page){
   if(!PAGE_NAMES[page])page='overview';
@@ -105,7 +105,7 @@ function render(){
 // The authenticated staging S3 view is the only source permitted to update
 // current-model NAV or the recent Paper chart; old GitHub JSON remains an archive.
 function renderTaxPanels(){
- const d=state.data||{},a=d.paper?.latest||{},feed=state.tax;
+ const d=state.data||{},a=d.paper?.latest||{},feed=state.privateTax||state.tax;
  let currentSession=a.session_date||null,sourceEquity=a.equity,sourceLabel='ארכיון GitHub · לא נתון חי';
  if(state.stagingRows){
   try{
@@ -448,6 +448,7 @@ initCloudJournal({
    state.stagingRows=rows;
    renderAuthenticatedStaging();
    renderTaxPanels();
- }
+ },
+ onTaxChange:report=>{state.privateTax=report;renderTaxPanels();}
 });
 navigate(location.hash.slice(1)||'overview');refresh();
