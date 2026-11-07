@@ -115,13 +115,13 @@ function renderTaxPanels(){
    sourceLabel=current.paper?'S3 Staging מאומת לפי גרסה · לא ברוקר':'אין תיק Paper רציף מאומת';
   }catch(_){currentSession=null;sourceEquity=null;sourceLabel='ראיות Staging לא תקינות';}
  }
- const t=taxFeedView(feed,currentSession);
+ const t=taxFeedView(feed,currentSession,sourceEquity);
  put('tax-global-signal',t.ready?'מס: הערכה מחקרית':'מס: חישוב חסום — נתונים חסרים');
  put('tax-overview-gross',money(sourceEquity));
  put('tax-overview-net',t.ready?money(t.afterTax):'—');
  put('tax-overview-source',sourceLabel+(currentSession?' · '+currentSession:''));
  put('tax-overview-status',t.ready?t.label:TAX_PLACEHOLDER);
- put('tax-hero-signal',taxActionSignal(d.signal));
+ put('tax-hero-signal',state.stagingRows?'איתות מס מ־AWS: עדיין חסר פירוט מכירות מלא כדי לקבוע חבות מס':taxActionSignal(d.signal));
  put('tax-paper-status',t.ready?t.label:TAX_PLACEHOLDER);
  put('tax-paper-assessed',t.ready?'₪'+number(t.taxIls):'—');
  put('tax-paper-after',t.ready?money(t.afterTax):'—');
