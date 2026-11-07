@@ -6,7 +6,7 @@ const DAY=/^20\d\d-\d\d-\d\d$/;
 const amt=x=>typeof x==='number'&&Number.isFinite(x)&&x>=0;
 export const TAX_PLACEHOLDER='לא חושב — חסרים נתוני מס מאומתים';
 
-export function taxFeedView(feed, paperSession=null){
+export function taxFeedView(feed, paperSession=null, paperGross=null){
   const blocked={ready:false,status:'BLOCKED',label:TAX_PLACEHOLDER,
     reason:'נדרשים רצף עסקאות מלא, מנות רכישה, שערי מט"ח מתוארכים ואימות מס מול הברוקר.',
     afterTax:null,taxIls:null,sourceDate:null};
@@ -20,7 +20,8 @@ export function taxFeedView(feed, paperSession=null){
     ||!amt(feed.gross_paper_nav_usd)||!amt(feed.estimated_after_tax_liquidation_usd)
     ||!amt(feed.estimated_tax_assessed_ils)
     ||feed.estimated_after_tax_liquidation_usd>feed.gross_paper_nav_usd
-    ||paperSession!==feed.asof_date)return blocked;
+    ||paperSession!==feed.asof_date||!amt(paperGross)||
+    Math.abs(feed.gross_paper_nav_usd-paperGross)>0.02)return blocked;
   return {ready:true,status:'RESEARCH_COMPLETE',label:'הערכת מס מחקרית · לא ניכוי ברוקר',
     reason:'מזומן אחרי מימוש רעיוני, בהנחות מס מחקריות ואחרי בדיקת מסמך מקור SHA.',
     afterTax:feed.estimated_after_tax_liquidation_usd,
