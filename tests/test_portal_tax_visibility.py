@@ -23,7 +23,7 @@ def test_tax_panels_cover_all_existing_stocklens_screens():
         "tax-global-signal", "tax-overview-panel", "tax-overview-net",
         "tax-hero-signal", "tax-paper-panel", "tax-paper-assessed",
         "tax-performance-panel", "tax-performance-status",
-        "tax-sim-panel", "tax-sim-strategy", "tax-sim-qqq", "tax-sim-paid",
+        "tax-sim-panel", "tax-sim-strategy", "tax-sim-qqq", "tax-sim-paid", "tax-sim-chart",
         "tax-research-panel", "tax-evidence-panel", "tax-evidence-status"
     }
     assert needed <= p.ids
