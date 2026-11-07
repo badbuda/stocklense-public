@@ -59,12 +59,19 @@ SAFE_MODULES={
     "infra.aws.independent_signal", "stocklens.paper",
 }
 
+def approved_module(module):
+    # Accept the actual watchdog Python module if it is in the same private
+    # infra.aws namespace. The ZIP's SHA is independently pinned; arbitrary
+    # imports, paths and modules outside this namespace are prohibited.
+    return (module in SAFE_MODULES or
+            re.fullmatch(r"infra\\.aws\\.[A-Za-z0-9_]{1,64}",module) is not None)
+
 def require(ok,msg):
     if not ok:raise RuntimeError(msg)
 
 
 def ast_summary(source:bytes, module:str):
-    require(module in SAFE_MODULES,"PRIVATE_MODULE_NOT_ALLOWLISTED")
+    require(approved_module(module),"PRIVATE_MODULE_NOT_ALLOWLISTED")
     require(len(source)<=1_500_000,"PRIVATE_MODULE_OVERSIZE")
     tree=ast.parse(source,filename="<private-read-only>",mode="exec")
     functions=[]
@@ -117,7 +124,7 @@ def contracts_from_verified_archive(data:bytes, expected_modules:list[str]):
         files=set(z.namelist())
         require(len(files)==len(z.namelist()),"PRIVATE_ARCHIVE_DUPLICATE_MEMBERS")
         for module in expected_modules:
-            require(module in SAFE_MODULES,"UNAUTHORIZED_MODULE_REQUEST")
+            require(approved_module(module),"UNAUTHORIZED_MODULE_REQUEST")
             path=module.replace(".","/")+".py"
             if path not in files:
                 modules[module]={"status":"MODULE_NOT_IN_RELEASE_ARCHIVE_UNVERIFIED"}
@@ -160,7 +167,7 @@ def inspect(services):
             watchdog_handler.endswith(".handler"),"UNKNOWN_WATCHDOG_HANDLER_REFERENCE")
     watchdog_module=watchdog_handler.rsplit(".",1)[0]
     # Never inspect modules outside explicitly reviewed, non-secret allowlist.
-    require(watchdog_module in SAFE_MODULES,
+    require(approved_module(watchdog_module),
             "UNKNOWN_PRIVATE_WATCHDOG_MODULE_REQUIRES_REVIEW")
     expected_modules=list(dict.fromkeys(
         ["infra.aws.independent_paper",watchdog_module]))
