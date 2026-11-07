@@ -53,7 +53,8 @@ def inspect_epoch2(read: Callable[[str], Receipt | None], *,
             gap.record.get("status")=="MISSED_UNRECOVERABLE_NO_BACKFILL" and
             gap.record.get("old_receipt_keys_unchanged") is True and
             gap.record.get("missed_sessions")==list(epoch.MISSED) and
-            gap.record.get("new_genesis_sha256")==g.sha256,
+            gap.record.get("new_genesis_sha256")==g.sha256 and
+            gap.record.get("original_anchor_sha256")==epoch.HISTORIC_SHA256,
             "INVALID_HISTORIC_GAP_AUDIT")
     prev_paper_sha=g.sha256
     prev_cont_sha=g.sha256
@@ -83,7 +84,7 @@ def inspect_epoch2(read: Callable[[str], Receipt | None], *,
                 "PAPER_CANDIDATE_CHAIN_BROKEN")
         require(continuity.get("book")==epoch.NEW_BOOK and
                 continuity.get("session")==day and
-                continuity.get("status")=="ON_TIME_QUALIFIED" and
+                continuity.get("status")=="STRUCTURAL_ONLY_NOT_ECONOMICALLY_QUALIFIED" and
                 continuity.get("paper_key")==p.key and
                 continuity.get("paper_sha256")==p.sha256 and
                 continuity.get("paper_version_id")==p.version and
