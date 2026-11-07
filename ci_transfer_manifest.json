@@ -8,7 +8,7 @@
     ".github/workflows/aws-journal-export.yml": "32bd92d6da3bfd6f89df09d9a719d3ce9f166871",
     ".github/workflows/aws-shadow-journal-audit.yml": "89d8bbba6c80a6da6bb739eef78fd7c73b0ae47b",
     ".github/workflows/fast-guard.yml": "a9b640c9fb437d3d25ae6ab1496c23699a3cfb1b",
-    ".github/workflows/ndx-1986-research.yml": "c57923ba09c99d99ae22bfe0be5bdaf28217b68f",
+    ".github/workflows/ndx-1986-research.yml": "c7ecd061fadf708e2e91ab80de5d1aa9b097a1cc",
     ".github/workflows/portal-browser-smoke.yml": "52239b0edc7c0f7a2c1ecfa5aae1d315f726a31e",
     ".github/workflows/portal-decisions-deployment.yml": "5202433063b977b08a07b4b5fba93bcb36a31aff",
     ".github/workflows/portal-history-build.yml": "2d731559dde6f3116cc349379190e74417a1ece9",
