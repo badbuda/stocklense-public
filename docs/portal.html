@@ -115,6 +115,25 @@
 </section>
 <section class="page" data-view="simulator">
   <div class="page-heading"><div><div class="eyebrow">SIMULATOR</div><h1>מה היה קורה לכסף שלי?</h1><p>סימולציה אינטראקטיבית על מחירי QQQ ו־TQQQ שנצפו מ־Yahoo. אפשר להשוות לתיק QQQ בלבד.</p></div><span class="subtle-tag">RESEARCH ONLY · NO ORDERS</span></div>
+  <div class="panel tax-panel" id="ndx86-research-panel">
+    <div class="section-title"><div><h2>1986–היום · מחקר מדד Nasdaq-100</h2><p>נתוני מדד אמיתיים מ־1986; חשיפת 3× סינתטית בלבד לפני הקמת TQQQ וגם לאחריה. בדיקת כללים רטרואקטיבית — לא ביצוע היסטורי של StockLens 8.0.</p></div><span class="subtle-tag">INDEX PROXY · RESEARCH ONLY</span></div>
+    <div class="notice compact"><span class="notice-icon">!</span><span><b>חשוב:</b> ב־1986 לא היו QQQ או TQQQ. יש נתוני מדד מ־1986, אבל נדרשים 253 ימי חימום לסיגנלים ולכן הרצת האסטרטגיה מתחילה ב־1987. תוצאות המדד מבוססות מחירי סגירה בלבד, ללא דיבידנדים, ללא מחירי פתיחה אמיתיים וללא מס. התשואות אינן ניתנות להשוואה ישירה לסימולטור ETF הנצפה שמתחיל ב־2010.</span></div>
+    <form id="ndx86-form" class="sim-controls">
+      <label>סכום התחלה ($)<input id="ndx86-initial" type="number" value="100000" min="100" step="100" required></label>
+      <label>הפקדה חודשית ($)<input id="ndx86-monthly" type="number" value="3500" min="0" step="100" required></label>
+      <label>תאריך התחלה <input id="ndx86-start" type="date" value="1986-01-02" required></label>
+      <label>תאריך סיום <input id="ndx86-end" type="date" required></label>
+      <label>גרירה שנתית משוערת לחשיפה 3× <select id="ndx86-drag"><option value="0">0% — אופטימי מאוד</option><option value="1">1%</option><option value="3" selected>3% — הנחה בלבד</option><option value="5">5%</option><option value="8">8%</option></select></label>
+      <label>עלות מעבר חשיפה (bps) <select id="ndx86-cost"><option value="0">0</option><option value="12" selected>12 — הנחה בלבד</option><option value="25">25</option><option value="50">50</option></select></label>
+      <button type="submit" class="primary-btn">חשב מחקר מ־1986 ←</button>
+    </form>
+    <div class="inline-alert" id="ndx86-status" role="status">טוען נתוני מדד Nasdaq-100 מ־1986…</div>
+    <div class="metrics-strip four"><div><small>StockLens · חשיפה סינתטית</small><strong id="ndx86-strategy">—</strong></div><div><small>Nasdaq-100 · מדד מחירים</small><strong id="ndx86-benchmark">—</strong></div><div><small>סך הפקדות</small><strong id="ndx86-paid">—</strong></div><div><small>ירידה מרבית · מודל</small><strong id="ndx86-dd">—</strong></div></div>
+    <div class="legend"><span><i class="legend-sky"></i>כללי חשיפה רטרואקטיביים, סינתטי</span><span><i class="legend-gold"></i>מדד Nasdaq-100 מחירים</span></div>
+    <div class="chart-area"><svg id="ndx86-chart" role="img" aria-label="מחקר מדד מ־1986: הון סינתטי מול מדד Nasdaq-100, ציר לוגריתמי" viewBox="0 0 900 260" preserveAspectRatio="none"></svg></div>
+    <p class="chart-caption">הגרף בציר לוגריתמי. המקור: <a href="https://fred.stlouisfed.org/series/NASDAQ100" target="_blank" rel="noopener noreferrer">FRED / Nasdaq, Inc. — NASDAQ100</a>. אין הוכחת זכאות TQQQ לפני 2010, אין נתוני דיבידנדים, ריבית מימון היסטורית או מס ישראלי; גרירת 3× ועלות המעבר הן הנחות שניתן לשנות. ההרצה הרטרואקטיבית אינה חלק מתוצאות StockLens 8.0 הקפואות.</p>
+  </div>
+  <div class="section-title"><div><h2>2010–היום · סימולטור ETF שנצפו בפועל</h2><p>QQQ ו־TQQQ ממחירי Yahoo, מסלול נפרד מהמחקר הסינתטי שלפני 2010.</p></div></div>
   <div class="notice"><span class="notice-icon">ⓘ</span><span>הסימולטור משחזר <b>החלטות היסטוריות קפואות</b> במסחר משוער בפתיחת היום הבא, כולל מניות שלמות, עמלות והחלקה. הוא אינו מריץ מחדש את האלגוריתם על תרחישי שוק חדשים או מתיימר לשחזר מילויי ברוקר.</span></div>
   <div class="panel"><form id="sim-form" class="sim-controls">
     <label>סכום התחלה ($)<input id="sim-initial" type="number" value="100000" min="100" step="100" required></label>
@@ -186,4 +205,5 @@
 </main>
 </div></div>
 <script type="module" src="./portal.js"></script>
+<script type="module" src="./ndx1986-sim.mjs"></script>
 </body></html>
