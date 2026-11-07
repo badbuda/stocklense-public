@@ -54,3 +54,12 @@
 .tax-status-chip{border:1px solid #62725c;background:#283327;color:#f5d99b;white-space:normal;max-width:280px;border-radius:10px;font-size:11px;font-weight:700;padding:7px 10px}
 .tax-signal-text{margin:9px 0 6px;color:#d7eced;font-size:12px}
 @media(max-width:760px){.tax-metrics{grid-template-columns:1fr}.tax-status-chip{font-size:10px;max-width:145px}.tax-panel{margin:14px 0}}
+
+.tax-reconciliation{background:#0b1b2a;border:1px solid var(--border);border-radius:14px;padding:16px;margin:14px 0 18px}
+.tax-reconciliation h3{font-size:16px;line-height:1.5;margin:0 0 8px}
+.tax-bridge-row{display:flex;justify-content:space-between;gap:16px;padding:11px 0;border-bottom:1px solid var(--border);align-items:center}
+.tax-bridge-row span{font-size:13px;max-width:70%;color:var(--muted)}
+.tax-bridge-row strong{font-size:15px;direction:ltr;text-align:left;white-space:nowrap;font-variant-numeric:tabular-nums}
+.tax-bridge-total{border-bottom:0;font-weight:700;padding-top:16px}
+.tax-bridge-total span,.tax-bridge-total strong{color:var(--text);font-size:16px}
+@media(max-width:660px){.tax-bridge-row{gap:8px}.tax-bridge-row span{font-size:12px}.tax-bridge-row strong{font-size:13px}.tax-reconciliation{padding:13px}}
