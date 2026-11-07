@@ -51,6 +51,7 @@ def test_public_site_defaults_to_blocked_tax_not_fake_after_tax_nav():
     assert "'/v1/tax?date='" in cloud
     assert "Authorization:'Bearer '+accessToken" in cloud
     assert "stagingSnapshot(response.sessions).paper?.session_date" in cloud
+    assert "await refreshPrivateTax(aligned).catch(()=>taxUpdated(null));" in cloud
 
 
 def test_tax_math_is_reproducible_and_fail_closed():
