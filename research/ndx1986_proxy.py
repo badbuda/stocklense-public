@@ -47,7 +47,7 @@ def parse_fred_csv(payload: bytes) -> list[tuple[str, float]]:
     return rows
 
 
-def build(rows: list[tuple[str, float]], *, source_sha256: str) -> dict:
+def build(rows: list[tuple[str, float]], *, source_sha256: str, source_meta: dict | None = None) -> dict:
     if len(rows) < 254:
         raise ValueError("INDEX_NEEDS_253_SESSION_WARMUP")
     if rows != sorted(rows) or len({r[0] for r in rows}) != len(rows):
@@ -102,16 +102,37 @@ def main():
     parser.add_argument("--csv", help="Optional FRED CSV input for offline audit")
     parser.add_argument("--out", default="docs/ndx1986-research.json")
     args = parser.parse_args()
+    source_meta = None
     if args.csv:
         payload = Path(args.csv).read_bytes()
+        rows = parse_fred_csv(payload)
     else:
-        request = Request(SOURCE_URL, headers={"User-Agent": "StockLens research-only source-audit/1.0"})
-        with urlopen(request, timeout=40) as response:
-            payload = response.read(2_000_000)
-    rows = parse_fred_csv(payload)
+        try:
+            request = Request(SOURCE_URL, headers={"User-Agent": "StockLens research-only source-audit/1.0"})
+            with urlopen(request, timeout=8) as response:
+                payload = response.read(2_000_000)
+            rows = parse_fred_csv(payload)
+        except (TimeoutError, OSError) as exc:
+            # FRED CSV occasionally stalls on GitHub runners. A separate
+            # observed ^NDX Yahoo source is acceptable, but MUST be labeled.
+            print("FRED_UNAVAILABLE_USING_SEPARATELY_LABELED_YAHOO_NDX_SOURCE:", type(exc).__name__)
+            import yfinance as yf
+            frame = yf.download("^NDX", start="1986-01-01", interval="1d",
+                                auto_adjust=False, progress=False, actions=False, threads=False)
+            if frame is None or frame.empty:
+                raise RuntimeError("YAHOO_NDX_SOURCE_UNAVAILABLE") from exc
+            close = frame["Close"]["^NDX"] if hasattr(frame.columns, "nlevels") and frame.columns.nlevels>1 else frame["Close"]
+            rows = [(day.date().isoformat(), float(value))
+                    for day, value in close.items()
+                    if day.date().isoformat() >= "1986-01-02" and math.isfinite(float(value)) and float(value)>0]
+            payload = ("DATE,NASDAQ100"+chr(10)+"".join(f"{day},{value:.12g}"+chr(10) for day,value in rows)).encode("utf-8")
+            source_meta = {"publisher": "Yahoo Finance / Nasdaq, Inc.", "series": "^NDX",
+                           "url": "https://finance.yahoo.com/quote/%5ENDX/history/",
+                           "download_sha256": hashlib.sha256(payload).hexdigest(),
+                           "method": "YFINANCE_NDX_CANONICAL_CLOSE_CSV_SHA256"}
     if rows[0][0] != "1986-01-02" or len(rows) < 9000:
-        raise ValueError("FRED_1986_SOURCE_COVERAGE_INCOMPLETE")
-    report = build(rows, source_sha256=hashlib.sha256(payload).hexdigest())
+        raise ValueError("NDX_1986_SOURCE_COVERAGE_INCOMPLETE")
+    report = build(rows, source_sha256=hashlib.sha256(payload).hexdigest(), source_meta=source_meta)
     target = Path(args.out)
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text(json.dumps(report, ensure_ascii=False, separators=(",", ":")) + "\n", encoding="utf-8")

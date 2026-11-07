@@ -87,11 +87,19 @@ async function init() {
     if (data.kind!=='STOCKLENS_NDX_1986_RETROACTIVE_INDEX_RESEARCH_V1'||
         data.status!=='RESEARCH_ONLY'||data.period?.source_start!=='1986-01-02'||
         !/^([a-f0-9]{64})$/.test(data.source?.download_sha256||'')||
+        !['NASDAQ100','^NDX'].includes(data.source?.series)||
+        !['https://fred.stlouisfed.org/graph/fredgraph.csv?id=NASDAQ100',
+          'https://finance.yahoo.com/quote/%5ENDX/history/'].includes(data.source?.url)||
         !Array.isArray(data.rows)||data.rows.length<9000||
         data.rows.at(-1).date!==data.period.source_end||
         data.rows.some((r,i)=>i>0&&r.date<=data.rows[i-1].date))
       throw Error('מקור נתוני המדד לא עבר בדיקת תקינות');
     source=data;
+    const sourceLink=$('ndx86-source-link');
+    if (sourceLink) {
+      sourceLink.href=data.source.url;
+      sourceLink.textContent=data.source.publisher+' — '+data.source.series;
+    }
     $('ndx86-start').min=data.period.source_start;
     $('ndx86-start').max=data.period.source_end;
     $('ndx86-end').min=data.period.source_start;
