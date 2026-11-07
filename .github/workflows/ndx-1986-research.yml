@@ -31,7 +31,7 @@ jobs:
           python -m unittest discover -s tests -p 'test_ndx1986_proxy.py' -v
           node --check docs/ndx1986-sim.mjs
       - name: Download actual FRED Nasdaq-100 index history and build research-only feed
-        run: python research/ndx1986_proxy.py --out docs/ndx1986-research.json
+        run: python -m research.ndx1986_proxy --out docs/ndx1986-research.json
       - name: Fail closed if coverage or semantics drift
         run: |
           python - <<'PY'
