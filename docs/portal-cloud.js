@@ -116,12 +116,12 @@ function stagingWeekdays(){
 }
 async function refreshStagingJournal(){
  const notice=byId('cloud-staging-status'),container=byId('cloud-staging-results');
- if(!config||!accessToken||Date.now()>=expiresAt){notice.textContent='נדרשת התחברות Cognito לקריאת נתוני Staging';return}
- notice.textContent='טוען ראיות S3 פרטיות…';
+ if(!config||!accessToken||Date.now()>=expiresAt){taxUpdated(null);notice.textContent='נדרשת התחברות Cognito לקריאת נתוני Staging';return}
+ notice.textContent='טוען ראיות S3 פרטיות…';taxUpdated(null);
  const url=config.api_base_url.replace(/\/$/,'')+'/v1/staging?dates='+encodeURIComponent(stagingWeekdays().join(','));
  const r=await fetch(url,{headers:{Authorization:'Bearer '+accessToken},cache:'no-store'});
- if(r.status===404){notice.textContent='נתיב Staging המאובטח טרם הותקן';return}
- if(r.status===401||r.status===403){accessToken=null;byId('cloud-staging-load').disabled=true;stagingUpdated([]);notice.textContent='תוקף ההתחברות פג';return}
+ if(r.status===404){stagingUpdated([]);taxUpdated(null);notice.textContent='נתיב Staging המאובטח טרם הותקן';return}
+ if(r.status===401||r.status===403){accessToken=null;byId('cloud-staging-load').disabled=true;stagingUpdated([]);taxUpdated(null);notice.textContent='תוקף ההתחברות פג';return}
  if(!r.ok)throw Error('STAGING_READ_HTTP_'+r.status);
  const response=await r.json();
  if(response.kind!=='STOCKLENS_AUTHENTICATED_STAGING_S3_READ_ONLY'||
