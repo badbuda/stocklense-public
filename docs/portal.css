@@ -43,3 +43,14 @@
 /* Fail-closed freshness banner takes precedence over generic notice layout. */
 #feed-status[hidden]{display:none}
 #feed-status.error{background:#482331;border-color:#974054;color:#ffb7c0;font-weight:700}
+
+/* Tax displays show verified net values only; blocked status remains visible
+   throughout the portal instead of filling gaps with a fictional 25% NAV. */
+.tax-panel{border:1px solid #34536b;background:linear-gradient(135deg,#112536,#101c2b);margin:20px 0}
+.tax-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:16px 0}
+.tax-metrics>div{border:1px solid var(--border);background:#0b1b2a;padding:14px;border-radius:12px;min-width:0}
+.tax-metrics small{color:var(--muted);display:block;font-size:12px;margin-bottom:7px}
+.tax-metrics strong{display:block;color:var(--text);font-size:clamp(15px,1.6vw,21px);line-height:1.5;overflow-wrap:anywhere}
+.tax-status-chip{border:1px solid #62725c;background:#283327;color:#f5d99b;white-space:normal;max-width:280px;border-radius:10px;font-size:11px;font-weight:700;padding:7px 10px}
+.tax-signal-text{margin:9px 0 6px;color:#d7eced;font-size:12px}
+@media(max-width:760px){.tax-metrics{grid-template-columns:1fr}.tax-status-chip{font-size:10px;max-width:145px}.tax-panel{margin:14px 0}}
