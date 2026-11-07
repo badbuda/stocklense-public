@@ -1,13 +1,13 @@
 # StockLens — evidence-based closeout
 
-Research-only / operationally BLOCKED. Generated 2026-10-29T18:24:49.007175+00:00.
+Research-only / operationally BLOCKED. Generated 2026-11-07T19:28:44.904673+00:00.
 Never imply broker execution or live AWS proof from GitHub CI.
 
 | Component | Current status | Evidence |
 |---|---|---|
-| Shadow frozen | SOURCE_PRESENT_NOT_AWS_EXECUTION | Signal session 2026-10-28 |
+| Shadow frozen | SOURCE_PRESENT_NOT_AWS_EXECUTION | Signal session 2026-11-06 |
 | Historical ETF combinations | HISTORICAL_CI_VERIFIED_NOT_FORWARD | 56 arms, 224 stress runs, to 2026-10-27 |
-| Legacy modeled Paper | STALE | Last 2026-10-09, 13 missed explicit, 2 modeled sessions |
+| Legacy modeled Paper | STALE | Last 2026-10-09, 20 missed explicit, 2 modeled sessions |
 | AWS ST | NOT_VERIFIED_FROM_GITHUB | Readback unverified |
 | AWS PROD | NOT_VERIFIED_FROM_GITHUB | Not an accepted Paper book |
 | Trading readiness | BLOCKED_FOR_LIVE_TRADING | 5/18 checks PASS; 13 blocked |
