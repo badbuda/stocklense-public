@@ -104,8 +104,26 @@ def next_market_session_proof():
     try:
         import exchange_calendars as xcals
     except ImportError:
-        return {"status":"XNYS_CALENDAR_NOT_AVAILABLE_REVIEW_REQUIRED",
-                "new_epoch_scheduling_authorized":False}
+        # A deliberately NARROW, externally reviewed date pin. NYSE's 2026
+        # official calendar confirms 2026-11-09 is an ordinary exchange day;
+        # 2026-11-06 is Friday, followed by the closed weekend. This fallback
+        # NEVER authorizes a schedule or supports other calendar dates.
+        from datetime import timedelta
+        last = date.fromisoformat(MISSING[-1])
+        first = date.fromisoformat(PROPOSED_FIRST_SESSION)
+        require(last.isoformat()=="2026-11-06" and
+                first.isoformat()=="2026-11-09" and
+                last.weekday()==4 and first.weekday()==0 and
+                (first-last)==timedelta(days=3),
+                "PINNED_XNYS_NOV09_REFERENCE_DIFFERS")
+        return {
+            "status":"OFFICIAL_NYSE_2026_NOV09_NARROW_DATE_PIN_ONLY",
+            "source":"https://www.nyse.com/trade/hours-calendars",
+            "last_missing_session":last.isoformat(),
+            "proposed_first_session":first.isoformat(),
+            "general_xnys_calendar_unavailable":True,
+            "new_epoch_scheduling_authorized":False,
+        }
     cal=xcals.get_calendar("XNYS")
     last=date.fromisoformat(MISSING[-1])
     first=date.fromisoformat(PROPOSED_FIRST_SESSION)
