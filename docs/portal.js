@@ -134,7 +134,7 @@ function renderTaxPanels(){
  put('tax-sim-paid',scenario?money(scenario.modeled_tax_paid_usd):'—');
  put('tax-sim-label',scenario?'תרחיש 25% על רווחים דולריים ממומשים; כולל מס משוער בעת מימוש יתרת התיק. אינו חישוב מס ישראלי, ללא שערי USD/ILS או קיזוז שנתי אמיתי.':'הריצי סימולציה להצגת תרחיש מס דולרי משוער. נתון זה אינו מחליף חישוב מס ישראלי.');
  const bridge=scenario&&state.lastSimulation?reconcileNominalTaxScenario(state.lastSimulation.strategy,scenario):null;
- const negative=v=>v==null?'—':v<0?'−'+money(-v):money(v);
+ const negative=v=>v==null?'—':v>0?'−'+money(v):v<0?'+'+money(-v):money(0);
  put('tax-bridge-gross',bridge?money(bridge.untaxedNav):'—');
  put('tax-bridge-paid',bridge?negative(bridge.modeledTaxesPaid):'—');
  put('tax-bridge-path',bridge?negative(bridge.capitalPathEffect):'—');
