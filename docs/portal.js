@@ -3,6 +3,7 @@ import {bindTradeInspector,showGapReport,updateScenarioComparison} from './porta
 import {initCloudJournal,refreshCloudJournal} from './portal-cloud.js';
 import {publicationFreshness,publicationMessage} from './portal-freshness.mjs';
 import {stagingSnapshot} from './portal-live.mjs';
+import {taxFeedView,taxActionSignal,createNominalTaxBook,recordNominalBuy,recordNominalSale,nominalTerminalLiquidation,TAX_PLACEHOLDER} from './portal-tax.mjs';
 const byId=id=>document.getElementById(id);
 const shell=document.getElementById('sidebar');
 const fmt=new Intl.NumberFormat('en-US',{maximumFractionDigits:2});
@@ -16,8 +17,8 @@ const setHtml=(id,value)=>{const e=byId(id);if(e)e.innerHTML=value};
 const dateText=s=>s?new Intl.DateTimeFormat('he-IL',{year:'numeric',month:'short',day:'numeric',timeZone:'UTC'}).format(new Date(s+'T12:00:00Z')):'—';
 const signed=v=>v>0?'positive':v<0?'negative':'';
 const PAGE_NAMES={overview:'תמונת מצב',paper:'העסקאות והתיק',performance:'ביצועים וסיכון',simulator:'סימולטור',research:'מעבדת מחקר',evidence:'נתונים ואמינות'};
-const state={data:null,series:null,history:null,risk:null,workbench:null,quality:null,exposure:null,lastSimulation:null,stagingRows:null};
-const DATA_ENDPOINTS={data:'data.json',series:'timeseries.json',history:'portal-history.json',risk:'observed_tqqq_risk_audit.json',workbench:'workbench.json',quality:'site_health.json',exposure:'lean-exposure-evidence.json'};
+const state={data:null,series:null,history:null,risk:null,workbench:null,quality:null,exposure:null,lastSimulation:null,lastTaxSimulation:null,stagingRows:null,tax:null,privateTax:null};
+const DATA_ENDPOINTS={data:'data.json',series:'timeseries.json',history:'portal-history.json',risk:'observed_tqqq_risk_audit.json',workbench:'workbench.json',quality:'site_health.json',exposure:'lean-exposure-evidence.json',tax:'tax-status.json'};
 function navigate(page){
   if(!PAGE_NAMES[page])page='overview';
   document.querySelectorAll('.page').forEach(x=>x.classList.toggle('visible',x.dataset.view===page));
@@ -99,9 +100,40 @@ function render(){
   setupSimulation();
   paintPerformance();
   renderAuthenticatedStaging();
+  renderTaxPanels();
 }
 // The authenticated staging S3 view is the only source permitted to update
 // current-model NAV or the recent Paper chart; old GitHub JSON remains an archive.
+function renderTaxPanels(){
+ const d=state.data||{},a=d.paper?.latest||{},feed=state.privateTax||state.tax;
+ let currentSession=a.session_date||null,sourceEquity=a.equity,sourceLabel='ארכיון GitHub · לא נתון חי';
+ if(state.stagingRows){
+  try{
+   const current=stagingSnapshot(state.stagingRows);
+   currentSession=current.paper?.session_date||null;
+   sourceEquity=current.paper?.paper?.equity??null;
+   sourceLabel=current.paper?'S3 Staging מאומת לפי גרסה · לא ברוקר':'אין תיק Paper רציף מאומת';
+  }catch(_){currentSession=null;sourceEquity=null;sourceLabel='ראיות Staging לא תקינות';}
+ }
+ const t=taxFeedView(feed,currentSession,sourceEquity);
+ put('tax-global-signal',t.ready?'מס: הערכה מחקרית':'מס: חישוב חסום — נתונים חסרים');
+ put('tax-overview-gross',money(sourceEquity));
+ put('tax-overview-net',t.ready?money(t.afterTax):'—');
+ put('tax-overview-source',sourceLabel+(currentSession?' · '+currentSession:''));
+ put('tax-overview-status',t.ready?t.label:TAX_PLACEHOLDER);
+ put('tax-hero-signal',state.stagingRows?'איתות מס מ־AWS: עדיין חסר פירוט מכירות מלא כדי לקבוע חבות מס':taxActionSignal(d.signal));
+ put('tax-paper-status',t.ready?t.label:TAX_PLACEHOLDER);
+ put('tax-paper-assessed',t.ready?'₪'+number(t.taxIls):'—');
+ put('tax-paper-after',t.ready?money(t.afterTax):'—');
+ put('tax-performance-status',t.ready?'חישוב חשבון מדומה בלבד; אין השוואת CAGR אחרי מס עד אימות נתונים היסטוריים.':'תשואות היסטוריות אחרי מס עדיין אינן מאומתות. אין להציג CAGR כנטו.');
+ put('tax-research-status',t.ready?t.label:TAX_PLACEHOLDER);
+ put('tax-evidence-status',t.ready?'מחקר מס מאומת מול קלטים — לא ניכוי בפועל':'BLOCKED · חסרים FX היסטורי, מנות רכישה, רצף מכירות ואישור ניכוי מס');
+ const scenario=state.lastTaxSimulation;
+ put('tax-sim-strategy',scenario?money(scenario.terminal_strategy.value):'—');
+ put('tax-sim-qqq',scenario?money(scenario.terminal_benchmark.value):'—');
+ put('tax-sim-paid',scenario?money(scenario.modeled_tax_paid_usd):'—');
+ put('tax-sim-label',scenario?'תרחיש 25% על רווחים דולריים ממומשים; כולל מס משוער בעת מימוש יתרת התיק. אינו חישוב מס ישראלי, ללא שערי USD/ILS או קיזוז שנתי אמיתי.':'הריצי סימולציה להצגת תרחיש מס דולרי משוער. נתון זה אינו מחליף חישוב מס ישראלי.');
+}
 function renderAuthenticatedStaging(){
  if(!state.data||!state.stagingRows)return;
  let current;
@@ -193,7 +225,7 @@ function renderGovernance(d){
 function renderTrades(){
   const paper=state.data.paper||{}, tr=paper.recent_trades||[], rows=paper.equity_history||[];
   put('trades-count',number(paper.trades||tr.length,0)+' עסקאות');
-  setHtml('trades-body',tr.length?[...tr].reverse().map((t,i)=>'<tr tabindex="0" role="button" aria-label="פירוט עסקת '+clean(t.symbol)+'" data-trade-index="'+i+'"><td>'+clean(t.execution_session)+'</td><td><span class="research-status '+(t.side==='BUY'?'accepted':'rejected')+'">'+clean(t.side==='BUY'?'קנייה':t.side==='SELL'?'מכירה':t.side)+'</span></td><td>'+clean(t.symbol)+'</td><td>'+number(t.qty,0)+'</td><td>'+clean(t.time_et)+'</td><td>'+money(t.reference_price)+'</td><td>'+money(t.modeled_fill_price)+'</td><td>'+money(t.fee)+'</td><td>'+clean(t.signal_date)+'</td></tr>').join(''):'<tr><td colspan="9">עדיין אין פעולות מתועדות ביומן.</td></tr>');
+  setHtml('trades-body',tr.length?[...tr].reverse().map((t,i)=>'<tr tabindex="0" role="button" aria-label="פירוט עסקת '+clean(t.symbol)+'" data-trade-index="'+i+'"><td>'+clean(t.execution_session)+'</td><td><span class="research-status '+(t.side==='BUY'?'accepted':'rejected')+'">'+clean(t.side==='BUY'?'קנייה':t.side==='SELL'?'מכירה':t.side)+'</span></td><td>'+clean(t.symbol)+'</td><td>'+number(t.qty,0)+'</td><td>'+clean(t.time_et)+'</td><td>'+money(t.reference_price)+'</td><td>'+money(t.modeled_fill_price)+'</td><td>'+money(t.fee)+'</td><td>'+clean(t.signal_date)+'</td><td>'+clean(t.side==='BUY'?'קנייה · אין מימוש':t.side==='SELL'?'מכירה · אירוע מס אפשרי':'דרוש אימות')+'</td></tr>').join(''):'<tr><td colspan="10">עדיין אין פעולות מתועדות ביומן.</td></tr>');
   bindTradeInspector(paper);
   setHtml('paper-body',rows.length?[...rows].reverse().map(t=>'<tr><td>'+clean(t.date)+'</td><td>'+money(t.equity)+'</td><td class="'+signed(Number(t.return))+'">'+percentage(t.return,2)+'</td><td class="'+signed(Number(t.drawdown))+'">'+percentage(t.drawdown,2)+'</td></tr>').join(''):'<tr><td colspan="4">אין עדיין יומן הון.</td></tr>');
 }
@@ -262,7 +294,7 @@ function svgElement(tag,attributes={},textValue){
  if(textValue!=null)n.textContent=textValue;
  return n;
 }
-function drawChart(id,rows,series=['s','q'],normalize=true){
+function drawChart(id,rows,series=['s','q'],normalize=true,seriesLabels={s:'StockLens',q:'QQQ'}){
  const svg=byId(id);svg.replaceChildren();if(rows.length<2)return false;
  const box=svg.viewBox.baseVal,W=box.width||900,H=box.height||340;
  const pad={t:23,r:18,b:32,l:72};
@@ -284,7 +316,7 @@ function drawChart(id,rows,series=['s','q'],normalize=true){
  svg.appendChild(cursor);
  const tip=svgElement('text',{x:pad.l,y:pad.t+9,opacity:0,'text-anchor':'start'});
  svg.appendChild(tip);
- const point=e=>{const r=svg.getBoundingClientRect();const px=(e.clientX-r.left)/r.width*W;const i=Math.round((px-pad.l)/(W-pad.l-pad.r)*(rows.length-1));const idx=Math.max(0,Math.min(rows.length-1,i));cursor.setAttribute('x1',x(idx));cursor.setAttribute('x2',x(idx));cursor.setAttribute('opacity','1');tip.setAttribute('opacity','1');tip.setAttribute('x',Math.min(W-220,Math.max(pad.l,x(idx))));tip.textContent=rows[idx].date+' · '+series.map(k=>(k==='q'?'QQQ ':'StockLens ')+money(mapped[idx][k])).join(' / ')};
+ const point=e=>{const r=svg.getBoundingClientRect();const px=(e.clientX-r.left)/r.width*W;const i=Math.round((px-pad.l)/(W-pad.l-pad.r)*(rows.length-1));const idx=Math.max(0,Math.min(rows.length-1,i));cursor.setAttribute('x1',x(idx));cursor.setAttribute('x2',x(idx));cursor.setAttribute('opacity','1');tip.setAttribute('opacity','1');tip.setAttribute('x',Math.min(W-220,Math.max(pad.l,x(idx))));tip.textContent=rows[idx].date+' · '+series.map(k=>(seriesLabels[k]||k)+' '+money(mapped[idx][k])).join(' / ')};
  svg.addEventListener('pointermove',point,{signal:chartAbort.signal});svg.addEventListener('pointerleave',()=>{cursor.setAttribute('opacity',0);tip.setAttribute('opacity',0)},{signal:chartAbort.signal});
  return true;
 }
@@ -326,22 +358,37 @@ function setupSimulation(){
  put('sim-message',h.observed_ohlc_available?'מוכן · מחירי QQQ ו־TQQQ יומיים שנצפו מ־Yahoo, ותאריך סיגנל קודם לכל יום.':'יש נתוני NAV היסטוריים, אך קובץ OHLC מאומת עדיין חסר. לא נריץ סימולטור עסקאות ללא מחירי TQQQ נצפים.');
 }
 function weights(l){if(l===0)return {QQQ:0,TQQQ:0};if(l===1.25)return {QQQ:.861875,TQQQ:.123125};if(l===2)return {QQQ:.4925,TQQQ:.4925};if(l===3)return {QQQ:0,TQQQ:.985};throw Error('רמת חשיפה לא מוכרת: '+l)}
-function makePortfolio(initial){return {cash:initial,shares:{QQQ:0,TQQQ:0},fees:0,slip:0,peak:initial,dd:0}}
+function makePortfolio(initial){return {cash:initial,shares:{QQQ:0,TQQQ:0},fees:0,slip:0,peak:initial,dd:0,taxBook:createNominalTaxBook()}}
 function nav(p,r,field){return p.cash+p.shares.QQQ*Number(r['q'+field])+p.shares.TQQQ*Number(r['t'+field])}
-function order(p,r,symbol,side,count,slip,day,cause,events){
+function order(p,r,symbol,side,count,slip,day,cause,events,taxRate=0){
  if(count<=0)return;
- const ref=Number(r[(symbol==='QQQ'?'q':'t')+'o']),factor=side==='BUY'?1:-1,fill=ref*(1+factor*slip/10000),fee=count*fill*.0002;
- if(side==='BUY'){const affordable=Math.floor(Math.max(0,p.cash)/ (fill*1.0002));count=Math.min(count,affordable);if(count<=0)return;p.cash-=count*fill*(1.0002);p.shares[symbol]+=count}
- else{count=Math.min(count,p.shares[symbol]);if(count<=0)return;p.cash+=count*fill-fee;p.shares[symbol]-=count}
- p.fees+=count*fill*.0002;p.slip+=count*Math.abs(fill-ref);
- if(events)events.push({date:day,symbol,side,qty:count,modeled_price:fill.toFixed(4),reason:cause});
+ const ref=Number(r[(symbol==='QQQ'?'q':'t')+'o']),factor=side==='BUY'?1:-1,fill=ref*(1+factor*slip/10000);
+ let fee=0,modeledTax=0,realizedUsd=0;
+ if(side==='BUY'){
+  const affordable=Math.floor(Math.max(0,p.cash)/(fill*1.0002));
+  count=Math.min(count,affordable);
+  if(count<=0)return;
+  fee=count*fill*.0002;
+  p.cash-=count*fill+fee;p.shares[symbol]+=count;
+  recordNominalBuy(p.taxBook,symbol,count,fill,fee);
+ }else{
+  count=Math.min(count,p.shares[symbol]);if(count<=0)return;
+  fee=count*fill*.0002;
+  const sale=recordNominalSale(p.taxBook,symbol,count,fill,fee,taxRate);
+  modeledTax=sale.tax;realizedUsd=sale.realized;
+  p.cash+=count*fill-fee-modeledTax;p.shares[symbol]-=count;
+ }
+ p.fees+=fee;p.slip+=count*Math.abs(fill-ref);
+ if(events)events.push({date:day,symbol,side,qty:count,modeled_price:fill.toFixed(4),reason:cause,
+   modeled_fee_usd:Number(fee.toFixed(5)),nominal_usd_tax_usd:Number(modeledTax.toFixed(5)),
+   realized_pl_usd:Number(realizedUsd.toFixed(5)),tax_semantics:'ILLUSTRATIVE_NOMINAL_USD_NOT_ISRAELI_TAX'});
 }
-function rebalance(p,r,target,slip,day,cause,events){
+function rebalance(p,r,target,slip,day,cause,events,taxRate=0){
  const equity=nav(p,r,'o'),desired={QQQ:Math.floor(equity*target.QQQ/Number(r.qo)),TQQQ:Math.floor(equity*target.TQQQ/Number(r.to))};
- for(const symbol of ['QQQ','TQQQ'])order(p,r,symbol,'SELL',Math.max(0,p.shares[symbol]-desired[symbol]),slip,day,cause,events);
- for(const symbol of ['QQQ','TQQQ'])order(p,r,symbol,'BUY',Math.max(0,desired[symbol]-p.shares[symbol]),slip,day,cause,events);
+ for(const symbol of ['QQQ','TQQQ'])order(p,r,symbol,'SELL',Math.max(0,p.shares[symbol]-desired[symbol]),slip,day,cause,events,taxRate);
+ for(const symbol of ['QQQ','TQQQ'])order(p,r,symbol,'BUY',Math.max(0,desired[symbol]-p.shares[symbol]),slip,day,cause,events,taxRate);
 }
-function simulateRealETF(rows,initial,monthly,slip){
+function simulateRealETF(rows,initial,monthly,slip,taxRate=0){
  const a=makePortfolio(initial),b=makePortfolio(initial),events=[],path=[];
  let paid=initial,month=null,prev=null,peakA=initial,peakB=initial,ddA=0,ddB=0;
  for(const r of rows){
@@ -349,8 +396,8 @@ function simulateRealETF(rows,initial,monthly,slip){
   const deposit=month!==null&&ym!==month?monthly:0;
   paid+=deposit;a.cash+=deposit;b.cash+=deposit;
   const changed=prev===null||prev!==l;
-  if(changed||deposit>0)rebalance(a,r,w,slip,r.date,changed?'שינוי חשיפה / אתחול':'הפקדה חודשית',events);
-  if(prev===null||deposit>0)rebalance(b,r,{QQQ:1,TQQQ:0},slip,r.date,'תיק השוואה QQQ',null);
+  if(changed||deposit>0)rebalance(a,r,w,slip,r.date,changed?'שינוי חשיפה / אתחול':'הפקדה חודשית',events,taxRate);
+  if(prev===null||deposit>0)rebalance(b,r,{QQQ:1,TQQQ:0},slip,r.date,'תיק השוואה QQQ',null,taxRate);
   const av=nav(a,r,'c'),bv=nav(b,r,'c');
   if(av<=0||bv<=0||!Number.isFinite(av+bv))throw Error('שווי תיק לא חוקי ביום '+r.date);
   peakA=Math.max(peakA,av);peakB=Math.max(peakB,bv);
@@ -358,7 +405,12 @@ function simulateRealETF(rows,initial,monthly,slip){
   path.push({date:r.date,s:av,q:bv});
   prev=l;month=ym;
  }
- return {strategy:nav(a,rows.at(-1),'c'),benchmark:nav(b,rows.at(-1),'c'),paid,dd:ddA,benchmark_dd:ddB,fees:a.fees,slippage:a.slip,events,path};
+ const last=rows.at(-1),price={QQQ:Number(last.qc),TQQQ:Number(last.tc)};
+ const terminal_strategy=nominalTerminalLiquidation(a.taxBook,a.shares,price,a.cash,slip,taxRate);
+ const terminal_benchmark=nominalTerminalLiquidation(b.taxBook,b.shares,price,b.cash,slip,taxRate);
+ return {strategy:nav(a,last,'c'),benchmark:nav(b,last,'c'),paid,dd:ddA,benchmark_dd:ddB,
+    fees:a.fees,slippage:a.slip,events,path,tax_rate_nominal_usd:taxRate,
+    modeled_tax_paid_usd:a.taxBook.paid,terminal_strategy,terminal_benchmark};
 }
 function runSimulation(e){
  if(e)e.preventDefault();
@@ -373,24 +425,35 @@ function runSimulation(e){
   if(rows.some(r=>['qo','qc','to','tc'].some(k=>!Number.isFinite(Number(r[k]))||Number(r[k])<=0)))throw Error('לסימולציה חסר מחיר ETF מקורי לחלק מהימים.');
   const result=simulateRealETF(rows,initial,monthly,slip);
   state.lastSimulation=result;
+  // Parallel illustrative USD model, not claimed as Israeli after-tax performance.
+  state.lastTaxSimulation=simulateRealETF(rows,initial,monthly,slip,0.25);
+  const taxPath=result.path.map((p,i)=>({date:p.date,s:p.s,q:state.lastTaxSimulation.path[i].s}));
+  if(taxPath.length>=2){
+    drawChart('tax-sim-chart',taxPath,['s','q'],false,{s:'StockLens לפני מס',q:'StockLens תרחיש מס'});
+    byId('tax-sim-chart-empty').hidden=true;
+  }
+  renderTaxPanels();
   put('sim-strategy',money(result.strategy));put('sim-benchmark',money(result.benchmark));put('sim-paid',money(result.paid));put('sim-dd',percentage(result.dd,1));
   drawChart('sim-chart',result.path,['s','q'],false);byId('sim-chart-empty').hidden=true;
   put('sim-message','חושבו '+number(rows.length,0)+' ימי מסחר · '+number(result.events.length,0)+' אירועי קנייה/מכירה · ללא עסקאות ברוקר.');
   byId('sim-message').classList.remove('bad');
   put('sim-footnote','תוצאה היסטורית מותנית בהנחות: עמלות 2 bps לצד, החלקה '+slip+' bps לצד, מחיר פתיחה יומי מותאם מ־Yahoo. השיטה נשארה קפואה. רמת החשיפה 3× משתמשת ב־TQQQ נצפה, לא ב־QQQ×3.');
   updateScenarioComparison({history:h,a:result,simulate:simulateRealETF,draw:drawChart});
-  setHtml('sim-events',result.events.length?result.events.slice(-100).reverse().map(r=>'<tr><td>'+clean(r.date)+'</td><td>'+clean(r.symbol)+'</td><td>'+clean(r.side)+'</td><td>'+number(r.qty,0)+'</td><td>'+money(r.modeled_price)+'</td><td>'+clean(r.reason)+'</td></tr>').join(''):'<tr><td colspan="6">לא נמצאו עסקאות בתקופה הזו.</td></tr>');
+  const taxEvents=state.lastTaxSimulation?.events||[];
+  setHtml('sim-events',taxEvents.length?taxEvents.slice(-100).reverse().map(r=>'<tr><td>'+clean(r.date)+'</td><td>'+clean(r.symbol)+'</td><td>'+clean(r.side)+'</td><td>'+number(r.qty,0)+'</td><td>'+money(r.modeled_price)+'</td><td>'+money(r.nominal_usd_tax_usd)+'</td><td>'+clean(r.reason)+'</td></tr>').join(''):'<tr><td colspan="7">לא נמצאו עסקאות בתקופה הזו.</td></tr>');
  }catch(err){put('sim-message',err.message);byId('sim-message').classList.add('bad')}
 }
 byId('sim-form').addEventListener('submit',runSimulation);
 byId('scenario-b-form').addEventListener('submit',e=>{e.preventDefault();updateScenarioComparison({history:state.history,a:state.lastSimulation,simulate:simulateRealETF,draw:drawChart})});
-byId('sim-download').addEventListener('click',()=>downloadCSV('stocklens-historical-modelled-trades.csv',['date','symbol','side','qty','modeled_price','reason'],state.lastSimulation?.events||[]));
+byId('sim-download').addEventListener('click',()=>downloadCSV('stocklens-nominal-usd-tax-scenario.csv',['date','symbol','side','qty','modeled_price','modeled_fee_usd','realized_pl_usd','nominal_usd_tax_usd','reason','tax_semantics'],state.lastTaxSimulation?.events||[]));
 initCloudJournal({
  getHistory:()=>state.history,
  showGaps:()=>showGapReport(state.data?.paper||{},state.history),
  onStagingChange:rows=>{
    state.stagingRows=rows;
    renderAuthenticatedStaging();
- }
+   renderTaxPanels();
+ },
+ onTaxChange:report=>{state.privateTax=report;renderTaxPanels();}
 });
 navigate(location.hash.slice(1)||'overview');refresh();

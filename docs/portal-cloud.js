@@ -1,5 +1,6 @@
 /* Optional Cognito PKCE: access token kept in memory only, never in URL/storage. */
-let config=null, accessToken=null, expiresAt=0, getHistory=()=>null, stagingUpdated=()=>{};
+import {stagingSnapshot} from './portal-live.mjs';
+let config=null, accessToken=null, expiresAt=0, getHistory=()=>null, stagingUpdated=()=>{},taxUpdated=()=>{};
 const byId=id=>document.getElementById(id);
 const status=s=>{const n=byId('cloud-status');if(n)n.textContent=s};
 const html=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c]));
@@ -87,6 +88,24 @@ export async function refreshCloudJournal(){
  root.innerHTML='<table><thead><tr><th>יום מסחר</th><th>סטטוס אימות</th><th>רמת סיגנל</th><th>שווי Paper</th><th>עסקאות Paper</th><th>מועד ארכוב ב־AWS</th></tr></thead><tbody>'+
  d.sessions.map(row=>'<tr><td>'+html(row.session_date)+'</td><td>'+html(row.status)+'</td><td>'+html(row.signal?.level??'—')+'</td><td>'+money(row.paper?.row?.equity)+'</td><td>'+html(row.paper?.trades?.length??'—')+'</td><td>'+html(row.paper?.recorded_at_utc||row.signal?.recorded_at_utc||'—')+'</td></tr>').join('')+'</tbody></table>';
 }
+/* Optional private tax route reuses Cognito JWT. It never falls back to public
+   account data and never turns a missing endpoint into an estimated tax. */
+async function refreshPrivateTax(sessionDate){
+ if(!config||!accessToken||Date.now()>=expiresAt||!/^20\d\d-\d\d-\d\d$/.test(sessionDate||'')){
+  taxUpdated(null);return;
+ }
+ const url=config.api_base_url.replace(/\/$/,'')+'/v1/tax?date='+encodeURIComponent(sessionDate);
+ const r=await fetch(url,{headers:{Authorization:'Bearer '+accessToken},cache:'no-store'});
+ if(r.status===404){taxUpdated(null);return}
+ if(r.status===401||r.status===403){taxUpdated(null);return}
+ if(!r.ok){taxUpdated(null);throw Error('PRIVATE_TAX_HTTP_'+r.status)}
+ const report=await r.json();
+ if(report?.kind!=='STOCKLENS_TAX_STATUS_V1'||report.schema_version!==1||
+    report.asof_date!==sessionDate||!['RESEARCH_COMPLETE','BLOCKED'].includes(report.status)){
+  taxUpdated(null);throw Error('UNTRUSTED_PRIVATE_TAX_REPORT');
+ }
+ taxUpdated(report);
+}
 /* JWT-authenticated S3 Staging: distinct from the stale production DynamoDB view. */
 function stagingWeekdays(){
  const result=[],d=new Date(); d.setUTCHours(0,0,0,0);
@@ -97,12 +116,12 @@ function stagingWeekdays(){
 }
 async function refreshStagingJournal(){
  const notice=byId('cloud-staging-status'),container=byId('cloud-staging-results');
- if(!config||!accessToken||Date.now()>=expiresAt){notice.textContent='נדרשת התחברות Cognito לקריאת נתוני Staging';return}
- notice.textContent='טוען ראיות S3 פרטיות…';
+ if(!config||!accessToken||Date.now()>=expiresAt){taxUpdated(null);notice.textContent='נדרשת התחברות Cognito לקריאת נתוני Staging';return}
+ notice.textContent='טוען ראיות S3 פרטיות…';taxUpdated(null);
  const url=config.api_base_url.replace(/\/$/,'')+'/v1/staging?dates='+encodeURIComponent(stagingWeekdays().join(','));
  const r=await fetch(url,{headers:{Authorization:'Bearer '+accessToken},cache:'no-store'});
- if(r.status===404){notice.textContent='נתיב Staging המאובטח טרם הותקן';return}
- if(r.status===401||r.status===403){accessToken=null;byId('cloud-staging-load').disabled=true;stagingUpdated([]);notice.textContent='תוקף ההתחברות פג';return}
+ if(r.status===404){stagingUpdated([]);taxUpdated(null);notice.textContent='נתיב Staging המאובטח טרם הותקן';return}
+ if(r.status===401||r.status===403){accessToken=null;byId('cloud-staging-load').disabled=true;stagingUpdated([]);taxUpdated(null);notice.textContent='תוקף ההתחברות פג';return}
  if(!r.ok)throw Error('STAGING_READ_HTTP_'+r.status);
  const response=await r.json();
  if(response.kind!=='STOCKLENS_AUTHENTICATED_STAGING_S3_READ_ONLY'||
@@ -119,15 +138,20 @@ async function refreshStagingJournal(){
  const invalid=response.sessions.filter(x=>x.status==='INVALID_EVIDENCE');
  notice.textContent='S3 Staging: '+signals.length+' סיגנלים, '+paper.length+' ימי Paper, '+invalid.length+' ראיות פסולות. אחרון: '+(signals.at(-1)?.session_date||'אין')+'. תצוגת SHA/גרסה, לא אימות מלא של שרשרת Paper או מסחר אמיתי.';
  stagingUpdated(response.sessions);
+ // Only an aligned, SHA-bound current Paper session can authorize a tax read.
+ let aligned=null;
+ try{aligned=stagingSnapshot(response.sessions).paper?.session_date||null}catch(_){aligned=null}
+ await refreshPrivateTax(aligned);
  container.hidden=false;
  container.innerHTML='<table><thead><tr><th>יום</th><th>מצב</th><th>רמת חשיפה</th><th>מינוף</th><th>שווי Paper מדומה</th><th>שמירת סיגנל ב־AWS</th></tr></thead><tbody>'+
  response.sessions.slice().reverse().map(x=>'<tr><td>'+html(x.session_date)+'</td><td>'+html(x.status)+'</td><td>'+
  html(x.signal?.level??'—')+'</td><td>'+html(x.signal?.target_leverage??'—')+'</td><td>'+
  money(x.paper?.equity)+'</td><td>'+html(x.signal?.saved_at_utc||'—')+'</td></tr>').join('')+'</tbody></table>';
 }
-export function initCloudJournal({getHistory:historyProvider,onStagingChange}){
+export function initCloudJournal({getHistory:historyProvider,onStagingChange,onTaxChange}){
  getHistory=historyProvider;
  if(typeof onStagingChange==='function')stagingUpdated=onStagingChange;
+ if(typeof onTaxChange==='function')taxUpdated=onTaxChange;
  const loginBtn=byId('cloud-login'),loadBtn=byId('cloud-load');
  loginBtn?.addEventListener('click',()=>login().catch(err=>status('שגיאה בהתחברות: '+err.message)));
  loadBtn?.addEventListener('click',()=>refreshCloudJournal().catch(err=>status('שגיאת קריאה מ־AWS: '+err.message)));
@@ -135,7 +159,7 @@ export function initCloudJournal({getHistory:historyProvider,onStagingChange}){
  // Authenticated, read-only refresh while the tab is open. Never retain JWT in storage.
  setInterval(()=>{
    if(!config||!accessToken)return;
-   if(Date.now()>=expiresAt){accessToken=null;stagingUpdated([]);status('פג תוקף ההתחברות ל־AWS; התחברי שוב.');return}
+   if(Date.now()>=expiresAt){accessToken=null;stagingUpdated([]);taxUpdated(null);status('פג תוקף ההתחברות ל־AWS; התחברי שוב.');return}
    refreshStagingJournal().catch(err=>{byId('cloud-staging-status').textContent='שגיאת רענון S3: '+err.message});
  },300000);
  fetch('./cloud-config.json',{cache:'no-store'}).then(r=>r.ok?r.json():null).then(async cfg=>{

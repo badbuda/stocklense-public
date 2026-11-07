@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "kind": "STOCKLENS_TAX_STATUS_V1",
+  "status": "BLOCKED",
+  "asof_date": null,
+  "source": "NO_PRIVATE_VERIFIED_TAX_RECEIPT",
+  "gross_paper_nav_usd": null,
+  "estimated_after_tax_liquidation_usd": null,
+  "estimated_tax_assessed_ils": null,
+  "estimated_withheld_by_broker_ils": null,
+  "realized_taxable_gain_ils": null,
+  "fx_verified": false,
+  "lot_history_verified": false,
+  "broker_withholding_verified": false,
+  "capital_trading_authorized": false,
+  "reason": "MISSING_FULL_SHA_BOUND_ST_PAPER_TRADE_HISTORY_AND_VERIFIED_DATED_ILS_USD_FX",
+  "display_policy": "NO_AFTER_TAX_NUMBER_UNTIL_VERIFIED",
+  "notes": "Public page contains only status; private account-level tax receipts and FX must never be committed to the public docs folder."
+}

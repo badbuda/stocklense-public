@@ -5,6 +5,7 @@ closing quotes, FX, and PRIOR-session signals. Never downloads prices, writes
 broker orders, mutates ST/PROD or changes frozen strategy code.
 """
 import argparse
+from copy import deepcopy
 import json
 import math
 from pathlib import Path
@@ -103,7 +104,32 @@ def replay(events, no_change_band=0.005, immediate_tax_withholding=False):
         maxdd = min(maxdd, equity/peak-1)
         ledger.append({"date":day,"action":action,"skipped":skipped,
                        "equity_usd":round(equity,4),"shares":dict(shares),
-                       "cash_usd":round(cash,4),"trades":daily})
+                       "cash_usd":round(cash,4),"trades":daily,
+                       "estimated_cumulative_tax_assessed_ils":str(taxes.tax_assessed_ils),
+                       "hypothetical_tax_cash_debited_usd":round(estimated_withheld_usd,4)})
+    # Terminal liquidation is a separate economic comparison, never an order.
+    # Clone the tax lots: this must not change held shares or Paper's cash/NAV.
+    liquidation_book = deepcopy(taxes)
+    hypothetical_liquidation_proceeds = 0.0
+    hypothetical_liquidation_cost = 0.0
+    for s in SYMBOLS:
+        qty = shares[s]
+        if not qty:
+            continue
+        reference = close[s]
+        fill = reference * (1.0-SLIP)
+        fee = qty * fill * FEE
+        liquidation_book.sell(day,s,qty,fill,fee,fx)
+        hypothetical_liquidation_proceeds += qty*fill-fee
+        hypothetical_liquidation_cost += qty*reference-(qty*fill-fee)
+    additional_tax_ils = liquidation_book.tax_assessed_ils - taxes.tax_assessed_ils
+    # Legacy paper has never withheld taxes. Immediate-scenario replay already
+    # debited those modeled amounts during the run. Do not double-charge them.
+    unpaid_past_tax_ils = 0 if immediate_tax_withholding else taxes.tax_assessed_ils
+    hypothetical_terminal_tax_usd = float(additional_tax_ils+unpaid_past_tax_ils)/fx
+    hypothetical_net_liquidation_usd = cash+hypothetical_liquidation_proceeds-hypothetical_terminal_tax_usd
+    if not math.isfinite(hypothetical_net_liquidation_usd):
+        raise ValueError("INVALID_HYPOTHETICAL_TERMINAL_TAX_VALUE")
     return {"model":"RESEARCH_NOT_LIVE","scenario":{"no_change_band":no_change_band,
              "immediate_tax_withholding":immediate_tax_withholding},
             "nav_usd":round(ledger[-1]["equity_usd"],4),
@@ -112,6 +138,18 @@ def replay(events, no_change_band=0.005, immediate_tax_withholding=False):
             "fee_usd":round(fees,2),"slippage_usd":round(slippage,2),
             "estimated_tax_assessed_ils":taxes.summary()["tax_assessed_ils"],
             "estimated_withheld_usd":round(estimated_withheld_usd,4),
+            "terminal_liquidation_research":{
+                "asof_date":day,
+                "gross_paper_nav_usd":round(equity,4),
+                "pre_tax_value_if_liquidated_usd":round(cash+hypothetical_liquidation_proceeds,4),
+                "additional_liquidation_cost_usd":round(hypothetical_liquidation_cost,4),
+                "additional_liquidation_tax_ils":str(additional_tax_ils),
+                "unpaid_past_assessed_tax_ils":str(unpaid_past_tax_ils),
+                "hypothetical_total_tax_deduction_usd_at_terminal_fx":round(hypothetical_terminal_tax_usd,4),
+                "estimated_after_tax_value_if_liquidated_usd":round(hypothetical_net_liquidation_usd,4),
+                "actual_broker_cash_or_tax_withheld":False,
+                "limitations":"FIFO FX research only; assumed 25pct, no surtax, year-end reconciliation or actual tax refunds; prior unwithheld ILS tax translated at terminal FX. Does not model cash timing of real broker withholding."
+            },
             "counts":counts,"ledger":ledger,"tax_book":taxes.summary(),
             "tax_events":taxes.events}
 
@@ -155,6 +193,15 @@ def compare(events):
     baseline = replay(events)
     return {"inputs":"MUST_BE_POINT_IN_TIME",
             "monthly_broker_tax_projection":monthly_broker_tax_projection(baseline["tax_events"]),
+            "tax_wrapper_illustrations":{
+                "brokerage_after_tax_if_liquidated_immediate_scenario_usd":
+                    replay(events,immediate_tax_withholding=True)["terminal_liquidation_research"]["estimated_after_tax_value_if_liquidated_usd"],
+                "ira_eligible_tax_exempt_if_liquidated_before_ira_fees_usd":
+                    baseline["terminal_liquidation_research"]["pre_tax_value_if_liquidated_usd"],
+                "ira_eligibility_or_tqqq_allowed_verified":False,
+                "ira_fee_and_withdrawal_conditions_modeled":False,
+                "notes":"IRA exemption is illustrative only if eligible; not a brokerage deposit alternative, no proof leveraged ETF is eligible, no account management fee."
+            },
             "comparison":{
         "baseline_pre_tax":baseline,
         "baseline_with_immediate_tax_scenario":replay(events,immediate_tax_withholding=True),
