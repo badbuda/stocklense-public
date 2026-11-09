@@ -53,6 +53,17 @@ def error_code(exc: Exception) -> str:
     return str((getattr(exc, "response", {}) or {}).get("Error", {}).get("Code", ""))
 
 
+def is_delete_marker(exc: Exception) -> bool:
+    """An S3 404 caused by a current delete marker is NOT an absent key.
+
+    Treating the marker as an unused key permits IfNoneMatch:* to create a
+    second current object over an older version, violating receipt lineage.
+    """
+    response = getattr(exc, "response", {}) or {}
+    headers = response.get("ResponseMetadata", {}).get("HTTPHeaders", {}) or {}
+    return str(headers.get("x-amz-delete-marker", "")).lower() == "true"
+
+
 @dataclass(frozen=True)
 class Receipt:
     key: str
@@ -89,6 +100,7 @@ class Epoch2Store:
             meta = self.s3.head_object(Bucket=self.bucket, Key=key)
         except Exception as exc:
             if error_code(exc) in ("404", "NotFound", "NoSuchKey"):
+                require(not is_delete_marker(exc), "IMMUTABLE_KEY_DELETE_MARKER")
                 return None
             raise EpochStorageBlocked("HEAD_FAIL_CLOSED:" + error_code(exc)) from exc
         ver, size = meta.get("VersionId"), meta.get("ContentLength")
@@ -107,6 +119,15 @@ class Epoch2Store:
         except Exception as exc:
             raise EpochStorageBlocked("PINNED_READ_FAIL_CLOSED") from exc
         require(isinstance(record, dict), "NON_OBJECT_RECEIPT")
+        # Re-serialize to reject duplicate JSON keys, whitespace variants,
+        # NaN/Infinity and data that does not match our canonical SHA format.
+        try:
+            require(raw == encode(record), "NON_CANONICAL_RECEIPT")
+        except (TypeError, ValueError) as exc:
+            raise EpochStorageBlocked("NON_CANONICAL_RECEIPT") from exc
+        declared_sha = (meta.get("Metadata") or {}).get("sha256")
+        if declared_sha is not None:
+            require(declared_sha == digest(raw), "RECEIPT_METADATA_SHA_MISMATCH")
         return Receipt(key, ver, digest(raw), raw, record)
 
     def _create(self, key: str, payload: dict) -> dict:
