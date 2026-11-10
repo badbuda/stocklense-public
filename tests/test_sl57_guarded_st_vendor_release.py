@@ -13,6 +13,11 @@ def fake_zip(payload: bytes) -> bytes:
     buffer = io.BytesIO()
     with zipfile.ZipFile(buffer, "w") as stream:
         stream.writestr("infra/aws/independent_pipeline.py", payload)
+        stream.writestr("infra/aws/independent_paper.py",
+            b"def run_scheduled_paper(now):\n"
+            b"    from infra.aws.independent_orchestrator import current_completed_session\n"
+            b"\n    day = current_completed_session(now)\n"
+            b"    return day\n")
         for i in range(120):
             stream.writestr(f"deps/submodule_{i}.py", b"# keep immutable dependency\n")
     return buffer.getvalue()
@@ -35,6 +40,7 @@ def test_pinned_source_and_no_hidden_existing_module(monkeypatch):
     candidate = release.prepare_zip(fake_zip(prior), fetch=mapping.__getitem__)
     with zipfile.ZipFile(io.BytesIO(candidate)) as zipped:
         assert zipped.read("infra/aws/independent_pipeline.py") == newer
+        assert b"completed_session_for_scheduled_attempt(now)" in zipped.read("infra/aws/independent_paper.py")
         assert zipped.read("stocklens/st_signal_retry_policy.py") == module
         assert zipped.read("deps/submodule_53.py") == b"# keep immutable dependency\n"
         assert len(zipped.namelist()) == len(set(zipped.namelist()))
@@ -48,6 +54,23 @@ def test_unknown_live_source_fails_closed_before_any_mutation(monkeypatch):
     })
     with pytest.raises(RuntimeError, match="PRIVATE_LAMBDA_SOURCE_CHANGED"):
         release.prepare_zip(fake_zip(b"changed private source"), fetch=lambda _: b"new")
+
+
+def test_unexpected_paper_handler_is_blocked_without_unsafe_overwrite(monkeypatch):
+    old = b"# old"
+    new = b"# new"
+    monkeypatch.setattr(release, "EXPECTED", {
+        "infra/aws/independent_pipeline.py": (
+            release.blob(old), release.blob(new)),
+    })
+    original = io.BytesIO()
+    with zipfile.ZipFile(original, "w") as z:
+        z.writestr("infra/aws/independent_pipeline.py", old)
+        z.writestr("infra/aws/independent_paper.py", b"def changed_private_handler(): pass")
+        for i in range(120):
+            z.writestr(f"deps/something_{i}.py", b"x=1\n")
+    with pytest.raises(RuntimeError, match="PRIVATE_PAPER_SCHEDULE_RESOLVER_CHANGED"):
+        release.prepare_zip(original.getvalue(), fetch=lambda _: new)
 
 
 def test_release_pinned_and_last_retry_before_open():
