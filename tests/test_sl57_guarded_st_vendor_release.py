@@ -93,3 +93,54 @@ def test_no_production_lambda_or_alarm_actions_in_release_script():
     assert "PROD_SCHEDULE_CHANGED" in source
     assert "APPLY_REQUIRES_EXPLICIT_APPROVAL_FLAGS" in source
     assert "PRIVATE_LAMBDA_SOURCE_CHANGED" in source
+
+
+def synthetic_private_watchdog(extra=""):
+    before, _ = release.WATCHDOG_CHANGES[0]
+    due, _ = release.WATCHDOG_CHANGES[1]
+    invoke, _ = release.WATCHDOG_CHANGES[2]
+    return (
+        "from infra.aws.independent_signal_monitor import due_signal_sessions\n"
+        "import os\n"
+        + extra + "\n"
+        "def inspect(*, now, signal_activation_at, \n"
+        + before + "\n"
+        + due + "\n"
+        "    return []\n\n"
+        "def handler(event, context):\n"
+        "    def read_signal_activation():\n"
+        "        return None\n"
+        "    cw.put_metric_data(Namespace='StockLens/IsolatedST', MetricData=[])\n"
+        "    return inspect(\n"
+        + invoke + "\n"
+    ).encode("utf-8")
+
+
+def test_private_watchdog_can_be_modified_only_at_three_expected_call_sites():
+    old = synthetic_private_watchdog("ISOLATED_PRIVATE_MONITORING = 'retained'")
+    result = release.patch_private_watchdog(old)
+    assert b"ISOLATED_PRIVATE_MONITORING = 'retained'" in result
+    assert b"v2_start_session=signal_v2_start_session" in result
+    assert b"SIGNAL_V2_START_SESSION" in result
+    assert b"signal_v2_start_session: str | None = None" in result
+    assert result != old
+    reconstructed = result.decode()
+    for before, after in reversed(release.WATCHDOG_CHANGES):
+        assert reconstructed.count(after) == 1
+        reconstructed = reconstructed.replace(after, before, 1)
+    assert reconstructed.encode() == old
+
+
+def test_unknown_private_watchdog_semantics_are_blocked(monkeypatch):
+    source = synthetic_private_watchdog().decode().replace(
+        "due_signal_sessions(now, signal_activation_at)",
+        "due_signal_sessions(now, signal_activation_at, some_new_behavior=True)",
+    ).encode()
+    with pytest.raises(RuntimeError, match="PRIVATE_WATCHDOG_V2_ANCHOR_CHANGED"):
+        release.patch_private_watchdog(source)
+
+
+def test_repeated_patch_is_blocked_without_new_approval():
+    first = release.patch_private_watchdog(synthetic_private_watchdog())
+    with pytest.raises(RuntimeError, match="V2_ANCHOR_CHANGED|V2_ALREADY_PRESENT"):
+        release.patch_private_watchdog(first)
