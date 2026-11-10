@@ -74,7 +74,7 @@ def test_unexpected_paper_handler_is_blocked_without_unsafe_overwrite(monkeypatc
 
 
 def test_release_pinned_and_last_retry_before_open():
-    assert release.REF == "189f63fb382d28479162018a085243b2ffca1487"
+    assert release.REF == "772f1184b0c417bead55fb27d203c1f05f836cad"
     assert release.UPDATED["CandidateSignalOnlyRuleName"] == "cron(30 5,8,11,12 ? * TUE-SAT *)"
     assert release.UPDATED["CandidatePaperOnlyRuleName"] == "cron(45 12 ? * TUE-SAT *)"
     assert release.OLD["CandidateSignalOnlyRuleName"] == "cron(30 2 ? * TUE-SAT *)"
