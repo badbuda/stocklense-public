@@ -206,6 +206,7 @@ paths = [
     "infra/aws/independent_signal_monitor.py",
     "stocklens/core.py",
     "stocklens/data.py",
+    "stocklens/st_signal_retry_policy.py",
     "stocklens/paper.py",
     "stocklens/__init__.py",
     "paper_rebalance_math.py",
