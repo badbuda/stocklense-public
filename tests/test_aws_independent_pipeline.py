@@ -203,3 +203,87 @@ def test_frozen_source_fingerprint_mismatch_fails_without_s3_writes():
             ingest_fn=lambda session, *, now: (raw, audit))
     # All source/feature checks must occur before the first S3 mutation.
     assert s3.data == {}
+
+
+def test_scheduled_retry_reuses_fully_verified_immutable_signal_no_yahoo(monkeypatch):
+    """Post-release Nov10 incident: Yahoo revises the bar AFTER an S3 success."""
+    import infra.aws.independent_pipeline as pipeline
+    payload, day, clock = daily_fixture()
+    raw, audit = extract_adjusted_qqq(payload, now=clock, expected_session=day)
+    audit = freeze_source_fixture(raw, audit)
+    s3 = InMemoryVersionedS3()
+    initial = pipeline.run(
+        expected_session=day, now=clock, s3=s3, bucket="test",
+        ingest_fn=lambda session, *, now: (raw, audit),
+    )
+    archive_before = dict(s3.data)
+    def yahoo_must_not_be_called(**kw):
+        raise AssertionError("YAHOO_FETCHED_AFTER_VERIFIED_ARCHIVE")
+    monkeypatch.setattr(pipeline, "run", yahoo_must_not_be_called)
+    result = pipeline.run_scheduled_signal(
+        now=clock + timedelta(hours=1), s3=s3, bucket="test"
+    )
+    assert result["status"] == "STAGED_SIGNAL_ALREADY_ARCHIVED_VERIFIED"
+    assert result["signal_sha256"] == initial["signal_sha256"]
+    assert result["signal_version_id"] == initial["signal_version_id"]
+    assert result["market_data_written"] is False
+    assert result["broker_actions"] is False
+    assert result["vendor_network_called"] is False
+    assert s3.data == archive_before
+
+
+def test_scheduled_retry_rejects_tampered_market_without_fetch_or_write(monkeypatch):
+    import infra.aws.independent_pipeline as pipeline
+    payload, day, clock = daily_fixture()
+    raw, audit = extract_adjusted_qqq(payload, now=clock, expected_session=day)
+    audit = freeze_source_fixture(raw, audit)
+    s3 = InMemoryVersionedS3()
+    pipeline.run(expected_session=day, now=clock, s3=s3, bucket="test",
+                 ingest_fn=lambda session, *, now: (raw, audit))
+    key = f"market/qqq/{day}.csv"
+    s3.data[key] = s3.data[key].replace(b"100", b"101", 1)
+    archive_before = dict(s3.data)
+    monkeypatch.setattr(pipeline, "run", lambda **kw: (_ for _ in ()).throw(
+        AssertionError("YAHOO_CALLED_FOR_INVALID_ARCHIVE")))
+    with pytest.raises(RuntimeError, match="ARCHIVED_SIGNAL_HASH_OR_PROVENANCE_MISMATCH"):
+        pipeline.run_scheduled_signal(
+            now=clock + timedelta(hours=1), s3=s3, bucket="test")
+    assert s3.data == archive_before
+
+
+def test_scheduled_retry_rejects_tampered_signal_and_partial_archive(monkeypatch):
+    import infra.aws.independent_pipeline as pipeline
+    payload, day, clock = daily_fixture()
+    raw, audit = extract_adjusted_qqq(payload, now=clock, expected_session=day)
+    audit = freeze_source_fixture(raw, audit)
+    s3 = InMemoryVersionedS3()
+    pipeline.run(expected_session=day, now=clock, s3=s3, bucket="test",
+                 ingest_fn=lambda session, *, now: (raw, audit))
+    key = f"signals/{day}.json"
+    original = s3.data[key]
+    s3.data[key] = original.replace(b"SHADOW_ONLY_NO_BROKER_ACTIONS",
+                                    b"SHADOW_ONLY_NO_BROKER_ACTIONz")
+    monkeypatch.setattr(pipeline, "run", lambda **kw: (_ for _ in ()).throw(
+        AssertionError("YAHOO_CALLED_FOR_TAMPERED_ARCHIVE")))
+    with pytest.raises(RuntimeError, match="ARCHIVED_SIGNAL_HASH_OR_PROVENANCE_MISMATCH"):
+        pipeline.run_scheduled_signal(
+            now=clock + timedelta(hours=1), s3=s3, bucket="test")
+    s3.data.pop(key)
+    with pytest.raises(RuntimeError, match="INCOMPLETE_IMMUTABLE_SIGNAL_ARCHIVE"):
+        pipeline.run_scheduled_signal(
+            now=clock + timedelta(hours=1), s3=s3, bucket="test")
+
+
+def test_scheduled_retry_takes_ingest_path_only_without_archive(monkeypatch):
+    import infra.aws.independent_pipeline as pipeline
+    _, day, clock = daily_fixture()
+    called = []
+    def fake_run(**kwargs):
+        called.append(kwargs)
+        return {"status":"STAGED_SIGNAL_ARCHIVED","broker_actions":False}
+    monkeypatch.setattr(pipeline, "run", fake_run)
+    result = pipeline.run_scheduled_signal(
+        now=clock, s3=InMemoryVersionedS3(), bucket="test")
+    assert result["status"] == "STAGED_SIGNAL_ARCHIVED"
+    assert len(called) == 1
+    assert called[0]["expected_session"] == day
