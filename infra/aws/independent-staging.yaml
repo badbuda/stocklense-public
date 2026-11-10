@@ -360,7 +360,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: 'STAGING candidate Signal ONLY; opt-in after alarm delivery review. Does not run Paper. Initially DISABLED.'
-      ScheduleExpression: 'cron(30 5,8,11 ? * TUE-SAT *)'
+      ScheduleExpression: 'cron(30 5,8,11,12 ? * TUE-SAT *)'
       State: !Ref CandidateSignalScheduleState
       Targets:
         - Id: StagingSignalOnly
@@ -380,7 +380,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: 'STAGING: completed XNYS session Paper-only, no Signal re-fetch or broker. DISABLED until prospective book and independent parity verified.'
-      ScheduleExpression: 'cron(20 12 ? * TUE-SAT *)'
+      ScheduleExpression: 'cron(45 12 ? * TUE-SAT *)'
       State: DISABLED
       Targets:
         - Id: StagingPaperOnly
