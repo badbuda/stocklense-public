@@ -18,6 +18,7 @@ def test_after_nyse_close_scheduled_signal_calls_only_frozen_signal(monkeypatch)
         calls.append(kwargs)
         return {"status": "STAGED_SIGNAL_ARCHIVED",
                 "session": kwargs["expected_session"], "broker_actions": False}
+    monkeypatch.setattr(pipeline, "_verified_archived_scheduled_signal", lambda **kw: None)
     monkeypatch.setattr(pipeline, "run", frozen)
     fake_s3 = object()
 
@@ -37,6 +38,7 @@ def test_after_nyse_close_scheduled_signal_calls_only_frozen_signal(monkeypatch)
 
 def test_dst_change_still_after_18_new_york_and_calls_only_signal(monkeypatch):
     calls = []
+    monkeypatch.setattr(pipeline, "_verified_archived_scheduled_signal", lambda **kw: None)
     monkeypatch.setattr(pipeline, "run", lambda **kw: calls.append(kw) or
                         {"status": "STAGED_SIGNAL_ARCHIVED", "broker_actions": False})
     # First Monday after NY falls back to EST: Monday 19:10 NY.
@@ -82,7 +84,7 @@ def test_cloudformation_signal_schedule_is_isolated_disabled_and_cost_bounded():
     signal = r["CandidateSignalOnlySchedule"]
     assert signal["Type"] == "AWS::Events::Rule"
     prop = signal["Properties"]
-    assert prop["ScheduleExpression"] == "cron(30 2 ? * TUE-SAT *)"
+    assert prop["ScheduleExpression"] == "cron(30 5,8,11,12 ? * TUE-SAT *)"
     assert prop["State"] == "Ref:CandidateSignalScheduleState"
     assert doc["Parameters"]["CandidateSignalScheduleState"]["Default"] == "DISABLED"
     assert len(prop["Targets"]) == 1

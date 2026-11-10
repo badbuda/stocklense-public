@@ -7,7 +7,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
-from datetime import datetime, timezone
+from datetime import datetime, time, timedelta, timezone
 
 from infra.aws.independent_market_ingest import _vendor_request, NY
 from infra.aws.independent_frozen_ingest import ingest_frozen_yfinance, PROVIDER as FROZEN_PROVIDER
@@ -195,6 +195,102 @@ def run(*, expected_session: str, now: datetime, s3, bucket: str,
     }
 
 
+
+def _verified_archived_scheduled_signal(*, expected_session: str, now: datetime,
+                                        s3, bucket: str) -> dict | None:
+    """Idempotent scheduled retry from ORIGINAL, immutable, versioned evidence.
+
+    Never refetch Yahoo after a completed archived Signal. Verify the S3 market,
+    provenance manifest, and Signal byte-for-byte by recomputing with the frozen
+    StockLens algorithm and the ORIGINAL retrieval clock. A missing full triple
+    means first-run; a partial/invalid triple fails closed without any write.
+    """
+    market_key = f"market/qqq/{expected_session}.csv"
+    manifest_key = f"manifests/qqq/{expected_session}.json"
+    signal_key = f"signals/{expected_session}.json"
+    saved = {
+        "market": _existing_object(s3, bucket, market_key),
+        "manifest": _existing_object(s3, bucket, manifest_key),
+        "signal": _existing_object(s3, bucket, signal_key),
+    }
+    if all(item is None for item in saved.values()):
+        return None
+    if any(item is None for item in saved.values()):
+        raise RuntimeError("INCOMPLETE_IMMUTABLE_SIGNAL_ARCHIVE")
+
+    market, market_version = saved["market"]
+    manifest_raw, manifest_version = saved["manifest"]
+    signal_raw, signal_version = saved["signal"]
+    market_sha = hashlib.sha256(market).hexdigest()
+    signal_sha = hashlib.sha256(signal_raw).hexdigest()
+    try:
+        manifest = json.loads(manifest_raw)
+        signal = json.loads(signal_raw)
+        audit = manifest["audit"]
+        saved_clock = datetime.fromisoformat(
+            audit["retrieved_at_utc"].replace("Z", "+00:00")
+        )
+        if saved_clock.tzinfo is None:
+            raise ValueError("NAIVE_SAVED_CLOCK")
+        saved_clock = saved_clock.astimezone(timezone.utc)
+    except (KeyError, TypeError, ValueError, AttributeError) as exc:
+        raise RuntimeError("INVALID_ARCHIVED_SIGNAL_PROVENANCE") from exc
+
+    if (saved_clock > now.astimezone(timezone.utc)
+        or manifest.get("status") != "VERIFIED"
+        or manifest.get("provider") != FROZEN_PROVIDER
+        or manifest.get("data_type") != "QQQ_ADJUSTED_DAILY"
+        or manifest.get("input_key") != market_key
+        or manifest.get("input_version_id") != market_version
+        or manifest.get("sha256") != market_sha
+        or audit.get("csv_sha256") != market_sha
+        or audit.get("provider") != FROZEN_PROVIDER
+        or audit.get("source_path") != "stocklens.data.load_qqq_history"
+        or audit.get("data_integrity_status") !=
+           "FROZEN_YFINANCE_SOURCE_VERIFIED_NOT_INDEPENDENT_VENDOR"
+        or audit.get("last_session") != expected_session
+        or not audit.get("reference_feature_window_sha256")
+        or signal.get("mode") != "SHADOW_ONLY_NO_BROKER_ACTIONS"
+        or signal.get("latest", {}).get("asof_date") != expected_session
+        or signal.get("data_audit", {}).get("source_sha256") != market_sha
+        or signal.get("data_audit", {}).get("feature_window_sha256") !=
+           audit["reference_feature_window_sha256"]
+        or signal.get("execution_plan", {}).get("broker_actions_enabled") is not False):
+        raise RuntimeError("ARCHIVED_SIGNAL_HASH_OR_PROVENANCE_MISMATCH")
+
+    # Recompute the precise saved original report, not from revised Yahoo data.
+    # This also validates all daily bars, the 253-day feature fingerprint,
+    # model decisions, and the saved no-broker execution policy.
+    replay = build_signal(
+        market, saved_clock, source=FROZEN_PROVIDER, source_sha256=market_sha
+    )
+    if (replay["latest"]["asof_date"] != expected_session
+        or replay["data_audit"]["feature_window_sha256"] !=
+           audit["reference_feature_window_sha256"]
+        or canonical(replay) != signal_raw
+        or canonical(manifest) != manifest_raw):
+        raise RuntimeError("ARCHIVED_SIGNAL_FROZEN_REPLAY_MISMATCH")
+
+    return {
+        "status": "STAGED_SIGNAL_ALREADY_ARCHIVED_VERIFIED",
+        "session": expected_session,
+        "market_key": market_key,
+        "market_version_id": market_version,
+        "market_sha256": market_sha,
+        "manifest_key": manifest_key,
+        "manifest_version_id": manifest_version,
+        "signal_key": signal_key,
+        "signal_version_id": signal_version,
+        "signal_sha256": signal_sha,
+        "canonical_source": FROZEN_PROVIDER,
+        "frozen_feature_window_sha256": audit["reference_feature_window_sha256"],
+        "broker_actions": False,
+        "market_data_written": False,
+        "vendor_network_called": False,
+        "archive_rewritten": False,
+    }
+
+
 def _vendor_network_probe(*, now: datetime, fetcher=None) -> dict:
     """Read-only Yahoo network connectivity check, allowed before market close.
 
@@ -250,6 +346,35 @@ def _import_smoke():
             "broker_actions": False, "market_data_written": False}
 
 
+def completed_session_for_scheduled_attempt(now: datetime) -> str | None:
+    """Resolve the session on either side of midnight New York, never after open.
+
+    At 02:30 UTC the old invocation was still 21:30/22:30 in New York on
+    the SAME trading day; the new retries at 05:30/08:30/11:30 UTC occur on
+    the FOLLOWING New York morning. Never mistake the next (incomplete)
+    XNYS session for the prior completed one.
+    """
+    if now.tzinfo is None:
+        raise ValueError("NAIVE_ORCHESTRATOR_CLOCK")
+    from zoneinfo import ZoneInfo
+    import exchange_calendars as xcals
+    ny = now.astimezone(ZoneInfo("America/New_York"))
+    cal = xcals.get_calendar("XNYS")
+    if ny.time() >= time(18, 0):
+        candidate = ny.date()
+    elif ny.time() < time(9, 30):
+        candidate = ny.date() - timedelta(days=1)
+    else:
+        raise RuntimeError("MARKET_DAY_NOT_YET_COMPLETE")
+    session = candidate.isoformat()
+    if not cal.is_session(session):
+        return None
+    # The retry may only use a fully closed prior market session.
+    if now.astimezone(timezone.utc) <= cal.session_close(session).to_pydatetime():
+        raise RuntimeError("MARKET_DAY_NOT_YET_COMPLETE")
+    return session
+
+
 def run_scheduled_signal(*, now: datetime, s3, bucket: str) -> dict:
     """Staging-only nightly Signal, deliberately independent of Paper bootstrap.
 
@@ -257,16 +382,53 @@ def run_scheduled_signal(*, now: datetime, s3, bucket: str) -> dict:
     XNYS non-trading days are skipped. This never calls Paper or a broker.
     Any failure propagates to the existing candidate Lambda Errors alarm.
     """
-    from infra.aws.independent_orchestrator import current_completed_session
-
-    session = current_completed_session(now)
+    session = completed_session_for_scheduled_attempt(now)
     if session is None:
         return {
             "status": "SKIPPED_XNYS_NONTRADING_DAY",
             "broker_actions": False,
             "market_data_written": False,
         }
-    return run(expected_session=session, now=now, s3=s3, bucket=bucket)
+    already = _verified_archived_scheduled_signal(
+        expected_session=session, now=now, s3=s3, bucket=bucket
+    )
+    if already is not None:
+        return already
+    try:
+        return run(expected_session=session, now=now, s3=s3, bucket=bucket)
+    except ValueError as exc:
+        # Yahoo occasionally publishes a completed US session after the old
+        # 02:30 UTC job, particularly after weekends. Stale daily candles
+        # are NOT substitutes for the expected XNYS session.
+        import re
+        match = re.fullmatch(
+            r"CANONICAL_INGEST_STALE_LAST_SESSION:expected=(\d{4}-\d{2}-\d{2})"
+            r":vendor_last=(\d{4}-\d{2}-\d{2})"
+            r":audit_last=(\d{4}-\d{2}-\d{2})",
+            str(exc),
+        )
+        if match is None or match.group(1) != session:
+            raise  # Other data/provider failures remain immediate hard errors.
+        from stocklens.st_signal_retry_policy import classify
+        result = classify(
+            expected_session=session,
+            vendor_last=match.group(2),
+            audit_last=match.group(3),
+            now_utc=now,
+            is_xnys_session=True,  # already checked by current_completed_session
+        )
+        if result.status != "DEFER_VENDOR_NOT_PUBLISHED":
+            raise  # Not a safe transient; preserve the original exception.
+        return {
+            "status": result.status,
+            "expected_session": session,
+            "observed_vendor_session": result.observed_vendor_session,
+            "retry_deadline_utc": result.deadline_utc,
+            "market_data_written": False,
+            "broker_actions": False,
+            "automatic_backfill": False,
+            "next_action": "WAIT_FOR_NEXT_SCHEDULED_ATTEMPT",
+        }
 
 
 def handler(event, context):

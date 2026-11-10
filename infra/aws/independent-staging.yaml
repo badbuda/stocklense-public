@@ -25,6 +25,11 @@ Parameters:
     Type: String
     Default: ''
     Description: 'Book genesis (bootstrap) session YYYY-MM-DD. Non-empty turns ON paper completeness monitoring independent of the scheduler; empty = no book monitored'
+  SignalV2StartSession:
+    Type: String
+    Default: ''
+    AllowedPattern: '^$|^[0-9]{4}-[0-9]{2}-[0-9]{2}$'
+    Description: 'Prospective XNYS session for V2 12:50 UTC signal deadline. Never backdate or suppress historical old signal incidents.'
 Conditions:
   HasAlertEmail: !Not [!Equals [!Ref AlertEmail, '']]
 Resources:
@@ -355,7 +360,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: 'STAGING candidate Signal ONLY; opt-in after alarm delivery review. Does not run Paper. Initially DISABLED.'
-      ScheduleExpression: 'cron(30 2 ? * TUE-SAT *)'
+      ScheduleExpression: 'cron(30 5,8,11,12 ? * TUE-SAT *)'
       State: !Ref CandidateSignalScheduleState
       Targets:
         - Id: StagingSignalOnly
@@ -375,7 +380,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: 'STAGING: completed XNYS session Paper-only, no Signal re-fetch or broker. DISABLED until prospective book and independent parity verified.'
-      ScheduleExpression: 'cron(20 3 ? * TUE-SAT *)'
+      ScheduleExpression: 'cron(0 13 ? * TUE-SAT *)'
       State: DISABLED
       Targets:
         - Id: StagingPaperOnly
@@ -534,6 +539,7 @@ Resources:
           PAPER_ONLY_RULE: !Ref CandidatePaperOnlySchedule
           EXPECTED_SCHEDULER_STATE: !Ref ExpectedSchedulerState
           MONITORING_START_SESSION: !Ref MonitoringStartSession
+          SIGNAL_V2_START_SESSION: !Ref SignalV2StartSession
   CandidateSessionWatchdogSchedule:
     Type: AWS::Events::Rule
     Properties:
