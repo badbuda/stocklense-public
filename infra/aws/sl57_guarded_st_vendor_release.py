@@ -16,7 +16,7 @@ ACCOUNT="634740393398"
 REGION="eu-central-1"
 ST="stocklens-st"
 PROD="stocklens-prod"
-REF="772f1184b0c417bead55fb27d203c1f05f836cad"
+REF="2abba1948d29050dede460b3c16645608d4f0b5c"
 REPO="badbuda/stocklense-public"
 PAPER_FILE="infra/aws/independent_paper.py"
 WATCHDOG_FILE="infra/aws/independent_session_watchdog.py"
@@ -61,11 +61,11 @@ EXPECTED={
   "7e8929d464dc50e0747e2c7bb6fc4df5470684c9",
   "0cd48632c8e063570c8131cb583576a0bcd029ff"),
  "stocklens/st_signal_retry_policy.py":(
-  None,"e48600308e3c4ad191713ea591151f17fe0cec70"),
+  None,"760f18a8ff644597b845de733e74a97666fd26eb"),
 }
 UPDATED={
  "CandidateSignalOnlyRuleName":"cron(30 5,8,11,12 ? * TUE-SAT *)",
- "CandidatePaperOnlyRuleName":"cron(45 12 ? * TUE-SAT *)",
+ "CandidatePaperOnlyRuleName":"cron(0 13 ? * TUE-SAT *)",
 }
 OLD={
  "CandidateSignalOnlyRuleName":"cron(30 2 ? * TUE-SAT *)",
@@ -160,7 +160,7 @@ def prepare_zip(source_zip,fetch=latest_source):
     check(blob(patched_watchdog)==EXPECTED[WATCHDOG_FILE][1],
           "REFERENCE_WATCHDOG_PATCH_NOT_PINNED")
   # Preserve ALL private Paper accounting changes. Alter only its scheduled
-  # trading-day resolver; 12:45 UTC is a pre-open New York morning.
+  # trading-day resolver; 13:00 UTC is a pre-open New York morning.
   import ast
   check(PAPER_FILE in names,"DEPLOYED_PAPER_HANDLER_MISSING")
   paper=old.read(PAPER_FILE).decode("utf-8")
