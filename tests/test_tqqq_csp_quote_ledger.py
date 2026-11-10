@@ -136,5 +136,21 @@ class TestTQQQOptionAccounting(unittest.TestCase):
             quote(date="2025-11-21",expiry="2025-11-21").validate()
 
 
+    def test_configurable_broker_ticket_fees_and_roll_cost(self):
+        # Published schedule example, NOT this investor's negotiated rate.
+        book=CashSecuredPutLedger(D("100000"), max_reserved_fraction=D(".4"),
+                 fee_per_contract=D("6"), minimum_order_fee=D("25"))
+        q=quote(bid="1.42", ask="1.52")
+        self.assertEqual(book._ticket_fee(1),D("25"))
+        self.assertEqual(book._ticket_fee(5),D("30"))
+        self.assertEqual(book.sell_put(q,5,stocklens_target=2,mark_underlying=D("85")),D("680.00"))
+        self.assertEqual(book.cash,D("100680"))
+        self.assertEqual(book.locked_cash(),D("35000"))
+        closed=quote(date="2025-10-30",bid="1.95",ask="2.00")
+        self.assertEqual(book.buy_to_close_put(closed,5),D("1030.00"))
+        self.assertEqual(book.cash,D("99650"))
+        self.assertEqual(book.short_puts,{})
+        self.assertEqual(book.last_date,"2025-10-30")
+
 if __name__=="__main__":
     unittest.main()
