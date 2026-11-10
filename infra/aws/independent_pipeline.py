@@ -7,7 +7,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
-from datetime import datetime, timezone
+from datetime import datetime, time, timedelta, timezone
 
 from infra.aws.independent_market_ingest import _vendor_request, NY
 from infra.aws.independent_frozen_ingest import ingest_frozen_yfinance, PROVIDER as FROZEN_PROVIDER
@@ -250,6 +250,35 @@ def _import_smoke():
             "broker_actions": False, "market_data_written": False}
 
 
+def completed_session_for_scheduled_attempt(now: datetime) -> str | None:
+    """Resolve the session on either side of midnight New York, never after open.
+
+    At 02:30 UTC the old invocation was still 21:30/22:30 in New York on
+    the SAME trading day; the new retries at 05:30/08:30/11:30 UTC occur on
+    the FOLLOWING New York morning. Never mistake the next (incomplete)
+    XNYS session for the prior completed one.
+    """
+    if now.tzinfo is None:
+        raise ValueError("NAIVE_ORCHESTRATOR_CLOCK")
+    from zoneinfo import ZoneInfo
+    import exchange_calendars as xcals
+    ny = now.astimezone(ZoneInfo("America/New_York"))
+    cal = xcals.get_calendar("XNYS")
+    if ny.time() >= time(18, 0):
+        candidate = ny.date()
+    elif ny.time() < time(9, 30):
+        candidate = ny.date() - timedelta(days=1)
+    else:
+        raise RuntimeError("MARKET_DAY_NOT_YET_COMPLETE")
+    session = candidate.isoformat()
+    if not cal.is_session(session):
+        return None
+    # The retry may only use a fully closed prior market session.
+    if now.astimezone(timezone.utc) <= cal.session_close(session).to_pydatetime():
+        raise RuntimeError("MARKET_DAY_NOT_YET_COMPLETE")
+    return session
+
+
 def run_scheduled_signal(*, now: datetime, s3, bucket: str) -> dict:
     """Staging-only nightly Signal, deliberately independent of Paper bootstrap.
 
@@ -257,9 +286,7 @@ def run_scheduled_signal(*, now: datetime, s3, bucket: str) -> dict:
     XNYS non-trading days are skipped. This never calls Paper or a broker.
     Any failure propagates to the existing candidate Lambda Errors alarm.
     """
-    from infra.aws.independent_orchestrator import current_completed_session
-
-    session = current_completed_session(now)
+    session = completed_session_for_scheduled_attempt(now)
     if session is None:
         return {
             "status": "SKIPPED_XNYS_NONTRADING_DAY",
