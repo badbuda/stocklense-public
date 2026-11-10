@@ -123,3 +123,13 @@ def test_nontrading_day_skips_rather_than_look_back_many_sessions():
     assert pipeline.completed_session_for_scheduled_attempt(
         dt("2026-12-26",5,30)
     ) is None
+
+
+def test_paper_next_new_york_morning_selects_prior_completed_session(monkeypatch):
+    """12:45 UTC Tuesday is pre-open NY, never the incomplete Tuesday session."""
+    from infra.aws import independent_paper as paper
+    monkeypatch.setattr(paper, "_read_genesis", lambda *_: None)
+    with pytest.raises(RuntimeError, match="AUTOMATED_PAPER_FORBIDDEN_WITHOUT_VERIFIED_GENESIS"):
+        paper.run_scheduled_paper(
+            now=dt("2026-11-10", 12, 45), s3=object(), bucket="fake-st"
+        )
