@@ -18,6 +18,14 @@ ST="stocklens-st"
 PROD="stocklens-prod"
 REF="189f63fb382d28479162018a085243b2ffca1487"
 REPO="badbuda/stocklense-public"
+PAPER_FILE="infra/aws/independent_paper.py"
+PAPER_BEFORE="""    from infra.aws.independent_orchestrator import current_completed_session
+
+    day = current_completed_session(now)"""
+PAPER_AFTER="""    from infra.aws.independent_pipeline import completed_session_for_scheduled_attempt
+
+    day = completed_session_for_scheduled_attempt(now)"""
+
 START="2026-11-10"  # prospective new policy; never reclassify historic incidents
 EXPECTED={
  "infra/aws/independent_pipeline.py":(
@@ -82,6 +90,15 @@ def prepare_zip(source_zip,fetch=latest_source):
     check(blob(old.read(path))==previous,"PRIVATE_LAMBDA_SOURCE_CHANGED:"+path)
    else:
     check(path not in names,"POLICY_ALREADY_EXISTS_REVIEW")
+  # Preserve ALL private Paper accounting changes. Alter only its scheduled
+  # trading-day resolver; 12:45 UTC is a pre-open New York morning.
+  import ast
+  check(PAPER_FILE in names,"DEPLOYED_PAPER_HANDLER_MISSING")
+  paper=old.read(PAPER_FILE).decode("utf-8")
+  check(paper.count(PAPER_BEFORE)==1,"PRIVATE_PAPER_SCHEDULE_RESOLVER_CHANGED")
+  patched_paper=paper.replace(PAPER_BEFORE,PAPER_AFTER)
+  ast.parse(patched_paper,filename=PAPER_FILE)
+  patches[PAPER_FILE]=patched_paper.encode("utf-8")
   with zipfile.ZipFile(target,"w",compression=zipfile.ZIP_DEFLATED,compresslevel=6) as out:
    for z in rows:
     out.writestr(z, patches.get(z.filename,old.read(z.filename)))
@@ -121,9 +138,9 @@ def read_state(session):
   check(cfg.get("State")=="Active" and cfg.get("LastUpdateStatus")=="Successful"
    and cfg.get("RevisionId") and cfg.get("CodeSha256"),"LAMBDA_NOT_STABLE:"+key)
   funcs[key]=(name,cfg)
- check(funcs["CandidateFunctionName"][1]["CodeSha256"]==
-       funcs["CandidateSessionWatchdogFunctionName"][1]["CodeSha256"],
-       "SIGNAL_WATCHDOG_ZIPS_NOT_IDENTICAL")
+ check(len({funcs[k][1]["CodeSha256"] for k in
+  ("CandidateFunctionName","CandidatePaperFunctionName","CandidateSessionWatchdogFunctionName")})==1,
+  "SIGNAL_PAPER_WATCHDOG_ZIPS_NOT_IDENTICAL")
  for key in (*FN.keys(),"CandidateOrchestratorRuleName"):
   r,t=rule(ev,st[key])
   check(r["State"]==("DISABLED" if key=="CandidateOrchestratorRuleName" else "ENABLED"),
@@ -156,8 +173,9 @@ def wait_verified(lm,fn,sha):
 
 def apply(ev,lm,st,prod,funcs,env,payload):
  target=sha256b64(payload)
- # Existing Paper code, receipts, immutable book and all PROD functions unchanged.
- for key in ("CandidateFunctionName","CandidateSessionWatchdogFunctionName"):
+ # Existing private Paper source is surgically updated only at the scheduled
+ # session resolver; its accounting code, receipts and all PROD functions stay unchanged.
+ for key in ("CandidateFunctionName","CandidatePaperFunctionName","CandidateSessionWatchdogFunctionName"):
   name,cfg=funcs[key]
   result=lm.update_function_code(FunctionName=name,ZipFile=payload,
    RevisionId=cfg["RevisionId"],Publish=False)
