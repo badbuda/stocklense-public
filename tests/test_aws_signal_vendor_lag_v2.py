@@ -39,7 +39,7 @@ def test_monday_signal_deferred_no_side_effect(monkeypatch):
 def test_monday_lag_beyond_last_deadline_is_a_hard_error(monkeypatch):
     monkeypatch.setattr(pipeline, "run", lambda **kw: (_ for _ in ()).throw(stale()))
     with pytest.raises(ValueError, match="CANONICAL_INGEST_STALE_LAST_SESSION"):
-        pipeline.run_scheduled_signal(now=dt("2026-11-10",12,30),
+        pipeline.run_scheduled_signal(now=dt("2026-11-10",12,50),
                                       s3=object(), bucket="fake-st")
 
 def test_unexpected_audit_disagreement_remains_alarmable(monkeypatch):
@@ -63,9 +63,9 @@ def test_v2_monitor_only_changes_prospective_sessions():
     oldmap=dict(old)
     assert oldmap["2026-11-06"] == dt("2026-11-07",3,30)
     assert "2026-11-09" not in oldmap
-    after=due_signal_sessions(dt("2026-11-10",12,30),activated,
+    after=due_signal_sessions(dt("2026-11-10",12,50),activated,
                                v2_start_session="2026-11-09")
-    assert dict(after)["2026-11-09"] == dt("2026-11-10",12,30)
+    assert dict(after)["2026-11-09"] == dt("2026-11-10",12,50)
 
 def test_watchdog_v2_defers_missing_until_final_deadline():
     opts=dict(rule_state="DISABLED",expected_rule_state="DISABLED",
@@ -77,12 +77,12 @@ def test_watchdog_v2_defers_missing_until_final_deadline():
     early=inspect(now=dt("2026-11-10",12,0), **opts)
     assert early["latest_due_signal_status"] == "NOT_DUE"
     assert early["metrics"]["MissingOrLateScheduledSignals"] == 0
-    due=inspect(now=dt("2026-11-10",12,30), **opts)
+    due=inspect(now=dt("2026-11-10",12,50), **opts)
     assert due["latest_due_signal_status"] == "MISSING"
     assert due["metrics"]["MissingOrLateScheduledSignals"] == 1
 
 def test_missing_paper_integrity_not_silenced_by_signal_delay():
-    report=inspect(now=dt("2026-11-10",12,30),
+    report=inspect(now=dt("2026-11-10",12,50),
                    rule_state="DISABLED",expected_rule_state="DISABLED",
                    monitoring_start="2026-10-30",
                    read_record=lambda _:None,read_genesis=lambda:None,
@@ -101,7 +101,7 @@ def test_zip_includes_retry_module_and_st_template_requires_explicit_activation(
     assert "SignalV2StartSession:" in template
     assert "SIGNAL_V2_START_SESSION: !Ref SignalV2StartSession" in template
     assert "cron(30 5,8,11,12 ? * TUE-SAT *)" in template
-    assert "cron(45 12 ? * TUE-SAT *)" in template
+    assert "cron(0 13 ? * TUE-SAT *)" in template
 
 
 def test_retries_resolve_previous_new_york_day_after_midnight():
