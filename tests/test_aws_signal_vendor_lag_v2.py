@@ -100,8 +100,8 @@ def test_zip_includes_retry_module_and_st_template_requires_explicit_activation(
     template=Path("infra/aws/independent-staging.yaml").read_text()
     assert "SignalV2StartSession:" in template
     assert "SIGNAL_V2_START_SESSION: !Ref SignalV2StartSession" in template
-    assert "cron(30 5,8,11 ? * TUE-SAT *)" in template
-    assert "cron(20 12 ? * TUE-SAT *)" in template
+    assert "cron(30 5,8,11,12 ? * TUE-SAT *)" in template
+    assert "cron(45 12 ? * TUE-SAT *)" in template
 
 
 def test_retries_resolve_previous_new_york_day_after_midnight():
