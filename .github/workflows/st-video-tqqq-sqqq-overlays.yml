@@ -1,0 +1,33 @@
+name: StockLens ST video overlay historical research
+on:
+  pull_request:
+    paths:
+      - "research/video_tqqq_sqqq_overlay.py"
+      - "tests/test_video_tqqq_sqqq_overlay.py"
+      - ".github/workflows/st-video-tqqq-sqqq-overlays.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  historical-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Causality and frozen-controls tests
+        run: python -m unittest discover -s tests -p 'test_video_tqqq_sqqq_overlay.py' -v
+      - name: One-batch historical factorial + swing proxy (no broker/API keys)
+        run: |
+          python research/video_tqqq_sqqq_overlay.py
+          test -s research/results/video_tqqq_sqqq_overlays_20261110.json
+      - name: Preserve research evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stocklens-video-tqqq-sqqq-historical-research
+          path: research/results/video_tqqq_sqqq_overlays_20261110.json
+          if-no-files-found: warn
+          retention-days: 30
