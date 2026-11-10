@@ -497,7 +497,7 @@
     "tests/test_shadow_research_publication_policy.py": "1e226b7ed9a1e6c67e8eec0975ff9f9a59588f5b",
     "tests/test_shadow_research_refresh.py": "7935d298266a292603902c432d18657eee592efd",
     "tests/test_shared_rebalance_math.py": "413c98ecff9e1a400929f94f2ce08895e5a1698e",
-    "tests/test_sl57_guarded_st_vendor_release.py": "b42f8d7177594fc4c3254af6edbb57e0ddf832e2",
+    "tests/test_sl57_guarded_st_vendor_release.py": "87b9f2ddcb45917560ca89d4766a5a1257639cf3",
     "tests/test_sl9_022_original_forward_qualification.py": "44991bf7a0520316622fb937078371ca93bb2ee0",
     "tests/test_sl9_031_real_etf_combinations.py": "08fb4f24bebc7b92473978176abb8ca0e3290736",
     "tests/test_sma200_threshold_provenance.py": "eefea858907bc80aebdc6c3c3b979379c7521b98",
