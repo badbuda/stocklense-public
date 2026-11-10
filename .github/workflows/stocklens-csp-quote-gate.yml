@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - research/stocklens_csp_premium_hurdle_20261110.mjs
+      - research/stocklens_csp_collateral_opportunity_cost_20261110.mjs
       - research/tqqq_cash_secured_options_ledger.py
       - tests/test_tqqq_csp_quote_ledger.py
       - .github/workflows/stocklens-csp-quote-gate.yml
