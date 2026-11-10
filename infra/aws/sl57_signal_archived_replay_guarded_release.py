@@ -21,7 +21,7 @@ import zipfile
 ACCOUNT = "634740393398"
 REGION = "eu-central-1"
 REPO = "badbuda/stocklense-public"
-REF = "acc16022081bb6f8ea6714889ec360a18515c978"
+REF = "367a475f3d9bedc27d7979b493529f0bf64276ed"
 PATH = "infra/aws/independent_pipeline.py"
 # Actual 2026-11-10 post-deploy release signed by operator, not a guess.
 CURRENT_ZIP_SHA256_B64 = "YKpLN8Ks36blX4J9z+GnDKx9fCN87tA7wwc5Sc/25WQ="
