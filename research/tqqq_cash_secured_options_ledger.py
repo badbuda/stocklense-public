@@ -148,7 +148,7 @@ class CashSecuredPutLedger:
         return self.cash-self.locked_cash()
 
     def _record(self,operation,q,n,amount):
-        self.events.append({"date":q.quote_date,"operation":operation,
+        self.events.append({"date":self.last_date,"operation":operation,
                             "contract":str(q.key),"contracts":n,
                             "cash_delta":str(amount),"cash":str(self.cash),
                             "reserved_cash":str(self.locked_cash())})
@@ -215,13 +215,14 @@ class CashSecuredPutLedger:
         self._record("BUY_LONG_PUT_AT_ASK",q,n,-debit)
         return debit
 
-    def expire_short_put_at_close(self,q:Quote,underlying_close:Decimal,n:int):
+    def expire_short_put_at_close(self,q:Quote,underlying_close:Decimal,n:int,settlement_date:str):
         """Simplified expiry assignment only (NOT early American assignment)."""
-        self._check(q)
+        q.validate()
+        if settlement_date != q.expiration or (self.last_date and settlement_date < self.last_date):
+            raise ValueError("EXPLICIT_EXPIRY_DATE_REQUIRED")
+        self.last_date=settlement_date
         if self.short_puts.get(q.key,0)<n or n<=0:
             raise ValueError("NO_SUCH_SHORT_PUT")
-        if q.quote_date != q.expiration:
-            raise ValueError("EXPLICIT_EXPIRY_DATE_REQUIRED")
         if D(underlying_close)<q.strike:
             assignment=q.strike*q.multiplier*n
             if self.cash<assignment:
@@ -236,18 +237,26 @@ class CashSecuredPutLedger:
         if self.short_puts[q.key]==0:self.short_puts.pop(q.key)
         self._record(event,q,n,cash_change)
 
-    def mark_equity(self,underlying,option_quotes):
+    def mark_equity(self,underlying,option_quotes,asof_date):
+        if self.last_date and asof_date < self.last_date:
+            raise ValueError("BACKDATED_MARK")
         price=D(underlying)
+        if price<=0:
+            raise ValueError("BAD_MARK_UNDERLYING")
         eq=self.cash+self.shares*price
         for key,n in self.short_puts.items():
             if key not in option_quotes:
                 raise ValueError("MISSING_SHORT_POSITION_MARK_QUOTE")
             q=option_quotes[key];q.validate()
+            if q.quote_date != asof_date:
+                raise ValueError("STALE_SHORT_OPTION_MARK")
             eq-=q.ask*q.multiplier*n  # conservative liability, avoid mid
         for key,n in self.protective_puts.items():
             if key not in option_quotes:
                 raise ValueError("MISSING_LONG_HEDGE_MARK_QUOTE")
             q=option_quotes[key];q.validate()
+            if q.quote_date != asof_date:
+                raise ValueError("STALE_LONG_OPTION_MARK")
             eq+=q.bid*q.multiplier*n
         return eq
 
