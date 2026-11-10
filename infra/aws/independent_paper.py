@@ -694,9 +694,9 @@ def run_scheduled_paper(*, now: datetime, s3, bucket: str,
     verified operator approval; scheduler can NEVER bootstrap. The archived
     Signal must already exist (Signal-only schedule precedes this by 70m).
     """
-    from infra.aws.independent_orchestrator import current_completed_session
+    from infra.aws.independent_pipeline import completed_session_for_scheduled_attempt
 
-    day = current_completed_session(now)
+    day = completed_session_for_scheduled_attempt(now)
     if day is None:
         return {
             "status": "SKIPPED_XNYS_NONTRADING_DAY",
