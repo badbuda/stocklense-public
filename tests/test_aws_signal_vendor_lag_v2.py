@@ -25,6 +25,7 @@ def test_monday_signal_deferred_no_side_effect(monkeypatch):
     def fake_run(**kw):
         requests.append(kw)
         raise stale()
+    monkeypatch.setattr(pipeline, "_verified_archived_scheduled_signal", lambda **kw: None)
     monkeypatch.setattr(pipeline, "run", fake_run)
     result = pipeline.run_scheduled_signal(
         now=dt("2026-11-10",5,30), s3=object(),bucket="fake-st")
@@ -37,12 +38,14 @@ def test_monday_signal_deferred_no_side_effect(monkeypatch):
     assert len(requests) == 1
 
 def test_monday_lag_beyond_last_deadline_is_a_hard_error(monkeypatch):
+    monkeypatch.setattr(pipeline, "_verified_archived_scheduled_signal", lambda **kw: None)
     monkeypatch.setattr(pipeline, "run", lambda **kw: (_ for _ in ()).throw(stale()))
     with pytest.raises(ValueError, match="CANONICAL_INGEST_STALE_LAST_SESSION"):
         pipeline.run_scheduled_signal(now=dt("2026-11-10",12,50),
                                       s3=object(), bucket="fake-st")
 
 def test_unexpected_audit_disagreement_remains_alarmable(monkeypatch):
+    monkeypatch.setattr(pipeline, "_verified_archived_scheduled_signal", lambda **kw: None)
     monkeypatch.setattr(pipeline, "run", lambda **kw: (_ for _ in ()).throw(
         stale(audit="2026-11-05")))
     with pytest.raises(ValueError, match="STALE_LAST_SESSION"):
@@ -50,6 +53,7 @@ def test_unexpected_audit_disagreement_remains_alarmable(monkeypatch):
                                       s3=object(), bucket="fake-st")
 
 def test_noncanonical_exception_remains_alarmable(monkeypatch):
+    monkeypatch.setattr(pipeline, "_verified_archived_scheduled_signal", lambda **kw: None)
     monkeypatch.setattr(pipeline, "run", lambda **kw: (_ for _ in ()).throw(
         ValueError("CANONICAL_INGEST_BAD_PRICE")))
     with pytest.raises(ValueError, match="BAD_PRICE"):
