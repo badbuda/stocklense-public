@@ -547,6 +547,8 @@
     "workbench_evidence_manifest.py": "7e290add5dcb861b0d4bdbed81cc7e4308ff4683",
     "workbench_selfcheck.py": "4f17be6d56ac7d3cc3637e1ef2b2af3ed9d880a8",
     "yahoo_eod_scorecard.py": "137465f3ff4d9a2b8c164bf4321480c0ea0869fd",
-    "yahoo_long_history.py": "e7e51b5c2f5697da5d583316638b98ec13e6114c"
+    "yahoo_long_history.py": "e7e51b5c2f5697da5d583316638b98ec13e6114c",
+    "infra/aws/sl57_signal_archived_replay_guarded_release.py": "3cdab64c4b42510061a7ca4e60424866bcf727d2",
+    "tests/test_sl57_signal_archived_replay_guarded_release.py": "6756ac78184db548c041dc2eaf38c21907d6f334"
   }
 }
