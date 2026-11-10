@@ -1,0 +1,49 @@
+name: StockLens TQQQ Put Option Underlying Risk (no option quotes)
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - research/stocklens_tqqq_csp_underlying_risk_20261110.mjs
+      - .github/workflows/stocklens-tqqq-csp-risk.yml
+jobs:
+  observed-underlying-risk:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run observed TQQQ underlying barrier diagnostic
+        run: |
+          node research/stocklens_tqqq_csp_underlying_risk_20261110.mjs > tqqq-csp-underlying-risk.json
+          python3 - <<'PY'
+          import json,math
+          j=json.load(open('tqqq-csp-underlying-risk.json'))
+          assert j['kind']=='CSP_UNDERLYING_BARRIER_STUDY_NOT_OPTION_PNL'
+          assert j['numberOfOverlappingWindows']==3970
+          assert j['optionsChainAvailable'] is False
+          assert j['actualPutReturnsModeled'] is False
+          assert j['baselineFrozen'] is True
+          assert j['noBrokerOrders'] and j['prodUnchanged'] and j['autoPromotion'] is False
+          assert j['videoSingleTradeIllustration']['reservedCashUsd']==35000
+          assert j['videoSingleTradeIllustration']['grossPremiumUsd']==710
+          for n,g in j['groups'].items():
+            for scenario,rows in g.items():
+              for pct,x in rows.items():
+                assert x['n']>=0
+                if x['n']:
+                  assert math.isfinite(x['expiryITMpct'])
+                  assert 0<=x['expiryITMpct']<=100
+          print('PRICE_ONLY_PUT_RISK_PASS; NO OPTION BACKTEST OR PROMOTION')
+          for label,g in j['groups'].items():
+            x=g['overlapping']['20pct_OTM']
+            z=g['nonoverlappingEvery21Sessions']['20pct_OTM']
+            print(label,'n',x['n'],'ITM_pct',x.get('expiryITMpct'),
+                  'max_loss_pct',x.get('maxCollateralLossExPremiumPct'),
+                  'disjoint_n',z['n'],'disjoint_ITM_pct',z.get('expiryITMpct'))
+          PY
+      - name: Archive risk diagnostics (never label as option PnL)
+        uses: actions/upload-artifact@v4
+        with:
+          name: stocklens-tqqq-short-put-price-risk-20261110
+          path: tqqq-csp-underlying-risk.json
+          retention-days: 30
