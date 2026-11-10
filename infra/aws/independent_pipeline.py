@@ -266,7 +266,41 @@ def run_scheduled_signal(*, now: datetime, s3, bucket: str) -> dict:
             "broker_actions": False,
             "market_data_written": False,
         }
-    return run(expected_session=session, now=now, s3=s3, bucket=bucket)
+    try:
+        return run(expected_session=session, now=now, s3=s3, bucket=bucket)
+    except ValueError as exc:
+        # Yahoo occasionally publishes a completed US session after the old
+        # 02:30 UTC job, particularly after weekends. Stale daily candles
+        # are NOT substitutes for the expected XNYS session.
+        import re
+        match = re.fullmatch(
+            r"CANONICAL_INGEST_STALE_LAST_SESSION:expected=(\d{4}-\d{2}-\d{2})"
+            r":vendor_last=(\d{4}-\d{2}-\d{2})"
+            r":audit_last=(\d{4}-\d{2}-\d{2})",
+            str(exc),
+        )
+        if match is None or match.group(1) != session:
+            raise  # Other data/provider failures remain immediate hard errors.
+        from stocklens.st_signal_retry_policy import classify
+        result = classify(
+            expected_session=session,
+            vendor_last=match.group(2),
+            audit_last=match.group(3),
+            now_utc=now,
+            is_xnys_session=True,  # already checked by current_completed_session
+        )
+        if result.status != "DEFER_VENDOR_NOT_PUBLISHED":
+            raise  # Not a safe transient; preserve the original exception.
+        return {
+            "status": result.status,
+            "expected_session": session,
+            "observed_vendor_session": result.observed_vendor_session,
+            "retry_deadline_utc": result.deadline_utc,
+            "market_data_written": False,
+            "broker_actions": False,
+            "automatic_backfill": False,
+            "next_action": "WAIT_FOR_NEXT_SCHEDULED_ATTEMPT",
+        }
 
 
 def handler(event, context):
