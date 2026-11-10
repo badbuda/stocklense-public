@@ -106,7 +106,7 @@ def synthetic_private_watchdog(extra=""):
         "def inspect(*, now, signal_activation_at, \n"
         + before + "\n"
         + due + "\n"
-        "    return []\n\n"
+        "                    return []\n\n"
         "def handler(event, context):\n"
         "    def read_signal_activation():\n"
         "        return None\n"
