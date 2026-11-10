@@ -19,6 +19,29 @@ PROD="stocklens-prod"
 REF="772f1184b0c417bead55fb27d203c1f05f836cad"
 REPO="badbuda/stocklense-public"
 PAPER_FILE="infra/aws/independent_paper.py"
+WATCHDOG_FILE="infra/aws/independent_session_watchdog.py"
+WATCHDOG_CHANGES=(
+    (
+        "            read_signal_saved_at=None, paper_rule_state: str | None = None) -> dict:",
+        "            read_signal_saved_at=None, paper_rule_state: str | None = None,\n"
+        "            signal_v2_start_session: str | None = None) -> dict:",
+    ),
+    (
+        "                    due = due_signal_sessions(now, signal_activation_at)",
+        "                    due = due_signal_sessions(\n"
+        "                        now, signal_activation_at,\n"
+        "                        v2_start_session=signal_v2_start_session,\n"
+        "                    )",
+    ),
+    (
+        "                     signal_activation_at=signal_activation_at,\n"
+        '                     read_signal_saved_at=lambda day: read_last_modified(f"signals/{day}.json"))',
+        "                     signal_activation_at=signal_activation_at,\n"
+        '                     signal_v2_start_session=os.environ.get("SIGNAL_V2_START_SESSION") or None,\n'
+        '                     read_signal_saved_at=lambda day: read_last_modified(f"signals/{day}.json"))',
+    ),
+)
+
 PAPER_BEFORE="""    from infra.aws.independent_orchestrator import current_completed_session
 
     day = current_completed_session(now)"""
@@ -72,6 +95,41 @@ def latest_source(path):
  with urllib.request.urlopen(req,timeout=35) as resp:
   return resp.read(240_000)
 
+def patch_private_watchdog(source: bytes) -> bytes:
+ """Preserve private isolated metrics/epoch logic and add ONLY three audited V2 edits.
+
+ The original complete file's SHA need not match if its unrelated private
+ monitoring implementation differs. Each exact modified call/signature must
+ still match the audited baseline; unexpected variants fail before any write.
+ """
+ import ast
+ try:
+  original=source.decode("utf-8")
+  tree=ast.parse(original,filename=WATCHDOG_FILE)
+ except (UnicodeError,SyntaxError) as exc:
+  raise RuntimeError("PRIVATE_WATCHDOG_SOURCE_INVALID") from exc
+ functions={x.name for x in tree.body if isinstance(x,(ast.FunctionDef,ast.AsyncFunctionDef))}
+ check({"inspect","handler"} <= functions, "PRIVATE_WATCHDOG_HANDLERS_CHANGED")
+ check("from infra.aws.independent_signal_monitor import due_signal_sessions" in original,
+       "PRIVATE_WATCHDOG_MONITOR_IMPORT_CHANGED")
+ check("cw.put_metric_data(" in original and "read_signal_activation" in original,
+       "PRIVATE_WATCHDOG_METRICS_OR_ANCHOR_CHANGED")
+ updated=original
+ for index,(before,after) in enumerate(WATCHDOG_CHANGES):
+  check(updated.count(before)==1, "PRIVATE_WATCHDOG_V2_ANCHOR_CHANGED:"+str(index))
+  check(updated.count(after)==0, "PRIVATE_WATCHDOG_V2_ALREADY_PRESENT:"+str(index))
+  updated=updated.replace(before,after,1)
+ try:
+  ast.parse(updated,filename=WATCHDOG_FILE)
+ except SyntaxError as exc:
+  raise RuntimeError("PATCHED_PRIVATE_WATCHDOG_NOT_PYTHON") from exc
+ restored=updated
+ for before,after in reversed(WATCHDOG_CHANGES):
+  restored=restored.replace(after,before,1)
+ check(restored==original,"PRIVATE_WATCHDOG_UNEXPECTED_PATCH_SCOPE")
+ return updated.encode("utf-8")
+
+
 def prepare_zip(source_zip,fetch=latest_source):
  """One pinned 4-file mutation; preserve all other deployed ZIP members."""
  patches={}
@@ -87,9 +145,20 @@ def prepare_zip(source_zip,fetch=latest_source):
   for path,(previous,_) in EXPECTED.items():
    if previous:
     check(path in names,"BASELINE_MEMBER_MISSING:"+path)
-    check(blob(old.read(path))==previous,"PRIVATE_LAMBDA_SOURCE_CHANGED:"+path)
+    if path != WATCHDOG_FILE:
+     check(blob(old.read(path))==previous,"PRIVATE_LAMBDA_SOURCE_CHANGED:"+path)
    else:
     check(path not in names,"POLICY_ALREADY_EXISTS_REVIEW")
+  if WATCHDOG_FILE in EXPECTED:
+   private_watchdog=old.read(WATCHDOG_FILE)
+   patched_watchdog=patch_private_watchdog(private_watchdog)
+   patches[WATCHDOG_FILE]=patched_watchdog
+   # Audit the three V2 changes against the pinned *reference* baseline.
+   # If baseline code has the expected SHA, transforming it must result in
+   # the exact pinned candidate watchdog SHA.
+   if blob(private_watchdog)==EXPECTED[WATCHDOG_FILE][0]:
+    check(blob(patched_watchdog)==EXPECTED[WATCHDOG_FILE][1],
+          "REFERENCE_WATCHDOG_PATCH_NOT_PINNED")
   # Preserve ALL private Paper accounting changes. Alter only its scheduled
   # trading-day resolver; 12:45 UTC is a pre-open New York morning.
   import ast
@@ -108,7 +177,11 @@ def prepare_zip(source_zip,fetch=latest_source):
  with zipfile.ZipFile(io.BytesIO(data)) as z:
   check(len(z.namelist())==len(set(z.namelist())),"CANDIDATE_DUPLICATE_MEMBERS")
   for path,(_,new_sha) in EXPECTED.items():
-   check(blob(z.read(path))==new_sha,"CANDIDATE_MEMBER_SHA_MISMATCH:"+path)
+   if path == WATCHDOG_FILE:
+    check(z.read(path)==patches[path],"PRIVATE_WATCHDOG_PATCH_BYTES_CHANGED")
+    check(z.read(path)!=private_watchdog,"PRIVATE_WATCHDOG_NOOP")
+   else:
+    check(blob(z.read(path))==new_sha,"CANDIDATE_MEMBER_SHA_MISMATCH:"+path)
  return data
 
 def outputs(cf,stack):
