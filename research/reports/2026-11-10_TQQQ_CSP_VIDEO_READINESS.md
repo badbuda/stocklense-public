@@ -35,3 +35,25 @@ This is **NOT a backtest of options**, because no actual historical premiums, qu
 Predeclare deterministic entry/exit/roll rules, validate data vendor and corporate actions, replay historical option **executable** bid/ask with hedge MTM, enforce collateral/assignment, model broker tax/FX, after-tax terminal wealth, 2022 crisis, extra lag and OOS. Frozen 8.0 must not be mutated and no automatic promotion.
 
 **Deployment gate:** `BLOCKED_DATA_OPTIONS_QUOTES`; **No option-strategy return/backtest has been claimed**. Even after quote data is obtained, original creator's adaptive support/roll logic is still `BLOCKED_UNSPECIFIED_RULES` until documented.
+
+
+## Observed underlying-price stress executed, 2026-11-10
+
+An independent JavaScript calculation fetched the *exact* frozen observed TQQQ daily bars and computed all 3,970 eligible 21-session windows from 2010-11-26 to 2026-09-10. The reported **20%-below-next-open hypothetical strike** is NOT the creator's actual support strike, and does not use options quotes. Signal level is frozen StockLens 8.0 from previous completed session.
+
+| Cohort | Overlapping windows | Future expiry-close below 20%-OTM strike | Any intervening DAILY CLOSE breach |
+|---|---:|---:|---:|
+| All states | 3,970 | 7.03% | 14.18% |
+| Frozen 8.0 cash=0 | 274 | **17.88%** | **30.29%** |
+| Frozen 8.0 risk-on | 3,696 | 6.22% | 12.99% |
+| Frozen 8.0 3× | 3,216 | 5.38% | 11.01% |
+| Year 2022 | 251 | **34.66%** | **55.78%** |
+| Year 2024 | 252 | 3.97% | 9.92% |
+
+Non-overlapping 21-session fixed-grid sensitivity: all = 190 windows with **7.89%** expiry-close-below-strike; frozen cash = only 14 grid windows with 14.29% breach (**too few** for reliable inference); 2022 = 11 grid windows with 27.27% breach. The high-risk cash cohort includes substantial 2022 overlap, and is NOT a causal proof that a signal predicts option returns. Results were calculated on observed underlying bars, no premium or roll data and no trading/assignment.
+
+**Unhedged short-put intrinsic-loss risk at expiry excluding any premium**: among all overlapping 20%-OTM 21-session windows, mean conditional on *all* windows (including zero-loss) is 0.79% of put strike cash collateral, worst expiry stress 62.16% of collateral. These values are NOT net option profit, because actual premiums, margin rates, hedges and early assignment are missing. Actual profit could differ substantially.
+
+**Sanity check for the narrator's single video trade:** 5 standard contracts × 100 shares × $70 strike = $35,000 collateral. 5 × 100 × $1.42 stated premium = $710 gross. At hypothetical expiry $50, unhedged short-put P&L $710 − (70−50)×500 = **−$9,290**; at $0 **−$34,290**; at $70 or higher **+$710**. Does not include long protective puts, previous rolls, stock inventory, broker fees or tax. This is arithmetic, not proof those trade quotes were actually executable.
+
+**Research decision:** cash-secured TQQQ puts on frozen **0x cash** days can materially re-introduce losses. Do not promote a cash-sleeve strategy using only observed underlying prices. Need licensed full historical options quote legs and predefined support/roll/hedge rules before evaluating CAGR, total equity or after-tax performance.
