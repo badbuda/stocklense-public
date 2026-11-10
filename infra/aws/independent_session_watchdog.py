@@ -62,7 +62,8 @@ def inspect(*, now: datetime, rule_state: str | None, expected_rule_state: str,
             monitoring_start: str | None, read_record, read_receipt_sha=lambda s: None,
             read_last_modified=None, read_genesis=None, book: str = sc.BOOK,
             signal_rule_state: str | None = None, signal_activation_at: datetime | None = None,
-            read_signal_saved_at=None, paper_rule_state: str | None = None) -> dict:
+            read_signal_saved_at=None, paper_rule_state: str | None = None,
+            signal_v2_start_session: str | None = None) -> dict:
     """read_record(session) -> dict | None; read_receipt_sha(session) -> sha | None;
     read_last_modified(key) -> aware datetime | None (genuine S3 server time).
 
@@ -163,7 +164,10 @@ def inspect(*, now: datetime, rule_state: str | None, expected_rule_state: str,
                 config_errors.append("SIGNAL_RECEIPT_READER_MISSING")
             else:
                 try:
-                    due = due_signal_sessions(now, signal_activation_at)
+                    due = due_signal_sessions(
+                        now, signal_activation_at,
+                        v2_start_session=signal_v2_start_session,
+                    )
                 except Exception as exc:
                     config_errors.append("SIGNAL_CALENDAR_ERROR:" + type(exc).__name__)
                     due = []
@@ -340,6 +344,7 @@ def handler(event, context):
                      paper_rule_state=paper_rule_state,
                      signal_rule_state=signal_rule_state,
                      signal_activation_at=signal_activation_at,
+                     signal_v2_start_session=os.environ.get("SIGNAL_V2_START_SESSION") or None,
                      read_signal_saved_at=lambda day: read_last_modified(f"signals/{day}.json"))
     cw.put_metric_data(Namespace=NAMESPACE, MetricData=[
         {"MetricName": k, "Value": float(v), "Unit": "Count"} for k, v in result["metrics"].items()])
