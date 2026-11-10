@@ -1,0 +1,48 @@
+name: StockLens QQQE observed participation proxy (data-gated)
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - research/qqqe_transition_proxy_20261110.py
+      - .github/workflows/stocklens-qqqe-participation.yml
+jobs:
+  QQQE-source-and-study:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install bounded research vendor dependency
+        run: python -m pip install yfinance==0.2.65
+      - name: Fetch observed QQQE / evaluate or mark source BLOCKED
+        run: |
+          python research/qqqe_transition_proxy_20261110.py
+          python - <<'PY'
+          import json,math
+          from pathlib import Path
+          p=Path('research/results/qqqe_transition_proxy_20261110.json')
+          x=json.loads(p.read_text())
+          assert not x['prod_changed'] and not x['automatic_promotion']
+          if x['status']=='OBSERVED_QQQE_PROXY_RESEARCH_ONLY':
+              assert x['QQQE_proxy_NOT_actual_NDXA50R'] is True
+              assert len(x['results'])==5 and x['period']['sessions']>3000
+              assert all(math.isfinite(v['cagr']) and math.isfinite(v['maxdd']) for v in x['results'])
+              print('OBSERVED_QQQE_SOURCE_PASS, NOT REAL NDXA50R')
+          else:
+              assert x['status']=='BLOCKED_NO_QUALIFIED_QQQE_PRICE_INPUT'
+              assert not x['results']
+              print('QQQE_VENDOR_SOURCE_BLOCKED_NO_RESULTS: '+x['reason'])
+          PY
+      - name: Preserve source and study or explicit data blocker
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stocklens-qqqe-breadth-proxy-20261110
+          path: |
+            research/results/qqqe_transition_proxy_20261110.json
+            research/results/qqqe_observed_vendor_20261110.json
+          if-no-files-found: warn
+          retention-days: 30
