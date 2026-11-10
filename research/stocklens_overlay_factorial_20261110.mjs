@@ -97,8 +97,8 @@ function simulate(targets,{extraLag=0,slippageBps=10}={}){
   if(prior===null||level!==prior){
    const equity=cash+qs*r.qo+ts*r.to;
    const tw=level===0?0:(level-1)/2,qw=level===0?0:1-tw;
-   const newQ=Math.floor(equity*qw*INV/r.qo);
-   const newT=Math.floor(equity*tw*INV/r.to);
+   const newQ=Math.floor(equity*qw*INVESTED/r.qo);
+   const newT=Math.floor(equity*tw*INVESTED/r.to);
    transact('sell','q',qs-newQ,r.qo);transact('sell','t',ts-newT,r.to);
    transact('buy','q',newQ-qs,r.qo);transact('buy','t',newT-ts,r.to);
   }
@@ -114,7 +114,7 @@ function wholeBaselineParity(){
   const r=bars[i],lev=r.l;
   if(prior===null||prior!==lev){
    const equity=cash+qs*r.qo+ts*r.to,tw=lev===0?0:(lev-1)/2,qw=lev===0?0:1-tw;
-   const newQ=Math.floor(equity*qw*INV/r.qo),newT=Math.floor(equity*tw*INV/r.to);
+   const newQ=Math.floor(equity*qw*INVESTED/r.qo),newT=Math.floor(equity*tw*INVESTED/r.to);
    for(const [sym,amt,px]of [['q',qs-newQ,r.qo],['t',ts-newT,r.to]]){
     if(amt<=0)continue;
     cash+=amt*px*(1-.001)*(1-.0002);if(sym==='q')qs-=amt;else ts-=amt;trades++;
