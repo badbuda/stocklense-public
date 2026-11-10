@@ -112,5 +112,29 @@ class TestTQQQOptionAccounting(unittest.TestCase):
             self.assertEqual(imported[0].source,"CBOE_EOD_1545")
 
 
+    def test_rejected_orders_are_side_effect_free(self):
+        book=CashSecuredPutLedger(D("100000"))
+        with self.assertRaisesRegex(ValueError,"STOCKLENS_CASH_REGIME"):
+            book.sell_put(quote(),1,stocklens_target=0,mark_underlying=D("80"))
+        self.assertIsNone(book.last_date)
+        self.assertEqual(book.events,[])
+        self.assertEqual(book.cash,D("100000"))
+        with self.assertRaisesRegex(ValueError,"UNRECOGNIZED_STOCKLENS_EXPOSURE"):
+            book.sell_put(quote(),1,stocklens_target=5,mark_underlying=D("80"))
+        self.assertIsNone(book.last_date)
+        with self.assertRaisesRegex(ValueError,"MAX_CASH_SLEEVE"):
+            book.sell_put(quote(),3,stocklens_target=2,mark_underlying=D("80"))
+        self.assertIsNone(book.last_date)
+        self.assertEqual(book.events,[])
+
+    def test_validations_reject_adjusted_root_and_bad_quote(self):
+        with self.assertRaisesRegex(ValueError,"WRONG_UNDERLYING_OR_ADJUSTED_ROOT"):
+            quote(root="TQQQ1").validate()
+        with self.assertRaisesRegex(ValueError,"CROSSED_OR_INVALID_NBBO"):
+            quote(bid="2.5",ask="2.1").validate()
+        with self.assertRaisesRegex(ValueError,"EXPIRED_OPTION_QUOTE"):
+            quote(date="2025-11-21",expiry="2025-11-21").validate()
+
+
 if __name__=="__main__":
     unittest.main()
