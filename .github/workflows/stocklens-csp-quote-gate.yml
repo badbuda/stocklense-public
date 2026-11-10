@@ -47,9 +47,28 @@ jobs:
                     'disjoint_n',d['windows'],
                     'disjoint_min_pct',d.get('mean_intrinsic_hurdle_pct_of_cash_collateral'))
           PY
+      - name: Cash collateral opportunity-cost stress using observed ETF fills
+        run: |
+          node research/stocklens_csp_collateral_opportunity_cost_20261110.mjs > csp-collateral-cost.json
+          python3 - <<'PY'
+          import json,math
+          j=json.load(open('csp-collateral-cost.json'))
+          assert j['baseline_model_verified'] and j['money_funded_equally_from_100k']
+          assert j['no_model_promotion'] and j['no_prod_changes'] and j['no_capital_deployed']
+          assert j['option_chain_quotes'] is False and j['options_premiums'] is False
+          assert len(j['models'])==5
+          assert math.isfinite(j['models'][0]['cagr'])
+          print("CSP_CASH_ALLOCATION_COST_PASS: NO OPTION PNL CLAIMED")
+          for m in j['models']:
+              print('reserve',m['reserve_fraction_at_state_transition'],
+                    'CAGR',round(100*m['cagr'],2),'MaxDD',round(100*m['maxdd'],2),
+                    'delta_CAGR_pp',round(m['delta_cagr_pp'],3))
+          PY
       - name: Archive research-only price hurdle artifact
         uses: actions/upload-artifact@v4
         with:
           name: stocklens-csp-premium-hurdle-20261110
-          path: csp-premium-hurdle.json
+          path: |
+            csp-premium-hurdle.json
+            csp-collateral-cost.json
           retention-days: 30
