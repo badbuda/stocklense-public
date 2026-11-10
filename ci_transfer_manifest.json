@@ -171,7 +171,7 @@
     "infra/aws/independent_signal_monitor.py": "34388ab6692a46535a3314773650fb5121318b83",
     "infra/aws/INDEPENDENT_SIGNAL_PRODUCER.md": "6245bd7df414eeb68190cd1a495b1bf365a96553",
     "infra/aws/independent_signal_producer.py": "42a697fad422bb997447bf2dfcc234de70404ab0",
-    "infra/aws/independent-staging.yaml": "d967ec6ec5a120f713367b51dc74444c675dd820",
+    "infra/aws/independent-staging.yaml": "c142cb2deac7e11255e6de4b91129cc935cfc9fa",
     "infra/aws/migrate_active_staging_signal.sh": "8ba0dc3c3aafc5197e864c976ae3ef63647034c9",
     "infra/aws/paper-evidence-handler.py": "0a967783e199fe6b0135deb974062e93982477c7",
     "infra/aws/paper-signal-journal.yaml": "b99b0db90504cf0dbff0276ab3e0fedae16a9075",
