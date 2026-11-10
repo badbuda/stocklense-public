@@ -26,7 +26,7 @@ def test_monday_late_vendor_appears_before_cutoff():
     assert value.signal_may_publish and not value.should_raise_alarm
 
 def test_monday_bar_missing_at_deadline_is_a_real_incident():
-    value=judge("2026-11-06","2026-11-06",at("2026-11-10",12,30))
+    value=judge("2026-11-06","2026-11-06",at("2026-11-10",12,50))
     assert value.status=="MISSING_VENDOR_BAR_AFTER_DEADLINE"
     assert value.should_raise_alarm
     assert not value.signal_may_publish
@@ -66,10 +66,10 @@ def test_no_history_backfill_or_lookahead():
         assert "SIGNAL_SESSION_EXPIRED" in str(exc)
 
 def test_friday_close_and_holiday_skip_deadline():
-    assert deadline_for("2026-11-06").isoformat()=="2026-11-07T12:30:00+00:00"
-    assert deadline_for("2026-11-09").isoformat()=="2026-11-10T12:30:00+00:00"
+    assert deadline_for("2026-11-06").isoformat()=="2026-11-07T12:50:00+00:00"
+    assert deadline_for("2026-11-09").isoformat()=="2026-11-10T12:50:00+00:00"
 
 def test_all_retries_pre_open_and_paper_after_signal():
     assert assert_safe_time_window()
     assert SIGNAL_RETRY_CRON == "cron(30 5,8,11,12 ? * TUE-SAT *)"
-    assert PAPER_AFTER_SIGNAL_CRON == "cron(45 12 ? * TUE-SAT *)"
+    assert PAPER_AFTER_SIGNAL_CRON == "cron(0 13 ? * TUE-SAT *)"
