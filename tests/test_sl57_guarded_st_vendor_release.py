@@ -144,3 +144,39 @@ def test_repeated_patch_is_blocked_without_new_approval():
     first = release.patch_private_watchdog(synthetic_private_watchdog())
     with pytest.raises(RuntimeError, match="V2_ANCHOR_CHANGED|V2_ALREADY_PRESENT"):
         release.patch_private_watchdog(first)
+
+
+def test_deployed_watchdog_private_isolation_drift_preserved_in_final_zip(monkeypatch):
+    """Regression for the exact 2026-11-10 user-reported source-hash blocker."""
+    previous_pipeline = b"# original scheduled signal source\n"
+    new_pipeline = b"# vetted scheduled signal source\n"
+    new_policy = b"# pinned signal retry module\n"
+    reference_watchdog = synthetic_private_watchdog()
+    private_watchdog = synthetic_private_watchdog(
+        "ISOLATED_ST_METRICS_PRESERVED = 'private-release'"
+    )
+    candidate_watchdog = release.patch_private_watchdog(reference_watchdog)
+    monkeypatch.setattr(release, "EXPECTED", {
+        "infra/aws/independent_pipeline.py": (
+            release.blob(previous_pipeline), release.blob(new_pipeline)),
+        "infra/aws/independent_session_watchdog.py": (
+            release.blob(reference_watchdog), release.blob(candidate_watchdog)),
+        "stocklens/st_signal_retry_policy.py": (
+            None, release.blob(new_policy)),
+    })
+    baseline = io.BytesIO(fake_zip(previous_pipeline))
+    with zipfile.ZipFile(baseline, "a") as archive:
+        archive.writestr("infra/aws/independent_session_watchdog.py", private_watchdog)
+    source_map = {
+        "infra/aws/independent_pipeline.py": new_pipeline,
+        "infra/aws/independent_session_watchdog.py": candidate_watchdog,
+        "stocklens/st_signal_retry_policy.py": new_policy,
+    }
+    payload = release.prepare_zip(baseline.getvalue(), fetch=source_map.__getitem__)
+    with zipfile.ZipFile(io.BytesIO(payload)) as archive:
+        deployed = archive.read("infra/aws/independent_session_watchdog.py")
+        assert b"ISOLATED_ST_METRICS_PRESERVED = 'private-release'" in deployed
+        assert b"v2_start_session=signal_v2_start_session" in deployed
+        assert archive.read("infra/aws/independent_pipeline.py") == new_pipeline
+        assert archive.read("stocklens/st_signal_retry_policy.py") == new_policy
+        assert len(archive.namelist()) == len(set(archive.namelist()))
