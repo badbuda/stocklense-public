@@ -102,3 +102,24 @@ def test_zip_includes_retry_module_and_st_template_requires_explicit_activation(
     assert "SIGNAL_V2_START_SESSION: !Ref SignalV2StartSession" in template
     assert "cron(30 5,8,11 ? * TUE-SAT *)" in template
     assert "cron(20 12 ? * TUE-SAT *)" in template
+
+
+def test_retries_resolve_previous_new_york_day_after_midnight():
+    f=pipeline.completed_session_for_scheduled_attempt
+    for hour in (5,8,11):
+        assert f(dt("2026-11-10",hour,30)) == "2026-11-09"
+    # Before the DST change, New York is one hour further ahead.
+    for hour in (5,8,11):
+        assert f(dt("2026-10-13",hour,30)) == "2026-10-12"
+
+def test_after_open_must_not_reinterpret_todays_partial_session():
+    with pytest.raises(RuntimeError,match="MARKET_DAY_NOT_YET_COMPLETE"):
+        pipeline.completed_session_for_scheduled_attempt(
+            dt("2026-11-10",16,0)
+        )
+
+def test_nontrading_day_skips_rather_than_look_back_many_sessions():
+    # Monday 2026-12-28 follows Friday Christmas holiday.
+    assert pipeline.completed_session_for_scheduled_attempt(
+        dt("2026-12-26",5,30)
+    ) is None
