@@ -1,0 +1,48 @@
+name: StockLens risk overlay factorial (research-only)
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - research/stocklens_overlay_factorial_20261110.mjs
+      - .github/workflows/stocklens-overlay-factorial.yml
+jobs:
+  overlay-factorial:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run 16 StockLens-on-top overlay combinations
+        run: |
+          node research/stocklens_overlay_factorial_20261110.mjs > stocklens-overlay-factorial.json
+          python3 - <<'PY'
+          import json, math
+          x=json.load(open('stocklens-overlay-factorial.json'))
+          assert x['full_baseline_parity']['passed']
+          assert x['full_baseline_parity']['trades']==147
+          assert x['count']==16
+          assert x['window']['sessions']==3991
+          assert x['limitation_flags']['automatic_promotion'] is False
+          assert x['limitation_flags']['broker_orders'] is False
+          assert x['limitation_flags']['prod_modified'] is False
+          all_layers={0:0,1:0,2:0,3:0,4:0}
+          for v in x['comparisons']:
+              all_layers[v['layer_count']]+=1
+              assert math.isfinite(v['cagr']) and math.isfinite(v['maxdd'])
+              assert len(v['stress'])==4
+          assert all_layers=={0:1,1:4,2:6,3:4,4:1}
+          base=x['comparisons'][0]
+          assert base['name']=='FROZEN_8'
+          assert abs(base['cagr']-0.39835414489537446)<1e-9
+          print('FACTORIAL_PASS baseline and all 15 overlay combinations')
+          print('ID | LAYERS | CAGR | MAXDD | ΔCAGR(pp) | ΔDD(pp) | TRADES')
+          for v in x['comparisons']:
+              print(v['name'],v['layer_count'],round(100*v['cagr'],2),round(100*v['maxdd'],2),
+                    round(v['cagr_delta_pp'],2),round(v['maxdd_improvement_pp'],2),v['trades'])
+          PY
+      - name: Upload results including all combinations and stress matrix
+        uses: actions/upload-artifact@v4
+        with:
+          name: stocklens-layered-factorial-20261110
+          path: stocklens-overlay-factorial.json
+          retention-days: 30
