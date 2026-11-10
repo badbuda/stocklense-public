@@ -42,10 +42,10 @@ def test_signal_state_keeps_default_disarmed_but_allows_explicit_active_release(
     assert param["AllowedValues"]==["DISABLED","ENABLED"]
     r=doc["Resources"]
     assert r["CandidateSignalOnlySchedule"]["Properties"]["State"] == "Ref:CandidateSignalScheduleState"
-    assert r["CandidateSignalOnlySchedule"]["Properties"]["ScheduleExpression"]=="cron(30 5,8,11 ? * TUE-SAT *)"
+    assert r["CandidateSignalOnlySchedule"]["Properties"]["ScheduleExpression"]=="cron(30 5,8,11,12 ? * TUE-SAT *)"
     assert r["CandidatePaperOnlySchedule"]["Properties"]["State"]=="DISABLED"
     assert r["CandidateOrchestratorSchedule"]["Properties"]["State"]=="DISABLED"
-    assert r["CandidatePaperOnlySchedule"]["Properties"]["ScheduleExpression"]=="cron(20 12 ? * TUE-SAT *)"
+    assert r["CandidatePaperOnlySchedule"]["Properties"]["ScheduleExpression"]=="cron(45 12 ? * TUE-SAT *)"
 
 def test_authenticated_import_smoke_safeguards():
     smoke=Path("infra/aws/smoke_independent_staging.sh").read_text()
