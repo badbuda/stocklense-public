@@ -7,7 +7,8 @@ GRACE = timedelta(hours=1)
 MAX_SESSIONS = 400
 
 
-def due_signal_sessions(now: datetime, activation_at: datetime) -> list[tuple[str, datetime]]:
+def due_signal_sessions(now: datetime, activation_at: datetime,
+                        v2_start_session: str | None = None) -> list[tuple[str, datetime]]:
     """Return (XNYS session, UTC receipt deadline) only for runs after activation.
 
     The scheduled UTC invocation at 02:30 is on the next calendar day after
@@ -32,10 +33,23 @@ def due_signal_sessions(now: datetime, activation_at: datetime) -> list[tuple[st
     sessions = list(cal.sessions_in_range(first, last))
     if len(sessions) > MAX_SESSIONS + 3:
         raise RuntimeError("SIGNAL_WATCH_CHECKPOINT_REQUIRED")
+    # Preserve the immutable historical 03:30 deadline for old sessions.
+    # Only a separately authorized, prospective V2 session may use the
+    # pre-open 12:30 deadline; never relabel past late receipts as on time.
+    v2_date = None
+    if v2_start_session:
+        v2_date = date.fromisoformat(v2_start_session)
+        if v2_date.isoformat() != v2_start_session or not cal.is_session(v2_start_session):
+            raise ValueError("SIGNAL_V2_ACTIVATION_NOT_XNYS_SESSION")
     due = []
     for sess in sessions:
         day = sess.date()
         scheduled = datetime.combine(day + timedelta(days=1), SCHEDULE_UTC, tzinfo=timezone.utc)
-        if scheduled > activation_at and scheduled + GRACE <= now:
-            due.append((day.isoformat(), scheduled + GRACE))
+        if v2_date is not None and day >= v2_date:
+            from stocklens.st_signal_retry_policy import deadline_for
+            deadline = deadline_for(day.isoformat())
+        else:
+            deadline = scheduled + GRACE
+        if scheduled > activation_at and deadline <= now:
+            due.append((day.isoformat(), deadline))
     return due
