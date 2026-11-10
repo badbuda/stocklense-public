@@ -116,6 +116,6 @@ console.log(JSON.stringify({schema_version:1,kind:'FROZEN8_TRANSITION_TIMING_SCR
  all_outputs_reused_in_sample:true,frozen8_parity:true,initial_capital_usd:CAP,
  implementation:'observed adjusted QQQ/TQQQ, prior completed close signal/next OPEN, 2bps fees+10bps slippage per side, whole shares, no cash yield',
  thresholds:'predeclared research interpretations: confirmation max 2 sessions; rebound RSI7>=55, SMA200+1%, EMA20 and MACD(6,13,5) positive, 3-day frozen plateau, 3-day pulse, 8-day cooldown; shock daily QQQ -2.5% below EMA20, 2-day downshift, 10-day cooldown',
- combinations:results,real_breadth_tested:false,full_autopilot_tested:false,israeli_tax_modeled:false,
+ combinations:results,target_level_series:Object.fromEntries(tests.map(x=>[x.name,x.lv.slice(START)])),real_breadth_tested:false,full_autopilot_tested:false,israeli_tax_modeled:false,
  pristine_heldout_test:false,broker_orders:false,production_changed:false,automatic_promotion:false
 },null,2));
