@@ -139,7 +139,6 @@ class CashSecuredPutLedger:
         q.validate()
         if self.last_date is not None and q.quote_date<self.last_date:
             raise ValueError("BACKDATED_ORDER")
-        self.last_date=q.quote_date
 
     def locked_cash(self):
         return sum((k[2]*k[4]*n for k,n in self.short_puts.items()),D(0))
@@ -147,8 +146,12 @@ class CashSecuredPutLedger:
     def free_cash(self):
         return self.cash-self.locked_cash()
 
-    def _record(self,operation,q,n,amount):
-        self.events.append({"date":self.last_date,"operation":operation,
+    def _record(self,operation,q,n,amount,event_date=None):
+        when=event_date or q.quote_date
+        if self.last_date is not None and when<self.last_date:
+            raise ValueError("BACKDATED_RECORD")
+        self.last_date=when
+        self.events.append({"date":when,"operation":operation,
                             "contract":str(q.key),"contracts":n,
                             "cash_delta":str(amount),"cash":str(self.cash),
                             "reserved_cash":str(self.locked_cash())})
@@ -158,6 +161,8 @@ class CashSecuredPutLedger:
         self._check(q)
         if q.right!="P" or not isinstance(n,int) or n<=0:
             raise ValueError("PUT_SELL_INVALID")
+        if stocklens_target not in (0, 1.25, 2, 3):
+            raise ValueError("UNRECOGNIZED_STOCKLENS_EXPOSURE")
         if stocklens_target==0:
             raise ValueError("STOCKLENS_CASH_REGIME_PUT_SELL_BLOCKED")
         # A short-put sleeve uses capital *already held in this ledger*,
@@ -220,7 +225,6 @@ class CashSecuredPutLedger:
         q.validate()
         if settlement_date != q.expiration or (self.last_date and settlement_date < self.last_date):
             raise ValueError("EXPLICIT_EXPIRY_DATE_REQUIRED")
-        self.last_date=settlement_date
         if self.short_puts.get(q.key,0)<n or n<=0:
             raise ValueError("NO_SUCH_SHORT_PUT")
         if D(underlying_close)<q.strike:
@@ -235,7 +239,7 @@ class CashSecuredPutLedger:
             cash_change=D(0);event="EXPIRED_OUT_OF_MONEY"
         self.short_puts[q.key]-=n
         if self.short_puts[q.key]==0:self.short_puts.pop(q.key)
-        self._record(event,q,n,cash_change)
+        self._record(event,q,n,cash_change,event_date=settlement_date)
 
     def mark_equity(self,underlying,option_quotes,asof_date):
         if self.last_date and asof_date < self.last_date:
