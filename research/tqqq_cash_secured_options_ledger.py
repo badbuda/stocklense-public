@@ -124,6 +124,8 @@ def import_cboe_csv(path: str, *, adjustment_verified: bool = False):
 class CashSecuredPutLedger:
     cash: Decimal
     max_reserved_fraction: Decimal = field(default_factory=lambda:D(".15"))
+    fee_per_contract: Decimal = field(default_factory=lambda:D("0"))
+    minimum_order_fee: Decimal = field(default_factory=lambda:D("0"))
     shares: int = 0
     short_puts: dict = field(default_factory=dict)
     protective_puts: dict = field(default_factory=dict)
@@ -132,8 +134,15 @@ class CashSecuredPutLedger:
 
     def __post_init__(self):
         self.cash=D(self.cash);self.max_reserved_fraction=D(self.max_reserved_fraction)
+        self.fee_per_contract=D(self.fee_per_contract)
+        self.minimum_order_fee=D(self.minimum_order_fee)
         if self.cash<=0 or not 0<self.max_reserved_fraction<=1:
             raise ValueError("INVALID_CAPITAL_OR_CSP_SLEEVE")
+        if self.fee_per_contract<0 or self.minimum_order_fee<0:
+            raise ValueError("BAD_BROKER_FEE_SCHEDULE")
+
+    def _ticket_fee(self,n:int):
+        return max(self.minimum_order_fee,self.fee_per_contract*n) if n>0 else D(0)
 
     def _check(self, q: Quote):
         q.validate()
@@ -173,7 +182,11 @@ class CashSecuredPutLedger:
         if reserve+self.locked_cash()>D(mark_underlying)*self.shares*self.max_reserved_fraction + self.cash*self.max_reserved_fraction:
             raise ValueError("MAX_CASH_SLEEVE_LIMIT")
         # Conservative assumption: sale at observed bid (not at mid).
-        credit=q.bid*q.multiplier*n
+        # Configurable per-ticket fees: default zero means UNIT TEST ONLY.
+        # For real results a verified broker fee schedule is mandatory.
+        credit=q.bid*q.multiplier*n-self._ticket_fee(n)
+        if credit<=0:
+            raise ValueError("NET_PREMIUM_AFTER_FEES_NONPOSITIVE")
         self.cash+=credit
         self.short_puts[q.key]=self.short_puts.get(q.key,0)+n
         self._record("SELL_PUT_AT_BID",q,n,credit)
@@ -184,7 +197,7 @@ class CashSecuredPutLedger:
         held=self.short_puts.get(q.key,0)
         if q.right!="P" or not isinstance(n,int) or n<=0 or n>held:
             raise ValueError("SHORT_PUT_NOT_HELD")
-        debit=q.ask*q.multiplier*n
+        debit=q.ask*q.multiplier*n+self._ticket_fee(n)
         if debit>self.cash:
             raise ValueError("INSUFFICIENT_CASH_FOR_ASK_CLOSE")
         self.cash-=debit
@@ -212,7 +225,7 @@ class CashSecuredPutLedger:
         self._check(q)
         if q.right!="P" or not isinstance(n,int) or n<=0:
             raise ValueError("LONG_PUT_INVALID")
-        debit=q.ask*q.multiplier*n
+        debit=q.ask*q.multiplier*n+self._ticket_fee(n)
         if debit>self.free_cash():
             raise ValueError("PROTECTIVE_PUT_UNFUNDED")
         self.cash-=debit
@@ -272,6 +285,6 @@ if __name__=="__main__":
         "automatic_promotion":False,
         "requires":"Licensed historical NBBO plus split-reviewed OCC contracts and complete time series.",
         "hard_safety_limits":["no stocklens 0x short puts","15% max cash sleeve default",
-         "strict cash collateral","executable bid sale/ask close","long puts funded",
+         "strict cash collateral","executable bid sale/ask close","configurable ticket fees","long puts funded",
          "missing marks fail closed","expiry assignment not early assignment"]
     },indent=2))
