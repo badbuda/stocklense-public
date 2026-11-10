@@ -14,8 +14,8 @@ POLICY_VERSION = "ST_SIGNAL_VENDOR_LAG_V2"
 # UTC next-calendar-day schedule, following the previous completed XNYS day.
 # Includes a final one-hour qualification window before the alert deadline.
 SIGNAL_RETRY_CRON = "cron(30 5,8,11,12 ? * TUE-SAT *)"
-PAPER_AFTER_SIGNAL_CRON = "cron(45 12 ? * TUE-SAT *)"
-RECEIPT_DEADLINE_UTC = time(12, 30)
+PAPER_AFTER_SIGNAL_CRON = "cron(0 13 ? * TUE-SAT *)"
+RECEIPT_DEADLINE_UTC = time(12, 50)
 MAX_WAIT_DAYS = 5
 
 @dataclass(frozen=True)
@@ -96,10 +96,10 @@ def assert_safe_time_window():
     The final scheduled attempt + monitoring deadline must be earlier.
     """
     last_try = time(12, 30)
-    if not (last_try <= RECEIPT_DEADLINE_UTC < time(13, 30)):
+    if not (last_try < RECEIPT_DEADLINE_UTC < time(13, 30)):
         raise RuntimeError("RETRY_POLICY_CROSSES_NEXT_US_OPEN")
     if "TUE-SAT" not in SIGNAL_RETRY_CRON:
         raise RuntimeError("SCHEDULE_WRONG_WEEKDAY_WINDOW")
-    if "12" not in PAPER_AFTER_SIGNAL_CRON:
+    if "13" not in PAPER_AFTER_SIGNAL_CRON:
         raise RuntimeError("PAPER_NOT_MOVED_AFTER_RETRY")
     return True
