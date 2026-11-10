@@ -71,5 +71,5 @@ def test_friday_close_and_holiday_skip_deadline():
 
 def test_all_retries_pre_open_and_paper_after_signal():
     assert assert_safe_time_window()
-    assert SIGNAL_RETRY_CRON == "cron(30 5,8,11 ? * TUE-SAT *)"
-    assert PAPER_AFTER_SIGNAL_CRON == "cron(20 12 ? * TUE-SAT *)"
+    assert SIGNAL_RETRY_CRON == "cron(30 5,8,11,12 ? * TUE-SAT *)"
+    assert PAPER_AFTER_SIGNAL_CRON == "cron(45 12 ? * TUE-SAT *)"
