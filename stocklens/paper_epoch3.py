@@ -118,7 +118,7 @@ def old_epoch_attested(proposal: dict) -> dict:
 
 
 def pinned_xnys_session() -> dict:
-    """Prove ONLY Nov 6 -> Nov 9 with pinned official schedule context."""
+    """Prove ONLY Nov 11 -> Nov 12 with pinned official schedule context."""
     previous, next_day = PINNED_XNYS_SUCCESSION
     first = date.fromisoformat(next_day)
     previous_date = date.fromisoformat(previous)
@@ -131,7 +131,7 @@ def pinned_xnys_session() -> dict:
            closing.isoformat() == "2026-11-12T21:00:00+00:00",
            "EXCHANGE_SESSION_DST_MISMATCH")
     return {
-        "status":"PINNED_NYSE_NOV09_REGULAR_SESSION_2026_ONLY",
+        "status":"PINNED_NYSE_NOV12_REGULAR_SESSION_2026_ONLY",
         "source":"https://www.nyse.com/trade/hours-calendars",
         "prior_exchange_session":previous,
         "new_exchange_session":next_day,
@@ -172,7 +172,10 @@ def assess_bootstrap_candidate(
                              str(verified_prior_signal.get("sha256", "")))),
            "UNVERIFIED_PREVIOUS_SESSION_FROZEN_SIGNAL")
     archived = read_utc(verified_prior_signal.get("archived_at_utc", ""))
-    ensure(archived < opening and archived < now,
+    # Prior decision must be saved after its actual Nov11 market close and
+    # before Nov12 market open; otherwise the signal is stale/lookahead.
+    prior_close = datetime(2026, 11, 11, 21, 0, tzinfo=UTC)
+    ensure(prior_close <= archived < opening and archived < now,
            "LOOKAHEAD_OR_SAME_SESSION_SIGNAL")
     ensure(isinstance(execution_market, dict) and
            execution_market.get("session") == FIRST_NEW_DAY and
