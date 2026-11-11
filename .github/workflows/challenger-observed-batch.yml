@@ -1,0 +1,34 @@
+name: Research — LRS / Autopilot observed-ETF batch
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - research/backtest_challenger_batch_20261110.mjs
+      - .github/workflows/challenger-observed-batch.yml
+jobs:
+  observed_challengers:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run read-only independent comparison
+        run: |
+          node research/backtest_challenger_batch_20261110.mjs > challenger-results.json
+          python3 - <<'PY'
+          import json
+          x=json.load(open('challenger-results.json'))
+          assert x['frozen_full_period_parity']['passed']
+          assert x['window']['sessions']==3991
+          assert x['source_period']['end']=='2026-10-09'
+          assert not x['broker_orders'] and not x['automatic_promotion'] and not x['prod_modified']
+          print('RESEARCH_PASS: frozen parity and no broker operations')
+          for k,v in x['metrics'].items():
+              print(k,'CAGR',round(v['cagr']*100,2),'MaxDD',round(v['maxdd']*100,2))
+          PY
+      - name: Upload immutable comparison artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: stocklens-challengers-20261110
+          path: challenger-results.json
+          retention-days: 30
