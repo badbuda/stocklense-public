@@ -25,7 +25,9 @@ def service_mocks(*, prod_enabled=False, paper_enabled=True, continuity=True):
                                         for k, v in out.items()]}]}
     def describe_rule(Name):
         idx = int(Name[-1])
-        cron = (mod.SIGNAL_CRON, mod.PAPER_CRON, mod.ORCHESTRATOR_CRON)[idx]
+        cron = ((mod.PROD_SIGNAL_CRON, mod.PROD_PAPER_CRON, mod.ORCHESTRATOR_CRON)
+                if Name.startswith("prod-") else
+                (mod.SIGNAL_CRON, mod.PAPER_CRON, mod.ORCHESTRATOR_CRON))[idx]
         state = ("ENABLED" if idx == 0 or (idx == 1 and paper_enabled) else "DISABLED")
         if Name.startswith("prod-"):
             state = "ENABLED" if prod_enabled and idx == 1 else "DISABLED"
@@ -110,4 +112,24 @@ def test_wrong_account_refused_before_any_stack_lookup():
     svc["cloudformation"] = SimpleNamespace(describe_stacks=lambda **_:
                                             pytest.fail("no AWS reads after wrong account"))
     with pytest.raises(RuntimeError, match="WRONG_AWS_ACCOUNT"):
+        mod.audit(svc, "2026-11-02")
+
+
+def test_schedule_contract_preserves_production_disarm_and_separate_cron_versions():
+    assert mod.SIGNAL_CRON == "cron(30 5,8,11,12 ? * TUE-SAT *)"
+    assert mod.PAPER_CRON == "cron(0 13 ? * TUE-SAT *)"
+    assert mod.PROD_SIGNAL_CRON == "cron(30 2 ? * TUE-SAT *)"
+    assert mod.PROD_PAPER_CRON == "cron(20 3 ? * TUE-SAT *)"
+
+
+def test_unknown_prod_cron_drifts_are_rejected(monkeypatch):
+    svc, _ = service_mocks()
+    original = svc["events"].describe_rule
+    def altered(Name):
+        r = original(Name)
+        if Name == "prod-1":
+            return {**r, "ScheduleExpression": "cron(0 13 ? * TUE-SAT *)"}
+        return r
+    svc["events"].describe_rule = altered
+    with pytest.raises(RuntimeError, match="WRONG_CRON:PROD:CandidatePaperOnlyRuleName"):
         mod.audit(svc, "2026-11-02")
