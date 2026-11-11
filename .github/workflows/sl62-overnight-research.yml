@@ -23,6 +23,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+      - name: Install offline-import dependency
+        run: python -m pip install pandas==2.3.3
       - name: Test frozen path parity, timestamp causality and modeled costs
         run: python -m unittest discover -s tests -p "test_sl62_overnight_session_timing.py" -v
       - name: Reproduce research comparison from immutable price snapshot
