@@ -30,7 +30,7 @@ MISSED = ("2026-11-05", "2026-11-06", "2026-11-09", "2026-11-10", "2026-11-11")
 FIRST_NEW_DAY = "2026-11-12"
 PREVIOUS_SIGNAL_DAY = "2026-11-11"
 
-# Verified 2026-11-11 by independently read-versioned S3 receipts.
+# Original historic SHA pins from prior read-only S3 evidence; this module does not reverify AWS.
 HISTORIC_SHA256 = {
     "paper/book/" + OLD_BOOK + "/genesis.json":
         "355398c0e93b9ea0aeb17f71fb90e4f040156314bff6eaf4fba3f3297c8cd8e1",
