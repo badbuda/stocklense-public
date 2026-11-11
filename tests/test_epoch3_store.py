@@ -4,6 +4,7 @@ from __future__ import annotations
 import io
 import json
 import hashlib
+from datetime import datetime, timezone
 
 import pytest
 
@@ -33,7 +34,8 @@ class FakeS3:
         if Key not in self.objects:
             raise S3Error("404")
         ver,data=self.objects[Key]
-        return {"VersionId":ver,"ContentLength":len(data)}
+        return {"VersionId":ver,"ContentLength":len(data),
+                "LastModified":datetime(2026,11,11,15,30,tzinfo=timezone.utc)}
 
     def get_object(self, *, Bucket, Key, VersionId):
         assert Bucket==m.ST_BUCKET
@@ -129,6 +131,9 @@ def store(*, guard=True, s3=None):
 
 def initialized():
     book,s3,count=store()
+    book.approve_inception(
+        explicit_operator_yes=True,starting_cash_usd=100000.0,
+        now=datetime(2026,11,11,15,0,tzinfo=timezone.utc))
     genesis=book.create_genesis(policy())
     book.record_missing_history()
     return book,s3,count,genesis
@@ -157,7 +162,9 @@ def paper_candidate(book,day="2026-11-12",previous="2026-11-11",
 def test_default_guard_blocks_all_mutating_operations():
     book,s3,count=store(guard=False)
     with pytest.raises(m.EpochStorageBlocked,match="PRIVATE_WRITE_GUARD_NOT_CONNECTED"):
-        book.create_genesis(policy())
+        book.approve_inception(
+            explicit_operator_yes=True,starting_cash_usd=100000.0,
+            now=datetime(2026,11,11,15,0,tzinfo=timezone.utc))
     assert s3.writes==[]
 
 
@@ -172,6 +179,9 @@ def test_st_bucket_only_and_no_legacy_write_keys():
 
 def test_genesis_and_gap_evidence_created_once_and_idempotent():
     book,s3,count=store()
+    book.approve_inception(
+        explicit_operator_yes=True,starting_cash_usd=100000.0,
+        now=datetime(2026,11,11,15,0,tzinfo=timezone.utc))
     first=book.create_genesis(policy())
     repeat=book.create_genesis(policy())
     assert first["status"]=="CREATED"
@@ -180,8 +190,8 @@ def test_genesis_and_gap_evidence_created_once_and_idempotent():
     gap_repeat=book.record_missing_history()
     assert gap["status"]=="CREATED"
     assert gap_repeat["status"]=="ALREADY_IDENTICAL"
-    assert s3.writes==[m.GENESIS,m.GAPS]
-    assert count["called"]==4
+    assert s3.writes==[m.APPROVAL,m.GENESIS,m.GAPS]
+    assert count["called"]==5
     gap_evidence=book.read(m.GAPS).record
     assert gap_evidence["missed_sessions"]==list(epoch.MISSED)
     assert gap_evidence["old_receipt_keys_unchanged"] is True
@@ -208,7 +218,7 @@ def test_existing_genesis_with_different_bytes_must_not_be_overwritten():
     p["candidate_manifest_sha256"]=epoch.sha(p["candidate_manifest"])
     with pytest.raises(m.EpochStorageBlocked,match="IMMUTABLE_CONFLICT"):
         book.create_genesis(p)
-    assert len(s3.writes)==2
+    assert len(s3.writes)==3
 
 
 def test_versioning_required_and_get_exact_version():
@@ -217,6 +227,9 @@ def test_versioning_required_and_get_exact_version():
     with pytest.raises(m.EpochStorageBlocked,match="VERSIONING_REQUIRED"):
         book.create_genesis(policy())
     s3.versioning="Enabled"
+    book.approve_inception(
+        explicit_operator_yes=True,starting_cash_usd=100000.0,
+        now=datetime(2026,11,11,15,0,tzinfo=timezone.utc))
     book.create_genesis(policy())
     read=book.read(m.GENESIS)
     assert read.version=="verified-st-version-1"
@@ -236,7 +249,7 @@ def test_first_forward_session_writes_linked_paper_and_continuity():
     assert c.record["paper_version_id"]==p.version
     assert c.record["previous_record_sha256"]==book.read(m.GENESIS).sha256
     assert result["old_epoch_alarm_preserved"] is True
-    assert len(s3.writes)==4
+    assert len(s3.writes)==5
     assert not any(k.startswith("paper/continuity/") or
                    k.startswith("paper/sessions/") for k in s3.writes)
 
@@ -249,7 +262,7 @@ def test_same_first_paper_retry_does_not_duplicate_objects():
     b=book.commit_modeled_session(
         candidate,next_exchange_session=lambda _:"",independent_engine_verified=True)
     assert a["continuity_sha256"]==b["continuity_sha256"]
-    assert len(s3.writes)==4
+    assert len(s3.writes)==5
 
 
 def test_crash_between_paper_and_continuity_fails_closed_and_resumes_idempotently():
@@ -314,7 +327,7 @@ def test_forged_historic_receipt_and_broker_actions_blocked():
         with pytest.raises(m.EpochStorageBlocked):
             book.commit_modeled_session(candidate,
                 next_exchange_session=lambda _:"",independent_engine_verified=True)
-    assert len(s3.writes)==2
+    assert len(s3.writes)==3
 
 
 def test_wrong_prior_hash_and_unqualified_predecessor_block_write():
@@ -324,7 +337,7 @@ def test_wrong_prior_hash_and_unqualified_predecessor_block_write():
     with pytest.raises(m.EpochStorageBlocked,match="MODEL_RECEIPT_STATE_OR_SHA_MISMATCH"):
         book.commit_modeled_session(cand,
             next_exchange_session=lambda _:"",independent_engine_verified=True)
-    assert len(s3.writes)==2
+    assert len(s3.writes)==3
 
 
 def test_invalid_403_head_never_looks_missing():
@@ -397,3 +410,70 @@ def test_receipt_sha_metadata_mismatch_fails_closed():
     with pytest.raises(m.EpochStorageBlocked, match="RECEIPT_METADATA_SHA_MISMATCH"):
         book.read(m.GENESIS)
     assert s3.writes == []
+
+
+def test_preopen_intent_required_before_any_new_book_genesis():
+    book,s3,_=store()
+    with pytest.raises(m.EpochStorageBlocked,
+                       match="SIGNED_PREOPEN_APPROVAL_MISSING_OR_MISMATCH"):
+        book.create_genesis(policy())
+    assert s3.writes==[]
+
+
+def test_preopen_intent_is_versioned_and_linked_to_genesis():
+    book,s3,_=store()
+    consent=book.approve_inception(
+        explicit_operator_yes=True,starting_cash_usd=100000.0,
+        now=datetime(2026,11,11,15,0,tzinfo=timezone.utc))
+    assert consent["status"]=="PREOPEN_INCEPTION_INTENT_ONLY_NOT_PAPER"
+    assert consent["server_timestamp_verified"] is True
+    assert s3.writes==[m.APPROVAL]
+    first=book.create_genesis(policy())
+    assert first["status"]=="CREATED"
+    source=book.read(m.APPROVAL)
+    genesis=book.read(m.GENESIS)
+    assert genesis.record["preopen_approval_sha256"]==source.sha256
+    assert genesis.record["preopen_approval_version_id"]==source.version
+    assert source.record["new_genesis_created"] is False
+
+
+def test_no_post_market_open_inception_even_when_no_book_exists():
+    book,s3,_=store()
+    with pytest.raises(m.EpochStorageBlocked,
+                       match="RETROACTIVE_INCEPTION_APPROVAL_FORBIDDEN"):
+        book.approve_inception(
+            explicit_operator_yes=True,starting_cash_usd=100000.0,
+            now=datetime(2026,11,12,14,30,tzinfo=timezone.utc))
+    assert s3.writes==[]
+
+
+def test_no_fake_operator_consent_or_changing_starting_cash():
+    book,s3,_=store()
+    with pytest.raises(m.EpochStorageBlocked,
+                       match="OPERATOR_EXPLICIT_YES_REQUIRED"):
+        book.approve_inception(
+            explicit_operator_yes=False,starting_cash_usd=100000.0,
+            now=datetime(2026,11,11,15,0,tzinfo=timezone.utc))
+    with pytest.raises(m.EpochStorageBlocked,
+                       match="FROZEN_MODEL_INITIAL_CASH_MUST_BE_100000_USD"):
+        book.approve_inception(
+            explicit_operator_yes=True,starting_cash_usd=250000.0,
+            now=datetime(2026,11,11,15,0,tzinfo=timezone.utc))
+    assert s3.writes==[]
+
+
+def test_approval_server_timestamp_after_open_blocks_genesis_even_if_client_lied():
+    class LateS3(FakeS3):
+        def head_object(self,*,Bucket,Key):
+            data=super().head_object(Bucket=Bucket,Key=Key)
+            if Key==m.APPROVAL:
+                data["LastModified"]=datetime(2026,11,12,14,31,tzinfo=timezone.utc)
+            return data
+    book,s3,_=store(s3=LateS3())
+    with pytest.raises(m.EpochStorageBlocked,match="APPROVAL_SERVER_TIMESTAMP_AFTER_OPEN"):
+        book.approve_inception(
+            explicit_operator_yes=True,starting_cash_usd=100000.0,
+            now=datetime(2026,11,11,15,0,tzinfo=timezone.utc))
+    assert s3.writes==[m.APPROVAL]  # immutable, but too late; never valid Genesis
+    with pytest.raises(m.EpochStorageBlocked,match="APPROVAL_S3_TIMESTAMP_UNVERIFIED_OR_LATE"):
+        book.create_genesis(policy())
