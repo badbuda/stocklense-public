@@ -545,7 +545,7 @@
     "workbench_selfcheck.py": "4f17be6d56ac7d3cc3637e1ef2b2af3ed9d880a8",
     "yahoo_eod_scorecard.py": "137465f3ff4d9a2b8c164bf4321480c0ea0869fd",
     "yahoo_long_history.py": "e7e51b5c2f5697da5d583316638b98ec13e6114c",
-    "stocklens/paper_epoch3.py": "712161c88b028b072cc5f3a559e6ee1722041938",
+    "stocklens/paper_epoch3.py": "90c675ad0f5e1ff3b095eb04332e10c698ec710c",
     "stocklens/epoch3_store.py": "c2bd01c3f3fa5cf2a1378940c6c156654ec484d8",
     "tests/test_epoch3_store.py": "1920b443527f6c9b143c40eaa009e6b4a27df178",
     "tests/test_paper_epoch3_forward.py": "c829e86185f68fc1d9e792a8888aa9b749f94dd9",
