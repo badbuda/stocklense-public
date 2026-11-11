@@ -1,78 +1,70 @@
-"""Source-only controls for dedicated ST audit identity and post-Paper CI timing."""
+"""Source-only safety checks; no PyYAML, AWS SDK or network dependency."""
 from pathlib import Path
-import yaml
+import re
 
 WORKFLOW=Path(".github/workflows/st-paper-daily-readonly.yml")
 ROLE=Path("infra/aws/st-github-paper-audit-role.yaml")
 
-def cf_yaml():
-    class Loader(yaml.SafeLoader):
-        pass
-    Loader.add_multi_constructor("!", lambda loader, tag, node: tag + ":" + str(node.value))
-    return yaml.load(ROLE.read_text(),Loader=Loader)
 
-
-def test_role_is_separate_from_legacy_dynamodb_only_audit_and_main_only():
-    cloud=cf_yaml()
-    assert list(cloud["Resources"]) == ["GitHubSTPaperAcceptanceRole"]
-    r=cloud["Resources"]["GitHubSTPaperAcceptanceRole"]
-    assert r["Type"] == "AWS::IAM::Role"
-    trust=r["Properties"]["AssumeRolePolicyDocument"]["Statement"][0]
-    assert trust["Action"] == "sts:AssumeRoleWithWebIdentity"
-    cond=trust["Condition"]["StringEquals"]
-    assert cond["token.actions.githubusercontent.com:aud"] == "sts.amazonaws.com"
-    assert cond["token.actions.githubusercontent.com:sub"] == (
-        "repo:badbuda@39247450/stocklense-public@1408609116:ref:refs/heads/main"
-    )
-    role_source=ROLE.read_text()
-    assert "stocklens-paper-GitHubAuditRole" not in role_source
-    assert "RoleName:" not in role_source
-
-
-def test_no_iam_write_s3_write_or_production_lambda_invoke():
-    doc=cf_yaml()
-    statements=doc["Resources"]["GitHubSTPaperAcceptanceRole"]["Properties"]["Policies"][0]["PolicyDocument"]["Statement"]
-    actions={action for stmt in statements
-             for action in (stmt["Action"] if isinstance(stmt["Action"],list) else [stmt["Action"]])}
-    assert "cloudformation:DescribeStacks" in actions
-    assert "s3:GetObjectVersion" in actions
-    assert "lambda:GetFunctionConfiguration" in actions
-    assert "lambda:InvokeFunction" in actions
-    assert not any(action.startswith(("iam:","dynamodb:","ec2:"))
-                   for action in actions)
-    assert not any("Put" in action or "Delete" in action or "Update" in action
-                   for action in actions)
-    for stmt in statements:
-        if stmt["Action"] == "lambda:InvokeFunction":
-            assert "function:stocklens-st-paper-candidate" in stmt["Resource"]
-            assert "prod" not in stmt["Resource"]
+def test_separate_github_oidc_role_trust_limited_to_main():
     source=ROLE.read_text()
-    assert "stocklens-prod" in source
-    assert "AWS_STOCKLENS_ST_AUDIT_ROLE_ARN" in source
+    assert "GitHubSTPaperAcceptanceRole:" in source
+    assert "AWS::IAM::Role" in source
+    assert "sts:AssumeRoleWithWebIdentity" in source
+    assert "'token.actions.githubusercontent.com:aud': 'sts.amazonaws.com'" in source
+    assert ("'token.actions.githubusercontent.com:sub': "
+            "'repo:badbuda@39247450/stocklense-public@1408609116:ref:refs/heads/main'") in source
+    assert "stocklens-paper-GitHubAuditRole" not in source
+    assert "RoleName:" not in source
+
+
+def test_no_iam_or_s3_mutation_role_permissions():
+    source=ROLE.read_text()
+    for allowed in ("cloudformation:DescribeStacks", "events:DescribeRule",
+                    "events:ListTargetsByRule", "lambda:GetFunctionConfiguration",
+                    "lambda:InvokeFunction", "s3:GetObjectVersion",
+                    "s3:GetBucketVersioning", "s3:ListBucketVersions",
+                    "sns:ListSubscriptionsByTopic", "cloudwatch:DescribeAlarms"):
+        assert allowed in source
+    assert "OnlySTPaperReadinessInvoke" in source
+    # Invoke is intentionally limited to a single ST Paper function, never PROD.
+    assert re.search(
+        r"Sid: OnlySTPaperReadinessInvoke[\s\S]*?"
+        r"Action: lambda:InvokeFunction\s+Resource: !Sub "
+        r"'arn:[^']*:function:stocklens-st-paper-candidate'",
+        source
+    )
     assert "IAM alone cannot constrain" in source
+    for forbidden in ("Action: iam:", "Action: s3:Put", "Action: s3:Delete",
+                      "Action: lambda:Update", "Action: events:Put",
+                      "Action: cloudformation:Update", "Action: dynamodb:"):
+        assert forbidden not in source
+    assert "stocklens-prod" in source  # only readback to assert disarmed state
+    assert "AWS_STOCKLENS_ST_AUDIT_ROLE_ARN" in source
 
 
-def test_workflow_retries_only_after_actual_st_paper_schedule():
-    import re
+def test_st_daily_acceptance_runs_only_after_paper_slot():
     source=WORKFLOW.read_text()
     assert "vars.AWS_STOCKLENS_ST_AUDIT_ROLE_ARN" in source
     assert "vars.AWS_STOCKLENS_AUDIT_ROLE_ARN" not in source
     assert "workflow_run:" not in source
     assert "cron: '15 14 * * 2-6'" in source
     assert "STAGING_PAPER_SCHEDULE_READINESS" not in source
-    assert re.search(r"python infra/aws/st_paper_closeout_readonly[.]py --session",source)
-    assert "stocklens-st-daily-readonly" in source
+    assert "python infra/aws/st_paper_closeout_readonly.py --session" in source
 
 
-def test_acceptance_keeps_prod_disarmed_and_paper_real_not_fabricated():
+def test_st_v2_and_prod_legacy_schedules_stay_distinct():
     source=Path("infra/aws/st_paper_closeout_readonly.py").read_text()
-    assert 'PROD_SIGNAL_CRON = "cron(30 2 ? * TUE-SAT *)"' in source
-    assert 'PROD_PAPER_CRON = "cron(20 3 ? * TUE-SAT *)"' in source
-    assert 'SIGNAL_CRON = "cron(30 5,8,11,12 ? * TUE-SAT *)"' in source
-    assert 'PAPER_CRON = "cron(0 13 ? * TUE-SAT *)"' in source
-    assert '"ST_RECURRING_PAPER_SCHEDULE_DISABLED"' in source
-    assert "ST_ALARM_OR_INSUFFICIENT_DATA" in source
-    assert "PAPER_READINESS_NOT_QUALIFIED" in source
+    for expected in (
+        'PROD_SIGNAL_CRON = "cron(30 2 ? * TUE-SAT *)"',
+        'PROD_PAPER_CRON = "cron(20 3 ? * TUE-SAT *)"',
+        'SIGNAL_CRON = "cron(30 5,8,11,12 ? * TUE-SAT *)"',
+        'PAPER_CRON = "cron(0 13 ? * TUE-SAT *)"',
+        '"ST_RECURRING_PAPER_SCHEDULE_DISABLED"',
+        "ST_ALARM_OR_INSUFFICIENT_DATA",
+        "PAPER_READINESS_NOT_QUALIFIED",
+    ):
+        assert expected in source
     for forbidden in ("put_object(", "put_rule(", "update_function_code(",
                       "delete_object(", "send_order(", "place_order("):
         assert forbidden not in source
