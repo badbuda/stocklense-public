@@ -548,6 +548,8 @@
     "stocklens/paper_epoch3.py": "712161c88b028b072cc5f3a559e6ee1722041938",
     "stocklens/epoch3_store.py": "c2bd01c3f3fa5cf2a1378940c6c156654ec484d8",
     "tests/test_epoch3_store.py": "1920b443527f6c9b143c40eaa009e6b4a27df178",
-    "tests/test_paper_epoch3_forward.py": "c829e86185f68fc1d9e792a8888aa9b749f94dd9"
+    "tests/test_paper_epoch3_forward.py": "c829e86185f68fc1d9e792a8888aa9b749f94dd9",
+    "infra/aws/sl56_epoch3_readonly_preflight.py": "b1d498ade24ea4ce0fdf264ec3b771f05b1192c7",
+    "tests/test_sl56_epoch3_readonly_preflight.py": "9da803a3de9c02fae231fba3a571ac46eff24c0e"
   }
 }
