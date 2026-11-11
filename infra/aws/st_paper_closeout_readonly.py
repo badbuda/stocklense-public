@@ -24,9 +24,13 @@ BUCKET = "stocklens-st-candidatedata-6jj7i9fxjmfr"
 PROD_BUCKET = "stocklens-prod-candidatedata-c3yge4ymwb7u"
 BOOK = "NEW_AWS_INDEPENDENT_STAGING_BOOK"
 GENESIS = "2026-10-30"
-SIGNAL_CRON = "cron(30 2 ? * TUE-SAT *)"
-PAPER_CRON = "cron(20 3 ? * TUE-SAT *)"
+# ST guarded release (2026-11-10) uses pre-open retries and delayed Paper.
+# PROD must remain disabled with its original CloudFormation cron definitions.
+SIGNAL_CRON = "cron(30 5,8,11,12 ? * TUE-SAT *)"
+PAPER_CRON = "cron(0 13 ? * TUE-SAT *)"
 ORCHESTRATOR_CRON = "cron(10 0 ? * TUE-SAT *)"
+PROD_SIGNAL_CRON = "cron(30 2 ? * TUE-SAT *)"
+PROD_PAPER_CRON = "cron(20 3 ? * TUE-SAT *)"
 SHA = re.compile(r"^[0-9a-f]{64}$")
 CONTINUITY = {"ON_TIME_QUALIFIED", "LATE_WITH_CONTEMPORANEOUS_EVIDENCE"}
 
@@ -90,11 +94,15 @@ def audit(services, session):
             "ST_PROD_BUCKET_MISMATCH")
     require(s3.get_bucket_versioning(Bucket=BUCKET).get("Status") == "Enabled",
             "ST_S3_VERSIONING_OFF")
-    expected = {"CandidateSignalOnlyRuleName": SIGNAL_CRON,
-                "CandidatePaperOnlyRuleName": PAPER_CRON,
-                "CandidateOrchestratorRuleName": ORCHESTRATOR_CRON}
+    expected_st = {"CandidateSignalOnlyRuleName": SIGNAL_CRON,
+                   "CandidatePaperOnlyRuleName": PAPER_CRON,
+                   "CandidateOrchestratorRuleName": ORCHESTRATOR_CRON}
+    expected_prod = {"CandidateSignalOnlyRuleName": PROD_SIGNAL_CRON,
+                     "CandidatePaperOnlyRuleName": PROD_PAPER_CRON,
+                     "CandidateOrchestratorRuleName": ORCHESTRATOR_CRON}
     state = {}
-    for label, outputs in (("ST", st), ("PROD", prod)):
+    for label, outputs, expected in (("ST", st, expected_st),
+                                     ("PROD", prod, expected_prod)):
         for key, cron in expected.items():
             rule = ev.describe_rule(Name=outputs[key])
             require(rule.get("ScheduleExpression") == cron, "WRONG_CRON:" + label + ":" + key)
