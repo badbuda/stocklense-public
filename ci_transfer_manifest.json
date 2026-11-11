@@ -550,6 +550,8 @@
     "tests/test_epoch3_store.py": "1920b443527f6c9b143c40eaa009e6b4a27df178",
     "tests/test_paper_epoch3_forward.py": "c829e86185f68fc1d9e792a8888aa9b749f94dd9",
     "infra/aws/sl56_epoch3_readonly_preflight.py": "b1d498ade24ea4ce0fdf264ec3b771f05b1192c7",
-    "tests/test_sl56_epoch3_readonly_preflight.py": "9da803a3de9c02fae231fba3a571ac46eff24c0e"
+    "tests/test_sl56_epoch3_readonly_preflight.py": "9da803a3de9c02fae231fba3a571ac46eff24c0e",
+    "infra/aws/sl56_old_paper_retry_containment.py": "86aa7130cc857bb48bda47c302fdf39d6444fd17",
+    "tests/test_sl56_old_paper_retry_containment.py": "0582c8cedb2e3a6a190cfcf652683b40e05fe855"
   }
 }
