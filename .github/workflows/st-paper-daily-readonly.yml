@@ -10,6 +10,7 @@ on:
     paths:
       - '.github/workflows/st-paper-daily-readonly.yml'
       - 'infra/aws/st_paper_closeout_readonly.py'
+      - 'infra/aws/st-github-paper-audit-role.yaml'
   workflow_run:
     workflows: ["StockLens 8.0 Shadow"]
     types: [completed]
@@ -35,18 +36,18 @@ jobs:
       - name: Verify configured AWS read-only identity
         shell: bash
         env:
-          ROLE_ARN: ${{ vars.AWS_STOCKLENS_AUDIT_ROLE_ARN }}
+          ROLE_ARN: ${{ vars.AWS_STOCKLENS_ST_AUDIT_ROLE_ARN }}
         run: |
           set -euo pipefail
           test -n "$ROLE_ARN" || {
-            echo "::error::Read-only AWS audit role not configured; ST NOT VERIFIED."
+            echo "::error::Dedicated ST acceptance AWS role not configured; ST NOT VERIFIED. Do not use the legacy DynamoDB-only audit role."
             exit 1
           }
       - name: Assume existing read-only AWS audit role via OIDC
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: eu-central-1
-          role-to-assume: ${{ vars.AWS_STOCKLENS_AUDIT_ROLE_ARN }}
+          role-to-assume: ${{ vars.AWS_STOCKLENS_ST_AUDIT_ROLE_ARN }}
           role-session-name: stocklens-st-daily-readonly
       - name: Check actual latest completed Shadow date against live ST Paper
         shell: bash
