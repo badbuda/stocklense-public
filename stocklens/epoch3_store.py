@@ -15,6 +15,7 @@ from __future__ import annotations
 import hashlib
 import json
 import re
+from datetime import datetime, timezone
 from dataclasses import dataclass
 from typing import Any, Callable
 
@@ -23,6 +24,7 @@ from stocklens import paper_epoch3 as epoch
 ST_BUCKET = "stocklens-st-candidatedata-6jj7i9fxjmfr"
 PREFIX = epoch.NEW_PREFIX
 GENESIS = PREFIX + "genesis.json"
+APPROVAL = PREFIX + "preopen-inception-approval.json"
 GAPS = PREFIX + "incidents/missing-2026-11-05_2026-11-11.json"
 MAX_BYTES = 1_000_000
 DAY = re.compile(r"20[0-9]{2}-[0-9]{2}-[0-9]{2}\Z")
@@ -164,6 +166,50 @@ class Epoch3Store:
         return {"key":key, "sha256":digest(raw),
                 "status":"CREATED", "versioned":True}
 
+    def approve_inception(self, *, explicit_operator_yes: bool,
+                          starting_cash_usd: float, now: datetime) -> dict:
+        """One immutable simulated-capital consent, required BEFORE NYSE open.
+
+        This is NOT a Paper receipt, book Genesis, real trade, or replacement for
+        a new independently reviewed AWS model/monitoring integration.
+        """
+        require(explicit_operator_yes is True, "OPERATOR_EXPLICIT_YES_REQUIRED")
+        require(type(starting_cash_usd) in (int,float) and
+                float(starting_cash_usd)==100000.0,
+                "FROZEN_MODEL_INITIAL_CASH_MUST_BE_100000_USD")
+        require(isinstance(now,datetime) and now.tzinfo is not None and
+                now.astimezone(timezone.utc) <
+                datetime(2026,11,12,14,30,tzinfo=timezone.utc),
+                "RETROACTIVE_INCEPTION_APPROVAL_FORBIDDEN")
+        require(self.read(GENESIS) is None,
+                "GENESIS_ALREADY_EXISTS_NO_FURTHER_APPROVAL")
+        result=self._create(APPROVAL, {
+            "schema":"stocklens-epoch3-preopen-inception-approval-v1",
+            "book":epoch.NEW_BOOK,
+            "first_session":epoch.FIRST_NEW_DAY,
+            "old_book":epoch.OLD_BOOK,
+            "cash_usd":100000.0,
+            "starting_shares":{"QQQ":0,"TQQQ":0},
+            "old_nav_transferred":False,
+            "mode":"SHADOW_ONLY_NO_BROKER_ACTIONS",
+            "real_broker_orders":False,
+            "new_genesis_created":False,
+        })
+        # S3's own timestamp, never caller clock, decides pre-open legitimacy.
+        approved=self.read(APPROVAL)
+        require(approved is not None and approved.sha256==result["sha256"],
+                "VERSIONED_APPROVAL_REVERIFY_FAILED")
+        meta=self.s3.head_object(Bucket=self.bucket,Key=APPROVAL)
+        when=meta.get("LastModified")
+        require(meta.get("VersionId")==approved.version and
+                isinstance(when,datetime) and when.tzinfo is not None and
+                when.astimezone(timezone.utc) <
+                datetime(2026,11,12,14,30,tzinfo=timezone.utc),
+                "APPROVAL_SERVER_TIMESTAMP_AFTER_OPEN_OR_MISSING")
+        return {**result,"status":"PREOPEN_INCEPTION_INTENT_ONLY_NOT_PAPER",
+                "server_timestamp_verified":True,
+                "book_genesis_created":False,"broker_orders":False}
+
     def create_genesis(self, policy_result: dict) -> dict:
         require(isinstance(policy_result, dict) and
                 policy_result.get("status") ==
@@ -186,7 +232,28 @@ class Epoch3Store:
                 manifest.get("broker_actions_authorized") is False and
                 manifest.get("original_book_anchors") == epoch.HISTORIC_SHA256,
                 "INCORRECT_OR_MUTATED_GENESIS_MANIFEST")
+        approval=self.read(APPROVAL)
+        require(approval is not None and
+                approval.record.get("schema")==
+                "stocklens-epoch3-preopen-inception-approval-v1" and
+                approval.record.get("book")==epoch.NEW_BOOK and
+                approval.record.get("first_session")==epoch.FIRST_NEW_DAY and
+                approval.record.get("cash_usd")==manifest.get("starting_cash_usd") and
+                approval.record.get("starting_shares")=={"QQQ":0,"TQQQ":0} and
+                approval.record.get("old_nav_transferred") is False and
+                approval.record.get("real_broker_orders") is False,
+                "SIGNED_PREOPEN_APPROVAL_MISSING_OR_MISMATCH")
+        meta=self.s3.head_object(Bucket=self.bucket,Key=APPROVAL)
+        when=meta.get("LastModified")
+        require(meta.get("VersionId")==approval.version and
+                isinstance(when,datetime) and when.tzinfo is not None and
+                when.astimezone(timezone.utc) <
+                datetime(2026,11,12,14,30,tzinfo=timezone.utc),
+                "APPROVAL_S3_TIMESTAMP_UNVERIFIED_OR_LATE")
         return self._create(GENESIS,{
+            "preopen_approval_key":APPROVAL,
+            "preopen_approval_version_id":approval.version,
+            "preopen_approval_sha256":approval.sha256,
             "schema":"stocklens-epoch3-genesis-v1",
             "book":epoch.NEW_BOOK,
             "manifest":manifest,
