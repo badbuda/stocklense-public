@@ -214,7 +214,9 @@ def test_genesis_rejects_modified_old_sha_and_invalid_epoch_contract():
 def test_existing_genesis_with_different_bytes_must_not_be_overwritten():
     book,s3,_,_=initialized()
     p=policy()
-    p["candidate_manifest"]["starting_cash_usd"]=200000
+    # Keep operator-approved cash unchanged but alter a model input, proving
+    # that the immutable new-book Genesis cannot be silently rewritten.
+    p["candidate_manifest"]["market_minute_bar_counts"]["QQQ"]=388
     p["candidate_manifest_sha256"]=epoch.sha(p["candidate_manifest"])
     with pytest.raises(m.EpochStorageBlocked,match="IMMUTABLE_CONFLICT"):
         book.create_genesis(p)
@@ -232,7 +234,7 @@ def test_versioning_required_and_get_exact_version():
         now=datetime(2026,11,11,15,0,tzinfo=timezone.utc))
     book.create_genesis(policy())
     read=book.read(m.GENESIS)
-    assert read.version=="verified-st-version-1"
+    assert read.version=="verified-st-version-2"
     assert read.sha256==hashlib.sha256(read.raw).hexdigest()
 
 
