@@ -2,15 +2,15 @@
   "schema_version": 2,
   "mode": "OBSERVATIONAL_ONLY",
   "affects_frozen_signal": false,
-  "asof_date": "2026-11-06",
+  "asof_date": "2026-11-10",
   "vix": {
-    "value": 25.639999389648438,
-    "regime": "ELEVATED",
+    "value": 19.459999084472656,
+    "regime": "NORMAL",
     "source": "Yahoo Finance ^VIX",
     "status": "AVAILABLE"
   },
   "fear_greed": null,
-  "generated_at_utc": "2026-11-07T03:04:01.399185+00:00",
+  "generated_at_utc": "2026-11-11T02:59:45.545440+00:00",
   "notes": [
     "Context is observational only.",
     "Missing context never changes or blocks StockLens 8.0.",

@@ -3,160 +3,160 @@
   "status": "PASS",
   "kind": "OBSERVED_ETF_HISTORICAL_PAIRED_RESAMPLING",
   "source_evidence_class": "TRADEABLE_ETF_HISTORICAL_PRICE_EXECUTION_PROXY",
-  "source_price_sha256": "3dd52a4198ce2b9e4d7a863fd65362213d590b7c18b4e8d19f89d808b42d2354",
-  "full_nav_sha256": "1dd3f4971d4ce45d2f179ad526a6e7ac62fa00b70ecbf47007667e2423aeedf0",
+  "source_price_sha256": "c995642c1bc69f5b5cd2dd1ddffaf67feff164346c565a6451ab08e693970eba",
+  "full_nav_sha256": "cd4e8d7ce5ee04c928d356250451d669f347a835a0cec15249529b0095f6fc0e",
   "period": {
     "start": "2010-02-11",
-    "end": "2026-11-06",
-    "sessions": 4211
+    "end": "2026-11-10",
+    "sessions": 4213
   },
-  "daily_relative_log_observations": 4211,
-  "original_relative_ending_wealth_ratio": 10.059985854706023,
-  "original_annualized_relative_log_growth": 0.14815019191880135,
-  "best_single_day_relative_log_return": 0.08683165644354729,
-  "worst_single_day_relative_log_return": -0.138790911589126,
+  "daily_relative_log_observations": 4213,
+  "original_relative_ending_wealth_ratio": 10.121274071479041,
+  "original_annualized_relative_log_growth": 0.14849206938212833,
+  "best_single_day_relative_log_return": 0.08683232626173787,
+  "worst_single_day_relative_log_return": -0.13879134099245344,
   "paired_moving_block_bootstrap": {
     "21": {
       "block_sessions": 21,
       "replicates": 600,
       "annualized_relative_log_growth_pctiles": {
-        "p05": 0.01601561578668429,
-        "p50": 0.1498334595006744,
-        "p95": 0.2928549659671542
+        "p05": 0.0032037780350176372,
+        "p50": 0.15147195698949453,
+        "p95": 0.2909263671390626
       },
-      "fraction_resamples_above_zero_NOT_P_VALUE": 0.9716666666666667,
+      "fraction_resamples_above_zero_NOT_P_VALUE": 0.9533333333333334,
       "scope": "IN_SAMPLE_PAIRED_BLOCK_RESAMPLING_NOT_HYPOTHESIS_TEST"
     },
     "63": {
       "block_sessions": 63,
       "replicates": 600,
       "annualized_relative_log_growth_pctiles": {
-        "p05": 0.020972572402882278,
-        "p50": 0.1549493344762996,
-        "p95": 0.28761522391104694
+        "p05": 0.022740569205406812,
+        "p50": 0.151585842513968,
+        "p95": 0.2827960849850691
       },
-      "fraction_resamples_above_zero_NOT_P_VALUE": 0.9766666666666667,
+      "fraction_resamples_above_zero_NOT_P_VALUE": 0.97,
       "scope": "IN_SAMPLE_PAIRED_BLOCK_RESAMPLING_NOT_HYPOTHESIS_TEST"
     },
     "126": {
       "block_sessions": 126,
       "replicates": 600,
       "annualized_relative_log_growth_pctiles": {
-        "p05": 0.04203126303790959,
-        "p50": 0.16258508575872554,
-        "p95": 0.2994637588468561
+        "p05": 0.04277931651807463,
+        "p50": 0.163713863554035,
+        "p95": 0.2995498517288465
       },
-      "fraction_resamples_above_zero_NOT_P_VALUE": 0.9933333333333333,
+      "fraction_resamples_above_zero_NOT_P_VALUE": 0.9866666666666667,
       "scope": "IN_SAMPLE_PAIRED_BLOCK_RESAMPLING_NOT_HYPOTHESIS_TEST"
     }
   },
   "leave_one_calendar_year_out": [
     {
       "excluded_calendar_year": 2010,
-      "remaining_sessions": 3986,
-      "annualized_relative_log_growth": 0.1470889942845581
+      "remaining_sessions": 3988,
+      "annualized_relative_log_growth": 0.14745034433248436
     },
     {
       "excluded_calendar_year": 2011,
-      "remaining_sessions": 3959,
-      "annualized_relative_log_growth": 0.18192333025771898
+      "remaining_sessions": 3961,
+      "annualized_relative_log_growth": 0.18228049030685814
     },
     {
       "excluded_calendar_year": 2012,
-      "remaining_sessions": 3961,
-      "annualized_relative_log_growth": 0.14902643066650895
+      "remaining_sessions": 3963,
+      "annualized_relative_log_growth": 0.14938966768671558
     },
     {
       "excluded_calendar_year": 2013,
-      "remaining_sessions": 3959,
-      "annualized_relative_log_growth": 0.12182892024027932
+      "remaining_sessions": 3961,
+      "annualized_relative_log_growth": 0.12219747536629431
     },
     {
       "excluded_calendar_year": 2014,
-      "remaining_sessions": 3959,
-      "annualized_relative_log_growth": 0.13826426879990317
+      "remaining_sessions": 3961,
+      "annualized_relative_log_growth": 0.1386297790185499
     },
     {
       "excluded_calendar_year": 2015,
-      "remaining_sessions": 3959,
-      "annualized_relative_log_growth": 0.16551855952795622
+      "remaining_sessions": 3961,
+      "annualized_relative_log_growth": 0.1658788004915164
     },
     {
       "excluded_calendar_year": 2016,
-      "remaining_sessions": 3959,
-      "annualized_relative_log_growth": 0.16915370628408072
+      "remaining_sessions": 3961,
+      "annualized_relative_log_growth": 0.16951320618596524
     },
     {
       "excluded_calendar_year": 2017,
-      "remaining_sessions": 3960,
-      "annualized_relative_log_growth": 0.12258321401516163
+      "remaining_sessions": 3962,
+      "annualized_relative_log_growth": 0.12295135974147074
     },
     {
       "excluded_calendar_year": 2018,
-      "remaining_sessions": 3960,
-      "annualized_relative_log_growth": 0.16174072776262483
+      "remaining_sessions": 3962,
+      "annualized_relative_log_growth": 0.16210166475099094
     },
     {
       "excluded_calendar_year": 2019,
-      "remaining_sessions": 3959,
-      "annualized_relative_log_growth": 0.14801744851808968
+      "remaining_sessions": 3961,
+      "annualized_relative_log_growth": 0.14838110333542257
     },
     {
       "excluded_calendar_year": 2020,
-      "remaining_sessions": 3958,
-      "annualized_relative_log_growth": 0.12592317832116695
+      "remaining_sessions": 3960,
+      "annualized_relative_log_growth": 0.1262906630964658
     },
     {
       "excluded_calendar_year": 2021,
-      "remaining_sessions": 3959,
-      "annualized_relative_log_growth": 0.13494287890696335
+      "remaining_sessions": 3961,
+      "annualized_relative_log_growth": 0.13530905539003418
     },
     {
       "excluded_calendar_year": 2022,
-      "remaining_sessions": 3960,
-      "annualized_relative_log_growth": 0.17243545317056805
+      "remaining_sessions": 3962,
+      "annualized_relative_log_growth": 0.17279435994387102
     },
     {
       "excluded_calendar_year": 2023,
-      "remaining_sessions": 3961,
-      "annualized_relative_log_growth": 0.12358894499461014
+      "remaining_sessions": 3963,
+      "annualized_relative_log_growth": 0.12395695730985518
     },
     {
       "excluded_calendar_year": 2024,
-      "remaining_sessions": 3959,
-      "annualized_relative_log_growth": 0.14150685837206473
+      "remaining_sessions": 3961,
+      "annualized_relative_log_growth": 0.14187174521895385
     },
     {
       "excluded_calendar_year": 2025,
-      "remaining_sessions": 3961,
-      "annualized_relative_log_growth": 0.15370419464269128
+      "remaining_sessions": 3963,
+      "annualized_relative_log_growth": 0.15406659338617437
     },
     {
       "excluded_calendar_year": 2026,
       "remaining_sessions": 3997,
-      "annualized_relative_log_growth": 0.16364279763675213
+      "annualized_relative_log_growth": 0.16364282840886493
     }
   ],
   "positive_day_concentration_sensitivity": {
     "1": {
-      "relative_growth_without_top_positive_sessions": 9.22331116972217,
-      "remaining_ann_relative_log_growth": 0.14219954452888392
+      "relative_growth_without_top_positive_sessions": 9.279495917283354,
+      "remaining_ann_relative_log_growth": 0.14254242273648837
     },
     "5": {
-      "relative_growth_without_top_positive_sessions": 6.840657368328882,
-      "remaining_ann_relative_log_growth": 0.12195382478602282
+      "relative_growth_without_top_positive_sessions": 6.882317985504709,
+      "remaining_ann_relative_log_growth": 0.12230005663883654
     },
     "10": {
-      "relative_growth_without_top_positive_sessions": 5.083233281815909,
-      "remaining_ann_relative_log_growth": 0.10219320037532323
+      "relative_growth_without_top_positive_sessions": 5.11418346018324,
+      "remaining_ann_relative_log_growth": 0.10254253847689339
     },
     "21": {
-      "relative_growth_without_top_positive_sessions": 2.7898912421511226,
-      "remaining_ann_relative_log_growth": 0.06332346657988057
+      "relative_growth_without_top_positive_sessions": 2.8068808551519973,
+      "remaining_ann_relative_log_growth": 0.06367867872426802
     },
     "63": {
-      "relative_growth_without_top_positive_sessions": 0.39357760399669234,
-      "remaining_ann_relative_log_growth": -0.05427407484822806
+      "relative_growth_without_top_positive_sessions": 0.39597424987071084,
+      "remaining_ann_relative_log_growth": -0.05390552756361211
     }
   },
   "synthetic_leverage_used": false,

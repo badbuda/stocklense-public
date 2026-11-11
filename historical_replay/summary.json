@@ -2,26 +2,26 @@
   "kind": "HISTORICAL_REPLAY_NOT_PROSPECTIVE",
   "frozen_model": "StockLens 8.0",
   "sessions": 252,
-  "first_date": "2025-11-06",
-  "last_date": "2026-11-06",
+  "first_date": "2025-11-10",
+  "last_date": "2026-11-10",
   "state_transitions": 5,
   "defense_sessions": 0,
   "level_counts": {
-    "1": 14,
+    "1": 16,
     "2": 15,
-    "3": 223
+    "3": 221
   },
-  "dataset_sha256": "c47f194552ca4281f0fd2556c6f8d3c1e1e95fb33f579bcaf0302c8b4c4dea96",
+  "dataset_sha256": "f4069eefec5e668bf5cb8b986cbc38fbb457dd959da27cf676f6eb4b1294d61d",
   "source_audit": {
     "source": "YFINANCE_QQQ_AUTO_ADJUSTED",
-    "raw_rows": 4743,
-    "completed_rows": 4743,
+    "raw_rows": 4745,
+    "completed_rows": 4745,
     "feature_window_sessions": 253,
-    "feature_window_sha256": "8601fd3d09b2d34a13bad0aafbff9e738a026c8bc2cdbca4191e1a821df871c6",
-    "raw_last_date": "2026-11-06",
-    "last_completed_date": "2026-11-06",
+    "feature_window_sha256": "836c76773410be694019ada98865f335f2c8bf132ec8e528941f0d9598d005b8",
+    "raw_last_date": "2026-11-10",
+    "last_completed_date": "2026-11-10",
     "dropped_incomplete_current_session": false,
-    "ny_time_at_validation": "2026-11-06T22:04:00.215530-05:00",
+    "ny_time_at_validation": "2026-11-10T21:59:44.507933-05:00",
     "safe_after_ny_time": "18:00"
   }
 }

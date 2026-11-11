@@ -1,6 +1,6 @@
 {
   "status": "SAFE_PAPER_AUTOMATION",
-  "generated_at_utc": "2026-11-07T03:04:07.137840+00:00",
+  "generated_at_utc": "2026-11-11T02:59:50.083066+00:00",
   "broker_mode": "PAPER",
   "live_trading_enabled": false,
   "checks": {
@@ -11,7 +11,7 @@
     "broker_not_authorized": true
   },
   "execution_required": false,
-  "signal_date": "2026-11-06",
+  "signal_date": "2026-11-10",
   "policy": {
     "reductions": "09:31 ET reference open",
     "additions": "09:32 ET reference open",

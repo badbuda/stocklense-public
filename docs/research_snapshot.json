@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "source_git_sha": "cae83ac8b028188c827b00c3d8a6268d755df18e",
+  "source_git_sha": "d6003dc42dbcb1ac7234c94aad96fd6dc1651c39",
   "milestone": "M2_SHADOW_GREEN_537_TESTS_PROVE_OR_BREAK_PUBLISHED",
   "experiments": [
     {
@@ -80,7 +80,7 @@
       "reason": "Research evidence is not authorization for promotion",
       "prospective": {
         "inception_date": "2026-09-26",
-        "sessions": 30,
+        "sessions": 32,
         "status": "ACTIVE_RESEARCH_ONLY"
       }
     }
