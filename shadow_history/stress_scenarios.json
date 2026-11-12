@@ -1,28 +1,28 @@
 {
   "mode": "ILLUSTRATIVE_LINEAR_STRESS_NOT_FORECAST",
-  "level": 1,
-  "target_leverage": 1.25,
+  "level": 2,
+  "target_leverage": 2.0,
   "invested_fraction": 0.985,
   "scenarios": [
     {
       "qqq_shock": -0.05,
-      "linearized_portfolio_impact": -0.0615625,
-      "ending_value_per_100": 93.84375
+      "linearized_portfolio_impact": -0.0985,
+      "ending_value_per_100": 90.14999999999999
     },
     {
       "qqq_shock": -0.1,
-      "linearized_portfolio_impact": -0.123125,
-      "ending_value_per_100": 87.6875
+      "linearized_portfolio_impact": -0.197,
+      "ending_value_per_100": 80.3
     },
     {
       "qqq_shock": -0.2,
-      "linearized_portfolio_impact": -0.24625,
-      "ending_value_per_100": 75.375
+      "linearized_portfolio_impact": -0.394,
+      "ending_value_per_100": 60.6
     },
     {
       "qqq_shock": -0.3,
-      "linearized_portfolio_impact": -0.36937499999999995,
-      "ending_value_per_100": 63.0625
+      "linearized_portfolio_impact": -0.591,
+      "ending_value_per_100": 40.900000000000006
     }
   ],
   "limitations": [

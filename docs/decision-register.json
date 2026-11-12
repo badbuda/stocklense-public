@@ -1,6 +1,6 @@
 {
   "archive_is_contiguous": false,
-  "archived_signal_count": 14,
+  "archived_signal_count": 15,
   "archived_signals": [
     {
       "action": "NO_CHANGE",
@@ -197,6 +197,20 @@
       "target_leverage": 1.25,
       "target_qqq_weight": 0.861875,
       "target_tqqq_weight": 0.123125
+    },
+    {
+      "action": "REBALANCE_NEXT_SESSION",
+      "broker_fills": false,
+      "created_at_utc": "2026-11-12T04:03:45.000652+00:00",
+      "defense": false,
+      "level": 2,
+      "provenance": "ARCHIVED_GITHUB_SHADOW_SIGNAL_NOT_AWS_ORDER",
+      "qqq_adjusted_close": 690.3800048828125,
+      "session": "2026-11-11",
+      "source": "shadow_history/2026-11-11.json",
+      "target_leverage": 2.0,
+      "target_qqq_weight": 0.4925,
+      "target_tqqq_weight": 0.4925
     }
   ],
   "automatic_trading_authorized": false,
@@ -209,12 +223,12 @@
     "status": "REQUIRES_AUTHENTICATED_AWS_READBACK"
   },
   "broker_orders_executed_by_this_report": false,
-  "generated_at_utc": "2026-11-11T02:59:41.644590+00:00",
+  "generated_at_utc": "2026-11-12T04:03:45.000652+00:00",
   "historical_execution_proxy": {
-    "end": "2026-11-10",
+    "end": "2026-11-11",
     "label": "HISTORICAL_MODELED_DAILY_OPEN_PROXY_NOT_OBSERVED_BROKER_FILLS",
     "note": "These rows use observed QQQ/TQQQ adjusted daily OHLC and modeled next-open execution; not actual Shadow receipts or minute-level fills.",
-    "sessions": 4213,
+    "sessions": 4214,
     "source": "portal-history.json",
     "start": "2010-02-11"
   },
@@ -228,5 +242,5 @@
   },
   "missing_signal_days_filled": false,
   "schema_version": 1,
-  "source_cutoff_signal_session": "2026-11-10"
+  "source_cutoff_signal_session": "2026-11-11"
 }

@@ -2,29 +2,29 @@
 
 ## Frozen signal
 
-- As of: **2026-11-10**
-- Action: **NO_CHANGE**
-- Level: **1**
+- As of: **2026-11-11**
+- Action: **REBALANCE_NEXT_SESSION**
+- Level: **2**
 - Defense: **OFF**
-- Target leverage: **1.25x**
-- QQQ target: **86.19%**
-- TQQQ target: **12.31%**
+- Target leverage: **2.00x**
+- QQQ target: **49.25%**
+- TQQQ target: **49.25%**
 
 ## Features
 
-- QQQ adjusted close: **674.7600**
-- SMA50: **719.1964**
-- SMA200: **680.3452**
-- VOL20: **35.34%**
-- MOM12: **11.18%**
+- QQQ adjusted close: **690.3800**
+- SMA50: **718.8660**
+- SMA200: **680.6522**
+- VOL20: **36.18%**
+- MOM12: **11.29%**
 
 ## Historical replay context — NOT prospective evidence
 
 - Sessions: **252**
-- Window: **2025-11-10 → 2026-11-10**
-- State transitions: **5**
+- Window: **2025-11-11 → 2026-11-11**
+- State transitions: **6**
 - Defense sessions: **0**
-- Level counts: **{'1': 16, '2': 15, '3': 221}**
+- Level counts: **{'1': 16, '2': 16, '3': 220}**
 
 ## Prospective paper portfolio
 
@@ -37,8 +37,8 @@
 - Cash: **$1,404.62**
 - Cumulative fees: **$19.72**
 - Cumulative modeled slippage: **$98.48**
-- Prospective signal rows: **14**
-- Exposure-changing signal rows: **1**
+- Prospective signal rows: **15**
+- Exposure-changing signal rows: **2**
 - Paper sessions: **2**
 
 ## Data-integrity audit

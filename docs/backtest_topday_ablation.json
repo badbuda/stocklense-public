@@ -1,20 +1,20 @@
 {
   "schema_version": 1,
   "status": "PASS",
-  "full_compounded_gross_return": 0.00025626472541739886,
+  "full_compounded_gross_return": -0.01944237409363525,
   "cases": [
     {
       "removed_top_positive_sessions": 1,
-      "remaining_compounded_gross_return": -0.09224722746164926,
-      "delta_vs_full": -0.09250349218706666,
+      "remaining_compounded_gross_return": -0.11012414024273254,
+      "delta_vs_full": -0.09068176614909729,
       "removed_dates": [
         "2026-08-04"
       ]
     },
     {
       "removed_top_positive_sessions": 5,
-      "remaining_compounded_gross_return": -0.3691058682443993,
-      "delta_vs_full": -0.3693621329698167,
+      "remaining_compounded_gross_return": -0.38153043989947,
+      "delta_vs_full": -0.36208806580583475,
       "removed_dates": [
         "2026-08-04",
         "2026-06-11",
@@ -25,8 +25,8 @@
     },
     {
       "removed_top_positive_sessions": 10,
-      "remaining_compounded_gross_return": -0.5510064253729701,
-      "delta_vs_full": -0.5512626900983875,
+      "remaining_compounded_gross_return": -0.55817075413918,
+      "delta_vs_full": -0.5387283800455448,
       "removed_dates": [
         "2026-08-04",
         "2026-06-11",
@@ -36,14 +36,14 @@
         "2025-11-24",
         "2026-06-18",
         "2026-05-08",
-        "2025-11-10",
-        "2026-02-06"
+        "2026-02-06",
+        "2026-05-06"
       ]
     },
     {
       "removed_top_positive_sessions": 20,
-      "remaining_compounded_gross_return": -0.7339395242124627,
-      "delta_vs_full": -0.7341957889378801,
+      "remaining_compounded_gross_return": -0.7343144649771195,
+      "delta_vs_full": -0.7148720908834842,
       "removed_dates": [
         "2026-08-04",
         "2026-06-11",
@@ -53,7 +53,6 @@
         "2025-11-24",
         "2026-06-18",
         "2026-05-08",
-        "2025-11-10",
         "2026-02-06",
         "2026-05-06",
         "2026-04-24",
@@ -64,7 +63,8 @@
         "2026-09-17",
         "2026-04-22",
         "2026-06-29",
-        "2026-05-20"
+        "2026-05-20",
+        "2026-06-08"
       ]
     }
   ],

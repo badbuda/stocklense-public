@@ -2,6 +2,20 @@
   "schema_version": 1,
   "items": [
     {
+      "short_sha": "4e676e2",
+      "date": "2026-11-11T10:50:08+02:00",
+      "title": "fix(portal): align CDN freshness E2E with real dashboard fetch",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "71ff530",
+      "date": "2026-11-11T02:59:55Z",
+      "title": "shadow: record prospective evidence 2026-11-10",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
       "short_sha": "d6003dc",
       "date": "2026-11-10T09:23:05+02:00",
       "title": "research: archive TQQQ/SQQQ video overlay falsification (StockLens 8.0 frozen)",
@@ -68,26 +82,26 @@
       "short_sha": "4b90a32",
       "date": "2026-11-07T23:26:39+02:00",
       "title": "research: add 1986 Nasdaq-100 index-only simulator",
-      "kind": "PROJECT",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "8caff4a",
-      "date": "2026-11-07T23:12:50+02:00",
-      "title": "feat(SL-56): isolated Epoch2 immutable Paper storage and read-only watchdog verification",
-      "kind": "PROJECT",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "fc2472c",
-      "date": "2026-11-07T23:12:07+02:00",
-      "title": "docs: preserve tax-deferral and IRA research README",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     }
   ],
   "high_signal_items": [
     {
+      "short_sha": "4e676e2",
+      "date": "2026-11-11T10:50:08+02:00",
+      "title": "fix(portal): align CDN freshness E2E with real dashboard fetch",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "71ff530",
+      "date": "2026-11-11T02:59:55Z",
+      "title": "shadow: record prospective evidence 2026-11-10",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
       "short_sha": "d6003dc",
       "date": "2026-11-10T09:23:05+02:00",
       "title": "research: archive TQQQ/SQQQ video overlay falsification (StockLens 8.0 frozen)",
@@ -156,42 +170,28 @@
       "title": "research: add 1986 Nasdaq-100 index-only simulator",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "8caff4a",
-      "date": "2026-11-07T23:12:50+02:00",
-      "title": "feat(SL-56): isolated Epoch2 immutable Paper storage and read-only watchdog verification",
-      "kind": "PROJECT",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "fc2472c",
-      "date": "2026-11-07T23:12:07+02:00",
-      "title": "docs: preserve tax-deferral and IRA research README",
-      "kind": "PROJECT",
-      "impact": "Repository change; CI validation is separate."
     }
   ],
   "recent_summary": [
+    {
+      "short_sha": "4e676e2",
+      "date": "2026-11-11T10:50:08+02:00",
+      "title": "fix(portal): align CDN freshness E2E with real dashboard fetch",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "71ff530",
+      "date": "2026-11-11T02:59:55Z",
+      "title": "shadow: record prospective evidence 2026-11-10",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
     {
       "short_sha": "d6003dc",
       "date": "2026-11-10T09:23:05+02:00",
       "title": "research: archive TQQQ/SQQQ video overlay falsification (StockLens 8.0 frozen)",
       "kind": "PROJECT",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "29c7830",
-      "date": "2026-11-07T23:33:20+02:00",
-      "title": "fix: restore valid portal E2E with 1986 assertions",
-      "kind": "FIX",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "c02d1da",
-      "date": "2026-11-07T23:32:11+02:00",
-      "title": "fix: validate deployed 1986 research feed in browser E2E",
-      "kind": "FIX",
       "impact": "Repository change; CI validation is separate."
     }
   ]

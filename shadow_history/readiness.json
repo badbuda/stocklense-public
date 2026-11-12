@@ -18,9 +18,9 @@
   "anomaly_status": "CLEAR",
   "artifact_integrity_status": "PASS",
   "integrity_evidence_phase": "POST_READINESS_VALIDATION",
-  "signal_date": "2026-11-10",
-  "action": "NO_CHANGE",
-  "execution_required": false,
-  "execution_note": "No exposure change required.",
+  "signal_date": "2026-11-11",
+  "action": "REBALANCE_NEXT_SESSION",
+  "execution_required": true,
+  "execution_note": "Validated state change requires paper reconciliation.",
   "observational_only": true
 }

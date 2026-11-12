@@ -2,7 +2,7 @@
   "status": "CLEAR",
   "severity": "NONE",
   "reasons": [],
-  "asof_date": "2026-11-10",
-  "generated_at_utc": "2026-11-11T02:59:51.337199+00:00",
+  "asof_date": "2026-11-11",
+  "generated_at_utc": "2026-11-12T04:03:57.368655+00:00",
   "auto_recovery": "Incident clears only when current evidence returns healthy; historical failures remain in CI history."
 }

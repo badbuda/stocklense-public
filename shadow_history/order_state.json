@@ -4,23 +4,23 @@
   "live_submission_authorized": false,
   "orders": [
     {
-      "order_id": "d519f88187b60129bca6",
-      "idempotency_key": "becc5443775a6fbfbaf9a4408418e27d4fe2f13c82bcb62982440b05c2b98054",
-      "session": "2026-11-11",
+      "order_id": "2b95769caf202f8080a9",
+      "idempotency_key": "3bfc72e1fc9a41a0d76166a5973483ab909de8a1cb396673da7eee2da705d9c5",
+      "session": "2026-11-12",
       "symbol": "TQQQ",
       "side": "SELL",
-      "quantity": 1048,
+      "quantity": 599,
       "status": "PLANNED",
       "broker_order_id": null,
       "filled_quantity": 0
     },
     {
-      "order_id": "ff7321b9b61cc11d9eb0",
-      "idempotency_key": "ca51b2ae29d1c5e8cb570a22d46c46a6a883f7ba9e99b509cd73f31997bf0f37",
-      "session": "2026-11-11",
+      "order_id": "4d239dda4da2d49a6885",
+      "idempotency_key": "3f3494ac0a4d6aa616d8261f37c788fb764fee6f9fea31f2802ce6145e25fae9",
+      "session": "2026-11-12",
       "symbol": "QQQ",
       "side": "BUY",
-      "quantity": 126,
+      "quantity": 70,
       "status": "PLANNED",
       "broker_order_id": null,
       "filled_quantity": 0
