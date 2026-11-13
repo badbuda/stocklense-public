@@ -1,0 +1,75 @@
+name: StockLens CSP premium hurdle and option quote-ledger gates
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - research/stocklens_csp_premium_hurdle_20261110.mjs
+      - research/stocklens_csp_collateral_opportunity_cost_20261110.mjs
+      - research/tqqq_cash_secured_options_ledger.py
+      - tests/test_tqqq_csp_quote_ledger.py
+      - .github/workflows/stocklens-csp-quote-gate.yml
+      - ci_transfer_manifest.json
+jobs:
+  csp-quote-gated-research:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate quote ledger invariants with synthetic fixtures only
+        run: |
+          PYTHONPATH=. python -m unittest discover -s tests -p test_tqqq_csp_quote_ledger.py -v
+          python -m compileall -q research/tqqq_cash_secured_options_ledger.py
+          python research/tqqq_cash_secured_options_ledger.py
+      - name: Compute observed-only premium hurdle (not option returns)
+        run: |
+          node research/stocklens_csp_premium_hurdle_20261110.mjs > csp-premium-hurdle.json
+          python3 - <<'PY'
+          import json,math
+          x=json.load(open("csp-premium-hurdle.json"))
+          assert x['kind']=="STOCKLENS_CSP_PREMIUM_REQUIRED_NOT_OPTION_BACKTEST"
+          assert x['cohort']['overlapping_total']==3970
+          assert x['no_price_chain_data'] and x['no_option_returns_modelled']
+          assert x['baseline_8_0_untouched'] and x['no_broker_orders'] and x['no_production_mutations'] and x['no_promotion']
+          assert len(x['groups'])==7
+          for category,values in x['groups'].items():
+              for strike_label,windows in values.items():
+                  for sampling,stats in windows.items():
+                      if stats["windows"]:
+                          assert math.isfinite(stats['mean_intrinsic_hurdle_pct_of_cash_collateral'])
+                          assert 0<=stats['expiry_below_strike_pct']<=100
+          print('CSP_HURDLE_PASS: No historical premiums or option returns claimed')
+          for category in ['all','frozen_cash_0x','frozen_risk_on','bear_2022','bear_2022_frozen_cash','rally_2024']:
+              x20=x['groups'][category]['20pct_otm']
+              a=x20['overlapping'];d=x20['disjoint_grid']
+              print(category,'overlap_n',a['windows'],'breach_pct',a['expiry_below_strike_pct'],
+                    'average_min_premium_pct',a['mean_intrinsic_hurdle_pct_of_cash_collateral'],
+                    'disjoint_n',d['windows'],
+                    'disjoint_min_pct',d.get('mean_intrinsic_hurdle_pct_of_cash_collateral'))
+          PY
+      - name: Cash collateral opportunity-cost stress using observed ETF fills
+        run: |
+          node research/stocklens_csp_collateral_opportunity_cost_20261110.mjs > csp-collateral-cost.json
+          python3 - <<'PY'
+          import json,math
+          j=json.load(open('csp-collateral-cost.json'))
+          assert j['baseline_model_verified'] and j['money_funded_equally_from_100k']
+          assert j['no_model_promotion'] and j['no_prod_changes'] and j['no_capital_deployed']
+          assert j['option_chain_quotes'] is False and j['options_premiums'] is False
+          assert len(j['models'])==5
+          assert math.isfinite(j['models'][0]['cagr'])
+          print("CSP_CASH_ALLOCATION_COST_PASS: NO OPTION PNL CLAIMED")
+          for m in j['models']:
+              print('reserve',m['reserve_fraction_at_state_transition'],
+                    'CAGR',round(100*m['cagr'],2),'MaxDD',round(100*m['maxdd'],2),
+                    'delta_CAGR_pp',round(m['delta_cagr_pp'],3))
+          PY
+      - name: Archive research-only price hurdle artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: stocklens-csp-premium-hurdle-20261110
+          path: |
+            csp-premium-hurdle.json
+            csp-collateral-cost.json
+          retention-days: 30
