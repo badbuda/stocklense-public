@@ -2,17 +2,17 @@
   "schema_version": 2,
   "publication_identity": {
     "schema_version": 2,
-    "git_sha": "4e676e26843451b53e3cb2ad2188b742d19fae9f",
+    "git_sha": "bf19a85b25309aea916ba4e07c3f2ceea1f0940c",
     "signal_asof": null,
     "replay_dataset_sha256": "db0889da31af43b1b75e005c1f4ab2cad421dfb55a6c55a77a223e0623950d95",
-    "replay_rows_sha256": "f8839eea4f0dc80e82678086822f2d171141dca9f3ea9c2e500a59edfa99d52e",
+    "replay_rows_sha256": "3d77373faf37a5f88a9c1c6243e9447e88d3531535e87b34289acf236a269dc1",
     "simulator_contract_sha256": "80745a3640c6fe667a3c500571fb15abee1d532a5b720fb6efc8b52f291dfc68",
-    "generation_id": "500a29f603b76fef210a9b84d47da2358e6dd7c72175d4c308fc7268ee09e68c"
+    "generation_id": "11a3ca9ff876eadc92da818ffe0d60f1edcb5d7b5937b93aa21fd4631ce9b1ff"
   },
   "status": "PASS",
   "full_path": {
-    "compounded_gross_return": -0.01944237409363525,
-    "max_drawdown": -0.3998361926848929,
+    "compounded_gross_return": 0.017057706674369344,
+    "max_drawdown": -0.39983619268489334,
     "max_drawdown_peak_date": "2026-10-06",
     "max_drawdown_trough_date": "2026-11-05"
   },
@@ -61,20 +61,20 @@
       "sessions": 126,
       "window_count": 126,
       "worst_return_window": {
-        "compounded_gross_return": -0.29387891142853817,
-        "max_drawdown": -0.3998361926848929,
+        "compounded_gross_return": -0.2938788821114602,
+        "max_drawdown": -0.399836192684893,
         "max_drawdown_peak_date": "2026-10-06",
         "max_drawdown_trough_date": "2026-11-05",
         "start": "2026-05-11",
         "end": "2026-11-06"
       },
       "worst_drawdown_window": {
-        "compounded_gross_return": -0.257208943438352,
-        "max_drawdown": -0.3998361926848931,
+        "compounded_gross_return": -0.2938788821114602,
+        "max_drawdown": -0.399836192684893,
         "max_drawdown_peak_date": "2026-10-06",
         "max_drawdown_trough_date": "2026-11-05",
-        "start": "2026-05-08",
-        "end": "2026-11-05"
+        "start": "2026-05-11",
+        "end": "2026-11-06"
       }
     }
   ],

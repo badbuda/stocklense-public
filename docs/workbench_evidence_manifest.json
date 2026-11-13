@@ -5,7 +5,7 @@
   "automatic_model_change": false,
   "automatic_promotion": false,
   "artifacts": {
-    "historical_replay/daily_states.csv": "bc78aba46b02d64a02e6b7fdad6a95db36e1939f0fc6acf989089dc952ac61da",
+    "historical_replay/daily_states.csv": "316d4cd89c2523797b8d9983f3d0418a4ca489b6c1310c762100349548e64d5b",
     "governance/qc_724_leverage_transitions.json": "e2d5851aed6688ae27cb6590a9adfac3ece449818d7ca923d7d011147b3a553e",
     "governance/qc_724_order_golden_master.json": "153edd0a5c8ebeed408b5d3b7d6a79af508c6f3f5ee8ed1868a3a65fc0fe17fb",
     "governance/qc_724_daily_state_manifest.json": "4a7e0757834866b90ccc14c53bf42123da2e530b01cca8d827f2144d5c5b6256",
@@ -18,5 +18,5 @@
     "lean_daily_state": "VERIFIED_FINGERPRINT_RAW_ROWS_MISSING",
     "prospective": "IMMATURE_FUTURE_ONLY"
   },
-  "manifest_sha256": "6102731944d5a2aeeb3725e3960d3421da34c2be139b71d76da356f26b6de00c"
+  "manifest_sha256": "94fe68395a4814517613dc777e03fcccc7be6bb7fbdebf09ef92cf6c5bf00b59"
 }

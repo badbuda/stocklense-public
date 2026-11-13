@@ -1,13 +1,13 @@
 {
   "schema_version": 2,
-  "summary": "2026-11-11 | L2 2.0x | REBALANCE_NEXT_SESSION | Health GREEN | READY",
-  "signal_date": "2026-11-11",
+  "summary": "2026-11-12 | L2 2.0x | NO_CHANGE | Health GREEN | READY",
+  "signal_date": "2026-11-12",
   "level": 2,
   "leverage": 2.0,
-  "action": "REBALANCE_NEXT_SESSION",
+  "action": "NO_CHANGE",
   "health": "GREEN",
   "readiness": "READY",
-  "execution_required": true,
+  "execution_required": false,
   "benchmark_status": "ACTIVE",
   "paper": {
     "last_executed_signal_date": "2026-10-08",
@@ -132,5 +132,5 @@
   },
   "artifact_integrity_status": "PASS",
   "publication_gate_status": "ALLOW",
-  "human_attention_required": true
+  "human_attention_required": false
 }

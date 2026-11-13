@@ -1,10 +1,10 @@
 {
   "status": "COMPLETE",
   "source": "YFINANCE_QQQ_AUTO_ADJUSTED",
-  "raw_rows": 4746,
-  "completed_rows": 4746,
-  "last_completed_date": "2026-11-11",
+  "raw_rows": 4747,
+  "completed_rows": 4747,
+  "last_completed_date": "2026-11-12",
   "feature_window_sessions": 253,
-  "feature_window_sha256": "ae634e7367664099735f757a23a244d37b9e4d89d10afb251bb5ba4106db9f76",
+  "feature_window_sha256": "c57ccbb5b65239aa471c833ab67ea24eb79caae2f0266f0e45b45bed09e7a1bf",
   "dropped_incomplete_current_session": false
 }

@@ -12,29 +12,29 @@
     "TQQQ": 598
   },
   "reference_prices": {
-    "QQQ": 690.3800048828125,
+    "QQQ": 688.1699829101562,
     "TQQQ": 81.27999877929688
   },
   "orders": [
     {
-      "session": "2026-11-12",
+      "session": "2026-11-13",
       "symbol": "TQQQ",
       "side": "SELL",
       "quantity": 599,
       "reason": "TARGET_REBALANCE",
       "target_leverage": 2.0,
-      "idempotency_key": "3bfc72e1fc9a41a0d76166a5973483ab909de8a1cb396673da7eee2da705d9c5",
+      "idempotency_key": "5274ae8f0091cfb8282089325964181dc1db0e624ca6fda9e894a477618891c8",
       "status": "PLANNED",
       "dry_run": true
     },
     {
-      "session": "2026-11-12",
+      "session": "2026-11-13",
       "symbol": "QQQ",
       "side": "BUY",
       "quantity": 70,
       "reason": "TARGET_REBALANCE",
       "target_leverage": 2.0,
-      "idempotency_key": "3f3494ac0a4d6aa616d8261f37c788fb764fee6f9fea31f2802ce6145e25fae9",
+      "idempotency_key": "755ab0f66f0f2bd9159b074bfe949272b9afc4c6830a082854e787afa88ec83a",
       "status": "PLANNED",
       "dry_run": true
     }
@@ -45,9 +45,9 @@
     "live_submission_authorized": false,
     "orders": [
       {
-        "order_id": "2b95769caf202f8080a9",
-        "idempotency_key": "3bfc72e1fc9a41a0d76166a5973483ab909de8a1cb396673da7eee2da705d9c5",
-        "session": "2026-11-12",
+        "order_id": "c9ecce8ec309fe7b55b8",
+        "idempotency_key": "5274ae8f0091cfb8282089325964181dc1db0e624ca6fda9e894a477618891c8",
+        "session": "2026-11-13",
         "symbol": "TQQQ",
         "side": "SELL",
         "quantity": 599,
@@ -56,9 +56,9 @@
         "filled_quantity": 0
       },
       {
-        "order_id": "4d239dda4da2d49a6885",
-        "idempotency_key": "3f3494ac0a4d6aa616d8261f37c788fb764fee6f9fea31f2802ce6145e25fae9",
-        "session": "2026-11-12",
+        "order_id": "aefeca2f0b4330fc7b9d",
+        "idempotency_key": "755ab0f66f0f2bd9159b074bfe949272b9afc4c6830a082854e787afa88ec83a",
+        "session": "2026-11-13",
         "symbol": "QQQ",
         "side": "BUY",
         "quantity": 70,
@@ -96,21 +96,21 @@
   "execution_windows": {
     "sell": {
       "status": "UPCOMING",
-      "seconds_to_window": 37624,
-      "session": "2026-11-12",
+      "seconds_to_window": 39263,
+      "session": "2026-11-13",
       "side": "SELL",
-      "time_et": "2026-11-12T09:31:00-05:00",
-      "time_utc": "2026-11-12T14:31:00+00:00",
+      "time_et": "2026-11-13T09:31:00-05:00",
+      "time_utc": "2026-11-13T14:31:00+00:00",
       "market_timezone": "America/New_York",
       "calendar": "XNYS"
     },
     "buy": {
       "status": "UPCOMING",
-      "seconds_to_window": 37684,
-      "session": "2026-11-12",
+      "seconds_to_window": 39323,
+      "session": "2026-11-13",
       "side": "BUY",
-      "time_et": "2026-11-12T09:32:00-05:00",
-      "time_utc": "2026-11-12T14:32:00+00:00",
+      "time_et": "2026-11-13T09:32:00-05:00",
+      "time_utc": "2026-11-13T14:32:00+00:00",
       "market_timezone": "America/New_York",
       "calendar": "XNYS"
     }
@@ -120,21 +120,21 @@
     "windows": {
       "sell": {
         "status": "UPCOMING",
-        "seconds_to_window": 37624,
-        "session": "2026-11-12",
+        "seconds_to_window": 39263,
+        "session": "2026-11-13",
         "side": "SELL",
-        "time_et": "2026-11-12T09:31:00-05:00",
-        "time_utc": "2026-11-12T14:31:00+00:00",
+        "time_et": "2026-11-13T09:31:00-05:00",
+        "time_utc": "2026-11-13T14:31:00+00:00",
         "market_timezone": "America/New_York",
         "calendar": "XNYS"
       },
       "buy": {
         "status": "UPCOMING",
-        "seconds_to_window": 37684,
-        "session": "2026-11-12",
+        "seconds_to_window": 39323,
+        "session": "2026-11-13",
         "side": "BUY",
-        "time_et": "2026-11-12T09:32:00-05:00",
-        "time_utc": "2026-11-12T14:32:00+00:00",
+        "time_et": "2026-11-13T09:32:00-05:00",
+        "time_utc": "2026-11-13T14:32:00+00:00",
         "market_timezone": "America/New_York",
         "calendar": "XNYS"
       }
