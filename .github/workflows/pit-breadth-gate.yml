@@ -1,0 +1,30 @@
+name: StockLens PIT breadth qualification gate
+on:
+  pull_request:
+    paths:
+      - 'research/pit_breadth_input_gate_20261111.py'
+      - 'tests/test_pit_breadth_input_gate_20261111.py'
+      - 'research/pit_breadth_coverage_gate_20261112.py'
+      - 'tests/test_pit_breadth_coverage_gate_20261112.py'
+      - 'research/pit_breadth_vendor_reconcile_20261113.py'
+      - 'tests/test_pit_breadth_vendor_reconcile_20261113.py'
+      - 'research/pit_breadth_temporal_replay_20261114.py'
+      - 'tests/test_pit_breadth_temporal_replay_20261114.py'
+      - '.github/workflows/pit-breadth-gate.yml'
+  workflow_dispatch:
+jobs:
+  pit-input-gate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run synthetic contract tests only
+        run: |
+          python -m unittest discover -s tests -p 'test_pit_breadth_input_gate_20261111.py' -v
+          python -m unittest discover -s tests -p 'test_pit_breadth_coverage_gate_20261112.py' -v
+          python -m unittest discover -s tests -p 'test_pit_breadth_vendor_reconcile_20261113.py' -v
+          python -m unittest discover -s tests -p 'test_pit_breadth_temporal_replay_20261114.py' -v
