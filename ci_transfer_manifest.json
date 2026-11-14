@@ -16,7 +16,7 @@
     ".github/workflows/shadow.yml": "ec3c59e952830c4457df0fd0b380b79e4f961e5b",
     ".github/workflows/st-3x-amplify-acceptance.yml": "8f1f5e33aeef673c373996e0ba9c1d64ce61a356",
     ".github/workflows/st-combo-amplify-acceptance.yml": "e40a54512ab00b52d8d4f56beb0a7b4d8349368c",
-    ".github/workflows/st-paper-daily-readonly.yml": "c3edbdf6f555f43d2eb174d4b464868b69b5f535",
+    ".github/workflows/st-paper-daily-readonly.yml": "ac6393658fe95cfe5f3bf74387bc97094718ca5f",
     ".github/workflows/st-real-3x-research.yml": "e41cccc8bcb99922a1c9371fcd9f30a1bd18a6bd",
     ".github/workflows/st-real-etf-combinations.yml": "cafb10db543f024314353b5a07e8b456b27e23df",
     ".github/workflows/st-video-tqqq-sqqq-overlays.yml": "63d3fb59183209755f2b3a697791f5cea098e54f",
@@ -187,7 +187,7 @@
     "infra/aws/st_paper_afterdeploy_forensics_readonly.py": "9aec6fc9d29eed1784875ed6024546922c679544",
     "infra/aws/st_paper_cfn_guarded_release.py": "2af630248d49a04ccfc2c61406f511d7d450d28d",
     "infra/aws/st_paper_chain_break_review_readonly.py": "7f14b31ce9454138d73342f73a1b83de5d5f0b5c",
-    "infra/aws/st_paper_closeout_readonly.py": "0dd053186f94be5176aac16d740a2df4e5b3785b",
+    "infra/aws/st_paper_closeout_readonly.py": "cfb86de6391c21e49fb7ae0ecfb8afc0513926be",
     "infra/aws/st_paper_epoch_policy_contract_readonly.py": "701057541748d904340b6c118b8e58fa4252d429",
     "infra/aws/st_paper_forward_epoch_plan_readonly.py": "418cf5b951fe14605656e6e519f55675a7d1e38f",
     "infra/aws/st_paper_immutable_link_audit_readonly.py": "70735afe595894ccfcf158eddeb332ce3c188093",
@@ -504,7 +504,7 @@
     "tests/test_st_paper_afterdeploy_forensics_readonly.py": "1af933a5870e3cb79251eb7637054da158460880",
     "tests/test_st_paper_cfn_guarded_release.py": "eeb9bce0923a1de50f2db23c5eccfd5b435ba518",
     "tests/test_st_paper_chain_break_review_readonly.py": "8ec7c8bdaa77796ed69f8b16799df4fa5acf09aa",
-    "tests/test_st_paper_closeout_readonly.py": "30aad0c5ea0769a276ffe66671bf6b89fb362203",
+    "tests/test_st_paper_closeout_readonly.py": "f9423d0cbb4c2f963caafc887414a75063beea07",
     "tests/test_st_paper_epoch_policy_contract_readonly.py": "e7376cb0b5dbfbf43c9653d07debca8ec37d9a4b",
     "tests/test_st_paper_forward_epoch_plan_readonly.py": "7af5130db725bbdc5aae906b5c25d14c4d21d48f",
     "tests/test_st_paper_immutable_link_audit_readonly.py": "f50857b2ae63250af8d04f81575de6f561c52f4e",
@@ -547,6 +547,8 @@
     "workbench_evidence_manifest.py": "7e290add5dcb861b0d4bdbed81cc7e4308ff4683",
     "workbench_selfcheck.py": "4f17be6d56ac7d3cc3637e1ef2b2af3ed9d880a8",
     "yahoo_eod_scorecard.py": "137465f3ff4d9a2b8c164bf4321480c0ea0869fd",
-    "yahoo_long_history.py": "e7e51b5c2f5697da5d583316638b98ec13e6114c"
+    "yahoo_long_history.py": "e7e51b5c2f5697da5d583316638b98ec13e6114c",
+    "infra/aws/st-github-paper-audit-role.yaml": "4b5fdf78437b130983c50dcf561ea65c65997c89",
+    "tests/test_st_github_paper_audit_role.py": "369417251823d687fa3aa83f9ac7cdb9a6b61218"
   }
 }
