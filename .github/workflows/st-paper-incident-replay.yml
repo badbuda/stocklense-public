@@ -1,0 +1,84 @@
+name: StockLens ST Paper Incident Replay (offline now)
+
+# Fast, reproducible fault-injection: NO AWS credentials, NO AWS changes,
+# NO trading or fake historical Paper receipts. A passing job is NOT live ST.
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - '.github/workflows/st-paper-incident-replay.yml'
+      - 'stocklens/paper_epoch3.py'
+      - 'stocklens/epoch3_store.py'
+      - 'infra/aws/sl56_epoch3_*.py'
+      - 'infra/aws/sl56_old_paper_retry_containment.py'
+      - 'tests/test_epoch3_store.py'
+      - 'tests/test_paper_epoch3_forward.py'
+      - 'tests/test_sl56_*.py'
+  push:
+    branches: [feat/sl56-forward-paper-epoch3-20261112]
+    paths:
+      - '.github/workflows/st-paper-incident-replay.yml'
+      - 'stocklens/paper_epoch3.py'
+      - 'stocklens/epoch3_store.py'
+      - 'infra/aws/sl56_epoch3_*.py'
+      - 'infra/aws/sl56_old_paper_retry_containment.py'
+      - 'tests/test_epoch3_store.py'
+      - 'tests/test_paper_epoch3_forward.py'
+      - 'tests/test_sl56_*.py'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: st-paper-incident-replay-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  replay-offline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install isolated test dependency
+        run: python -m pip install --disable-pip-version-check --quiet pytest
+      - name: Verify source handoff SHA for the exact checked-out branch
+        run: python ci_transfer_guard.py
+      - name: Replay known Paper incidents and S3 crash/idempotency paths
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+          AWS_EC2_METADATA_DISABLED: 'true'
+        run: |
+          set -euo pipefail
+          python -m pytest -q \
+            tests/test_paper_epoch3_forward.py \
+            tests/test_epoch3_store.py \
+            tests/test_sl56_epoch3_readonly_preflight.py \
+            tests/test_sl56_epoch3_preopen_approval.py \
+            tests/test_sl56_old_paper_retry_containment.py \
+            tests/test_epoch2_store.py \
+            --junitxml=st-paper-incident-replay.xml
+      - name: Record exact test scope and boundaries
+        if: always()
+        run: |
+          {
+            echo "### ST Paper incident replay — OFFLINE ONLY"
+            echo
+            echo "- Runs on demand; does not wait for a new trading session."
+            echo "- Replays the missing minute-bar threshold, broken old-book"
+            echo "  continuity, S3 conditional-write crash/idempotency, and pre-open approval guards."
+            echo "- NO AWS credentials; NO live Lambda invocation; NO broker orders."
+            echo "- Green proves offline policy/tests only. It does NOT certify deployed"
+            echo "  private Lambda code, ST S3 receipts, alarm health, or a new forward Paper day."
+            echo "- After deployment: separately run authenticated read-only ST acceptance."
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload replay JUnit report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: st-paper-incident-replay
+          path: st-paper-incident-replay.xml
+          if-no-files-found: warn
+          retention-days: 14
