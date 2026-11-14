@@ -2,12 +2,12 @@
   "schema_version": 1,
   "publication_identity": {
     "schema_version": 2,
-    "git_sha": "bf19a85b25309aea916ba4e07c3f2ceea1f0940c",
+    "git_sha": "fc659e0d6edd06a117d97f6f15b7668a1abaa690",
     "signal_asof": null,
     "replay_dataset_sha256": "db0889da31af43b1b75e005c1f4ab2cad421dfb55a6c55a77a223e0623950d95",
-    "replay_rows_sha256": "3d77373faf37a5f88a9c1c6243e9447e88d3531535e87b34289acf236a269dc1",
+    "replay_rows_sha256": "e8a32eb3759a6310cbd40ca3a17af618d456614071befdd0c0f1062da73c2572",
     "simulator_contract_sha256": "80745a3640c6fe667a3c500571fb15abee1d532a5b720fb6efc8b52f291dfc68",
-    "generation_id": "11a3ca9ff876eadc92da818ffe0d60f1edcb5d7b5937b93aa21fd4631ce9b1ff"
+    "generation_id": "f192cd02fdd48603a3a2b49f776e51aa5ba74cd698726d5ed19f99a92e399cd3"
   },
   "status": "PASS",
   "regime_definition": {
@@ -16,11 +16,11 @@
   },
   "regimes": {
     "BULL_MID_VOL": {
-      "sessions": 91,
-      "strategy_gross_sum": 0.16488254214971576,
-      "qqq_sum": 0.05496084738323859,
+      "sessions": 90,
+      "strategy_gross_sum": 0.16724763479114346,
+      "qqq_sum": 0.05574921159704782,
       "positive_strategy_sessions": 48,
-      "positive_strategy_session_share": 0.5274725274725275
+      "positive_strategy_session_share": 0.5333333333333333
     },
     "MIXED_MID_VOL": {
       "sessions": 79,
@@ -51,11 +51,11 @@
       "positive_strategy_session_share": 0.4074074074074074
     },
     "MIXED_HIGH_VOL": {
-      "sessions": 10,
-      "strategy_gross_sum": 0.08630343088743445,
-      "qqq_sum": 0.07737550907721791,
+      "sessions": 11,
+      "strategy_gross_sum": 0.07990109606595766,
+      "qqq_sum": 0.07417434166647952,
       "positive_strategy_sessions": 7,
-      "positive_strategy_session_share": 0.7
+      "positive_strategy_session_share": 0.6363636363636364
     }
   },
   "semantics": "Descriptive predeclared mechanical regime decomposition of gross replay returns. The volatility bins are reporting thresholds only, not frozen-model thresholds. Sums are diagnostics, not compounded CAGR or alpha.",

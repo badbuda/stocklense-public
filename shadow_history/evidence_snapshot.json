@@ -18,17 +18,17 @@
     },
     {
       "path": "shadow_history/health.json",
-      "sha256": "7fde7108c41478acccf72fa8098fa68e1aed799d010ef7aa125589df805cdb6a",
+      "sha256": "ccc593077eb984b044d9836785882b32c37343e8bc6522afc86855516571368f",
       "bytes": 186
     },
     {
       "path": "shadow_history/readiness.json",
-      "sha256": "9412eb2e642270bdf7f8c05ca89dc198587c22bfae79ac45094909b82d798901",
+      "sha256": "825a3b2691c525a9bba52b9f22f0fe9f17764d520c3d5ccf8a953931ef678531",
       "bytes": 779
     },
     {
       "path": "shadow_history/qc_daily_parity.json",
-      "sha256": "d0d72e9b009ce710b00d259c2e26cd4948011c6a2b95b2ac92fcd98a929c2ded",
+      "sha256": "67fe58dac0f12089ab69c12ed2faa2f7e19c34cb2241d7467d3f0c4bad5676be",
       "bytes": 34786
     },
     {
@@ -38,13 +38,13 @@
     },
     {
       "path": "shadow_history/data_provenance.json",
-      "sha256": "7c6db4aa13507ea1550e249e1ea645abd174fec5a9bd9151cc76d10b62a297de",
+      "sha256": "b95d14f14a7c9dfa5b9b8f0d65d5e8a6334515ef48e6a4ab9194703a48509545",
       "bytes": 330
     },
     {
       "path": "shadow_history/anomalies.json",
-      "sha256": "b80037b731e55bc6c1be2a1b47953ba51e5e01b078cf07603dc92f3bbe14c9ce",
-      "bytes": 1322
+      "sha256": "a1498f8a3a1e5aac39ae301b29a0d5afa9f2651c9fb8eca78bc8715a0964e642",
+      "bytes": 1317
     },
     {
       "path": "shadow_history/execution_audit.json",
@@ -58,17 +58,17 @@
     },
     {
       "path": "shadow_history/market_context.json",
-      "sha256": "37f26d10f05a01ffd5b3fd75535a56cfc4d69673bd02a56ad8fdeaa4896e8664",
+      "sha256": "081a6f3466202bc228066923f5c5fb3af9c956b3b7a1a7989d98d4f59f99cbed",
       "bytes": 533
     },
     {
       "path": "shadow_history/context_quality.json",
-      "sha256": "9ea9591db39196d5892f0b2d2bcefbb4753e9b5e31b0836a4000715ceb777134",
+      "sha256": "fb1578c9532b33470249048031f3cdcefe5099cd1f73e4d533a4dfb157a442b8",
       "bytes": 268
     },
     {
       "path": "shadow_history/context_analytics.json",
-      "sha256": "da1f1d2461204899101941af6ae3bb703bf6b873ac51bd6d606ff5478ae21df9",
+      "sha256": "332c2c4f33714740ebed6eee95b9121edaa6cb98c0da88221be4f4940c425245",
       "bytes": 250
     }
   ],

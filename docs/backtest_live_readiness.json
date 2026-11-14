@@ -4,18 +4,18 @@
   "status": "BLOCKED_FOR_LIVE_TRADING",
   "model": "StockLens 8.0 FROZEN",
   "evidence_class": "OBSERVED_ETF_DAILY_OPEN_PROXY_NOT_BROKER_LIVE",
-  "generated_at_utc": "2026-11-13T03:36:39.826724+00:00",
+  "generated_at_utc": "2026-11-14T03:33:21.673722+00:00",
   "backtest_window": {
     "start": "2010-02-11",
-    "end": "2026-11-12",
-    "sessions": 4215
+    "end": "2026-11-13",
+    "sessions": 4216
   },
-  "historical_observed_etf_cagr": 0.3674233780907621,
-  "historical_qqq_cagr": 0.19006217879230225,
-  "historical_max_drawdown": -0.4907565610655398,
+  "historical_observed_etf_cagr": 0.3653558891135731,
+  "historical_qqq_cagr": 0.18916880765318145,
+  "historical_max_drawdown": -0.49075667940529455,
   "statistical_significance_not_proven": true,
   "observed_daily_open_not_true_fills": true,
-  "prospective_challenger_sessions": 34,
+  "prospective_challenger_sessions": 35,
   "prospective_frozen_paper_sessions": 2,
   "paired_forward_paper_sessions": 0,
   "review_floors_are_not_proof": true,
@@ -28,11 +28,11 @@
       "evidence": {
         "period": {
           "start": "2010-02-11",
-          "end": "2026-11-12",
-          "sessions": 4215
+          "end": "2026-11-13",
+          "sessions": 4216
         },
         "source": "YFINANCE_AUTO_ADJUSTED_DAILY_OPEN_AND_CLOSE",
-        "data_sha256": "e46f7237bd581e2dd06547edf8db865c5084a27e6971ac0069f838ee47065885"
+        "data_sha256": "cfbb1ebdd6d9ef70c62f09d801d9a312e3024faf841d5dfd2f0760648b060b8d"
       },
       "severity": "REQUIRED"
     },
@@ -42,8 +42,8 @@
       "status": "PASS",
       "description": "Both strategies require identical market dates and external cashflows.",
       "evidence": {
-        "stocklens": 18899279.949721,
-        "qqq": 1844295.955949,
+        "stocklens": 18442009.38063,
+        "qqq": 1822105.590579,
         "contribution_matched": true
       },
       "severity": "REQUIRED"
@@ -55,8 +55,8 @@
       "description": "Every observed QQQ/TQQQ backtest session must align with the XNYS exchange calendar and same-run price snapshot.",
       "evidence": {
         "status": "PASS",
-        "expected": 4215,
-        "observed": 4215,
+        "expected": 4216,
+        "observed": 4216,
         "missing": [],
         "suspicious_large_moves": 0
       },
@@ -80,7 +80,7 @@
       "description": "Identical StockLens 8.0 target from the observed ETF backtest and the published shadow signal, for the same completed QQQ date.",
       "evidence": {
         "status": "PASS",
-        "date": "2026-11-12",
+        "date": "2026-11-13",
         "errors": []
       },
       "severity": "REQUIRED"
@@ -91,7 +91,7 @@
       "status": "BLOCKED",
       "description": "Collect at least 63 prospective, time-stamped observed QQQ/TQQQ 09:30/09:31/09:32 minute prices, with no synthetic backfill. These quotes are NOT broker fills.",
       "evidence": {
-        "verified_completed_sessions": 13,
+        "verified_completed_sessions": 14,
         "review_floor": 63,
         "journal_status": "CAPTURED_NEW_VERIFIED_SESSION",
         "broker_fill_parity": false
@@ -152,7 +152,7 @@
       "status": "BLOCKED",
       "description": "Prospective frozen StockLens 8.0, tracked AFTER registration, must be independently reviewed before live deployment.",
       "evidence": {
-        "sl9_challenger_sessions_not_baseline_proof": 34,
+        "sl9_challenger_sessions_not_baseline_proof": 35,
         "prospective_baseline_verified_sessions": 2,
         "requested_review_checkpoints": [
           63,
@@ -223,7 +223,7 @@
       "status": "BLOCKED",
       "description": "Human-approved loss budget, position sizing, concentration, volatility gap limits, kill switch and response playbook must be validated.",
       "evidence": {
-        "historical_max_drawdown": -0.4907565610655398,
+        "historical_max_drawdown": -0.49075667940529455,
         "stress_loss_guarantee": false,
         "policy": "NOT_YET_APPROVED"
       },
@@ -271,7 +271,7 @@
     "prospective_paper_capture": {
       "status": "MISSED_EXECUTION_REVIEW",
       "paper_sessions": 2,
-      "missed_sessions": 24,
+      "missed_sessions": 25,
       "error_count": 0
     },
     "selection_bias_inventory": {

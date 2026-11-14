@@ -1,21 +1,21 @@
 {
   "schema_version": 1,
   "kind": "FINAL_PUBLICATION_MANIFEST",
-  "generated_at_utc": "2026-11-13T03:36:39.988442+00:00",
-  "git_sha": "bf19a85b25309aea916ba4e07c3f2ceea1f0940c",
-  "publication_generation": "11a3ca9ff876eadc92da818ffe0d60f1edcb5d7b5937b93aa21fd4631ce9b1ff",
-  "github_run_id": "43358892978",
-  "github_run_number": "201",
+  "generated_at_utc": "2026-11-14T03:33:21.890119+00:00",
+  "git_sha": "fc659e0d6edd06a117d97f6f15b7668a1abaa690",
+  "publication_generation": "f192cd02fdd48603a3a2b49f776e51aa5ba74cd698726d5ed19f99a92e399cd3",
+  "github_run_id": "43550969311",
+  "github_run_number": "202",
   "status": "PASS",
   "files": [
     {
       "path": "output/research_provenance.json",
-      "sha256": "921c92ccea1aaa0e67c7458b526b9b4a7e196bc14abc194e7d00a2bfa0ea0aac",
+      "sha256": "e9a7c8d2bb4376fdb53e8133d642b136eb3a7c7a434c16c6376f43f944f4b7cb",
       "bytes": 889
     },
     {
       "path": "shadow_history/run_manifest.json",
-      "sha256": "272575016da3d90ed717414f94a41a4871e38fd68aefbc8f79a9831c34e2456a",
+      "sha256": "e15fd99f4cd1e089df3da65f12ce607199bb52f2d24c6ca2e14fb0282baa3633",
       "bytes": 3655
     },
     {
@@ -30,13 +30,13 @@
     },
     {
       "path": "shadow_history/publication_gate.json",
-      "sha256": "7da3779e5972a9b9309b848824999db22da684c30e8474928613ae6868929d93",
+      "sha256": "e2bd77a73de6f24e018d65bffb629ac8f0425df8ae3aa40e88b48d80680366a5",
       "bytes": 761
     },
     {
       "path": "docs/data.json",
-      "sha256": "2771df05368257338b27b41120e0c8d2baaff26e6b9981f710e20093042720e3",
-      "bytes": 64681
+      "sha256": "631c875bbbe5d6843faa7f463b9fefd5d8f134123daee57b7b00ef909b6c340a",
+      "bytes": 64623
     }
   ]
 }

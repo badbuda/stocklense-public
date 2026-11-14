@@ -2,12 +2,12 @@
   "status": "ACTIVE",
   "sessions": 252,
   "level_counts": {
-    "3": 219,
+    "3": 218,
     "1": 16,
-    "2": 17
+    "2": 18
   },
   "defense_sessions": 0,
   "state_transitions": 6,
   "current_level": 2,
-  "current_level_streak_sessions": 2
+  "current_level_streak_sessions": 3
 }

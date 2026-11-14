@@ -1,17 +1,6 @@
 {
-  "status": "CHANGED",
-  "date": "2026-11-11",
-  "action": "REBALANCE_NEXT_SESSION",
-  "changes": [
-    {
-      "field": "level",
-      "from": "1",
-      "to": "2"
-    },
-    {
-      "field": "target_leverage",
-      "from": "1.25",
-      "to": "2.0"
-    }
-  ]
+  "status": "UNCHANGED",
+  "date": "2026-11-12",
+  "action": "NO_CHANGE",
+  "changes": []
 }
