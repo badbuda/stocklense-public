@@ -1,0 +1,41 @@
+name: SL-62 overnight and intraday research (offline)
+on:
+  pull_request:
+    paths:
+      - "research/overnight_session_timing_study.py"
+      - "tests/test_sl62_overnight_session_timing.py"
+      - ".github/workflows/sl62-overnight-research.yml"
+      - "research/frozen_sources/observed_qqq_tqqq_ml_20100211_20261009.json"
+  push:
+    branches:
+      - "research/sl-62-overnight-intraday-v1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  sl62-offline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install offline-import dependency
+        run: python -m pip install pandas==2.3.3
+      - name: Test frozen path parity, timestamp causality and modeled costs
+        run: python -m unittest discover -s tests -p "test_sl62_overnight_session_timing.py" -v
+      - name: Reproduce research comparison from immutable price snapshot
+        run: python -m research.overnight_session_timing_study
+      - name: Save JSON and Markdown for review, never deploy
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: SL-62-overnight-session-proxy
+          path: |
+            research/results/SL-62-overnight-intraday.json
+            research/reports/SL-62-overnight-intraday.md
+          if-no-files-found: warn
+          retention-days: 30
