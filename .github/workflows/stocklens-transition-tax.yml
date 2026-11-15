@@ -1,0 +1,54 @@
+name: StockLens transition tax and USDILS research
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - research/stocklens_transition_tax_20261110.py
+      - research/stocklens_transition_timing_20261110.mjs
+      - .github/workflows/stocklens-transition-tax.yml
+jobs:
+  tax-execution-proxy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install only required observed FX provider
+        run: python -m pip install yfinance==0.2.65
+      - name: Produce exact target series and tax ledger from observed data
+        run: |
+          node research/stocklens_transition_timing_20261110.mjs > transition-timing-results.json
+          PYTHONPATH=. python research/stocklens_transition_tax_20261110.py
+          python - <<'PY'
+          import json, math
+          from pathlib import Path
+          x=json.loads(Path('research/results/transition_tax_fifo_fx_20261110.json').read_text())
+          assert not x['broker_orders'] and not x['production_changed'] and not x['automatic_promotion']
+          if x['status']=='OBSERVED_USDILS_AND_FIFO_FX_TAX_RESEARCH':
+              assert x['cohort_replay_parity']
+              assert len(x['results'])==8
+              assert all(z['gross_parity'] for z in x['results'])
+              for v in x['results']:
+                  w=v['immediate_withholding']
+                  assert math.isfinite(w['after_tax_terminal_cagr'])
+                  assert w['after_tax_terminal_liquidation_usd']>0
+              print('FIFO_FX_TAX_MODEL_PASS / real USDILS observed, research only')
+          else:
+              assert x['status']=='BLOCKED_FX_TAX_OR_PARITY' and not x['results']
+              print('TAX_SOURCE_OR_PARITY_BLOCKED_UNVERIFIED:',x['reason'])
+          PY
+      - name: Archive exact signals, FX vendor and resulting tax models
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stocklens-real-fx-tax-transition-20261110
+          path: |
+            transition-timing-results.json
+            research/results/usdils_vendor_20261110.json
+            research/results/transition_tax_fifo_fx_20261110.json
+          if-no-files-found: warn
+          retention-days: 30
