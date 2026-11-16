@@ -43,5 +43,22 @@ class TestTaxLots(unittest.TestCase):
         with self.assertRaises(ValueError): x.buy(1,"NaN",3)
     def test_reject_invalid_rate(self):
         with self.assertRaises(ValueError): TaxLedger("1.1")
+    def test_fee_exceeds_gross_proceeds_is_atomic(self):
+        x=TaxLedger()
+        x.buy(2,100,3)
+        before=(x.lots[0].quantity,x.lots[0].basis_nis,x.realized_nis,x.tax_paid_nis,x.loss_pool_nis)
+        with self.assertRaisesRegex(ValueError,"FEE_EXCEEDS_GROSS_PROCEEDS"):
+            x.sell(1,100,3,301)
+        after=(x.lots[0].quantity,x.lots[0].basis_nis,x.realized_nis,x.tax_paid_nis,x.loss_pool_nis)
+        self.assertEqual(before,after)
+    def test_partial_sale_preserves_fifo_basis_conservation(self):
+        x=TaxLedger()
+        x.buy(3,10,3,3)
+        x.buy(2,20,3,2)
+        original_basis=sum(l.basis_nis for l in x.lots)
+        result=x.sell(4,30,3,4)
+        consumed_basis=4*30*3-4-result["realized_gain_nis"]
+        self.assertEqual(sum(l.basis_nis for l in x.lots)+consumed_basis,original_basis)
+        self.assertEqual(sum(l.quantity for l in x.lots),Decimal(1))
 if __name__ == "__main__":
     unittest.main()
