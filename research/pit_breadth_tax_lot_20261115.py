@@ -38,11 +38,16 @@ class TaxLedger:
         q, p, fx, fee = map(D, (quantity, price_usd, fx_nis_per_usd, fee_nis))
         if q <= 0 or p <= 0 or fx <= 0 or fee < 0:
             raise ValueError("INVALID_SELL")
+        if fee > q * p * fx:
+            raise ValueError("FEE_EXCEEDS_GROSS_PROCEEDS")
         if q > sum((lot.quantity for lot in self.lots), Decimal(0)):
             raise ValueError("INSUFFICIENT_SHARES")
+        # Compute on detached copies: Decimal arithmetic failures must never
+        # leave a partially consumed FIFO ledger.
+        pending = [Lot(lot.quantity, lot.basis_nis) for lot in self.lots]
         remaining, basis = q, Decimal(0)
         while remaining:
-            lot = self.lots[0]
+            lot = pending[0]
             take = min(remaining, lot.quantity)
             consumed = lot.basis_nis * take / lot.quantity
             basis += consumed
@@ -50,16 +55,19 @@ class TaxLedger:
             lot.quantity -= take
             remaining -= take
             if lot.quantity == 0:
-                self.lots.pop(0)
+                pending.pop(0)
         gain = q * p * fx - fee - basis
-        self.realized_nis += gain
+        loss_pool = self.loss_pool_nis
         if gain < 0:
-            self.loss_pool_nis += -gain
+            loss_pool += -gain
             tax = Decimal(0)
         else:
-            offset = min(gain, self.loss_pool_nis)
-            self.loss_pool_nis -= offset
+            offset = min(gain, loss_pool)
+            loss_pool -= offset
             tax = (gain - offset) * self.rate
+        self.lots = pending
+        self.realized_nis += gain
+        self.loss_pool_nis = loss_pool
         self.tax_paid_nis += tax
         return {"realized_gain_nis": gain, "tax_nis": tax,
                 "net_proceeds_nis": q * p * fx - fee - tax,
