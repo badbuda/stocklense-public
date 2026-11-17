@@ -18,18 +18,18 @@
     },
     {
       "path": "shadow_history/health.json",
-      "sha256": "ccc593077eb984b044d9836785882b32c37343e8bc6522afc86855516571368f",
+      "sha256": "2b7e53b338462270244bdf0de5d1c3093b6e49d399ee69bc33bbe4e77fafb8b3",
       "bytes": 186
     },
     {
       "path": "shadow_history/readiness.json",
-      "sha256": "825a3b2691c525a9bba52b9f22f0fe9f17764d520c3d5ccf8a953931ef678531",
-      "bytes": 779
+      "sha256": "c7205c68755bd501c716d90e862c12a1b40726d7d1381ca9ae3603bd01a75f96",
+      "bytes": 816
     },
     {
       "path": "shadow_history/qc_daily_parity.json",
-      "sha256": "67fe58dac0f12089ab69c12ed2faa2f7e19c34cb2241d7467d3f0c4bad5676be",
-      "bytes": 34786
+      "sha256": "f69fb12c468e20a95596c362002a65d50ae88fd868ee8d45defae20a8c3afb97",
+      "bytes": 34781
     },
     {
       "path": "shadow_history/qc_parity_dossier.json",
@@ -38,13 +38,13 @@
     },
     {
       "path": "shadow_history/data_provenance.json",
-      "sha256": "b95d14f14a7c9dfa5b9b8f0d65d5e8a6334515ef48e6a4ab9194703a48509545",
+      "sha256": "a88ef49f1bea5a7a13fe3cf6262ccdf479766641d5e2fb7ff39e9273d3bcd061",
       "bytes": 330
     },
     {
       "path": "shadow_history/anomalies.json",
-      "sha256": "a1498f8a3a1e5aac39ae301b29a0d5afa9f2651c9fb8eca78bc8715a0964e642",
-      "bytes": 1317
+      "sha256": "6b0cb58d9c9599a10dc39e7fae4031adbc2bd0ec1de6715778bcc0beab29a1da",
+      "bytes": 1318
     },
     {
       "path": "shadow_history/execution_audit.json",
@@ -58,17 +58,17 @@
     },
     {
       "path": "shadow_history/market_context.json",
-      "sha256": "081a6f3466202bc228066923f5c5fb3af9c956b3b7a1a7989d98d4f59f99cbed",
-      "bytes": 533
+      "sha256": "d8e94eb4a4ed757d8ee7854f69a04ce11a026522e65a4a6088b0e9409eae1f92",
+      "bytes": 532
     },
     {
       "path": "shadow_history/context_quality.json",
-      "sha256": "fb1578c9532b33470249048031f3cdcefe5099cd1f73e4d533a4dfb157a442b8",
+      "sha256": "450b256f6e4cbb3050ba6d528e4976eb64164593501d7cf4afe5217a19fbfdf8",
       "bytes": 268
     },
     {
       "path": "shadow_history/context_analytics.json",
-      "sha256": "332c2c4f33714740ebed6eee95b9121edaa6cb98c0da88221be4f4940c425245",
+      "sha256": "c723742bd6dd75da0ea7958cbd49754f7a03975c9d4afb929a5222cb5c4c6d8e",
       "bytes": 250
     }
   ],

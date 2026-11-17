@@ -1,8 +1,8 @@
 {
   "stage": "BOOTSTRAP",
   "prospective_sessions": 2,
-  "prospective_signal_sessions": 17,
-  "prospective_transitions": 2,
+  "prospective_signal_sessions": 18,
+  "prospective_transitions": 3,
   "performance_interpretation_allowed": false,
   "strong_live_claims_allowed": false,
   "independently_qualified_frozen8_sessions": 0,

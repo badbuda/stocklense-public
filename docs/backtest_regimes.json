@@ -2,12 +2,12 @@
   "schema_version": 1,
   "publication_identity": {
     "schema_version": 2,
-    "git_sha": "fc659e0d6edd06a117d97f6f15b7668a1abaa690",
+    "git_sha": "03c0e0184a5d5ea3ad207a1b22a252724799b327",
     "signal_asof": null,
     "replay_dataset_sha256": "db0889da31af43b1b75e005c1f4ab2cad421dfb55a6c55a77a223e0623950d95",
-    "replay_rows_sha256": "e8a32eb3759a6310cbd40ca3a17af618d456614071befdd0c0f1062da73c2572",
+    "replay_rows_sha256": "789f4b8e7ec5ffffa634344ce1db00ee20b849b1aa41ccd2263420558365a9eb",
     "simulator_contract_sha256": "80745a3640c6fe667a3c500571fb15abee1d532a5b720fb6efc8b52f291dfc68",
-    "generation_id": "f192cd02fdd48603a3a2b49f776e51aa5ba74cd698726d5ed19f99a92e399cd3"
+    "generation_id": "19368b19dca2594d16b7dcd22cfedd6ce96c43f974097becac7820336606537e"
   },
   "status": "PASS",
   "regime_definition": {
@@ -16,46 +16,46 @@
   },
   "regimes": {
     "BULL_MID_VOL": {
-      "sessions": 90,
-      "strategy_gross_sum": 0.16724763479114346,
-      "qqq_sum": 0.05574921159704782,
+      "sessions": 89,
+      "strategy_gross_sum": 0.22849613803536373,
+      "qqq_sum": 0.07616537934512124,
       "positive_strategy_sessions": 48,
-      "positive_strategy_session_share": 0.5333333333333333
+      "positive_strategy_session_share": 0.5393258426966292
     },
     "MIXED_MID_VOL": {
       "sessions": 79,
-      "strategy_gross_sum": 0.02529855592080954,
-      "qqq_sum": 0.03376468497075624,
+      "strategy_gross_sum": 0.025298241154775747,
+      "qqq_sum": 0.033764578150938473,
       "positive_strategy_sessions": 45,
       "positive_strategy_session_share": 0.569620253164557
     },
     "BULL_LOW_VOL": {
       "sessions": 34,
-      "strategy_gross_sum": -0.11630827595472737,
-      "qqq_sum": -0.038769425318242456,
+      "strategy_gross_sum": -0.11630910534510241,
+      "qqq_sum": -0.038769701781700805,
       "positive_strategy_sessions": 16,
       "positive_strategy_session_share": 0.47058823529411764
     },
     "MIXED_LOW_VOL": {
       "sessions": 10,
-      "strategy_gross_sum": 0.10788276670621177,
-      "qqq_sum": 0.035960922235403925,
+      "strategy_gross_sum": 0.1078836626368681,
+      "qqq_sum": 0.035961220878956035,
       "positive_strategy_sessions": 7,
       "positive_strategy_session_share": 0.7
     },
     "BULL_HIGH_VOL": {
       "sessions": 27,
-      "strategy_gross_sum": -0.06805624595253879,
-      "qqq_sum": -0.030487997057109917,
+      "strategy_gross_sum": -0.06805651875749275,
+      "qqq_sum": -0.03048808799209457,
       "positive_strategy_sessions": 11,
       "positive_strategy_session_share": 0.4074074074074074
     },
     "MIXED_HIGH_VOL": {
-      "sessions": 11,
-      "strategy_gross_sum": 0.07990109606595766,
-      "qqq_sum": 0.07417434166647952,
+      "sessions": 12,
+      "strategy_gross_sum": 0.055837366268548766,
+      "qqq_sum": 0.06214247676777507,
       "positive_strategy_sessions": 7,
-      "positive_strategy_session_share": 0.6363636363636364
+      "positive_strategy_session_share": 0.5833333333333334
     }
   },
   "semantics": "Descriptive predeclared mechanical regime decomposition of gross replay returns. The volatility bins are reporting thresholds only, not frozen-model thresholds. Sums are diagnostics, not compounded CAGR or alpha.",

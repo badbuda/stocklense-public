@@ -2,6 +2,13 @@
   "schema_version": 1,
   "items": [
     {
+      "short_sha": "03c0e01",
+      "date": "2026-11-14T03:33:23Z",
+      "title": "shadow: record prospective evidence 2026-11-13",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
       "short_sha": "fc659e0",
       "date": "2026-11-13T03:36:42Z",
       "title": "shadow: record prospective evidence 2026-11-12",
@@ -76,18 +83,18 @@
       "date": "2026-11-07T23:29:39+02:00",
       "title": "research: add verified Yahoo NDX fallback for FRED timeout",
       "kind": "PROJECT",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "7d1e9af",
-      "date": "2026-11-07T23:27:21+02:00",
-      "title": "ci: run 1986 FRED research builder as module",
-      "kind": "FIX",
       "impact": "Repository change; CI validation is separate."
     }
   ],
   "high_signal_items": [
     {
+      "short_sha": "03c0e01",
+      "date": "2026-11-14T03:33:23Z",
+      "title": "shadow: record prospective evidence 2026-11-13",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
       "short_sha": "fc659e0",
       "date": "2026-11-13T03:36:42Z",
       "title": "shadow: record prospective evidence 2026-11-12",
@@ -163,16 +170,16 @@
       "title": "research: add verified Yahoo NDX fallback for FRED timeout",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "7d1e9af",
-      "date": "2026-11-07T23:27:21+02:00",
-      "title": "ci: run 1986 FRED research builder as module",
-      "kind": "FIX",
-      "impact": "Repository change; CI validation is separate."
     }
   ],
   "recent_summary": [
+    {
+      "short_sha": "03c0e01",
+      "date": "2026-11-14T03:33:23Z",
+      "title": "shadow: record prospective evidence 2026-11-13",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
     {
       "short_sha": "fc659e0",
       "date": "2026-11-13T03:36:42Z",
@@ -184,13 +191,6 @@
       "short_sha": "bf19a85",
       "date": "2026-11-12T04:04:02Z",
       "title": "shadow: record prospective evidence 2026-11-11",
-      "kind": "PROJECT",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "4e676e2",
-      "date": "2026-11-11T10:50:08+02:00",
-      "title": "fix(portal): align CDN freshness E2E with real dashboard fetch",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     }

@@ -3,41 +3,41 @@
   "alerts": [],
   "diagnostics": {
     "close": {
-      "relative_change": 0.01203186489870445,
+      "relative_change": 0.026680807568290985,
       "absolute_limit": 0.15,
-      "rolling_median_change": 0.00758267750237856,
-      "rolling_mad": 0.004628318104087383,
+      "rolling_median_change": 0.008026008695791495,
+      "rolling_mad": 0.004770037359818374,
       "effective_limit": 0.15
     },
     "sma50": {
-      "relative_change": 0.0010308975322885195,
+      "relative_change": 0.0015733632250921439,
       "absolute_limit": 0.05,
-      "rolling_median_change": 0.0005290301489209864,
-      "rolling_mad": 0.00036560093396821055,
+      "rolling_median_change": 0.0005521113685536963,
+      "rolling_mad": 0.000372321037745235,
       "effective_limit": 0.05
     },
     "sma200": {
-      "relative_change": 0.00038620593236201846,
+      "relative_change": 0.00030821110504031403,
       "absolute_limit": 0.02,
-      "rolling_median_change": 0.0007891305646869882,
-      "rolling_mad": 0.00011670190629228518,
+      "rolling_median_change": 0.0007891303401462092,
+      "rolling_mad": 0.00011670145387924092,
       "effective_limit": 0.02
     },
     "vol20": {
-      "relative_change": 0.021630331941493334,
+      "relative_change": 0.018015662904176864,
       "absolute_limit": 0.75,
-      "rolling_median_change": 0.022564204694858644,
-      "rolling_mad": 0.016518620611362108,
+      "rolling_median_change": 0.022302191655107134,
+      "rolling_mad": 0.014862443753184872,
       "effective_limit": 0.75
     },
     "mom12": {
-      "relative_change": 0.11140801166233662,
+      "relative_change": 0.07045595025724637,
       "absolute_limit": 0.75,
-      "rolling_median_change": 0.04092455804611301,
-      "rolling_mad": 0.02169186805458903,
+      "rolling_median_change": 0.04242779882820091,
+      "rolling_mad": 0.023703583233195595,
       "effective_limit": 0.75
     }
   },
-  "sessions_available": 252,
+  "sessions_available": 251,
   "policy": "absolute safety limits plus robust rolling baseline; never changes frozen model"
 }

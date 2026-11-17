@@ -8,33 +8,33 @@
     "TQQQ": 1197
   },
   "target_positions": {
-    "QQQ": 71,
-    "TQQQ": 598
+    "QQQ": 128,
+    "TQQQ": 149
   },
   "reference_prices": {
-    "QQQ": 679.8900146484375,
+    "QQQ": 661.75,
     "TQQQ": 81.27999877929688
   },
   "orders": [
     {
-      "session": "2026-11-16",
+      "session": "2026-11-17",
       "symbol": "TQQQ",
       "side": "SELL",
-      "quantity": 599,
+      "quantity": 1048,
       "reason": "TARGET_REBALANCE",
-      "target_leverage": 2.0,
-      "idempotency_key": "39403e7c14ebfb26f7b6c44ace4e59c1080604b979f156ca0888fb51faf9bb23",
+      "target_leverage": 1.25,
+      "idempotency_key": "1bd7ae442c6c63e9bfd54b31cf5f9812312de3f7a759c19e038366f1ad8f657c",
       "status": "PLANNED",
       "dry_run": true
     },
     {
-      "session": "2026-11-16",
+      "session": "2026-11-17",
       "symbol": "QQQ",
       "side": "BUY",
-      "quantity": 71,
+      "quantity": 128,
       "reason": "TARGET_REBALANCE",
-      "target_leverage": 2.0,
-      "idempotency_key": "39eb7ac572645b1aaecc5a9c32093527c554764f7c00f64c361b22ba2214c6db",
+      "target_leverage": 1.25,
+      "idempotency_key": "0bd0151743ab4adee4211fc27ae86d9962f81cf33daf6b86130533204869c327",
       "status": "PLANNED",
       "dry_run": true
     }
@@ -45,23 +45,23 @@
     "live_submission_authorized": false,
     "orders": [
       {
-        "order_id": "aed58cbf86bd58da63b0",
-        "idempotency_key": "39403e7c14ebfb26f7b6c44ace4e59c1080604b979f156ca0888fb51faf9bb23",
-        "session": "2026-11-16",
+        "order_id": "40b515c9420b69d5c8ae",
+        "idempotency_key": "1bd7ae442c6c63e9bfd54b31cf5f9812312de3f7a759c19e038366f1ad8f657c",
+        "session": "2026-11-17",
         "symbol": "TQQQ",
         "side": "SELL",
-        "quantity": 599,
+        "quantity": 1048,
         "status": "PLANNED",
         "broker_order_id": null,
         "filled_quantity": 0
       },
       {
-        "order_id": "4e98d8143e3c923837fe",
-        "idempotency_key": "39eb7ac572645b1aaecc5a9c32093527c554764f7c00f64c361b22ba2214c6db",
-        "session": "2026-11-16",
+        "order_id": "b944badc7b767ed04da5",
+        "idempotency_key": "0bd0151743ab4adee4211fc27ae86d9962f81cf33daf6b86130533204869c327",
+        "session": "2026-11-17",
         "symbol": "QQQ",
         "side": "BUY",
-        "quantity": 71,
+        "quantity": 128,
         "status": "PLANNED",
         "broker_order_id": null,
         "filled_quantity": 0
@@ -73,15 +73,15 @@
     "differences": [
       {
         "symbol": "QQQ",
-        "expected": 71,
+        "expected": 128,
         "actual": 0,
-        "delta": -71
+        "delta": -128
       },
       {
         "symbol": "TQQQ",
-        "expected": 598,
+        "expected": 149,
         "actual": 1197,
-        "delta": 599
+        "delta": 1048
       }
     ],
     "live_gate_eligible": false,
@@ -96,21 +96,21 @@
   "execution_windows": {
     "sell": {
       "status": "UPCOMING",
-      "seconds_to_window": 212262,
-      "session": "2026-11-16",
+      "seconds_to_window": 33192,
+      "session": "2026-11-17",
       "side": "SELL",
-      "time_et": "2026-11-16T09:31:00-05:00",
-      "time_utc": "2026-11-16T14:31:00+00:00",
+      "time_et": "2026-11-17T09:31:00-05:00",
+      "time_utc": "2026-11-17T14:31:00+00:00",
       "market_timezone": "America/New_York",
       "calendar": "XNYS"
     },
     "buy": {
       "status": "UPCOMING",
-      "seconds_to_window": 212322,
-      "session": "2026-11-16",
+      "seconds_to_window": 33252,
+      "session": "2026-11-17",
       "side": "BUY",
-      "time_et": "2026-11-16T09:32:00-05:00",
-      "time_utc": "2026-11-16T14:32:00+00:00",
+      "time_et": "2026-11-17T09:32:00-05:00",
+      "time_utc": "2026-11-17T14:32:00+00:00",
       "market_timezone": "America/New_York",
       "calendar": "XNYS"
     }
@@ -120,28 +120,28 @@
     "windows": {
       "sell": {
         "status": "UPCOMING",
-        "seconds_to_window": 212262,
-        "session": "2026-11-16",
+        "seconds_to_window": 33192,
+        "session": "2026-11-17",
         "side": "SELL",
-        "time_et": "2026-11-16T09:31:00-05:00",
-        "time_utc": "2026-11-16T14:31:00+00:00",
+        "time_et": "2026-11-17T09:31:00-05:00",
+        "time_utc": "2026-11-17T14:31:00+00:00",
         "market_timezone": "America/New_York",
         "calendar": "XNYS"
       },
       "buy": {
         "status": "UPCOMING",
-        "seconds_to_window": 212322,
-        "session": "2026-11-16",
+        "seconds_to_window": 33252,
+        "session": "2026-11-17",
         "side": "BUY",
-        "time_et": "2026-11-16T09:32:00-05:00",
-        "time_utc": "2026-11-16T14:32:00+00:00",
+        "time_et": "2026-11-17T09:32:00-05:00",
+        "time_utc": "2026-11-17T14:32:00+00:00",
         "market_timezone": "America/New_York",
         "calendar": "XNYS"
       }
     }
   },
   "no_change_tolerance_applied": false,
-  "pretrade_target_weight_gap": 0.4932683128442423,
+  "pretrade_target_weight_gap": 0.8626433128442422,
   "price_semantics": "INDICATIVE_LAST_PUBLISHED_REFERENCE_NOT_NEXT_SESSION_09_31_09_32",
   "note": "Dry-run plan only. No live broker order is submitted."
 }
