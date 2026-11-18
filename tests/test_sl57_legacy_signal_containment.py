@@ -1,5 +1,8 @@
 """Deterministic fail-closed regression for legacy ST-only Signal containment."""
 import io
+from datetime import datetime, timezone
+
+NOW = datetime(2026, 11, 18, 19, 0, tzinfo=timezone.utc)
 import json
 from types import SimpleNamespace
 import pytest
@@ -81,7 +84,7 @@ def fake(*, prod_enabled=False, st_source=True, errors=True):
 
 def test_inspect_is_read_only_and_evidence_bound():
     c, changes, _ = fake()
-    out = m.run(c, "inspect")
+    out = m.run(c, "inspect", now=NOW)
     assert out["status"] == "ST_ONLY_LEGACY_SIGNAL_PAUSE_ELIGIBLE_NOT_EXECUTED"
     assert out["st_verified_signal"]["session"] == "2026-11-17"
     assert out["aws_mutations"] is False
@@ -91,9 +94,9 @@ def test_inspect_is_read_only_and_evidence_bound():
 def test_pause_requires_explicit_approval_and_disables_only_old_signal():
     c, changes, stacks = fake()
     with pytest.raises(RuntimeError, match="EXPLICIT_OPERATOR_APPROVAL_REQUIRED"):
-        m.run(c, "pause", approved=False)
+        m.run(c, "pause", approved=False, now=NOW)
     assert changes == []
-    out = m.run(c, "pause", approved=True)
+    out = m.run(c, "pause", approved=True, now=NOW)
     assert out["status"] == "LEGACY_STAGING_SIGNAL_SCHEDULE_PAUSED_NOT_PAPER_RECOVERY"
     assert changes == [stacks[m.LEGACY]["CandidateSignalOnlyRuleName"]]
     assert out["alarms_untouched"] and out["paper_and_watchdog_untouched"]
@@ -118,4 +121,12 @@ def test_wrong_account_denied_before_any_stack_read():
         describe_stacks=lambda **kwargs: pytest.fail("stack access on wrong account"))
     with pytest.raises(RuntimeError, match="WRONG_ACCOUNT"):
         m.run(c, "inspect")
+    assert changes == []
+
+
+def test_stale_2026_evidence_expires_without_aws_mutation():
+    c, changes, _ = fake()
+    with pytest.raises(RuntimeError, match="LEGACY_CONTAINMENT_EVIDENCE_EXPIRED"):
+        m.run(c, "pause", approved=True,
+              now=datetime(2026, 11, 19, 14, 31, tzinfo=timezone.utc))
     assert changes == []

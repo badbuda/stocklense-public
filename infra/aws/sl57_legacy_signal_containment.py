@@ -25,6 +25,8 @@ PROD_BUCKET = "stocklens-prod-candidatedata-c3yge4ymwb7u"
 ST_SIGNAL = "stocklens-st-candidate"
 LEGACY_SIGNAL = "stocklens-independent-staging-candidate"
 PROOF_SESSION = "2026-11-17"
+# This evidence is only sufficient until the next XNYS open; never use stale proof.
+PROOF_EXPIRES_UTC = datetime(2026, 11, 19, 14, 30, tzinfo=timezone.utc)
 ST_SIGNAL_CRON = "cron(30 5,8,11,12 ? * TUE-SAT *)"
 OLD_SIGNAL_CRON = "cron(30 2 ? * TUE-SAT *)"
 RULE_KEYS = ("CandidateSignalOnlyRuleName", "CandidatePaperOnlyRuleName",
@@ -117,7 +119,10 @@ def prove_errors(logs):
             "source": "AWS_CLOUDWATCH_LOGS_NOT_REPLAYED"}
 
 
-def preflight(c):
+def preflight(c, *, now=None):
+    now = now or datetime.now(timezone.utc)
+    require(now.tzinfo is not None and now.astimezone(timezone.utc) < PROOF_EXPIRES_UTC,
+            "LEGACY_CONTAINMENT_EVIDENCE_EXPIRED")
     require(c["sts"].get_caller_identity().get("Account") == ACCOUNT, "WRONG_ACCOUNT")
     cf, ev, lam = c["cloudformation"], c["events"], c["lambda"]
     st, old, prod = (outputs(cf, name) for name in (ST, LEGACY, PROD))
@@ -153,15 +158,15 @@ def preflight(c):
     }
 
 
-def run(c, mode, approved=False):
+def run(c, mode, approved=False, *, now=None):
     require(mode in ("inspect", "pause"), "UNKNOWN_MODE")
     require((mode == "pause") == approved, "EXPLICIT_OPERATOR_APPROVAL_REQUIRED")
-    check = preflight(c)
+    check = preflight(c, now=now)
     check["mode"] = mode
     if mode == "inspect":
         check["aws_mutations"] = False
         return check
-    fresh = preflight(c)
+    fresh = preflight(c, now=now)
     require(fresh["legacy_rule"] == check["legacy_rule"] and
             fresh["st_verified_signal"]["sha256"] == check["st_verified_signal"]["sha256"],
             "CONCURRENT_EVIDENCE_CHANGE_REVIEW_REQUIRED")
