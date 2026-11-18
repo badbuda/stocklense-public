@@ -9,7 +9,7 @@ from infra.aws import st_paper_operational_blockers_readonly as mod
 
 
 def mock_cloud(*, paper_enabled=False, prod_enabled=False, continuity=False,
-               signal_present=True, wrong_account=False):
+               signal_present=True, wrong_account=False, version_missing=False):
     calls = []
     st = {"CandidateDataBucket": mod.BUCKET}
     prod = {"CandidateDataBucket": mod.PROD_BUCKET}
@@ -39,13 +39,31 @@ def mock_cloud(*, paper_enabled=False, prod_enabled=False, continuity=False,
         raw = json.dumps({"test_record": True}).encode()
         return {"VersionId": "v1", "ContentLength": len(raw),
                 "Body": io.BytesIO(raw)}
+    st["CandidateFunctionName"] = "st-signal"
+    st["CandidatePaperFunctionName"] = "st-paper"
+    def version_list(**kwargs):
+        is_continuity = "continuity" in kwargs["Prefix"]
+        should_be_missing = version_missing or (is_continuity and not continuity)
+        return {"Versions": ([] if should_be_missing else
+                             [{"Key": kwargs["Prefix"], "VersionId": "v1",
+                               "IsLatest": True}]), "IsTruncated": False}
     services = {
         "sts": SimpleNamespace(get_caller_identity=lambda: {
             "Account": "WRONG" if wrong_account else mod.ACCOUNT}),
         "cloudformation": SimpleNamespace(describe_stacks=stack),
         "events": SimpleNamespace(describe_rule=drule),
         "s3": SimpleNamespace(get_bucket_versioning=lambda **kw: {"Status": "Enabled"},
-                              get_object=obj),
+                              get_object=obj, list_object_versions=version_list),
+        "lambda": SimpleNamespace(
+            get_function_configuration=lambda FunctionName: {
+                "FunctionName": FunctionName, "State": "Active",
+                "LastUpdateStatus": "Successful",
+                "Handler": ("infra.aws.independent_paper.handler"
+                            if FunctionName == "st-paper"
+                            else "infra.aws.independent_pipeline.handler"),
+                "CodeSha256": "K" * 44, "LastModified": "2026-11-10T06:58:35Z",
+                "Environment": {"Variables": {"STOCKLENS_DATA_BUCKET": mod.BUCKET}},
+            }),
         "cloudwatch": SimpleNamespace(describe_alarms=lambda **kw:
                        {"MetricAlarms": [
                            {"AlarmName": "stocklens-st-MissedSessions", "StateValue": "ALARM"},
@@ -90,3 +108,29 @@ def test_wrong_account_rejected_before_any_stacks():
         describe_stacks=lambda **kw: pytest.fail("attempted wrong account AWS access"))
     with pytest.raises(RuntimeError, match="WRONG_ACCOUNT_STOP_ALL"):
         mod.diagnostic(c, "2026-11-17")
+
+
+def test_version_inventory_proves_missing_without_listbucket():
+    c, _ = mock_cloud()
+    def access_denied(**kw):
+        if "paper/" in kw["Key"]:
+            err = RuntimeError("403")
+            err.response = {"Error": {"Code": "AccessDenied"}}
+            raise err
+        raw = json.dumps({"source": True}).encode()
+        return {"VersionId": "v1", "ContentLength": len(raw), "Body": io.BytesIO(raw)}
+    c["s3"].get_object = access_denied
+    out = mod.diagnostic(c, "2026-11-17")
+    assert out["s3_objects"]["continuity"]["status"] == (
+        "MISSING_VERIFIED_BY_VERSION_INVENTORY")
+    assert "ST_CONTINUITY_MISSING_VERIFIED_BY_VERSION_INVENTORY" in out["blockers"]
+    assert out["aws_mutations"] is False
+
+
+def test_live_runtime_config_and_sha_are_reported_without_lambda_invoke():
+    c, _ = mock_cloud()
+    out = mod.diagnostic(c, "2026-11-17")
+    assert out["runtime_lambdas"]["paper"]["state"] == "Active"
+    assert out["runtime_lambdas"]["paper"]["handler_matches"] is True
+    assert out["runtime_lambdas"]["signal"]["bucket_matches"] is True
+    assert out["lambda_invocations"] is False
