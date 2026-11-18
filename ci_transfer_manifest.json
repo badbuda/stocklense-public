@@ -552,8 +552,8 @@
     "workbench_selfcheck.py": "4f17be6d56ac7d3cc3637e1ef2b2af3ed9d880a8",
     "yahoo_eod_scorecard.py": "137465f3ff4d9a2b8c164bf4321480c0ea0869fd",
     "yahoo_long_history.py": "e7e51b5c2f5697da5d583316638b98ec13e6114c",
-    "infra/aws/st_paper_operational_blockers_readonly.py": "d4e4ac7cff936717a76729dc2b0912cfda1902b5",
-    "tests/test_st_paper_operational_blockers_readonly.py": "5877db98bbc1059851045da3e414ace136fdb134",
+    "infra/aws/st_paper_operational_blockers_readonly.py": "b796e7f2bfbf7b2f77fcb392a92a3734b1f64922",
+    "tests/test_st_paper_operational_blockers_readonly.py": "c3c3d658f4cd89cee10e0bbb6d5346a7e9c17f1c",
     "infra/aws/sl56_live_minute_vendor_probe.py": "068e0dbc5978af721d6b2cfd4474de1172f4bae7",
     ".github/workflows/sl56-live-minute-provider-probe.yml": "f1a63850d8cf2edf4ae76b9a2a04892a9f397ba4",
     "tests/test_sl56_live_minute_vendor_probe.py": "cc590b5dff339b9b3f3a79863c3a8764f3964f99"
