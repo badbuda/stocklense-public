@@ -354,3 +354,46 @@ def test_only_epoch2_keys_and_no_auto_aws_or_broker_connection():
     assert "execute_change_set(" not in source
     assert ".enable_rule(" not in source
     assert ".disable_rule(" not in source
+
+
+def test_delete_marker_cannot_be_treated_as_empty_receipt_key():
+    class DeletedKey(FakeS3):
+        def head_object(self, *, Bucket, Key):
+            exc = S3Error("404")
+            exc.response["ResponseMetadata"] = {
+                "HTTPHeaders": {"x-amz-delete-marker": "true"}
+            }
+            raise exc
+
+    book, s3, _ = store(s3=DeletedKey())
+    with pytest.raises(m.EpochStorageBlocked, match="IMMUTABLE_KEY_DELETE_MARKER"):
+        book.create_genesis(policy())
+    assert s3.writes == []
+
+
+@pytest.mark.parametrize("raw", [
+    b'{ "book": "fake" }',
+    b'{"book":"old","book":"forged"}',
+    b'{"cash":NaN}',
+])
+def test_noncanonical_receipts_fail_closed_without_writes(raw):
+    book, s3, _ = store()
+    s3.objects[m.GENESIS] = ("verified-version", raw)
+    with pytest.raises(m.EpochStorageBlocked, match="NON_CANONICAL_RECEIPT"):
+        book.read(m.GENESIS)
+    assert s3.writes == []
+
+
+def test_receipt_sha_metadata_mismatch_fails_closed():
+    class WrongMetadata(FakeS3):
+        def head_object(self, *, Bucket, Key):
+            meta = super().head_object(Bucket=Bucket, Key=Key)
+            meta["Metadata"] = {"sha256": "0" * 64}
+            return meta
+
+    s3 = WrongMetadata()
+    s3.objects[m.GENESIS] = ("verified-version", m.encode({"book": epoch.NEW_BOOK}))
+    book, _, _ = store(s3=s3)
+    with pytest.raises(m.EpochStorageBlocked, match="RECEIPT_METADATA_SHA_MISMATCH"):
+        book.read(m.GENESIS)
+    assert s3.writes == []
