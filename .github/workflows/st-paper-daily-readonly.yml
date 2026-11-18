@@ -33,10 +33,14 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      # The dedicated role was provisioned by the operator. Its ARN is public
+      # infrastructure metadata, NOT an AWS credential. Prefer repository
+      # variable when defined; the pinned fallback permits the already-created
+      # role to be audited without requiring gh CLI authentication in CloudShell.
       - name: Verify configured AWS read-only identity
         shell: bash
         env:
-          ROLE_ARN: ${{ vars.AWS_STOCKLENS_ST_AUDIT_ROLE_ARN }}
+          ROLE_ARN: ${{ vars.AWS_STOCKLENS_ST_AUDIT_ROLE_ARN || 'arn:aws:iam::634740393398:role/stocklens-st-paper-audit--GitHubSTPaperAcceptanceRo-CbZTBKwqwUJg' }}
         run: |
           set -euo pipefail
           test -n "$ROLE_ARN" || {
@@ -47,7 +51,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: eu-central-1
-          role-to-assume: ${{ vars.AWS_STOCKLENS_ST_AUDIT_ROLE_ARN }}
+          role-to-assume: ${{ vars.AWS_STOCKLENS_ST_AUDIT_ROLE_ARN || 'arn:aws:iam::634740393398:role/stocklens-st-paper-audit--GitHubSTPaperAcceptanceRo-CbZTBKwqwUJg' }}
           role-session-name: stocklens-st-daily-readonly
       - name: Check actual latest completed Shadow date against live ST Paper
         shell: bash
