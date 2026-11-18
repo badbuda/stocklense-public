@@ -16,7 +16,7 @@
     ".github/workflows/shadow.yml": "ec3c59e952830c4457df0fd0b380b79e4f961e5b",
     ".github/workflows/st-3x-amplify-acceptance.yml": "8f1f5e33aeef673c373996e0ba9c1d64ce61a356",
     ".github/workflows/st-combo-amplify-acceptance.yml": "e40a54512ab00b52d8d4f56beb0a7b4d8349368c",
-    ".github/workflows/st-paper-daily-readonly.yml": "590aa82fea72b34837b5f1b8bb365da8e22eb9c3",
+    ".github/workflows/st-paper-daily-readonly.yml": "18e78a0c079c6d29d6fce7eefa943c4422f97ffd",
     ".github/workflows/st-real-3x-research.yml": "e41cccc8bcb99922a1c9371fcd9f30a1bd18a6bd",
     ".github/workflows/st-real-etf-combinations.yml": "cafb10db543f024314353b5a07e8b456b27e23df",
     ".github/workflows/st-video-tqqq-sqqq-overlays.yml": "63d3fb59183209755f2b3a697791f5cea098e54f",
@@ -551,6 +551,8 @@
     "workbench_evidence_manifest.py": "7e290add5dcb861b0d4bdbed81cc7e4308ff4683",
     "workbench_selfcheck.py": "4f17be6d56ac7d3cc3637e1ef2b2af3ed9d880a8",
     "yahoo_eod_scorecard.py": "137465f3ff4d9a2b8c164bf4321480c0ea0869fd",
-    "yahoo_long_history.py": "e7e51b5c2f5697da5d583316638b98ec13e6114c"
+    "yahoo_long_history.py": "e7e51b5c2f5697da5d583316638b98ec13e6114c",
+    "infra/aws/st_paper_operational_blockers_readonly.py": "d4e4ac7cff936717a76729dc2b0912cfda1902b5",
+    "tests/test_st_paper_operational_blockers_readonly.py": "5877db98bbc1059851045da3e414ace136fdb134"
   }
 }
