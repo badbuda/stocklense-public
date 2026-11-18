@@ -10,6 +10,7 @@ on:
     paths:
       - '.github/workflows/st-paper-daily-readonly.yml'
       - 'infra/aws/st_paper_closeout_readonly.py'
+      - 'infra/aws/st_paper_operational_blockers_readonly.py'
       - 'infra/aws/st-github-paper-audit-role.yaml'
   # 14:15 UTC Tuesday-Saturday, one hour+ after scheduled ST Paper.
   # Includes overnight Monday session via Tuesday and Friday via Saturday.
@@ -53,6 +54,37 @@ jobs:
           aws-region: eu-central-1
           role-to-assume: ${{ vars.AWS_STOCKLENS_ST_AUDIT_ROLE_ARN || 'arn:aws:iam::634740393398:role/stocklens-st-paper-audit--GitHubSTPaperAcceptanceRo-CbZTBKwqwUJg' }}
           role-session-name: stocklens-st-daily-readonly
+      - name: Snapshot all Paper scheduler, alarm and S3 blockers (read only)
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --quiet boto3
+          session="$(python - <<'PY'
+          import json
+          from pathlib import Path
+          print(json.loads(Path('docs/data.json').read_text())['signal']['asof_date'])
+          PY
+          )"
+          python infra/aws/st_paper_operational_blockers_readonly.py --session "$session" > "$RUNNER_TEMP/st-blockers.json"
+          python - "$RUNNER_TEMP/st-blockers.json" "$GITHUB_STEP_SUMMARY" <<'PY'
+          import json,sys
+          from pathlib import Path
+          d=json.loads(Path(sys.argv[1]).read_text())
+          with Path(sys.argv[2]).open('a') as out:
+              out.write("### Independent Paper operational blockers (not acceptance)\n\n")
+              out.write("Session: "+str(d.get("session"))+"\n\n")
+              for key,entry in d.get("schedules",{}).items():
+                  out.write("- "+key+": "+str(entry["state"])+" (cron match: "+
+                            str(entry["cron_match"])+")\n")
+              out.write("\nNon-OK ST alarms: "+
+                        ", ".join(a["name"]+"="+str(a["state"])
+                                  for a in d.get("alarms_non_ok",[]))+"\n\n")
+              for key,entry in d.get("s3_objects",{}).items():
+                  out.write("- S3 "+key+": "+entry["status"]+"\n")
+              out.write("\n**Not proof of Paper readiness.** "+
+                        ", ".join(d.get("blockers",[]))+"\n\n")
+          print("ST_OPERATIONAL_BLOCKERS",d["status"],d.get("blockers"))
+          PY
       - name: Check actual latest completed Shadow date against live ST Paper
         shell: bash
         run: |
