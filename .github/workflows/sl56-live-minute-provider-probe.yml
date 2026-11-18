@@ -1,0 +1,23 @@
+name: SL-56 Live Minute Provider Qualification (no AWS mutations)
+on:
+  pull_request:
+    paths:
+      - 'infra/aws/sl56_live_minute_vendor_probe.py'
+      - '.github/workflows/sl56-live-minute-provider-probe.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  no-aws-minute-data-probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install current provider and calendar
+        run: python -m pip install --quiet "yfinance>=0.2.60" "pandas>=2.0,<3" "exchange_calendars>=4,<5"
+      - name: Probe real observed minute QQQ and TQQQ against frozen Paper gate
+        run: |
+          PYTHONPATH=. python infra/aws/sl56_live_minute_vendor_probe.py --session 2026-11-16 --session 2026-11-17
