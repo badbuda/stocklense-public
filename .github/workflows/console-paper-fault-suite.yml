@@ -1,0 +1,37 @@
+name: StockLens CloudShell Paper Fault Suite (offline)
+on:
+  pull_request:
+    paths:
+      - 'infra/aws/st_cloudshell_all_scenarios.sh'
+      - 'tests/test_st_cloudshell_all_scenarios.py'
+      - '.github/workflows/console-paper-fault-suite.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  offline-paper-scenarios:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install same scientific/test dependencies as CloudShell runner
+        run: python -m pip install --disable-pip-version-check -q 'pytest>=8,<10' 'pandas>=2,<3' 'exchange-calendars>=4,<5' 'yfinance>=0.2.60,<1' 'boto3>=1.34,<2'
+      - name: Execute exact public-module Paper fault suite (no AWS access)
+        env:
+          PYTHONPATH: '.:infra/aws'
+        run: |
+          python -m pytest -q --disable-warnings \
+            tests/test_st_paper_operational_blockers_readonly.py \
+            tests/test_st_paper_closeout_readonly.py \
+            tests/test_paper_eod_completeness.py \
+            tests/test_paper_transaction_recovery.py \
+            tests/test_paper_session_continuity.py \
+            tests/test_paper_portfolio_integrity.py \
+            tests/test_paper_execution_contract.py \
+            tests/test_aws_schedule_watchdog.py \
+            tests/test_paper_forward_audit.py \
+            tests/test_paper_reconcile_frozen_contract.py \
+            tests/test_st_cloudshell_all_scenarios.py
