@@ -2,12 +2,12 @@
   "schema_version": 1,
   "publication_identity": {
     "schema_version": 2,
-    "git_sha": "d6003dc42dbcb1ac7234c94aad96fd6dc1651c39",
+    "git_sha": "35e8bb2389b15e8880802f96bb4fef71ccae19c0",
     "signal_asof": null,
     "replay_dataset_sha256": "db0889da31af43b1b75e005c1f4ab2cad421dfb55a6c55a77a223e0623950d95",
-    "replay_rows_sha256": "ee9e67d02a5c8f520b2746a8954eec5528442e39218f97c4b2b6a73015590d05",
+    "replay_rows_sha256": "4f9c93596e45e03b9317bd528d99d57544299d3d1b3cfc64b75f91a39a6668b7",
     "simulator_contract_sha256": "80745a3640c6fe667a3c500571fb15abee1d532a5b720fb6efc8b52f291dfc68",
-    "generation_id": "47bd04bd2982d640f1df4d6d92f6d86a1ef7c44a21d6b8139c8a160ee180151a"
+    "generation_id": "1a1bf3493cb6e1c709091bd78974187f54de0d732a4f43b7d46993470799c2a3"
   },
   "status": "PASS",
   "regime_definition": {
@@ -15,47 +15,47 @@
     "volatility": "Diagnostic buckets: LOW <15%; MID 15%-25%; HIGH >=25% using VOL20. These 15%/25% cutoffs are fixed reporting bins, NOT StockLens 8.0 decision thresholds."
   },
   "regimes": {
-    "BULL_MID_VOL": {
-      "sessions": 94,
-      "strategy_gross_sum": 0.2137993881360859,
-      "qqq_sum": 0.07126646271202863,
-      "positive_strategy_sessions": 49,
-      "positive_strategy_session_share": 0.5212765957446809
-    },
     "MIXED_MID_VOL": {
       "sessions": 79,
-      "strategy_gross_sum": 0.025298254409944043,
-      "qqq_sum": 0.033764582569327906,
+      "strategy_gross_sum": 0.025298740608472647,
+      "qqq_sum": 0.03376468445176106,
       "positive_strategy_sessions": 45,
       "positive_strategy_session_share": 0.569620253164557
     },
+    "BULL_MID_VOL": {
+      "sessions": 87,
+      "strategy_gross_sum": 0.2518484488076377,
+      "qqq_sum": 0.08394948293587923,
+      "positive_strategy_sessions": 47,
+      "positive_strategy_session_share": 0.5402298850574713
+    },
     "BULL_LOW_VOL": {
       "sessions": 34,
-      "strategy_gross_sum": -0.11630910534510241,
-      "qqq_sum": -0.038769701781700805,
+      "strategy_gross_sum": -0.1163079643867333,
+      "qqq_sum": -0.03876932146224443,
       "positive_strategy_sessions": 16,
       "positive_strategy_session_share": 0.47058823529411764
     },
     "MIXED_LOW_VOL": {
       "sessions": 10,
-      "strategy_gross_sum": 0.1078836626368681,
-      "qqq_sum": 0.035961220878956035,
+      "strategy_gross_sum": 0.1078830553638872,
+      "qqq_sum": 0.03596101845462907,
       "positive_strategy_sessions": 7,
       "positive_strategy_session_share": 0.7
     },
     "BULL_HIGH_VOL": {
       "sessions": 27,
-      "strategy_gross_sum": -0.06805651875749275,
-      "qqq_sum": -0.03048808799209457,
+      "strategy_gross_sum": -0.06805624595253879,
+      "qqq_sum": -0.030487997057109917,
       "positive_strategy_sessions": 11,
       "positive_strategy_session_share": 0.4074074074074074
     },
     "MIXED_HIGH_VOL": {
-      "sessions": 7,
-      "strategy_gross_sum": 0.021516895684023818,
-      "qqq_sum": 0.025546280914489405,
-      "positive_strategy_sessions": 5,
-      "positive_strategy_session_share": 0.7142857142857143
+      "sessions": 13,
+      "strategy_gross_sum": 0.00247575113196688,
+      "qqq_sum": 0.035461669199484125,
+      "positive_strategy_sessions": 7,
+      "positive_strategy_session_share": 0.5384615384615384
     }
   },
   "semantics": "Descriptive predeclared mechanical regime decomposition of gross replay returns. The volatility bins are reporting thresholds only, not frozen-model thresholds. Sums are diagnostics, not compounded CAGR or alpha.",

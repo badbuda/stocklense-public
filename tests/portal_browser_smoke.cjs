@@ -28,17 +28,30 @@ try{
  assert.equal((await page.locator('.page.visible').getAttribute('data-view')),'overview');
  assert.match(await page.locator('#kpi-nav').textContent(),/^\$/);
  assert.match(await page.locator('#readiness-clarity').textContent(),/אין אישור למסחר אמיתי/);
+ // Match the real portal's versioned readOptional() requests: a CDN can
+ // have an old unversioned JSON edge object even when the main-source bytes
+ // and the browser's actual ?v=Date.now() data feed are synchronized.
  const governance=await page.evaluate(async()=>{
+   const fetchLive=async path=>{
+     const url=path+'?e2e_fresh='+Date.now()+'-'+Math.random().toString(36).slice(2);
+     const res=await fetch(url,{cache:'no-store'});
+     if(!res.ok)throw Error('E2E_LIVE_FEED_HTTP:'+path+':'+res.status);
+     return res.json();
+   };
    const [d,h,r]=await Promise.all([
-     fetch('data.json',{cache:'no-store'}).then(x=>x.json()),
-     fetch('portal-history.json',{cache:'no-store'}).then(x=>x.json()),
-     fetch('observed_tqqq_risk_audit.json',{cache:'no-store'}).then(x=>x.json())
+     fetchLive('data.json'),
+     fetchLive('portal-history.json'),
+     fetchLive('observed_tqqq_risk_audit.json')
    ]);
    return {paper:d.paper.sessions,research:d.capital_readiness.prospective_completed_sessions,
      cum:d.paper.latest.cumulative_return,technical:d.capital_readiness.technical_checks_pass,
      signalSession:d.signal.asof_date,paperSession:d.paper.latest.session_date,
      historySession:h.updated_session,riskSession:r.period.end};
  });
+ console.log('PORTAL_E2E_LIVE_FEED_COHORT',JSON.stringify({
+   signal:governance.signalSession,paper:governance.paperSession,
+   history:governance.historySession,risk:governance.riskSession
+ }));
  assert.ok(governance.signalSession,'No published signal session');
  const paperArchiveStale=governance.paperSession!==governance.signalSession;
  // A stale *archival* Paper is an expected, explicitly degraded data state.
