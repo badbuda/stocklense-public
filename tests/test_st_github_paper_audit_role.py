@@ -46,6 +46,11 @@ def test_no_iam_or_s3_mutation_role_permissions():
 def test_st_daily_acceptance_runs_only_after_paper_slot():
     source=WORKFLOW.read_text()
     assert "vars.AWS_STOCKLENS_ST_AUDIT_ROLE_ARN" in source
+    # A CloudFormation-provisioned role ARN is not an AWS secret. The fallback
+    # only chooses the new dedicated ST role, never the legacy Shadow role.
+    pinned = "arn:aws:iam::634740393398:role/stocklens-st-paper-audit--GitHubSTPaperAcceptanceRo-CbZTBKwqwUJg"
+    assert source.count("vars.AWS_STOCKLENS_ST_AUDIT_ROLE_ARN || '") == 2
+    assert source.count(pinned) == 2
     assert "vars.AWS_STOCKLENS_AUDIT_ROLE_ARN" not in source
     assert "workflow_run:" not in source
     assert "cron: '15 14 * * 2-6'" in source
