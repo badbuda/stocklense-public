@@ -2,12 +2,12 @@
   "schema_version": 2,
   "publication_identity": {
     "schema_version": 2,
-    "git_sha": "03c0e0184a5d5ea3ad207a1b22a252724799b327",
+    "git_sha": "35e8bb2389b15e8880802f96bb4fef71ccae19c0",
     "signal_asof": null,
     "replay_dataset_sha256": "db0889da31af43b1b75e005c1f4ab2cad421dfb55a6c55a77a223e0623950d95",
-    "replay_rows_sha256": "789f4b8e7ec5ffffa634344ce1db00ee20b849b1aa41ccd2263420558365a9eb",
+    "replay_rows_sha256": "4f9c93596e45e03b9317bd528d99d57544299d3d1b3cfc64b75f91a39a6668b7",
     "simulator_contract_sha256": "80745a3640c6fe667a3c500571fb15abee1d532a5b720fb6efc8b52f291dfc68",
-    "generation_id": "19368b19dca2594d16b7dcd22cfedd6ce96c43f974097becac7820336606537e"
+    "generation_id": "1a1bf3493cb6e1c709091bd78974187f54de0d732a4f43b7d46993470799c2a3"
   },
   "status": "WAITING_FOR_PAIRED_EVIDENCE",
   "paper_sessions": 2,

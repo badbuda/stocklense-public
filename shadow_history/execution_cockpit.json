@@ -8,33 +8,33 @@
     "TQQQ": 1197
   },
   "target_positions": {
-    "QQQ": 128,
+    "QQQ": 129,
     "TQQQ": 149
   },
   "reference_prices": {
-    "QQQ": 661.75,
+    "QQQ": 656.9500122070312,
     "TQQQ": 81.27999877929688
   },
   "orders": [
     {
-      "session": "2026-11-17",
+      "session": "2026-11-18",
       "symbol": "TQQQ",
       "side": "SELL",
       "quantity": 1048,
       "reason": "TARGET_REBALANCE",
       "target_leverage": 1.25,
-      "idempotency_key": "1bd7ae442c6c63e9bfd54b31cf5f9812312de3f7a759c19e038366f1ad8f657c",
+      "idempotency_key": "55e705971f4a06089eb0792eb575387acd6d8d167a409f23aba082b9b32c95ec",
       "status": "PLANNED",
       "dry_run": true
     },
     {
-      "session": "2026-11-17",
+      "session": "2026-11-18",
       "symbol": "QQQ",
       "side": "BUY",
-      "quantity": 128,
+      "quantity": 129,
       "reason": "TARGET_REBALANCE",
       "target_leverage": 1.25,
-      "idempotency_key": "0bd0151743ab4adee4211fc27ae86d9962f81cf33daf6b86130533204869c327",
+      "idempotency_key": "daa1488cc4f7b72410a91e57d438cd96adde6634281d56c4e43476204771fa24",
       "status": "PLANNED",
       "dry_run": true
     }
@@ -45,9 +45,9 @@
     "live_submission_authorized": false,
     "orders": [
       {
-        "order_id": "40b515c9420b69d5c8ae",
-        "idempotency_key": "1bd7ae442c6c63e9bfd54b31cf5f9812312de3f7a759c19e038366f1ad8f657c",
-        "session": "2026-11-17",
+        "order_id": "25c5a330d234201358f4",
+        "idempotency_key": "55e705971f4a06089eb0792eb575387acd6d8d167a409f23aba082b9b32c95ec",
+        "session": "2026-11-18",
         "symbol": "TQQQ",
         "side": "SELL",
         "quantity": 1048,
@@ -56,12 +56,12 @@
         "filled_quantity": 0
       },
       {
-        "order_id": "b944badc7b767ed04da5",
-        "idempotency_key": "0bd0151743ab4adee4211fc27ae86d9962f81cf33daf6b86130533204869c327",
-        "session": "2026-11-17",
+        "order_id": "320c11f46dced3944201",
+        "idempotency_key": "daa1488cc4f7b72410a91e57d438cd96adde6634281d56c4e43476204771fa24",
+        "session": "2026-11-18",
         "symbol": "QQQ",
         "side": "BUY",
-        "quantity": 128,
+        "quantity": 129,
         "status": "PLANNED",
         "broker_order_id": null,
         "filled_quantity": 0
@@ -73,9 +73,9 @@
     "differences": [
       {
         "symbol": "QQQ",
-        "expected": 128,
+        "expected": 129,
         "actual": 0,
-        "delta": -128
+        "delta": -129
       },
       {
         "symbol": "TQQQ",
@@ -96,21 +96,21 @@
   "execution_windows": {
     "sell": {
       "status": "UPCOMING",
-      "seconds_to_window": 33192,
-      "session": "2026-11-17",
+      "seconds_to_window": 35555,
+      "session": "2026-11-18",
       "side": "SELL",
-      "time_et": "2026-11-17T09:31:00-05:00",
-      "time_utc": "2026-11-17T14:31:00+00:00",
+      "time_et": "2026-11-18T09:31:00-05:00",
+      "time_utc": "2026-11-18T14:31:00+00:00",
       "market_timezone": "America/New_York",
       "calendar": "XNYS"
     },
     "buy": {
       "status": "UPCOMING",
-      "seconds_to_window": 33252,
-      "session": "2026-11-17",
+      "seconds_to_window": 35615,
+      "session": "2026-11-18",
       "side": "BUY",
-      "time_et": "2026-11-17T09:32:00-05:00",
-      "time_utc": "2026-11-17T14:32:00+00:00",
+      "time_et": "2026-11-18T09:32:00-05:00",
+      "time_utc": "2026-11-18T14:32:00+00:00",
       "market_timezone": "America/New_York",
       "calendar": "XNYS"
     }
@@ -120,21 +120,21 @@
     "windows": {
       "sell": {
         "status": "UPCOMING",
-        "seconds_to_window": 33192,
-        "session": "2026-11-17",
+        "seconds_to_window": 35555,
+        "session": "2026-11-18",
         "side": "SELL",
-        "time_et": "2026-11-17T09:31:00-05:00",
-        "time_utc": "2026-11-17T14:31:00+00:00",
+        "time_et": "2026-11-18T09:31:00-05:00",
+        "time_utc": "2026-11-18T14:31:00+00:00",
         "market_timezone": "America/New_York",
         "calendar": "XNYS"
       },
       "buy": {
         "status": "UPCOMING",
-        "seconds_to_window": 33252,
-        "session": "2026-11-17",
+        "seconds_to_window": 35615,
+        "session": "2026-11-18",
         "side": "BUY",
-        "time_et": "2026-11-17T09:32:00-05:00",
-        "time_utc": "2026-11-17T14:32:00+00:00",
+        "time_et": "2026-11-18T09:32:00-05:00",
+        "time_utc": "2026-11-18T14:32:00+00:00",
         "market_timezone": "America/New_York",
         "calendar": "XNYS"
       }

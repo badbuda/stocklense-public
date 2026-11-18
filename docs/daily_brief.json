@@ -7,7 +7,7 @@
   },
   "simulator": {
     "status": "PASS",
-    "sessions": 252
+    "sessions": 251
   },
   "blockers": [
     {
@@ -15,5 +15,5 @@
       "status": "BLOCKED"
     }
   ],
-  "source_git_sha": "03c0e0184a5d5ea3ad207a1b22a252724799b327"
+  "source_git_sha": "35e8bb2389b15e8880802f96bb4fef71ccae19c0"
 }

@@ -18,17 +18,17 @@
     },
     {
       "path": "shadow_history/health.json",
-      "sha256": "2b7e53b338462270244bdf0de5d1c3093b6e49d399ee69bc33bbe4e77fafb8b3",
+      "sha256": "51faad9548edf8f7000af0ca5bd5816c884e992da024878cfeb04e47bbf3c8d2",
       "bytes": 186
     },
     {
       "path": "shadow_history/readiness.json",
-      "sha256": "c7205c68755bd501c716d90e862c12a1b40726d7d1381ca9ae3603bd01a75f96",
-      "bytes": 816
+      "sha256": "79a541e232e59c276ababc508a42d8ca66e961de5f5a91fd754935594a8b68ef",
+      "bytes": 779
     },
     {
       "path": "shadow_history/qc_daily_parity.json",
-      "sha256": "f69fb12c468e20a95596c362002a65d50ae88fd868ee8d45defae20a8c3afb97",
+      "sha256": "84877c9abb828dd457ed7f9d5863746d66e2639607e134e74eae591d2dec8702",
       "bytes": 34781
     },
     {
@@ -38,13 +38,13 @@
     },
     {
       "path": "shadow_history/data_provenance.json",
-      "sha256": "a88ef49f1bea5a7a13fe3cf6262ccdf479766641d5e2fb7ff39e9273d3bcd061",
+      "sha256": "19a83081a6cee36b848531bb066b4c13ea856083323fa57ee5938697de888acc",
       "bytes": 330
     },
     {
       "path": "shadow_history/anomalies.json",
-      "sha256": "6b0cb58d9c9599a10dc39e7fae4031adbc2bd0ec1de6715778bcc0beab29a1da",
-      "bytes": 1318
+      "sha256": "b2656493104d1d7a290012b34e41dee75a7d01a8fa4b1a8352a97eaeff5accb1",
+      "bytes": 1322
     },
     {
       "path": "shadow_history/execution_audit.json",
@@ -58,17 +58,17 @@
     },
     {
       "path": "shadow_history/market_context.json",
-      "sha256": "d8e94eb4a4ed757d8ee7854f69a04ce11a026522e65a4a6088b0e9409eae1f92",
-      "bytes": 532
+      "sha256": "438c6d1fc7c354a9661254350b58fb75374d5e608500d082d8c6a300b6d3b497",
+      "bytes": 535
     },
     {
       "path": "shadow_history/context_quality.json",
-      "sha256": "450b256f6e4cbb3050ba6d528e4976eb64164593501d7cf4afe5217a19fbfdf8",
+      "sha256": "efc727645e18f7ec526a349b7209ea5a7e1426882ffb922ffb5026eccc8f11f9",
       "bytes": 268
     },
     {
       "path": "shadow_history/context_analytics.json",
-      "sha256": "c723742bd6dd75da0ea7958cbd49754f7a03975c9d4afb929a5222cb5c4c6d8e",
+      "sha256": "fe00fce819b300ae65dbe702ce7493f76545699d42859e3b8e702fa63e9d92a8",
       "bytes": 250
     }
   ],

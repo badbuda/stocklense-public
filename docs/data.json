@@ -3,26 +3,26 @@
   "model": "StockLens 8.0",
   "mode": "SHADOW_FROZEN",
   "signal": {
-    "asof_date": "2026-11-16",
-    "action": "REBALANCE_NEXT_SESSION",
+    "asof_date": "2026-11-17",
+    "action": "NO_CHANGE",
     "level": 1,
     "defense_active": false,
     "target_leverage": 1.25,
     "qqq_weight": 0.861875,
     "tqqq_weight": 0.123125,
     "cash_weight": 0.015000000000000055,
-    "generated_at_utc": "2026-11-17T05:17:38.750512+00:00",
+    "generated_at_utc": "2026-11-18T04:38:14.759308+00:00",
     "source": null,
     "features": {
-      "close": 661.75,
-      "sma50": 716.5894482421875,
-      "sma200": 681.4106283569336,
-      "vol20": 0.3603329336539503,
-      "mom12": 0.09279951135977638
+      "close": 656.9500122070312,
+      "sma50": 715.3762036132813,
+      "sma200": 681.5753076171875,
+      "vol20": 0.3603632747729868,
+      "mom12": 0.08405321751265404
     }
   },
   "market_prices": {
-    "qqq_adjusted_close": 661.75,
+    "qqq_adjusted_close": 656.9500122070312,
     "tqqq_reference_price": 81.27999877929688,
     "price_session": "2026-10-09",
     "source": "YFINANCE_1M_RAW"
@@ -132,25 +132,25 @@
     "anomaly_status": "CLEAR",
     "artifact_integrity_status": "PASS",
     "integrity_evidence_phase": "POST_READINESS_VALIDATION",
-    "signal_date": "2026-11-16",
-    "action": "REBALANCE_NEXT_SESSION",
-    "execution_required": true,
-    "execution_note": "Validated state change requires paper reconciliation.",
+    "signal_date": "2026-11-17",
+    "action": "NO_CHANGE",
+    "execution_required": false,
+    "execution_note": "No exposure change required.",
     "observational_only": true
   },
   "market_context": {
     "schema_version": 2,
     "mode": "OBSERVATIONAL_ONLY",
     "affects_frozen_signal": false,
-    "asof_date": "2026-11-16",
+    "asof_date": "2026-11-17",
     "vix": {
-      "value": 22.90999984741211,
-      "regime": "NORMAL",
+      "value": 25.459999084472656,
+      "regime": "ELEVATED",
       "source": "Yahoo Finance ^VIX",
       "status": "AVAILABLE"
     },
     "fear_greed": null,
-    "generated_at_utc": "2026-11-17T05:17:42.654731+00:00",
+    "generated_at_utc": "2026-11-18T04:38:19.386946+00:00",
     "notes": [
       "Context is observational only.",
       "Missing context never changes or blocks StockLens 8.0.",
@@ -167,21 +167,21 @@
       "trend_reentry_ratio": 1.01
     },
     "distances": {
-      "vol_to_32": -0.0403329336539503,
-      "vol_to_28": 0.08033293365395028,
-      "vol_to_42": 0.05966706634604968,
-      "vol_to_38": -0.0196670663460497,
-      "close_vs_retention_floor_pct": -0.019043267572564138,
-      "close_vs_reentry_threshold_pct": -0.038468153363206414,
-      "sma50_vs_sma200_pct": 0.051626461961826964,
-      "mom12": 0.09279951135977638
+      "vol_to_32": -0.04036327477298679,
+      "vol_to_28": 0.08036327477298677,
+      "vol_to_42": 0.05963672522701319,
+      "vol_to_38": -0.019636725227013208,
+      "close_vs_retention_floor_pct": -0.02639390908084105,
+      "close_vs_reentry_threshold_pct": -0.045673237613893636,
+      "sma50_vs_sma200_pct": 0.049592313011254774,
+      "mom12": 0.08405321751265404
     },
     "flags": [],
     "observational_only": true
   },
   "data_quality": {
     "status": "PASS",
-    "signal_date": "2026-11-16",
+    "signal_date": "2026-11-17",
     "source": null,
     "health": "GREEN",
     "qc_cross_provider_diagnostic": "EXPOSURE_ALIGNMENT_ONLY_NOT_LEAN_INPUT_PARITY",
@@ -192,7 +192,7 @@
     "lean_yahoo_exposure_overlap_days": 3662,
     "lean_same_input_parity_proven": false,
     "qc_session_coverage": 1.0,
-    "sma200_upper_hysteresis_margin_bps": -384.68153363206414,
+    "sma200_upper_hysteresis_margin_bps": -456.73237613893633,
     "sma200_upper_threshold_within_10bps": false,
     "sma200_threshold_diagnostic": "NOT_NEAR_UPPER_THRESHOLD",
     "sma200_threshold_data_source": "QQQ_ADJUSTED_SIGNAL_VENDOR_NOT_LEAN_PARITY",
@@ -212,47 +212,58 @@
   },
   "event_journal": {
     "latest": {
-      "date": "2026-11-16",
-      "action": "REBALANCE_NEXT_SESSION",
+      "date": "2026-11-17",
+      "action": "NO_CHANGE",
       "level": 1,
       "target_leverage": 1.25,
       "reasons": [
-        "QQQ -2.89% vs SMA200",
-        "VOL20 36.03%",
-        "MOM12 +9.28%",
+        "QQQ -3.61% vs SMA200",
+        "VOL20 36.04%",
+        "MOM12 +8.41%",
         "Defense OFF"
       ]
     }
   },
   "regime_analytics": {
     "status": "ACTIVE",
-    "sessions": 251,
+    "sessions": 252,
     "level_counts": {
       "3": 216,
-      "1": 17,
+      "1": 18,
       "2": 18
     },
     "defense_sessions": 0,
     "state_transitions": 7,
     "current_level": 1,
-    "current_level_streak_sessions": 1
+    "current_level_streak_sessions": 2
   },
   "change_digest": {
-    "status": "UNCHANGED",
-    "date": "2026-11-13",
-    "action": "NO_CHANGE",
-    "changes": []
+    "status": "CHANGED",
+    "date": "2026-11-16",
+    "action": "REBALANCE_NEXT_SESSION",
+    "changes": [
+      {
+        "field": "level",
+        "from": "2",
+        "to": "1"
+      },
+      {
+        "field": "target_leverage",
+        "from": "2.0",
+        "to": "1.25"
+      }
+    ]
   },
   "daily_digest": {
     "schema_version": 2,
-    "summary": "2026-11-16 | L1 1.25x | REBALANCE_NEXT_SESSION | Health GREEN | READY",
-    "signal_date": "2026-11-16",
+    "summary": "2026-11-17 | L1 1.25x | NO_CHANGE | Health GREEN | READY",
+    "signal_date": "2026-11-17",
     "level": 1,
     "leverage": 1.25,
-    "action": "REBALANCE_NEXT_SESSION",
+    "action": "NO_CHANGE",
     "health": "GREEN",
     "readiness": "READY",
-    "execution_required": true,
+    "execution_required": false,
     "benchmark_status": "ACTIVE",
     "paper": {
       "last_executed_signal_date": "2026-10-08",
@@ -377,28 +388,28 @@
     },
     "artifact_integrity_status": "PASS",
     "publication_gate_status": "ALLOW",
-    "human_attention_required": true
+    "human_attention_required": false
   },
   "slo": {
-    "signal_sessions_recorded": 18,
+    "signal_sessions_recorded": 19,
     "duplicate_signal_sessions": 0,
-    "latest_canonical_completed_session": "2026-11-16",
-    "latest_persisted_signal_session": "2026-11-16",
+    "latest_canonical_completed_session": "2026-11-17",
+    "latest_persisted_signal_session": "2026-11-17",
     "stale_vs_canonical_completed_session": false,
     "target": "one immutable validated signal per canonical completed market session",
     "status": "PASS"
   },
   "transition_explanation": {
-    "primary": "VOL20 is -1.97 pp above L1\u2192L2 and 8.03 pp above L1\u2192L3.",
-    "trend_retention_floor": 674.5965220733642,
-    "trend_reentry_threshold": 688.2247346405029,
-    "close": 661.75,
+    "primary": "VOL20 is -1.96 pp above L1\u2192L2 and 8.04 pp above L1\u2192L3.",
+    "trend_retention_floor": 674.7595545410156,
+    "trend_reentry_threshold": 688.3910606933593,
+    "close": 656.9500122070312,
     "observational_only": true
   },
   "evidence_maturity": {
     "stage": "BOOTSTRAP",
     "prospective_sessions": 2,
-    "prospective_signal_sessions": 18,
+    "prospective_signal_sessions": 19,
     "prospective_transitions": 3,
     "performance_interpretation_allowed": false,
     "strong_live_claims_allowed": false,
@@ -437,42 +448,42 @@
     "alerts": [],
     "diagnostics": {
       "close": {
-        "relative_change": 0.026680807568290985,
+        "relative_change": 0.0072534760755100115,
         "absolute_limit": 0.15,
-        "rolling_median_change": 0.008026008695791495,
-        "rolling_mad": 0.004770037359818374,
+        "rolling_median_change": 0.008220133674802125,
+        "rolling_mad": 0.005092041618217901,
         "effective_limit": 0.15
       },
       "sma50": {
-        "relative_change": 0.0015733632250921439,
+        "relative_change": 0.0016930819060792792,
         "absolute_limit": 0.05,
         "rolling_median_change": 0.0005521113685536963,
-        "rolling_mad": 0.000372321037745235,
+        "rolling_mad": 0.00039429573362925914,
         "effective_limit": 0.05
       },
       "sma200": {
-        "relative_change": 0.00030821110504031403,
+        "relative_change": 0.00024166911461826054,
         "absolute_limit": 0.02,
-        "rolling_median_change": 0.0007891303401462092,
-        "rolling_mad": 0.00011670145387924092,
+        "rolling_median_change": 0.0007891303444342566,
+        "rolling_mad": 0.00011670168227346709,
         "effective_limit": 0.02
       },
       "vol20": {
-        "relative_change": 0.018015662904176864,
+        "relative_change": 8.420301394274051e-05,
         "absolute_limit": 0.75,
         "rolling_median_change": 0.022302191655107134,
         "rolling_mad": 0.014862443753184872,
         "effective_limit": 0.75
       },
       "mom12": {
-        "relative_change": 0.07045595025724637,
+        "relative_change": 0.09424699932124182,
         "absolute_limit": 0.75,
-        "rolling_median_change": 0.04242779882820091,
-        "rolling_mad": 0.023703583233195595,
+        "rolling_median_change": 0.04242833087090975,
+        "rolling_mad": 0.025157141671992844,
         "effective_limit": 0.75
       }
     },
-    "sessions_available": 251,
+    "sessions_available": 252,
     "policy": "absolute safety limits plus robust rolling baseline; never changes frozen model"
   },
   "recovery_plan": {
@@ -485,11 +496,11 @@
   "data_provenance": {
     "status": "COMPLETE",
     "source": "YFINANCE_QQQ_AUTO_ADJUSTED",
-    "raw_rows": 4749,
-    "completed_rows": 4749,
-    "last_completed_date": "2026-11-16",
+    "raw_rows": 4750,
+    "completed_rows": 4750,
+    "last_completed_date": "2026-11-17",
     "feature_window_sessions": 253,
-    "feature_window_sha256": "08d313d28e0b38ef03b03e958342981a1e273ca86e700c4761fe43d07f5f1c7c",
+    "feature_window_sha256": "3ce1d8f78025c73f8b0416b12ca4c37df195e5c401761d54caf599b1724101ae",
     "dropped_incomplete_current_session": false
   },
   "forward_path": {
@@ -569,10 +580,10 @@
   },
   "execution_plan": {
     "status": "PLAN_READY",
-    "signal_date": "2026-11-16",
-    "signal_action": "REBALANCE_NEXT_SESSION",
+    "signal_date": "2026-11-17",
+    "signal_action": "NO_CHANGE",
     "bootstrap": false,
-    "execution_required": true,
+    "execution_required": false,
     "target": {
       "level": 1,
       "defense": false,
@@ -689,15 +700,15 @@
       "plan_ready": true,
       "prior_execution_audit_clean": true
     },
-    "execution_required": true,
-    "signal_date": "2026-11-16",
+    "execution_required": false,
+    "signal_date": "2026-11-17",
     "broker_authorized": false,
     "capital_scaling_authorized": false,
     "note": "Readiness for prospective paper accounting only; never authorizes broker trading or capital scaling."
   },
   "automation_guard": {
     "status": "SAFE_PAPER_AUTOMATION",
-    "generated_at_utc": "2026-11-17T05:17:47.433864+00:00",
+    "generated_at_utc": "2026-11-18T04:38:25.046036+00:00",
     "broker_mode": "PAPER",
     "live_trading_enabled": false,
     "checks": {
@@ -707,8 +718,8 @@
       "live_flag_disabled": true,
       "broker_not_authorized": true
     },
-    "execution_required": true,
-    "signal_date": "2026-11-16",
+    "execution_required": false,
+    "signal_date": "2026-11-17",
     "policy": {
       "reductions": "09:31 ET reference open",
       "additions": "09:32 ET reference open",
@@ -731,33 +742,33 @@
       "TQQQ": 1197
     },
     "target_positions": {
-      "QQQ": 128,
+      "QQQ": 129,
       "TQQQ": 149
     },
     "reference_prices": {
-      "QQQ": 661.75,
+      "QQQ": 656.9500122070312,
       "TQQQ": 81.27999877929688
     },
     "orders": [
       {
-        "session": "2026-11-17",
+        "session": "2026-11-18",
         "symbol": "TQQQ",
         "side": "SELL",
         "quantity": 1048,
         "reason": "TARGET_REBALANCE",
         "target_leverage": 1.25,
-        "idempotency_key": "1bd7ae442c6c63e9bfd54b31cf5f9812312de3f7a759c19e038366f1ad8f657c",
+        "idempotency_key": "55e705971f4a06089eb0792eb575387acd6d8d167a409f23aba082b9b32c95ec",
         "status": "PLANNED",
         "dry_run": true
       },
       {
-        "session": "2026-11-17",
+        "session": "2026-11-18",
         "symbol": "QQQ",
         "side": "BUY",
-        "quantity": 128,
+        "quantity": 129,
         "reason": "TARGET_REBALANCE",
         "target_leverage": 1.25,
-        "idempotency_key": "0bd0151743ab4adee4211fc27ae86d9962f81cf33daf6b86130533204869c327",
+        "idempotency_key": "daa1488cc4f7b72410a91e57d438cd96adde6634281d56c4e43476204771fa24",
         "status": "PLANNED",
         "dry_run": true
       }
@@ -768,9 +779,9 @@
       "live_submission_authorized": false,
       "orders": [
         {
-          "order_id": "40b515c9420b69d5c8ae",
-          "idempotency_key": "1bd7ae442c6c63e9bfd54b31cf5f9812312de3f7a759c19e038366f1ad8f657c",
-          "session": "2026-11-17",
+          "order_id": "25c5a330d234201358f4",
+          "idempotency_key": "55e705971f4a06089eb0792eb575387acd6d8d167a409f23aba082b9b32c95ec",
+          "session": "2026-11-18",
           "symbol": "TQQQ",
           "side": "SELL",
           "quantity": 1048,
@@ -779,12 +790,12 @@
           "filled_quantity": 0
         },
         {
-          "order_id": "b944badc7b767ed04da5",
-          "idempotency_key": "0bd0151743ab4adee4211fc27ae86d9962f81cf33daf6b86130533204869c327",
-          "session": "2026-11-17",
+          "order_id": "320c11f46dced3944201",
+          "idempotency_key": "daa1488cc4f7b72410a91e57d438cd96adde6634281d56c4e43476204771fa24",
+          "session": "2026-11-18",
           "symbol": "QQQ",
           "side": "BUY",
-          "quantity": 128,
+          "quantity": 129,
           "status": "PLANNED",
           "broker_order_id": null,
           "filled_quantity": 0
@@ -796,9 +807,9 @@
       "differences": [
         {
           "symbol": "QQQ",
-          "expected": 128,
+          "expected": 129,
           "actual": 0,
-          "delta": -128
+          "delta": -129
         },
         {
           "symbol": "TQQQ",
@@ -819,21 +830,21 @@
     "execution_windows": {
       "sell": {
         "status": "UPCOMING",
-        "seconds_to_window": 33192,
-        "session": "2026-11-17",
+        "seconds_to_window": 35555,
+        "session": "2026-11-18",
         "side": "SELL",
-        "time_et": "2026-11-17T09:31:00-05:00",
-        "time_utc": "2026-11-17T14:31:00+00:00",
+        "time_et": "2026-11-18T09:31:00-05:00",
+        "time_utc": "2026-11-18T14:31:00+00:00",
         "market_timezone": "America/New_York",
         "calendar": "XNYS"
       },
       "buy": {
         "status": "UPCOMING",
-        "seconds_to_window": 33252,
-        "session": "2026-11-17",
+        "seconds_to_window": 35615,
+        "session": "2026-11-18",
         "side": "BUY",
-        "time_et": "2026-11-17T09:32:00-05:00",
-        "time_utc": "2026-11-17T14:32:00+00:00",
+        "time_et": "2026-11-18T09:32:00-05:00",
+        "time_utc": "2026-11-18T14:32:00+00:00",
         "market_timezone": "America/New_York",
         "calendar": "XNYS"
       }
@@ -843,21 +854,21 @@
       "windows": {
         "sell": {
           "status": "UPCOMING",
-          "seconds_to_window": 33192,
-          "session": "2026-11-17",
+          "seconds_to_window": 35555,
+          "session": "2026-11-18",
           "side": "SELL",
-          "time_et": "2026-11-17T09:31:00-05:00",
-          "time_utc": "2026-11-17T14:31:00+00:00",
+          "time_et": "2026-11-18T09:31:00-05:00",
+          "time_utc": "2026-11-18T14:31:00+00:00",
           "market_timezone": "America/New_York",
           "calendar": "XNYS"
         },
         "buy": {
           "status": "UPCOMING",
-          "seconds_to_window": 33252,
-          "session": "2026-11-17",
+          "seconds_to_window": 35615,
+          "session": "2026-11-18",
           "side": "BUY",
-          "time_et": "2026-11-17T09:32:00-05:00",
-          "time_utc": "2026-11-17T14:32:00+00:00",
+          "time_et": "2026-11-18T09:32:00-05:00",
+          "time_utc": "2026-11-18T14:32:00+00:00",
           "market_timezone": "America/New_York",
           "calendar": "XNYS"
         }
@@ -870,7 +881,7 @@
   },
   "execution_policy": {
     "schema_version": 1,
-    "generated_at_utc": "2026-11-17T05:17:47.319012+00:00",
+    "generated_at_utc": "2026-11-18T04:38:24.896844+00:00",
     "status": "PAPER_PLAN_READY",
     "next_action": "OBSERVE_SCHEDULED_WINDOWS",
     "window_statuses": {
@@ -888,15 +899,15 @@
     "schema_version": 2,
     "publication_identity": {
       "schema_version": 2,
-      "git_sha": "03c0e0184a5d5ea3ad207a1b22a252724799b327",
+      "git_sha": "35e8bb2389b15e8880802f96bb4fef71ccae19c0",
       "signal_asof": null,
       "replay_dataset_sha256": "db0889da31af43b1b75e005c1f4ab2cad421dfb55a6c55a77a223e0623950d95",
-      "replay_rows_sha256": "789f4b8e7ec5ffffa634344ce1db00ee20b849b1aa41ccd2263420558365a9eb",
+      "replay_rows_sha256": "4f9c93596e45e03b9317bd528d99d57544299d3d1b3cfc64b75f91a39a6668b7",
       "simulator_contract_sha256": "80745a3640c6fe667a3c500571fb15abee1d532a5b720fb6efc8b52f291dfc68",
-      "generation_id": "19368b19dca2594d16b7dcd22cfedd6ce96c43f974097becac7820336606537e"
+      "generation_id": "1a1bf3493cb6e1c709091bd78974187f54de0d732a4f43b7d46993470799c2a3"
     },
     "stage": "SHADOW_ONLY",
-    "prospective_completed_sessions": 36,
+    "prospective_completed_sessions": 37,
     "qualified_forward_paired_sessions": 0,
     "original_rows_proxy_not_etf": true,
     "prospective_evidence": {
@@ -909,12 +920,12 @@
       "source_status": "AVAILABLE",
       "returns_csv": "research/data/SL9-007-UPSHIFT-CONFIRMATION.csv",
       "producer_current": true,
-      "producer_git_sha": "03c0e0184a5d5ea3ad207a1b22a252724799b327",
-      "registry_updated_at_utc": "2026-11-17T05:17:44.844686+00:00",
+      "producer_git_sha": "35e8bb2389b15e8880802f96bb4fef71ccae19c0",
+      "registry_updated_at_utc": "2026-11-18T04:38:22.063364+00:00",
       "maturity_status": "ATTENTION",
       "experiment_id": "SL9-007-UPSHIFT-CONFIRMATION",
-      "accepted_completed_xnys_rows": 36,
-      "persisted_prospective_rows": 36,
+      "accepted_completed_xnys_rows": 37,
+      "persisted_prospective_rows": 37,
       "audit_schema_complete": true,
       "persistence_consistent": true,
       "gate": "STRICTLY_AFTER_INCEPTION_AND_COMPLETED_XNYS",
@@ -966,18 +977,18 @@
   },
   "prospective_maturity": {
     "schema_version": 6,
-    "producer_git_sha": "03c0e0184a5d5ea3ad207a1b22a252724799b327",
-    "current_git_sha": "03c0e0184a5d5ea3ad207a1b22a252724799b327",
+    "producer_git_sha": "35e8bb2389b15e8880802f96bb4fef71ccae19c0",
+    "current_git_sha": "35e8bb2389b15e8880802f96bb4fef71ccae19c0",
     "producer_current": true,
-    "registry_updated_at_utc": "2026-11-17T05:17:44.844686+00:00",
+    "registry_updated_at_utc": "2026-11-18T04:38:22.063364+00:00",
     "status": "ATTENTION",
     "experiments": [
       {
         "experiment_id": "SL9-007-UPSHIFT-CONFIRMATION",
         "status": "ACTIVE_RESEARCH_ONLY",
         "inception_date": "2026-09-26",
-        "accepted_completed_xnys_sessions": 36,
-        "persisted_prospective_sessions": 36,
+        "accepted_completed_xnys_sessions": 37,
+        "persisted_prospective_sessions": 37,
         "definition_current": true,
         "registered_definition_fingerprint": "b6c7a09db9bfb74ed323f36f8cfe1fbcc34d0962cea7fade1fdcfffbf7779fb7",
         "current_definition_fingerprint": "b6c7a09db9bfb74ed323f36f8cfe1fbcc34d0962cea7fade1fdcfffbf7779fb7",
@@ -1002,8 +1013,8 @@
     "status": "CLEAR",
     "severity": "NONE",
     "reasons": [],
-    "asof_date": "2026-11-16",
-    "generated_at_utc": "2026-11-17T05:17:48.738916+00:00",
+    "asof_date": "2026-11-17",
+    "generated_at_utc": "2026-11-18T04:38:26.651734+00:00",
     "auto_recovery": "Incident clears only when current evidence returns healthy; historical failures remain in CI history."
   },
   "publication_gate": {
@@ -1021,8 +1032,8 @@
       "provenance_generation_canonical": true,
       "manifest_generation_canonical": true
     },
-    "source_git_sha": "03c0e0184a5d5ea3ad207a1b22a252724799b327",
-    "publication_generation": "19368b19dca2594d16b7dcd22cfedd6ce96c43f974097becac7820336606537e",
+    "source_git_sha": "35e8bb2389b15e8880802f96bb4fef71ccae19c0",
+    "publication_generation": "1a1bf3493cb6e1c709091bd78974187f54de0d732a4f43b7d46993470799c2a3",
     "rule": "Evidence publication is allowed only from a complete internally consistent run. Remote branch freshness is enforced by workflow before push.",
     "authoritative": true
   },
@@ -1037,27 +1048,27 @@
     "schema_version": 2,
     "kind": "RESEARCH_PROVENANCE",
     "dataset_path": "docs/research.json",
-    "dataset_sha256": "96be71c3ca27f60ce14a48185f8610511164e556da218f7952ac84523fea69e6",
-    "rows": 251,
+    "dataset_sha256": "2aad9626ee5fb11cbc343e6635d6c9aca1b90667c751f8856d5e01a609ec61bd",
+    "rows": 252,
     "first_date": "2025-11-17",
-    "last_date": "2026-11-16",
+    "last_date": "2026-11-17",
     "baseline": "StockLens 8.0 FROZEN",
     "mode": "RESEARCH_SANDBOX",
     "factor_coverage": {
       "vix": {
         "factor": "vix",
-        "sessions": 251,
-        "available_sessions": 16,
-        "coverage_ratio": 0.06374501992031872,
+        "sessions": 252,
+        "available_sessions": 17,
+        "coverage_ratio": 0.06746031746031746,
         "first_available": "2026-10-08",
-        "last_available": "2026-11-16",
+        "last_available": "2026-11-17",
         "status": "INSUFFICIENT"
       }
     },
-    "git_sha": "03c0e0184a5d5ea3ad207a1b22a252724799b327",
-    "github_run_id": "44021588385",
-    "github_run_number": "203",
-    "publication_generation": "19368b19dca2594d16b7dcd22cfedd6ce96c43f974097becac7820336606537e",
+    "git_sha": "35e8bb2389b15e8880802f96bb4fef71ccae19c0",
+    "github_run_id": "44237029804",
+    "github_run_number": "204",
+    "publication_generation": "1a1bf3493cb6e1c709091bd78974187f54de0d732a4f43b7d46993470799c2a3",
     "promotion_allowed": false,
     "automatic_model_change": false
   },
@@ -1070,21 +1081,21 @@
     "status": "AVAILABLE",
     "vix_available": true,
     "vix_fresh_calendar_days": true,
-    "history_sessions": 16,
+    "history_sessions": 17,
     "affects_frozen_signal": false,
     "blocking": false,
     "interpretation": "Research context only; quality never gates StockLens 8.0 signal generation."
   },
   "context_analytics": {
     "status": "ACTIVE",
-    "sessions": 16,
+    "sessions": 17,
     "vix_min": 14.84000015258789,
     "vix_max": 28.18000030517578,
-    "vix_average": 19.496874928474426,
+    "vix_average": 19.847646937650794,
     "regime_counts": {
       "NORMAL": 13,
       "LOW": 1,
-      "ELEVATED": 2
+      "ELEVATED": 3
     },
     "observational_only": true
   },
@@ -1150,9 +1161,9 @@
       "info": [
         "NONMATERIAL_INPUT_REVISIONS:5"
       ],
-      "signal_rows": 18,
+      "signal_rows": 19,
       "paper_sessions": 2,
-      "asof_date": "2026-11-16"
+      "asof_date": "2026-11-17"
     },
     "nonmaterial_input_revisions": 5,
     "qc_reference": "LOCKED",
@@ -1184,37 +1195,37 @@
   "historical_context": {
     "kind": "HISTORICAL_REPLAY_NOT_PROSPECTIVE",
     "frozen_model": "StockLens 8.0",
-    "sessions": 251,
+    "sessions": 252,
     "first_date": "2025-11-17",
-    "last_date": "2026-11-16",
+    "last_date": "2026-11-17",
     "state_transitions": 7,
     "defense_sessions": 0,
     "level_counts": {
-      "1": 17,
+      "1": 18,
       "2": 18,
       "3": 216
     },
-    "dataset_sha256": "b4414b0de02168f1a68c9efe1b21d0f84e439f4e450b48b254614cad06091a20",
+    "dataset_sha256": "43fff55ee77ad20d5202d29a968e9c75b2ae41d77cec60bb5aeefd086763d75f",
     "source_audit": {
       "source": "YFINANCE_QQQ_AUTO_ADJUSTED",
-      "raw_rows": 4749,
-      "completed_rows": 4749,
+      "raw_rows": 4750,
+      "completed_rows": 4750,
       "feature_window_sessions": 253,
-      "feature_window_sha256": "6517df60bf585a99294079e7bde2faf719f021b24d40fbc3f738668577a08599",
-      "raw_last_date": "2026-11-16",
-      "last_completed_date": "2026-11-16",
+      "feature_window_sha256": "e17d5dc2f137fcbc5c35343756e9bf12a59d1d65b013546075207d781e4d1875",
+      "raw_last_date": "2026-11-17",
+      "last_completed_date": "2026-11-17",
       "dropped_incomplete_current_session": false,
-      "ny_time_at_validation": "2026-11-17T00:17:41.675793-05:00",
+      "ny_time_at_validation": "2026-11-17T23:38:18.169668-05:00",
       "safe_after_ny_time": "18:00"
     }
   },
   "why": {
-    "close_vs_sma200_pct": -0.02885283489683843,
-    "sma50_vs_sma200_pct": 0.051626461961826964,
-    "vol_to_level3_drop": -0.0403329336539503,
-    "mom12": 0.09279951135977638,
-    "trend_retention_floor": 674.5965220733642,
-    "trend_reentry_threshold": 688.2247346405029
+    "close_vs_sma200_pct": -0.036129969990032595,
+    "sma50_vs_sma200_pct": 0.049592313011254774,
+    "vol_to_level3_drop": -0.04036327477298679,
+    "mom12": 0.08405321751265404,
+    "trend_retention_floor": 674.7595545410156,
+    "trend_reentry_threshold": 688.3910606933593
   },
   "signal_history": [
     {
@@ -1342,18 +1353,16 @@
       "level": 1,
       "defense": false,
       "leverage": 1.25
+    },
+    {
+      "date": "2026-11-17",
+      "action": "NO_CHANGE",
+      "level": 1,
+      "defense": false,
+      "leverage": 1.25
     }
   ],
   "history_90": [
-    {
-      "date": "2026-07-13",
-      "level": 2,
-      "defense": false,
-      "leverage": 2.0,
-      "close": 710.9990844726562,
-      "vol20": 0.28489065260296637,
-      "mom12": 0.28754653108219363
-    },
     {
       "date": "2026-07-14",
       "level": 2,
@@ -1370,7 +1379,7 @@
       "leverage": 3.0,
       "close": 716.9928588867188,
       "vol20": 0.26208127766880696,
-      "mom12": 0.2966267008468706
+      "mom12": 0.2966268439651807
     },
     {
       "date": "2026-07-16",
@@ -1388,7 +1397,7 @@
       "leverage": 3.0,
       "close": 694.606201171875,
       "vol20": 0.26272724501904576,
-      "mom12": 0.2537077452759964
+      "mom12": 0.2537078833888411
     },
     {
       "date": "2026-07-20",
@@ -1397,7 +1406,7 @@
       "leverage": 3.0,
       "close": 695.33544921875,
       "vol20": 0.24335676006977025,
-      "mom12": 0.2449489546249004
+      "mom12": 0.24494909067185588
     },
     {
       "date": "2026-07-21",
@@ -1424,7 +1433,7 @@
       "leverage": 3.0,
       "close": 691.23974609375,
       "vol20": 0.23682875257830935,
-      "mom12": 0.2388287404427889
+      "mom12": 0.23882860493200564
     },
     {
       "date": "2026-07-24",
@@ -1442,7 +1451,7 @@
       "leverage": 3.0,
       "close": 681.4099731445312,
       "vol20": 0.23271687918059086,
-      "mom12": 0.2130850868244878
+      "mom12": 0.21308495501275915
     },
     {
       "date": "2026-07-28",
@@ -1451,7 +1460,7 @@
       "leverage": 3.0,
       "close": 674.786865234375,
       "vol20": 0.21191432828753426,
-      "mom12": 0.19840981039671823
+      "mom12": 0.1984096804922455
     },
     {
       "date": "2026-07-29",
@@ -1460,7 +1469,7 @@
       "leverage": 3.0,
       "close": 661.0411376953125,
       "vol20": 0.20564624533702283,
-      "mom12": 0.17033983031176936
+      "mom12": 0.1703400832448505
     },
     {
       "date": "2026-07-30",
@@ -1487,7 +1496,7 @@
       "leverage": 3.0,
       "close": 699.34130859375,
       "vol20": 0.24143522663568134,
-      "mom12": 0.245007477863048
+      "mom12": 0.24500734258268753
     },
     {
       "date": "2026-08-04",
@@ -1496,7 +1505,7 @@
       "leverage": 3.0,
       "close": 723.0964965820312,
       "vol20": 0.26322574173428664,
-      "mom12": 0.31316556994318145
+      "mom12": 0.31316571549673955
     },
     {
       "date": "2026-08-05",
@@ -1505,7 +1514,7 @@
       "leverage": 3.0,
       "close": 716.5533447265625,
       "vol20": 0.2655783634631336,
-      "mom12": 0.2777072596674417
+      "mom12": 0.2777073987249057
     },
     {
       "date": "2026-08-06",
@@ -1514,7 +1523,7 @@
       "leverage": 3.0,
       "close": 713.9061279296875,
       "vol20": 0.25895501493581324,
-      "mom12": 0.2816890635896119
+      "mom12": 0.28168920403398867
     },
     {
       "date": "2026-08-07",
@@ -1550,7 +1559,7 @@
       "leverage": 3.0,
       "close": 722.9467163085938,
       "vol20": 0.2513684659507025,
-      "mom12": 0.26941703689850827
+      "mom12": 0.26941717294347023
     },
     {
       "date": "2026-08-13",
@@ -1559,7 +1568,7 @@
       "leverage": 3.0,
       "close": 731.3079833984375,
       "vol20": 0.24588647039633374,
-      "mom12": 0.26815925626866566
+      "mom12": 0.2681593904918025
     },
     {
       "date": "2026-08-14",
@@ -1568,7 +1577,7 @@
       "leverage": 3.0,
       "close": 730.3090209960938,
       "vol20": 0.23804380730447072,
-      "mom12": 0.2657940707300759
+      "mom12": 0.2657942046359274
     },
     {
       "date": "2026-08-17",
@@ -1577,7 +1586,7 @@
       "leverage": 3.0,
       "close": 729.1102294921875,
       "vol20": 0.23846985703123988,
-      "mom12": 0.26469683357369367
+      "mom12": 0.26469710136089675
     },
     {
       "date": "2026-08-18",
@@ -1586,7 +1595,7 @@
       "leverage": 3.0,
       "close": 716.7631225585938,
       "vol20": 0.24001833685289684,
-      "mom12": 0.24877134742967377
+      "mom12": 0.24877148022118245
     },
     {
       "date": "2026-08-19",
@@ -1595,7 +1604,7 @@
       "leverage": 3.0,
       "close": 715.3345947265625,
       "vol20": 0.23927164394095307,
-      "mom12": 0.24677915652288163
+      "mom12": 0.24677928915537817
     },
     {
       "date": "2026-08-20",
@@ -1613,7 +1622,7 @@
       "leverage": 3.0,
       "close": 712.6973876953125,
       "vol20": 0.2249357211796222,
-      "mom12": 0.26678926465184616
+      "mom12": 0.2667894020825241
     },
     {
       "date": "2026-08-24",
@@ -1622,7 +1631,7 @@
       "leverage": 3.0,
       "close": 705.5847778320312,
       "vol20": 0.22838439204466857,
-      "mom12": 0.25998037054011536
+      "mom12": 0.2599805078679156
     },
     {
       "date": "2026-08-25",
@@ -1631,7 +1640,7 @@
       "leverage": 3.0,
       "close": 709.9801635742188,
       "vol20": 0.22466218250058675,
-      "mom12": 0.24856719738280275
+      "mom12": 0.24856706336649736
     },
     {
       "date": "2026-08-26",
@@ -1640,7 +1649,7 @@
       "leverage": 3.0,
       "close": 710.6295166015625,
       "vol20": 0.2078215737627054,
-      "mom12": 0.25332455798147957
+      "mom12": 0.25332469289763715
     },
     {
       "date": "2026-08-27",
@@ -1667,7 +1676,7 @@
       "leverage": 3.0,
       "close": 716.013916015625,
       "vol20": 0.1743617200254163,
-      "mom12": 0.2480280892098803
+      "mom12": 0.24802822198214525
     },
     {
       "date": "2026-09-01",
@@ -1676,7 +1685,7 @@
       "leverage": 3.0,
       "close": 706.9033813476562,
       "vol20": 0.13164514262700203,
-      "mom12": 0.246577990495922
+      "mom12": 0.24657785632485774
     },
     {
       "date": "2026-09-02",
@@ -1685,7 +1694,7 @@
       "leverage": 3.0,
       "close": 708.501708984375,
       "vol20": 0.1286746577958502,
-      "mom12": 0.2599550639849779
+      "mom12": 0.25995520074190015
     },
     {
       "date": "2026-09-03",
@@ -1703,7 +1712,7 @@
       "leverage": 3.0,
       "close": 718.2116088867188,
       "vol20": 0.12856087968438337,
-      "mom12": 0.25588486292738066
+      "mom12": 0.25588513100303856
     },
     {
       "date": "2026-09-08",
@@ -1730,7 +1739,7 @@
       "leverage": 3.0,
       "close": 707.9523315429688,
       "vol20": 0.1300505669680611,
-      "mom12": 0.2266855689755367
+      "mom12": 0.22668569870618938
     },
     {
       "date": "2026-09-11",
@@ -1739,7 +1748,7 @@
       "leverage": 3.0,
       "close": 714.1358642578125,
       "vol20": 0.12676478718291762,
-      "mom12": 0.23699489921005257
+      "mom12": 0.23699502998816957
     },
     {
       "date": "2026-09-14",
@@ -1748,7 +1757,7 @@
       "leverage": 3.0,
       "close": 708.4417724609375,
       "vol20": 0.12905822003122974,
-      "mom12": 0.22003085207736484
+      "mom12": 0.22003072383914501
     },
     {
       "date": "2026-09-15",
@@ -1757,7 +1766,7 @@
       "leverage": 3.0,
       "close": 703.8065795898438,
       "vol20": 0.13030251342623883,
-      "mom12": 0.20671790251166566
+      "mom12": 0.20671802879274792
     },
     {
       "date": "2026-09-16",
@@ -1766,7 +1775,7 @@
       "leverage": 3.0,
       "close": 703.9863891601562,
       "vol20": 0.11734593430033317,
-      "mom12": 0.19678543717104025
+      "mom12": 0.1967855613501195
     },
     {
       "date": "2026-09-17",
@@ -1775,7 +1784,7 @@
       "leverage": 3.0,
       "close": 716.1737060546875,
       "vol20": 0.13376193709566056,
-      "mom12": 0.21853384306220325
+      "mom12": 0.21853396960485316
     },
     {
       "date": "2026-09-18",
@@ -1784,7 +1793,7 @@
       "leverage": 3.0,
       "close": 720.6990356445312,
       "vol20": 0.13259586154546288,
-      "mom12": 0.22868587824224074
+      "mom12": 0.22868575039015782
     },
     {
       "date": "2026-09-21",
@@ -1802,7 +1811,7 @@
       "leverage": 3.0,
       "close": 747.4600219726562,
       "vol20": 0.1607751439815987,
-      "mom12": 0.25442995704997995
+      "mom12": 0.25443008554460733
     },
     {
       "date": "2026-09-23",
@@ -1811,7 +1820,7 @@
       "leverage": 3.0,
       "close": 741.2100219726562,
       "vol20": 0.16509442326224227,
-      "mom12": 0.2366200679734558
+      "mom12": 0.23662019389829414
     },
     {
       "date": "2026-09-24",
@@ -1820,7 +1829,7 @@
       "leverage": 3.0,
       "close": 741.0999755859375,
       "vol20": 0.16524773989048888,
-      "mom12": 0.24470424314566963
+      "mom12": 0.24470411555011107
     },
     {
       "date": "2026-09-25",
@@ -1865,7 +1874,7 @@
       "leverage": 3.0,
       "close": 742.030029296875,
       "vol20": 0.15443399927403453,
-      "mom12": 0.241761624732316
+      "mom12": 0.24176175156614188
     },
     {
       "date": "2026-10-02",
@@ -1883,7 +1892,7 @@
       "leverage": 3.0,
       "close": 756.2000122070312,
       "vol20": 0.15488359029082677,
-      "mom12": 0.2542768338268946
+      "mom12": 0.2542767068484104
     },
     {
       "date": "2026-10-06",
@@ -1901,7 +1910,7 @@
       "leverage": 3.0,
       "close": 757.72998046875,
       "vol20": 0.15432005621727532,
-      "mom12": 0.2527196087811727
+      "mom12": 0.25271948237354036
     },
     {
       "date": "2026-10-08",
@@ -1910,7 +1919,7 @@
       "leverage": 3.0,
       "close": 747.5800170898438,
       "vol20": 0.15780214575999052,
-      "mom12": 0.24248156872801663
+      "mom12": 0.24248144268980187
     },
     {
       "date": "2026-10-09",
@@ -1928,7 +1937,7 @@
       "leverage": 3.0,
       "close": 746.0399780273438,
       "vol20": 0.1556028944064543,
-      "mom12": 0.22735411618009116
+      "mom12": 0.227354362663567
     },
     {
       "date": "2026-10-13",
@@ -1964,7 +1973,7 @@
       "leverage": 3.0,
       "close": 709.7999877929688,
       "vol20": 0.18556893361804927,
-      "mom12": 0.1841767601287534
+      "mom12": 0.1841768807092825
     },
     {
       "date": "2026-10-19",
@@ -1973,7 +1982,7 @@
       "leverage": 3.0,
       "close": 718.3599853515625,
       "vol20": 0.1576452609926224,
-      "mom12": 0.20291189957427558
+      "mom12": 0.2029120225177874
     },
     {
       "date": "2026-10-20",
@@ -1982,7 +1991,7 @@
       "leverage": 3.0,
       "close": 717.6300048828125,
       "vol20": 0.15354151820356501,
-      "mom12": 0.19384991606857316
+      "mom12": 0.19385003728988592
     },
     {
       "date": "2026-10-21",
@@ -2045,7 +2054,7 @@
       "leverage": 3.0,
       "close": 715.3400268554688,
       "vol20": 0.20012781289806217,
-      "mom12": 0.1355323077614703
+      "mom12": 0.13553219774277703
     },
     {
       "date": "2026-10-30",
@@ -2054,7 +2063,7 @@
       "leverage": 3.0,
       "close": 690.489990234375,
       "vol20": 0.22639919251016324,
-      "mom12": 0.09117172368180815
+      "mom12": 0.09117182892861342
     },
     {
       "date": "2026-11-02",
@@ -2063,7 +2072,7 @@
       "leverage": 3.0,
       "close": 681.0900268554688,
       "vol20": 0.2235280695583286,
-      "mom12": 0.09302793010445942
+      "mom12": 0.09302803716713703
     },
     {
       "date": "2026-11-03",
@@ -2081,7 +2090,7 @@
       "leverage": 3.0,
       "close": 691.9500122070312,
       "vol20": 0.2304657769947411,
-      "mom12": 0.09986264461219174
+      "mom12": 0.09986253790782285
     },
     {
       "date": "2026-11-05",
@@ -2090,7 +2099,7 @@
       "leverage": 1.25,
       "close": 647.0499877929688,
       "vol20": 0.31428003574048125,
-      "mom12": 0.04980241811900865
+      "mom12": 0.04980252207688696
     },
     {
       "date": "2026-11-06",
@@ -2108,7 +2117,7 @@
       "leverage": 1.25,
       "close": 679.3499755859375,
       "vol20": 0.3533541300102361,
-      "mom12": 0.11586623604536861
+      "mom12": 0.11586612417611852
     },
     {
       "date": "2026-11-10",
@@ -2135,7 +2144,7 @@
       "leverage": 2.0,
       "close": 688.1699829101562,
       "vol20": 0.36178163532232305,
-      "mom12": 0.1123499409738069
+      "mom12": 0.11234983123324871
     },
     {
       "date": "2026-11-13",
@@ -2144,7 +2153,7 @@
       "leverage": 2.0,
       "close": 679.8900146484375,
       "vol20": 0.3539561784599649,
-      "mom12": 0.09983336603086013
+      "mom12": 0.0998332574395342
     },
     {
       "date": "2026-11-16",
@@ -2154,6 +2163,15 @@
       "close": 661.75,
       "vol20": 0.3603329336539503,
       "mom12": 0.09279951135977638
+    },
+    {
+      "date": "2026-11-17",
+      "level": 1,
+      "defense": false,
+      "leverage": 1.25,
+      "close": 656.9500122070312,
+      "vol20": 0.3603632747729868,
+      "mom12": 0.08405343587563996
     }
   ]
 }
