@@ -36,6 +36,22 @@ class PairedTaxAuditTests(unittest.TestCase):
     def test_year_end_not_silently_accepted(self):
         a,b=fixtures(); a["cash_timing"]=b["cash_timing"]="year_end"
         self.assertEqual(audit_pair(a,b)["status"],"BLOCKED")
+    def test_duplicate_session_rejected(self):
+        a,b=fixtures()
+        a["sessions"][1]=b["sessions"][1]=a["sessions"][0]
+        self.assertEqual(audit_pair(a,b)["reason"], "NON_MONOTONIC_OR_DUPLICATE_SESSIONS")
+    def test_reversed_sessions_rejected(self):
+        a,b=fixtures()
+        a["sessions"]=b["sessions"]=list(reversed(a["sessions"]))
+        self.assertEqual(audit_pair(a,b)["status"], "BLOCKED")
+    def test_malformed_digest_rejected(self):
+        a,b=fixtures()
+        a["dataset_sha256"]=b["dataset_sha256"]="not-a-sha256"
+        self.assertEqual(audit_pair(a,b)["reason"], "INVALID_DATASET_SHA256")
+    def test_invalid_session_date_rejected(self):
+        a,b=fixtures()
+        a["sessions"][0]=b["sessions"][0]="2026-99-99"
+        self.assertEqual(audit_pair(a,b)["status"], "BLOCKED")
     def test_proxy_not_observed(self):
         a,b=fixtures(); a["source_kind"]=b["source_kind"]="proxy"
         self.assertEqual(audit_pair(a,b)["source_kind"],"proxy")
