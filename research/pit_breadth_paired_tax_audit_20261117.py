@@ -4,6 +4,8 @@ Inputs are per-session ledger rows from identical market data and execution assu
 This does not calculate Israeli statutory tax; tax must be independently modeled.
 """
 from decimal import Decimal, InvalidOperation
+from datetime import date
+import re
 
 def number(value):
     try:
@@ -24,6 +26,15 @@ def audit_pair(before, after):
                 raise ValueError("UNPAIRED_" + key.upper())
         if not all(isinstance(obj["sessions"], list) and obj["sessions"] for obj in (before, after)):
             raise ValueError("EMPTY_SESSIONS")
+        for key in ("dataset_sha256", "execution_sha256"):
+            if not isinstance(before[key], str) or re.fullmatch(r"[0-9a-f]{64}", before[key]) is None:
+                raise ValueError("INVALID_" + key.upper())
+        try:
+            days = [date.fromisoformat(s) for s in before["sessions"]]
+        except (TypeError, ValueError) as exc:
+            raise ValueError("INVALID_SESSION_DATE") from exc
+        if any(days[i] >= days[i + 1] for i in range(len(days) - 1)):
+            raise ValueError("NON_MONOTONIC_OR_DUPLICATE_SESSIONS")
         if type(before["lag_sessions"]) is not int or before["lag_sessions"] < 1:
             raise ValueError("LAG_1_REQUIRED")
         if before["source_kind"] not in ("observed_pit", "proxy", "synthetic"):
