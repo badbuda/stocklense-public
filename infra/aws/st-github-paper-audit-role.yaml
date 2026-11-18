@@ -1,0 +1,90 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >
+  Isolated StockLens ST Paper acceptance role for GitHub main workflow.
+  Does not edit the legacy DynamoDB-only audit role or ST/PROD stacks.
+Parameters:
+  ExistingGitHubOIDCProviderArn:
+    Type: String
+    Default: arn:aws:iam::634740393398:oidc-provider/token.actions.githubusercontent.com
+    AllowedPattern: '^arn:aws:iam::634740393398:oidc-provider/token[.]actions[.]githubusercontent[.]com$'
+  StagingDataBucketName:
+    Type: String
+    Default: stocklens-st-candidatedata-6jj7i9fxjmfr
+    AllowedPattern: '^stocklens-st-candidatedata-[a-z0-9]+$'
+Resources:
+  GitHubSTPaperAcceptanceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      Description: >
+        Restricted ST and disabled PROD readback; paper readiness invokes the
+        ST Paper function with a read-only mode. IAM alone cannot constrain
+        invocation payload. Does not grant any broker or S3 write APIs.
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Federated: !Ref ExistingGitHubOIDCProviderArn
+            Action: sts:AssumeRoleWithWebIdentity
+            Condition:
+              StringEquals:
+                'token.actions.githubusercontent.com:aud': 'sts.amazonaws.com'
+                'token.actions.githubusercontent.com:sub': 'repo:badbuda@39247450/stocklense-public@1408609116:ref:refs/heads/main'
+      Policies:
+        - PolicyName: STPaperAcceptanceAuditV1
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Sid: OnlySTAndPRODStackMetadata
+                Effect: Allow
+                Action: cloudformation:DescribeStacks
+                Resource:
+                  - !Sub 'arn:${AWS::Partition}:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/stocklens-st/*'
+                  - !Sub 'arn:${AWS::Partition}:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/stocklens-prod/*'
+              - Sid: OnlySTAndPRODEventRuleMetadata
+                Effect: Allow
+                Action: [events:DescribeRule, events:ListTargetsByRule]
+                Resource:
+                  - !Sub 'arn:${AWS::Partition}:events:${AWS::Region}:${AWS::AccountId}:rule/stocklens-st-*'
+                  - !Sub 'arn:${AWS::Partition}:events:${AWS::Region}:${AWS::AccountId}:rule/stocklens-prod-*'
+              - Sid: IsolatedSTLambdaConfiguration
+                Effect: Allow
+                Action: lambda:GetFunctionConfiguration
+                Resource:
+                  - !Sub 'arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:stocklens-st-candidate'
+                  - !Sub 'arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:stocklens-st-paper-candidate'
+              # Only ST Paper; no PROD invoke. The workflow passes the READINESS
+              # mode, but IAM has no condition key restricting event payload.
+              - Sid: OnlySTPaperReadinessInvoke
+                Effect: Allow
+                Action: lambda:InvokeFunction
+                Resource: !Sub 'arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:stocklens-st-paper-candidate'
+              - Sid: STBucketVersionMetadata
+                Effect: Allow
+                Action: s3:GetBucketVersioning
+                Resource: !Sub 'arn:${AWS::Partition}:s3:::${StagingDataBucketName}'
+              - Sid: STPaperObjectVersionInventory
+                Effect: Allow
+                Action: s3:ListBucketVersions
+                Resource: !Sub 'arn:${AWS::Partition}:s3:::${StagingDataBucketName}'
+                Condition:
+                  StringLike:
+                    s3:prefix: ['paper/*', 'paper/']
+              - Sid: OnlySTArchivedSignalAndPaperBytes
+                Effect: Allow
+                Action: [s3:GetObject, s3:GetObjectVersion]
+                Resource:
+                  - !Sub 'arn:${AWS::Partition}:s3:::${StagingDataBucketName}/signals/*'
+                  - !Sub 'arn:${AWS::Partition}:s3:::${StagingDataBucketName}/paper/*'
+              - Sid: OnlySTSNSSubscriptions
+                Effect: Allow
+                Action: sns:ListSubscriptionsByTopic
+                Resource: !Sub 'arn:${AWS::Partition}:sns:${AWS::Region}:${AWS::AccountId}:stocklens-st-candidate-alerts'
+              - Sid: ReadCloudWatchAlarmStates
+                Effect: Allow
+                Action: cloudwatch:DescribeAlarms
+                Resource: '*'
+Outputs:
+  GitHubSTPaperAcceptanceRoleArn:
+    Description: GitHub Actions variable AWS_STOCKLENS_ST_AUDIT_ROLE_ARN
+    Value: !GetAtt GitHubSTPaperAcceptanceRole.Arn

@@ -1,8 +1,8 @@
 name: StockLens ST Paper Daily Read-Only Acceptance
 
-# Runs after the market-data Shadow publisher. Does NOT activate ST schedules,
-# create Paper receipts, deploy PROD or send broker orders. A red check is a
-# genuine missing/denied AWS acceptance, never an excuse to backfill.
+# Runs AFTER the independent ST pre-open Signal retries (through 12:30 UTC)
+# and ST Paper at 13:00 UTC. The old Shadow-triggered 03:00 UTC job was
+# necessarily premature. This workflow never backfills/activates trading.
 on:
   workflow_dispatch:
   push:
@@ -10,9 +10,11 @@ on:
     paths:
       - '.github/workflows/st-paper-daily-readonly.yml'
       - 'infra/aws/st_paper_closeout_readonly.py'
-  workflow_run:
-    workflows: ["StockLens 8.0 Shadow"]
-    types: [completed]
+      - 'infra/aws/st-github-paper-audit-role.yaml'
+  # 14:15 UTC Tuesday-Saturday, one hour+ after scheduled ST Paper.
+  # Includes overnight Monday session via Tuesday and Friday via Saturday.
+  schedule:
+    - cron: '15 14 * * 2-6'
 
 permissions:
   contents: read
@@ -24,7 +26,6 @@ concurrency:
 
 jobs:
   st-readonly:
-    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 6
     steps:
@@ -35,18 +36,18 @@ jobs:
       - name: Verify configured AWS read-only identity
         shell: bash
         env:
-          ROLE_ARN: ${{ vars.AWS_STOCKLENS_AUDIT_ROLE_ARN }}
+          ROLE_ARN: ${{ vars.AWS_STOCKLENS_ST_AUDIT_ROLE_ARN }}
         run: |
           set -euo pipefail
           test -n "$ROLE_ARN" || {
-            echo "::error::Read-only AWS audit role not configured; ST NOT VERIFIED."
+            echo "::error::Dedicated ST acceptance AWS role not configured; ST NOT VERIFIED. Do not use the legacy DynamoDB-only audit role."
             exit 1
           }
       - name: Assume existing read-only AWS audit role via OIDC
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: eu-central-1
-          role-to-assume: ${{ vars.AWS_STOCKLENS_AUDIT_ROLE_ARN }}
+          role-to-assume: ${{ vars.AWS_STOCKLENS_ST_AUDIT_ROLE_ARN }}
           role-session-name: stocklens-st-daily-readonly
       - name: Check actual latest completed Shadow date against live ST Paper
         shell: bash
