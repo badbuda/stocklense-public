@@ -556,6 +556,9 @@
     "tests/test_st_paper_operational_blockers_readonly.py": "c3c3d658f4cd89cee10e0bbb6d5346a7e9c17f1c",
     "infra/aws/sl56_live_minute_vendor_probe.py": "068e0dbc5978af721d6b2cfd4474de1172f4bae7",
     ".github/workflows/sl56-live-minute-provider-probe.yml": "f1a63850d8cf2edf4ae76b9a2a04892a9f397ba4",
-    "tests/test_sl56_live_minute_vendor_probe.py": "cc590b5dff339b9b3f3a79863c3a8764f3964f99"
+    "tests/test_sl56_live_minute_vendor_probe.py": "cc590b5dff339b9b3f3a79863c3a8764f3964f99",
+    "infra/aws/st_cloudshell_all_scenarios.sh": "d21049d133f56610f29cb3833c3e37374d133a14",
+    "tests/test_st_cloudshell_all_scenarios.py": "a9ace6f22671678327b972972bf7b90f1d92b4a0",
+    ".github/workflows/console-paper-fault-suite.yml": "e1602afd147f78618fc01dbc22bcbed6f3ee63e5"
   }
 }
