@@ -1,0 +1,22 @@
+name: SL-63 Epoch4 modeled economic Paper+immutable Continuity integration (offline)
+on:
+  pull_request:
+    paths:
+      - 'infra/aws/sl63_epoch4_paper_economic_adapter.py'
+      - 'tests/test_sl63_epoch4_paper_economic_adapter.py'
+      - '.github/workflows/sl63-epoch4-paper-adapter.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  economic-and-storage-faults:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install --quiet -r requirements.txt pytest
+      - name: Actual 8.0 economic BUY SELL and fail-closed Epoch4 continuity tests
+        run: python -m pytest -q tests/test_sl63_epoch4_paper_economic_adapter.py
