@@ -1,0 +1,46 @@
+name: StockLens Paper BUY SELL HOLD Forced Scenario Matrix (offline only)
+on:
+  pull_request:
+    paths:
+      - 'stocklens/paper.py'
+      - 'paper_portfolio.py'
+      - 'paper_transaction.py'
+      - 'paper_portfolio_integrity.py'
+      - 'paper_rebalance_math.py'
+      - 'tests/test_paper_order_lifecycle_matrix.py'
+      - '.github/workflows/paper-order-lifecycle-matrix.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'tests/test_paper_order_lifecycle_matrix.py'
+      - '.github/workflows/paper-order-lifecycle-matrix.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  forced-buy-sell-nochange:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install frozen Paper test dependencies (no AWS credential)
+        run: python -m pip install --quiet -r requirements.txt pytest
+      - name: All 16 exposure transitions and persisted multi-day order log
+        run: |
+          python -m pytest -vv --disable-warnings --junitxml="$RUNNER_TEMP/paper-order-scenarios.xml" \
+            tests/test_paper_order_lifecycle_matrix.py \
+            tests/test_paper_execution_contract.py \
+            tests/test_paper_transaction_recovery.py \
+            tests/test_paper_eod_completeness.py \
+            tests/test_paper_session_continuity.py \
+            tests/test_paper_tax_receipts.py \
+            tests/test_paper_portfolio_integrity.py
+      - name: Explain limited meaning of green CI
+        if: always()
+        run: |
+          echo '### Synthetic signal/price order lifecycle tests only' >> "$GITHUB_STEP_SUMMARY"
+          echo 'No private AWS Lambda invoked; no real broker orders, S3 writes, or provider market-bar attestation.' >> "$GITHUB_STEP_SUMMARY"
+          echo 'A green test does NOT mean ST Paper has a deployed Epoch4 execution handler, Genesis, continuity, or live Watchdog.' >> "$GITHUB_STEP_SUMMARY"
