@@ -30,7 +30,9 @@ def audit_pair(before, after):
             if not isinstance(before[key], str) or re.fullmatch(r"[0-9a-f]{64}", before[key]) is None:
                 raise ValueError("INVALID_" + key.upper())
         try:
-            days = [date.fromisoformat(s) for s in before["sessions"]]
+            days = [date.fromisoformat(s) for s in before["sessions"] if isinstance(s, str) and re.fullmatch(r"\d{4}-\d{2}-\d{2}", s)]
+            if len(days) != len(before["sessions"]):
+                raise ValueError("NON_CANONICAL_SESSION_DATE")
         except (TypeError, ValueError) as exc:
             raise ValueError("INVALID_SESSION_DATE") from exc
         if any(days[i] >= days[i + 1] for i in range(len(days) - 1)):
@@ -57,12 +59,23 @@ def audit_pair(before, after):
             for key in ("gross_equity_nis", "fees_nis", "trade_fingerprint"):
                 if raw[key] != taxed[key]:
                     raise ValueError("TRADE_OR_GROSS_MISMATCH")
+            for row in (raw, taxed):
+                fingerprint = row["trade_fingerprint"]
+                if not isinstance(fingerprint, str) or not fingerprint.strip():
+                    raise ValueError("INVALID_TRADE_FINGERPRINT")
+                fee = number(row["fees_nis"])
+                if fee < 0:
+                    raise ValueError("NEGATIVE_FEE")
+                if number(row["gross_equity_nis"]) < 0:
+                    raise ValueError("NEGATIVE_GROSS_EQUITY")
             tax = number(taxed["tax_paid_nis"])
             if tax < 0:
                 raise ValueError("NEGATIVE_TAX")
             cumulative_tax += tax
             gross = number(raw["gross_equity_nis"])
             net = number(taxed["net_equity_nis"])
+            if net < 0:
+                raise ValueError("NEGATIVE_NET_EQUITY")
             # Illustrative immediate settlement: gross portfolio wealth minus
             # cumulative tax payments, not realized P&L or total sale proceeds.
             if before["cash_timing"] == "immediate" and net != gross - cumulative_tax:
