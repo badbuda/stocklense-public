@@ -33,7 +33,8 @@ BOOK = "NEW_AWS_INDEPENDENT_STAGING_BOOK_EPOCH4_20261119"
 SAFE_CASES = ("CASH", "L1", "L2", "L3", "MISSING_PRIOR",
               "MISSING_CURRENT", "BAD_WEIGHTS", "CONTINUITY_WRITE_ERROR",
               "RETRY_DUPLICATE", "UNKNOWN_MODE",
-              "SEQUENCE_BUY_SELL_BUY", "CONTINUITY_RETRY_RECOVERY")
+              "SEQUENCE_BUY_SELL_BUY", "CONTINUITY_RETRY_RECOVERY",
+              "VIRTUAL_CLOCK_BUY_SELL_BUY")
 WRITE_METHODS = {"put_object","copy_object","delete_object","upload_file",
                  "put_item","update_item","transact_write_items"}
 READ_METHODS = {"get_object","head_object","list_object_versions",
@@ -190,6 +191,7 @@ class FakeS3:
         self.ops=[]
         self.counter=0
         self.continuity_failed_once=False
+        self.immutable_conflict_roles=[]
         # Simulate archived session commit on its OWN market date, not
         # CloudShell current wall clock. Otherwise next day's causal receipt
         # checks can reject an impossible future LastModified timestamp.
@@ -228,6 +230,10 @@ class FakeS3:
             self.continuity_failed_once=True
             raise RuntimeError("SYNTHETIC_FIRST_CONTINUITY_WRITE_FAILED")
         if IfNoneMatch=="*" and Key in self.items:
+            role=("genesis" if "genesis" in Key else
+                  "continuity" if "continuity" in Key else
+                  "paper" if "sessions/" in Key else "other")
+            self.immutable_conflict_roles.append(role)
             raise ClientError({"Error":{"Code":"PreconditionFailed"}},"PutObject")
         raw=Body if isinstance(Body,bytes) else (
             Body.encode() if isinstance(Body,str) else Body.read())
@@ -304,7 +310,8 @@ def selected_target():
         "CASH","L1","L2","L3") else "L3"
 target=selected_target()
 prior=frozen(PRIOR,target)
-current=frozen(DAY,"CASH") if case=="SEQUENCE_BUY_SELL_BUY" else frozen(DAY,target)
+current=frozen(DAY,"CASH") if case in (
+    "SEQUENCE_BUY_SELL_BUY","VIRTUAL_CLOCK_BUY_SELL_BUY") else frozen(DAY,target)
 if case=="BAD_WEIGHTS":
     prior["latest"]["qqq_weight"]=-0.2
 if case!="MISSING_PRIOR":
@@ -398,11 +405,23 @@ fake_context=types.SimpleNamespace(
     memory_limit_in_mb="512",
     get_remaining_time_in_millis=lambda:45000,
 )
+# The production Handler may correctly require each session to have
+# *already* completed. Virtual-clock scenario advances wall time IN THIS
+# LOCAL CHILD ONLY. No future market data, AWS read, or actual Paper receipt.
+# Original production date guards remain in place: they see the simulated time.
+def run_handler_with_time(event, day):
+    if case!="VIRTUAL_CLOCK_BUY_SELL_BUY":
+        return module.handler(event,fake_context)
+    from freezegun import freeze_time
+    next_morning=(datetime.date.fromisoformat(day)+
+                  datetime.timedelta(days=1)).isoformat()+"T10:00:00Z"
+    with freeze_time(next_morning):
+        return module.handler(event,fake_context)
 output=[]
 for _ in range(attempts):
     try:
         with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
-            reply=module.handler(event,fake_context)
+            reply=run_handler_with_time(event,DAY)
         if isinstance(reply,dict):
             state=reply.get("status")
             # Only statuses from our known safety vocabulary can be shown.
@@ -438,13 +457,19 @@ def observed_sides_for_keys(keys):
 # sessions. This forces SELL on Nov19 after Nov18's L3 BUY; also forces
 # subsequent BUY and target rebalances. No S3 signal is backdated/rewritten.
 sequence=[]
-if case=="SEQUENCE_BUY_SELL_BUY":
+if case in ("SEQUENCE_BUY_SELL_BUY","VIRTUAL_CLOCK_BUY_SELL_BUY"):
     schedule=(
-        ("2026-11-12","2026-11-11","L3","CASH",True),
-        ("2026-11-13","2026-11-12","CASH","L2",False),
-        ("2026-11-16","2026-11-13","L2","L1",False),
-        ("2026-11-17","2026-11-16","L1","L3",False),
-        ("2026-11-18","2026-11-17","L3","CASH",False),
+        (("2026-11-18","2026-11-17","L3","CASH",True),
+         ("2026-11-19","2026-11-18","CASH","L2",False),
+         ("2026-11-20","2026-11-19","L2","L1",False),
+         ("2026-11-23","2026-11-20","L1","L3",False),
+         ("2026-11-24","2026-11-23","L3","CASH",False))
+        if case=="VIRTUAL_CLOCK_BUY_SELL_BUY" else (
+         ("2026-11-12","2026-11-11","L3","CASH",True),
+         ("2026-11-13","2026-11-12","CASH","L2",False),
+         ("2026-11-16","2026-11-13","L2","L1",False),
+         ("2026-11-17","2026-11-16","L1","L3",False),
+         ("2026-11-18","2026-11-17","L3","CASH",False))
     )
     # First step was executed in the existing loop, whose starting signal
     # 17 Nov was L3 and 18 Nov's *next-day* frozen target was CASH.
@@ -458,7 +483,7 @@ if case=="SEQUENCE_BUY_SELL_BUY":
             "modeled_sides_in_receipt":observed_sides_for_keys(newkeys),
             "new_unique_s3_writes":len(newkeys),
         }
-    sequence.append(step_proof("2026-11-12",list(s3.writes),
+    sequence.append(step_proof(schedule[0][0],list(s3.writes),
                       bool(output and
                            output[0].get("status")=="STAGED_PAPER_VERIFIED")))
     for day,prev,prior_target,next_target,bootstrap in schedule[1:]:
@@ -478,7 +503,7 @@ if case=="SEQUENCE_BUY_SELL_BUY":
         result={"outcome":"handler_exception"}
         try:
             with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
-                ret=module.handler(event,fake_context)
+                ret=run_handler_with_time(event,day)
             observed=ret.get("status") if isinstance(ret,dict) else None
             result={"outcome":"handler_returned",
                     "status":(observed if observed=="STAGED_PAPER_VERIFIED"
@@ -495,6 +520,7 @@ recovery_detail=None
 if case=="CONTINUITY_RETRY_RECOVERY":
     recovery_detail={
         "first_continuity_write_failed_injected":s3.continuity_failed_once,
+        "immutable_precondition_conflict_roles":list(s3.immutable_conflict_roles),
         "paper_receipt_persisted":(
             "paper/sessions/2026-11-18.json" in s3.items),
         "continuity_receipt_persisted":(
@@ -517,10 +543,12 @@ print(json.dumps({"case":case,
     "synthetic_storage_lastmodified_is_session_scoped":True,
     "fake_s3_writes_count":len(s3.writes),
     "fake_s3_duplicate_key_writes":len(s3.writes)-len(set(s3.writes)),
+    "fake_s3_precondition_conflict_roles":list(s3.immutable_conflict_roles),
     "fake_s3_modeled_sides_observed":sides,
     "consecutive_session_proofs":sequence,
     "partial_write_recovery_proof":recovery_detail,
     "both_buy_sell_not_proven_by_single_case":True,
+    "virtual_clock_isolated_child_only":case=="VIRTUAL_CLOCK_BUY_SELL_BUY",
 },sort_keys=True))
 '''
 
@@ -633,6 +661,23 @@ def run():
         and {"BUY","SELL"}.issubset(set(
             sequence.get("fake_s3_modeled_sides_observed",[])))
         and sequence.get("fake_s3_duplicate_key_writes")==0)
+    future_case=next((x for x in report["cases"]
+                      if x.get("case")=="VIRTUAL_CLOCK_BUY_SELL_BUY"),{})
+    virtual_steps=future_case.get("consecutive_session_proofs",[])
+    virtual_days=("2026-11-18","2026-11-19","2026-11-20",
+                  "2026-11-23","2026-11-24")
+    report["virtual_clock_private_handler_buy_sell_proven"]=bool(
+        future_case.get("child_exit")==0
+        and future_case.get("virtual_clock_isolated_child_only")
+        and len(virtual_steps)==len(virtual_days)
+        and all(s.get("session")==day
+                and s.get("private_handler_returned_verified")
+                and s.get("paper_receipt_written")
+                and s.get("continuity_receipt_written")
+                for s,day in zip(virtual_steps,virtual_days))
+        and {"BUY","SELL"}.issubset(set(
+            future_case.get("fake_s3_modeled_sides_observed",[])))
+        and future_case.get("fake_s3_duplicate_key_writes")==0)
     recovery=next((x for x in report["cases"]
                    if x.get("case")=="CONTINUITY_RETRY_RECOVERY"),{})
     proof=recovery.get("partial_write_recovery_proof") or {}
