@@ -129,13 +129,16 @@ def prepare_zip(raw,base):
 
 CHILD = r'''
 from __future__ import annotations
-import io, json, os, sys, socket, hashlib, datetime, importlib, contextlib
+import io, json, os, sys, socket, hashlib, datetime, importlib, contextlib, traceback
 from pathlib import Path
 root=Path(os.environ["SL63_FAKE_ROOT"]).resolve()
 case=os.environ["SL63_CASE"]
 repo=Path(os.environ["SL63_PUBLIC_ROOT"]).resolve()
-DAY="2026-11-18"
-PRIOR="2026-11-17"
+# Five-session probe MUST only use completed XNYS sessions as of Nov19
+# morning. Trying Nov19/20/23/24 before they have closed is legitimately
+# rejected by production's no-future-session guard.
+DAY=("2026-11-12" if case=="SEQUENCE_BUY_SELL_BUY" else "2026-11-18")
+PRIOR=("2026-11-11" if case=="SEQUENCE_BUY_SELL_BUY" else "2026-11-17")
 BUCKET="stocklens-st-candidatedata-6jj7i9fxjmfr"
 sys.path.insert(0,str(root))
 sys.path.insert(1,str(repo))
@@ -187,11 +190,20 @@ class FakeS3:
         self.ops=[]
         self.counter=0
         self.continuity_failed_once=False
-    def seed(self,key,body,stamp="2026-11-18T02:00:00+00:00"):
+        # Simulate archived session commit on its OWN market date, not
+        # CloudShell current wall clock. Otherwise next day's causal receipt
+        # checks can reject an impossible future LastModified timestamp.
+        self.fake_s3_commit_utc=datetime.datetime.fromisoformat(
+            DAY+"T23:00:00+00:00")
+    def seed(self,key,body,stamp=None):
         self.counter+=1
         raw=json.dumps(body,sort_keys=True,separators=(",",":")).encode()
+        timestamp=stamp or body.get("generated_at_utc")
+        if not timestamp:
+            raise RuntimeError("SYNTHETIC_SIGNAL_NEEDS_UTC_TIMESTAMP")
         self.items[key]=(raw,"fake-version-"+str(self.counter),
-                         datetime.datetime.fromisoformat(stamp))
+                         datetime.datetime.fromisoformat(
+                             timestamp.replace("Z","+00:00")))
     def _check(self,bucket):
         if bucket!=BUCKET:raise RuntimeError("S3_BUCKET_ESCAPE_DENIED")
     def head_object(self,Bucket,Key,**kw):
@@ -221,7 +233,7 @@ class FakeS3:
             Body.encode() if isinstance(Body,str) else Body.read())
         if len(raw)>2_000_000:raise RuntimeError("FAKE_S3_OVERSIZED_WRITE")
         self.counter+=1;version="fake-write-"+str(self.counter)
-        now=datetime.datetime.now(datetime.timezone.utc)
+        now=self.fake_s3_commit_utc
         self.items[Key]=(raw,version,now)
         self.writes.append(Key)
         return {"VersionId":version,"ETag":'"'+hashlib.md5(raw).hexdigest()+'"'}
@@ -312,6 +324,44 @@ module=importlib.import_module("infra.aws.independent_paper")
 assert Path(module.__file__).resolve().is_relative_to(root)
 if hasattr(module,"fetch_execution_market"):
     setattr(module,"fetch_execution_market",stub_market)
+# Contract-safe error fingerprints. We DO NOT output private source, private
+# function names, exception text, object keys, traceback lines or credentials.
+ERROR_TAGS=(
+    "date","session","previous","prior","genesis","book","continuity",
+    "signal","market","timestamp","time","latest","expected","version",
+    "invalid","already","duplicate","parse","format","missing","chain",
+    "receipt","before","after","next","future","stale",
+)
+def exception_evidence(exc):
+    msg=str(exc).lower()
+    frames=[]
+    for tb in traceback.walk_tb(exc.__traceback__):
+        frame,_=tb
+        name=frame.f_code.co_filename.replace("\\","/")
+        if "/stocklens/paper.py" in name or "/stocklens/core.py" in name:
+            kind="DEPLOYED_ECONOMIC_MODEL"
+        elif "/infra/aws/independent_paper.py" in name:
+            kind="DEPLOYED_PRIVATE_HANDLER"
+        elif "/infra/aws/" in name:
+            kind="DEPLOYED_INFRA_HELPER"
+        elif "/exchange_calendars/" in name:
+            kind="XNYS_CALENDAR_DEPENDENCY"
+        elif "/botocore/" in name:
+            kind="FAKE_AWS_SDK_EXCEPTION"
+        elif name=="<string>":
+            kind="OFFLINE_HARNESS"
+        else:
+            kind="OTHER_DEPENDENCY"
+        frames.append(kind)
+    return {
+        "class":type(exc).__name__,
+        "last_frame_category":frames[-1] if frames else "UNKNOWN",
+        "frame_categories":list(dict.fromkeys(frames))[-8:],
+        "message_sha256":hashlib.sha256(str(exc).encode()).hexdigest(),
+        "known_error_token_presence":[t for t in ERROR_TAGS if t in msg],
+        "raw_error_not_disclosed":True,
+    }
+
 def inspect_new_writes():
     import collections
     buckets=collections.Counter()
@@ -363,7 +413,8 @@ for _ in range(attempts):
         else:output.append({"outcome":"handler_non_dict_return"})
     except Exception as exc:
         output.append({"outcome":"handler_exception",
-                       "exception_class":type(exc).__name__})
+                       "exception_class":type(exc).__name__,
+                       "safe_failure_evidence":exception_evidence(exc)})
 def observed_sides_for_keys(keys):
     def recurse(v):
         if isinstance(v,dict):
@@ -389,11 +440,11 @@ def observed_sides_for_keys(keys):
 sequence=[]
 if case=="SEQUENCE_BUY_SELL_BUY":
     schedule=(
-        ("2026-11-18","2026-11-17","L3","CASH",True),
-        ("2026-11-19","2026-11-18","CASH","L2",False),
-        ("2026-11-20","2026-11-19","L2","L1",False),
-        ("2026-11-23","2026-11-20","L1","L3",False),
-        ("2026-11-24","2026-11-23","L3","CASH",False),
+        ("2026-11-12","2026-11-11","L3","CASH",True),
+        ("2026-11-13","2026-11-12","CASH","L2",False),
+        ("2026-11-16","2026-11-13","L2","L1",False),
+        ("2026-11-17","2026-11-16","L1","L3",False),
+        ("2026-11-18","2026-11-17","L3","CASH",False),
     )
     # First step was executed in the existing loop, whose starting signal
     # 17 Nov was L3 and 18 Nov's *next-day* frozen target was CASH.
@@ -407,12 +458,14 @@ if case=="SEQUENCE_BUY_SELL_BUY":
             "modeled_sides_in_receipt":observed_sides_for_keys(newkeys),
             "new_unique_s3_writes":len(newkeys),
         }
-    sequence.append(step_proof("2026-11-18",list(s3.writes),
+    sequence.append(step_proof("2026-11-12",list(s3.writes),
                       bool(output and
                            output[0].get("status")=="STAGED_PAPER_VERIFIED")))
     for day,prev,prior_target,next_target,bootstrap in schedule[1:]:
         DAY=day
         PRIOR=prev
+        s3.fake_s3_commit_utc=datetime.datetime.fromisoformat(
+            day+"T23:00:00+00:00")
         # Prior signal was already frozen and is present. Seed ONLY the new
         # post-session Signal to support the next *following* session.
         s3.seed("signals/"+day+".json",frozen(day,next_target),
@@ -432,7 +485,8 @@ if case=="SEQUENCE_BUY_SELL_BUY":
                               else "NOT_VERIFIED_STATUS_REDACTED")}
         except Exception as exc:
             result={"outcome":"handler_exception",
-                    "exception_class":type(exc).__name__}
+                    "exception_class":type(exc).__name__,
+                    "safe_failure_evidence":exception_evidence(exc)}
         output.append(result)
         sequence.append(step_proof(day,s3.writes[before:],
                           result.get("status")=="STAGED_PAPER_VERIFIED"))
@@ -460,6 +514,7 @@ print(json.dumps({"case":case,
     "handler_results":output,
     "fake_s3_paper_write_counts":counts,
     "fake_s3_reads_count":sum(x in ("GET","HEAD") for x in s3.ops),
+    "synthetic_storage_lastmodified_is_session_scoped":True,
     "fake_s3_writes_count":len(s3.writes),
     "fake_s3_duplicate_key_writes":len(s3.writes)-len(set(s3.writes)),
     "fake_s3_modeled_sides_observed":sides,
@@ -564,8 +619,8 @@ def run():
     sequence=next((x for x in report["cases"]
                    if x.get("case")=="SEQUENCE_BUY_SELL_BUY"),{})
     steps=sequence.get("consecutive_session_proofs",[])
-    required_dates=("2026-11-18","2026-11-19","2026-11-20",
-                    "2026-11-23","2026-11-24")
+    required_dates=("2026-11-12","2026-11-13","2026-11-16",
+                    "2026-11-17","2026-11-18")
     report["legacy_private_handler_multisession_sides"]=(
         sequence.get("fake_s3_modeled_sides_observed",[]))
     report["legacy_private_handler_multisession_proven"]=bool(
