@@ -593,6 +593,9 @@
     "infra/aws/sl63_epoch4_watchdog.py": "1d06d242a6559af4e4437f0699affd044c934005",
     "tests/test_sl63_epoch4_prospective_runtime.py": "98e13ce1e4a0449e211a237daecf97fc4b55cfc9",
     "tests/test_sl63_epoch4_watchdog.py": "786bb751fc29abaf5dd481e5df44abb5b4c893a8",
-    ".github/workflows/sl63-epoch4-prospective.yml": "e1b21dfcbeb82f98991b2398da84fb0df47b848d"
+    ".github/workflows/sl63-epoch4-prospective.yml": "e1b21dfcbeb82f98991b2398da84fb0df47b848d",
+    "infra/aws/sl63_epoch4_automated_release.py": "6754ec16e9e39cba14fe428f2596dbcb486b360f",
+    "tests/test_sl63_epoch4_automated_release.py": "d5c568a50577db0ee28831623d5b59eae7441c17",
+    ".github/workflows/sl63-epoch4-automated-release.yml": "d56941443771140efdb2a265b7910d834ff608aa"
   }
 }
