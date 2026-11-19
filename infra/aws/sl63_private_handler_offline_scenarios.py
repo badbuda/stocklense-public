@@ -357,8 +357,16 @@ def childcase(root, repo, name):
         lines=[x for x in process.stdout.splitlines() if x.startswith('{"')]
         result=json.loads(lines[-1])
     except Exception:
+        # The failing private ZIP source is NEVER emitted, only a fixed
+        # exception-class allowlist; CI toy fixtures remain debuggable.
+        last=process.stderr.strip().splitlines()
+        candidate=last[-1].split(":",1)[0].strip() if last else ""
+        allowed={"ModuleNotFoundError","ImportError","AssertionError",
+                 "RuntimeError","TypeError","AttributeError","OSError",
+                 "SyntaxError","ValueError","NameError","KeyError"}
         return {"case":name,"status":"OFFLINE_PRIVATE_HANDLER_RUNTIME_UNVERIFIED",
                 "child_exit":process.returncode,
+                "exception_class":candidate if candidate in allowed else "UNCLASSIFIED_CHILD_FAILURE",
                 "stderr_sha256":hashlib.sha256(process.stderr.encode()).hexdigest(),
                 "private_stdout_disclosed":False}
     return {"case":name,"status":"OBSERVED_PRIVATE_HANDLER_WITH_IN_MEMORY_AWS",
