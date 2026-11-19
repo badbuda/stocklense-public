@@ -139,7 +139,8 @@ def _source_signal(s3, session, prior, prior_close, opening, approval):
     return signal
 
 
-def build_and_store_pair(s3, *, session, market, observed_at_utc):
+def build_and_store_pair(s3, *, session, market, observed_at_utc,
+                         market_evidence=None):
     """Offline injectable S3 integration, NOT a deployable AWS handler.
 
     No raw historical sessions before approved 2026-11-19 are accepted.
@@ -153,6 +154,21 @@ def build_and_store_pair(s3, *, session, market, observed_at_utc):
     # The market object is injected and does not prove actual vendor sourcing.
     require(isinstance(market,model.SessionMarket),
             "INJECTED_MARKET_DATA_CLASS_REQUIRED")
+    if market_evidence is not None:
+        # Only strict single-vendor Yahoo 1m observations are accepted here.
+        # This does not constitute independent-vendor corroboration.
+        require(type(market_evidence) is dict
+                and market_evidence.get("schema")==
+                    "sl63-yahoo-single-vendor-1m-quote-evidence-v1"
+                and market_evidence.get("single_vendor")=="YFINANCE_1M_RAW"
+                and market_evidence.get("synthetic_quotes") is False
+                and market_evidence.get("independent_second_vendor_verified")
+                    is False
+                and market.source=="YFINANCE_1M_RAW"
+                and type(market_evidence.get("quotes_and_actions_sha256"))
+                    is str
+                and len(market_evidence["quotes_and_actions_sha256"])==64,
+                "LIVE_MARKET_EVIDENCE_INVALID_OR_UNATTESTED")
     approval=_approval(s3,"2026-11-19",
                        _market_clock("2026-11-19",
                                      "2026-11-20T23:00:00Z")[2])
@@ -195,7 +211,11 @@ def build_and_store_pair(s3, *, session, market, observed_at_utc):
         "book":store.EPOCH,"session":session,
         "mode":"SHADOW_ONLY_NO_BROKER_ACTIONS",
         "broker_orders_authorized":False,"broker_fills_observed":False,
-        "execution_evidence":"INJECTED_MARKET_NOT_INDEPENDENTLY_ATTESTED",
+        "execution_evidence":(
+            "YFINANCE_RAW_1M_SINGLE_VENDOR_NOT_INDEPENDENTLY_CORROBORATED"
+            if market_evidence is not None else
+            "INJECTED_MARKET_NOT_INDEPENDENTLY_ATTESTED"),
+        "market_evidence":market_evidence,
         "signal":{"key":signal["key"],"version_id":signal["version_id"],
                   "sha256":signal["sha256"]},
         "prior_paper_sha256":prev_paper["sha256"] if prev_paper else None,

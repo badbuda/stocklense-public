@@ -1,0 +1,27 @@
+name: SL-63 prospective Epoch4 auto Paper and watchdog (offline)
+on:
+  pull_request:
+    paths:
+      - 'infra/aws/sl63_epoch4_lambda.py'
+      - 'infra/aws/sl63_epoch4_paper_economic_adapter.py'
+      - 'infra/aws/sl63_epoch4_prospective_runtime.py'
+      - 'infra/aws/sl63_epoch4_watchdog.py'
+      - 'tests/test_sl63_epoch4_prospective_runtime.py'
+      - 'tests/test_sl63_epoch4_watchdog.py'
+      - '.github/workflows/sl63-epoch4-prospective.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  forward-only-synthetic-economy-and-version-chain:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install --quiet -r requirements.txt pytest
+      - name: Existing dark gate, new EOD modeled Paper, atomic recovery, watcher
+        run: |
+          python -m pytest -q tests/test_sl63_epoch4_lambda.py tests/test_sl63_epoch4_paper_economic_adapter.py tests/test_sl63_epoch4_immutable_store.py tests/test_sl63_epoch4_prospective_runtime.py tests/test_sl63_epoch4_watchdog.py
