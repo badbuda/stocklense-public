@@ -277,3 +277,84 @@ def test_toy_private_handler_virtual_clock_with_sell_has_no_real_s3(tmp_path):
         outcome["fake_s3_modeled_sides_observed"])
     assert outcome["virtual_clock_isolated_child_only"] is True
     assert outcome["real_aws_mutations"] is False
+
+
+def test_strict_idempotent_fake_put_never_rewrites_immutable_session(tmp_path):
+    """TOY handler: failure after Paper, replay existing bytes, finalize Continuity."""
+    from infra.aws import sl63_deployed_paper_source_parity as pins
+    root=Path(__file__).resolve().parents[1]
+    toy=(
+        "import boto3,json\n"
+        "def handler(event,context):\n"
+        " s3=boto3.client('s3')\n"
+        " b='stocklens-st-candidatedata-6jj7i9fxjmfr'\n"
+        " s3.put_object(Bucket=b,Key='paper/book/TOY/aux.json',"
+        "Body=b'fixed',IfNoneMatch='*')\n"
+        " s3.put_object(Bucket=b,Key='paper/sessions/2026-11-18.json',"
+        "Body=json.dumps({'trades':[{'side':'BUY'}]}),IfNoneMatch='*')\n"
+        " s3.put_object(Bucket=b,Key='paper/continuity/2026-11-18.json',"
+        "Body=b'fixed-continuity',IfNoneMatch='*')\n"
+        " return {'status':'STAGED_PAPER_VERIFIED'}\n"
+    )
+    buf=io.BytesIO()
+    with zipfile.ZipFile(buf,"w") as z:
+        for filename in pins.PINNED_PUBLIC_MODULE_BLOBS:
+            z.writestr(filename,(root/filename).read_bytes())
+        z.writestr(m.PRIVATE,toy)
+    m.prepare_zip(buf.getvalue(),tmp_path)
+    result=m.childcase(tmp_path,root,"CONTINUITY_RETRY_IDENTICAL_REPLAY")
+    assert result["child_exit"]==0,result
+    x=result["partial_write_recovery_proof"]
+    assert x["first_continuity_write_failed_injected"]
+    assert x["paper_receipt_persisted"]
+    assert x["continuity_receipt_persisted"]
+    assert x["retry_reported_verified"]
+    assert x["duplicate_written_keys"]==0
+    assert x["exact_existing_versions_reused"]==2
+    assert x["immutable_precondition_conflict_roles"]==[]
+    assert {y["key_role"] for y in x["exact_immutable_replay_proofs"]}=={
+        "book_auxiliary","paper_session"}
+    assert all(y["bytes_identical"] and y["reused_exact_existing_version"]
+               for y in x["exact_immutable_replay_proofs"])
+    assert result["real_aws_mutations"] is False
+
+
+def test_strict_immutable_replay_rejects_different_existing_bytes(tmp_path):
+    """Another TOY handler changes the old book record: no overwrite allowed."""
+    from infra.aws import sl63_deployed_paper_source_parity as pins
+    root=Path(__file__).resolve().parents[1]
+    toy=(
+        "import boto3\n"
+        "_attempt=0\n"
+        "def handler(event,context):\n"
+        " global _attempt\n"
+        " _attempt+=1\n"
+        " s3=boto3.client('s3')\n"
+        " b='stocklens-st-candidatedata-6jj7i9fxjmfr'\n"
+        " s3.put_object(Bucket=b,Key='paper/book/TOY/aux.json',"
+        "Body=str(_attempt).encode(),IfNoneMatch='*')\n"
+        " s3.put_object(Bucket=b,Key='paper/sessions/2026-11-18.json',"
+        "Body=b'fixed',IfNoneMatch='*')\n"
+        " s3.put_object(Bucket=b,Key='paper/continuity/2026-11-18.json',"
+        "Body=b'fixed',IfNoneMatch='*')\n"
+        " return {'status':'STAGED_PAPER_VERIFIED'}\n"
+    )
+    buf=io.BytesIO()
+    with zipfile.ZipFile(buf,"w") as z:
+        for filename in pins.PINNED_PUBLIC_MODULE_BLOBS:
+            z.writestr(filename,(root/filename).read_bytes())
+        z.writestr(m.PRIVATE,toy)
+    m.prepare_zip(buf.getvalue(),tmp_path)
+    result=m.childcase(tmp_path,root,"CONTINUITY_RETRY_CHANGED_PAYLOAD")
+    assert result["child_exit"]==0,result
+    p=result["partial_write_recovery_proof"]
+    assert p["first_continuity_write_failed_injected"]
+    assert not p["continuity_receipt_persisted"]
+    assert not p["retry_reported_verified"]
+    assert p["duplicate_written_keys"]==0
+    assert p["immutable_precondition_conflict_roles"]==["book_auxiliary"]
+    assert len(p["exact_immutable_replay_proofs"])==1
+    x=p["exact_immutable_replay_proofs"][0]
+    assert x["bytes_identical"] is False
+    assert x["reused_exact_existing_version"] is False
+    assert result["real_aws_mutations"] is False
