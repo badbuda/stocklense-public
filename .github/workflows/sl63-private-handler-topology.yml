@@ -1,0 +1,22 @@
+name: SL-63 Private ST Paper handler static topology safety tests
+on:
+  pull_request:
+    paths:
+      - 'infra/aws/sl63_private_handler_topology_readonly.py'
+      - 'tests/test_sl63_private_handler_topology_readonly.py'
+      - '.github/workflows/sl63-private-handler-topology.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  static-readonly-not-execution:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install --quiet pytest
+      - name: No handler invocation, no code disclosure, enumerate supported mode markers
+        run: python -m pytest -q tests/test_sl63_private_handler_topology_readonly.py

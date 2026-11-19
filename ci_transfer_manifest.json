@@ -571,6 +571,9 @@
     "tests/test_signal_to_paper_order_handoff.py": "376812463089ba5e1c25601ce9704e78a9b026e1",
     "infra/aws/sl63_deployed_paper_source_parity.py": "cbce63d33cc8471a5e88c73af991a3f59af5edd2",
     "tests/test_sl63_deployed_paper_source_parity.py": "b4c3e04dba9ae238d3b670262a9558c7ae5659aa",
-    ".github/workflows/sl63-deployed-zip-parity.yml": "0eda8da1c5fc47f58c0fec85f1dd4b08306dd9bc"
+    ".github/workflows/sl63-deployed-zip-parity.yml": "0eda8da1c5fc47f58c0fec85f1dd4b08306dd9bc",
+    "infra/aws/sl63_private_handler_topology_readonly.py": "c8a85c9b5e4b2b92133628cb1f9c9c6c434f3e6f",
+    "tests/test_sl63_private_handler_topology_readonly.py": "05b43cc3c8cabf67ca6a1fc438bf47ad33a39753",
+    ".github/workflows/sl63-private-handler-topology.yml": "fc50bfbddb621035bb8baf3b443180e6ee74473a"
   }
 }
