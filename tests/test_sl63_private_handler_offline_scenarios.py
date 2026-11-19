@@ -82,3 +82,33 @@ def test_fake_handler_smoke_never_makes_a_network_request(tmp_path):
     # Test that source ZIP never gets copied to a non-temporary destination.
     m.prepare_zip(data,tmp_path)
     assert (tmp_path/"infra/aws/independent_paper.py").is_file()
+
+def test_real_public_engine_zip_with_toy_handler_is_executed_only_in_fake_aws(tmp_path):
+    """The local handler really runs with injected signals and fake S3.
+
+    This is a toy private handler, not the deployed user's real handler.
+    Checks child provenance and fake AWS isolation before the user runs it.
+    """
+    root=Path(__file__).resolve().parents[1]
+    from infra.aws import sl63_deployed_paper_source_parity as pins
+    mem=io.BytesIO()
+    with zipfile.ZipFile(mem,"w") as z:
+        for path in pins.PINNED_PUBLIC_MODULE_BLOBS:
+            z.writestr(path,(root/path).read_bytes())
+        z.writestr(m.PRIVATE,
+            "import boto3\n"
+            "def handler(event,context):\n"
+            " s3=boto3.client('s3')\n"
+            " s3.get_object(Bucket='stocklens-st-candidatedata-6jj7i9fxjmfr',"
+            "Key='signals/2026-11-17.json')\n"
+            " return {'status':'STAGED_PAPER_VERIFIED'}\n")
+    m.prepare_zip(mem.getvalue(),tmp_path)
+    result=m.childcase(tmp_path,root,"L3")
+    assert result["child_exit"]==0,result
+    assert result["true_private_handler_imported_from_deployed_zip"] is True
+    assert result["network_disabled"] is True
+    assert result["all_sdk_calls_fake"] is True
+    assert result["broker_orders"] is False
+    assert result["real_aws_mutations"] is False
+    assert result["fake_s3_reads_count"]>0
+    assert result["handler_results"][0]["status"]=="STAGED_PAPER_VERIFIED"

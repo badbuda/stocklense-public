@@ -414,8 +414,12 @@ def run():
     report["positive_local_fake_paper_and_continuity_cases"]=len(successes)
     report["new_epoch_runtime_deployed"]=False
     report["private_handler_real_aws_s3_write_tested"]=False
-    report["status"]="PRIVATE_HANDLER_FORCED_OFFLINE_DIAGNOSTIC_NOT_ST_RELEASE"
-    return report,0
+    # A technical invocation with no actual Paper/Continuity is a BLOCKER,
+    # not a green run: tests cannot pass by simply refusing to execute.
+    report["status"]=("PRIVATE_HANDLER_FAKE_STORAGE_RECEIPTS_OBSERVED_NOT_LIVE_E2E"
+                      if successes else
+                      "PRIVATE_HANDLER_FORCED_BUY_SELL_E2E_NOT_PROVEN_BLOCKED")
+    return report, 0 if successes else 4
 
 
 def main():
