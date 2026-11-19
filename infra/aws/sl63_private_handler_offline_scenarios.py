@@ -34,7 +34,9 @@ SAFE_CASES = ("CASH", "L1", "L2", "L3", "MISSING_PRIOR",
               "MISSING_CURRENT", "BAD_WEIGHTS", "CONTINUITY_WRITE_ERROR",
               "RETRY_DUPLICATE", "UNKNOWN_MODE",
               "SEQUENCE_BUY_SELL_BUY", "CONTINUITY_RETRY_RECOVERY",
-              "VIRTUAL_CLOCK_BUY_SELL_BUY")
+              "VIRTUAL_CLOCK_BUY_SELL_BUY",
+              "CONTINUITY_RETRY_IDENTICAL_REPLAY",
+              "CONTINUITY_RETRY_CHANGED_PAYLOAD")
 WRITE_METHODS = {"put_object","copy_object","delete_object","upload_file",
                  "put_item","update_item","transact_write_items"}
 READ_METHODS = {"get_object","head_object","list_object_versions",
@@ -184,6 +186,17 @@ except ImportError:
 def missing(key):
     return ClientError({"Error":{"Code":"NoSuchKey","Message":"fake"}},
                        "GetObject")
+# Only allowed, static key categories are printed; raw private S3 keys
+# and internal book IDs are NEVER printed.
+def safe_s3_key_role(key):
+    if key.startswith("paper/sessions/"):return "paper_session"
+    if key.startswith("paper/continuity/"):return "continuity"
+    if key.startswith("paper/book/") and "genesis" in key:return "genesis"
+    if key.startswith("paper/book/"):return "book_auxiliary"
+    if key.startswith("paper/"):return "paper_auxiliary"
+    if key.startswith("signals/"):return "signal"
+    return "other_namespace"
+
 class FakeS3:
     def __init__(self):
         self.items={}
@@ -192,6 +205,8 @@ class FakeS3:
         self.counter=0
         self.continuity_failed_once=False
         self.immutable_conflict_roles=[]
+        self.immutable_replay_proofs=[]
+        self.immutable_replay_reuses=0
         # Simulate archived session commit on its OWN market date, not
         # CloudShell current wall clock. Otherwise next day's causal receipt
         # checks can reject an impossible future LastModified timestamp.
@@ -225,19 +240,35 @@ class FakeS3:
         self._check(Bucket);self.ops.append("PUT")
         if case=="CONTINUITY_WRITE_ERROR" and ("continuity" in Key):
             raise RuntimeError("SYNTHETIC_CONTINUITY_WRITE_FAILED")
-        if (case=="CONTINUITY_RETRY_RECOVERY" and
-                "continuity" in Key and not self.continuity_failed_once):
+        if (case in (
+                "CONTINUITY_RETRY_RECOVERY",
+                "CONTINUITY_RETRY_IDENTICAL_REPLAY",
+                "CONTINUITY_RETRY_CHANGED_PAYLOAD")
+                and "continuity" in Key and not self.continuity_failed_once):
             self.continuity_failed_once=True
             raise RuntimeError("SYNTHETIC_FIRST_CONTINUITY_WRITE_FAILED")
-        if IfNoneMatch=="*" and Key in self.items:
-            role=("genesis" if "genesis" in Key else
-                  "continuity" if "continuity" in Key else
-                  "paper" if "sessions/" in Key else "other")
-            self.immutable_conflict_roles.append(role)
-            raise ClientError({"Error":{"Code":"PreconditionFailed"}},"PutObject")
         raw=Body if isinstance(Body,bytes) else (
             Body.encode() if isinstance(Body,str) else Body.read())
         if len(raw)>2_000_000:raise RuntimeError("FAKE_S3_OVERSIZED_WRITE")
+        if IfNoneMatch=="*" and Key in self.items:
+            role=safe_s3_key_role(Key)
+            old_bytes,old_version,old_when=self.items[Key]
+            identical=(raw==old_bytes)
+            # This is an EXPERIMENT on fake S3 only, NOT actual S3 behavior.
+            # Reuse existing VERSION only for exact byte identity.
+            allow_case=case in (
+                "CONTINUITY_RETRY_IDENTICAL_REPLAY",
+                "CONTINUITY_RETRY_CHANGED_PAYLOAD")
+            accepted=bool(allow_case and identical)
+            self.immutable_replay_proofs.append({
+                "key_role":role,"bytes_identical":identical,
+                "reused_exact_existing_version":accepted})
+            if accepted:
+                self.immutable_replay_reuses+=1
+                return {"VersionId":old_version,
+                        "ETag":'"'+hashlib.md5(old_bytes).hexdigest()+'"'}
+            self.immutable_conflict_roles.append(role)
+            raise ClientError({"Error":{"Code":"PreconditionFailed"}},"PutObject")
         self.counter+=1;version="fake-write-"+str(self.counter)
         now=self.fake_s3_commit_utc
         self.items[Key]=(raw,version,now)
@@ -395,7 +426,10 @@ def inspect_new_writes():
 event={"mode":"STAGING_PAPER_ONLY",
        "expected_session":DAY, "bootstrap":True}
 if case=="UNKNOWN_MODE":event["mode"]="NOT_SUPPORTED_FAKE_SIMULATE_MODE"
-attempts=2 if case in ("RETRY_DUPLICATE","CONTINUITY_RETRY_RECOVERY") else 1
+attempts=2 if case in (
+    "RETRY_DUPLICATE","CONTINUITY_RETRY_RECOVERY",
+    "CONTINUITY_RETRY_IDENTICAL_REPLAY",
+    "CONTINUITY_RETRY_CHANGED_PAYLOAD") else 1
 import types
 fake_context=types.SimpleNamespace(
     aws_request_id="SL63-OFFLINE-FAKE-INVOCATION",
@@ -517,10 +551,15 @@ if case in ("SEQUENCE_BUY_SELL_BUY","VIRTUAL_CLOCK_BUY_SELL_BUY"):
                           result.get("status")=="STAGED_PAPER_VERIFIED"))
 counts,sides=inspect_new_writes()
 recovery_detail=None
-if case=="CONTINUITY_RETRY_RECOVERY":
+if case in (
+        "CONTINUITY_RETRY_RECOVERY",
+        "CONTINUITY_RETRY_IDENTICAL_REPLAY",
+        "CONTINUITY_RETRY_CHANGED_PAYLOAD"):
     recovery_detail={
         "first_continuity_write_failed_injected":s3.continuity_failed_once,
         "immutable_precondition_conflict_roles":list(s3.immutable_conflict_roles),
+        "exact_immutable_replay_proofs":list(s3.immutable_replay_proofs),
+        "exact_existing_versions_reused":s3.immutable_replay_reuses,
         "paper_receipt_persisted":(
             "paper/sessions/2026-11-18.json" in s3.items),
         "continuity_receipt_persisted":(
@@ -544,6 +583,8 @@ print(json.dumps({"case":case,
     "fake_s3_writes_count":len(s3.writes),
     "fake_s3_duplicate_key_writes":len(s3.writes)-len(set(s3.writes)),
     "fake_s3_precondition_conflict_roles":list(s3.immutable_conflict_roles),
+    "fake_s3_replay_proofs":list(s3.immutable_replay_proofs),
+    "fake_s3_reused_version_count":s3.immutable_replay_reuses,
     "fake_s3_modeled_sides_observed":sides,
     "consecutive_session_proofs":sequence,
     "partial_write_recovery_proof":recovery_detail,
@@ -688,6 +729,22 @@ def run():
         and proof.get("continuity_receipt_persisted")
         and proof.get("retry_reported_verified")
         and proof.get("duplicate_written_keys")==0)
+    exact_case=next((x for x in report["cases"]
+                     if x.get("case")=="CONTINUITY_RETRY_IDENTICAL_REPLAY"),{})
+    exact_proof=exact_case.get("partial_write_recovery_proof") or {}
+    report["strict_identical_immutable_replay_diagnostic"]={
+        "private_handler_in_fake_storage_recovered":bool(
+            exact_case.get("child_exit")==0
+            and exact_proof.get("first_continuity_write_failed_injected")
+            and exact_proof.get("paper_receipt_persisted")
+            and exact_proof.get("continuity_receipt_persisted")
+            and exact_proof.get("retry_reported_verified")
+            and exact_proof.get("duplicate_written_keys")==0),
+        "reused_exact_existing_versions":exact_proof.get(
+            "exact_existing_versions_reused",0),
+        "forbidden_nonidentical_overwrite_occurred":False,
+        "fake_s3_only_no_deployed_handler_fix":True,
+    }
     report["new_epoch_runtime_deployed"]=False
     report["private_handler_real_aws_s3_write_tested"]=False
     # Never call single-session BUYs successful E2E. Require multi-session
