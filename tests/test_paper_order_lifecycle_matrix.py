@@ -8,6 +8,8 @@ A green result does NOT certify any deployed private AWS Paper handler.
 from __future__ import annotations
 
 import csv
+import hashlib
+import os
 import itertools
 import json
 import math
@@ -212,6 +214,44 @@ def test_twenty_day_forced_order_lifecycle_persists_and_audits_every_session(
     assert _csv(paths["ledger"])[-1]["target_defense"]=="True"
     assert int(_csv(paths["ledger"])[-1]["qqq_shares"])==0
     assert int(_csv(paths["ledger"])[-1]["tqqq_shares"])==0
+
+    # Upload ONLY synthetic fixtures; no AWS source, production strategy
+    # holdings or real broker data ever enters this audit artifact.
+    outdir=os.environ.get("STOCKLENS_SCENARIO_EVIDENCE_DIR")
+    if outdir:
+        dest=Path(outdir)
+        dest.mkdir(parents=True,exist_ok=True)
+        proof_files=("ledger","trades","state","snapshot","latest")
+        hashes={}
+        for name in proof_files:
+            raw=paths[name].read_bytes()
+            dest.joinpath(paths[name].name).write_bytes(raw)
+            hashes[paths[name].name]=hashlib.sha256(raw).hexdigest()
+        complete_ledger=_csv(paths["ledger"])
+        complete_trades=_csv(paths["trades"])
+        report={
+            "schema":"stocklens-forced-paper-order-scenarios-v1",
+            "evidence_kind":"OFFLINE_SYNTHETIC_FIXTURE_NOT_LIVE_AWS",
+            "real_market_data":False,
+            "deployed_private_paper_lambda_tested":False,
+            "broker_orders":False,
+            "aws_mutations":False,
+            "modeled_sessions":len(complete_ledger),
+            "expected_regime_sequence":list(targets),
+            "modeled_trades":len(complete_trades),
+            "side_counts":{
+                "BUY":sum(t["side"]=="BUY" for t in complete_trades),
+                "SELL":sum(t["side"]=="SELL" for t in complete_trades),
+            },
+            "all_paper_rows_and_trades_independently_audited":True,
+            "independent_audit_result":"PASS_MODELLED_PAPER_ACCOUNTING_NOT_BROKER_FILLS",
+            "artifact_sha256":hashes,
+        }
+        (dest/"scenario_report.json").write_text(
+            json.dumps(report,indent=2,sort_keys=True)+"\n",encoding="utf-8")
+        assert report["modeled_sessions"]==len(targets)
+        assert report["side_counts"]["BUY"]>0
+        assert report["side_counts"]["SELL"]>0
 
 
 def test_sale_proceeds_fund_same_session_new_purchase_with_sell_first():
