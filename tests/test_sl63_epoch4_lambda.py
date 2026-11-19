@@ -70,3 +70,23 @@ def test_no_broker_import_or_lambda_unsafe_settings():
     assert "put_rule" not in s
     assert app.FIRST=="2026-11-19"
     assert store.EPOCH=="NEW_AWS_INDEPENDENT_STAGING_BOOK_EPOCH4_20261119"
+
+
+
+def test_live_vendor_preflight_readonly_never_creates_paper(dark,monkeypatch):
+    from stocklens import paper as model
+    from stocklens.paper import SessionMarket
+    seen=[]
+    monkeypatch.setattr(app.adapter,"_approval",lambda *args:{"sha256":"a"*64})
+    monkeypatch.setattr(app.adapter,"_source_signal",lambda *args:{"sha256":"b"*64})
+    monkeypatch.setattr(model,"fetch_execution_market",
+        lambda prior,day:(seen.append((prior,day)) or
+            SessionMarket(day,{"QQQ":100,"TQQQ":50},
+                {"QQQ":101,"TQQQ":52},
+                {"QQQ":102,"TQQQ":53},
+                {"QQQ":0,"TQQQ":0},{"QQQ":0,"TQQQ":0})))
+    r=app.handler({"mode":app.VENDOR_PREFLIGHT},None)
+    assert r["status"]=="EPOCH4_HISTORIC_YFINANCE_1M_READ_ONLY_PREFLIGHT"
+    assert r["new_epoch_paper_or_continuity_written"] is False
+    assert r["broker_orders"] is False
+    assert seen==[("2026-11-17","2026-11-18")]

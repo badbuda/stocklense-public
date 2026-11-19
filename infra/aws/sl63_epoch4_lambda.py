@@ -16,6 +16,7 @@ REGION="eu-central-1"
 FIRST="2026-11-19"
 READINESS="STAGING_EPOCH4_DARK_READINESS"
 PREFLIGHT="STAGING_EPOCH4_READ_ONLY_PREFLIGHT"
+VENDOR_PREFLIGHT="STAGING_EPOCH4_VENDOR_CONNECTIVITY_READONLY"
 PAPER="STAGING_EPOCH4_MODELED_PAPER"
 ST="stocklens-st-candidatedata-6jj7i9fxjmfr"
 
@@ -35,11 +36,11 @@ def handler(event,context):
     _require(os.getenv("AWS_REGION",REGION)==REGION,
              "REGION_DIFFERENT_FROM_ST_PIN")
     mode=event.get("mode")
-    _require(mode in (READINESS,PREFLIGHT,PAPER),
+    _require(mode in (READINESS,PREFLIGHT,VENDOR_PREFLIGHT,PAPER),
              "UNKNOWN_MODE_FAIL_CLOSED")
     import boto3
     s3=boto3.client("s3",region_name=REGION)
-    if mode in (READINESS,PREFLIGHT):
+    if mode in (READINESS,PREFLIGHT,VENDOR_PREFLIGHT):
         if mode==READINESS:
             _require(os.getenv("STOCKLENS_EPOCH4_WRITE_ENABLED")=="false",
                      "READINESS_MUST_REMAIN_DARK")
@@ -53,6 +54,24 @@ def handler(event,context):
             FIRST,"2026-11-20T23:00:00Z")
         signal=adapter._source_signal(
             s3,FIRST,prior,close,opening,approval)
+        if mode==VENDOR_PREFLIGHT:
+            # Read-only historic vendor connectivity validation. The Nov18
+            # completed session is safely prior to operator-approved Nov19
+            # first session; it never manufactures a Paper trade.
+            from stocklens import paper as model
+            quote=model.fetch_execution_market("2026-11-17","2026-11-18")
+            quality=prospective._quote_payload(quote)
+            _require(quote.session_date=="2026-11-18",
+                     "VENDOR_PREFLIGHT_HISTORIC_SESSION_MISMATCH")
+            return {
+                "status":"EPOCH4_HISTORIC_YFINANCE_1M_READ_ONLY_PREFLIGHT",
+                "historical_session":"2026-11-18",
+                "source":quality["single_vendor"],
+                "quote_sha256":quality["quotes_and_actions_sha256"],
+                "independent_second_vendor_verified":False,
+                "broker_orders":False,
+                "new_epoch_paper_or_continuity_written":False,
+            }
         return {
             "status":("EPOCH4_DARK_LAMBDA_READINESS_S3_READ_ONLY"
                       if mode==READINESS else
