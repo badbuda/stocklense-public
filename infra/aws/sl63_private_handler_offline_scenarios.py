@@ -134,8 +134,11 @@ from pathlib import Path
 root=Path(os.environ["SL63_FAKE_ROOT"]).resolve()
 case=os.environ["SL63_CASE"]
 repo=Path(os.environ["SL63_PUBLIC_ROOT"]).resolve()
-DAY="2026-11-18"
-PRIOR="2026-11-17"
+# Five-session probe MUST only use completed XNYS sessions as of Nov19
+# morning. Trying Nov19/20/23/24 before they have closed is legitimately
+# rejected by production's no-future-session guard.
+DAY=("2026-11-12" if case=="SEQUENCE_BUY_SELL_BUY" else "2026-11-18")
+PRIOR=("2026-11-11" if case=="SEQUENCE_BUY_SELL_BUY" else "2026-11-17")
 BUCKET="stocklens-st-candidatedata-6jj7i9fxjmfr"
 sys.path.insert(0,str(root))
 sys.path.insert(1,str(repo))
@@ -191,12 +194,16 @@ class FakeS3:
         # CloudShell current wall clock. Otherwise next day's causal receipt
         # checks can reject an impossible future LastModified timestamp.
         self.fake_s3_commit_utc=datetime.datetime.fromisoformat(
-            "2026-11-18T23:00:00+00:00")
-    def seed(self,key,body,stamp="2026-11-18T02:00:00+00:00"):
+            DAY+"T23:00:00+00:00")
+    def seed(self,key,body,stamp=None):
         self.counter+=1
         raw=json.dumps(body,sort_keys=True,separators=(",",":")).encode()
+        timestamp=stamp or body.get("generated_at_utc")
+        if not timestamp:
+            raise RuntimeError("SYNTHETIC_SIGNAL_NEEDS_UTC_TIMESTAMP")
         self.items[key]=(raw,"fake-version-"+str(self.counter),
-                         datetime.datetime.fromisoformat(stamp))
+                         datetime.datetime.fromisoformat(
+                             timestamp.replace("Z","+00:00")))
     def _check(self,bucket):
         if bucket!=BUCKET:raise RuntimeError("S3_BUCKET_ESCAPE_DENIED")
     def head_object(self,Bucket,Key,**kw):
@@ -433,11 +440,11 @@ def observed_sides_for_keys(keys):
 sequence=[]
 if case=="SEQUENCE_BUY_SELL_BUY":
     schedule=(
-        ("2026-11-18","2026-11-17","L3","CASH",True),
-        ("2026-11-19","2026-11-18","CASH","L2",False),
-        ("2026-11-20","2026-11-19","L2","L1",False),
-        ("2026-11-23","2026-11-20","L1","L3",False),
-        ("2026-11-24","2026-11-23","L3","CASH",False),
+        ("2026-11-12","2026-11-11","L3","CASH",True),
+        ("2026-11-13","2026-11-12","CASH","L2",False),
+        ("2026-11-16","2026-11-13","L2","L1",False),
+        ("2026-11-17","2026-11-16","L1","L3",False),
+        ("2026-11-18","2026-11-17","L3","CASH",False),
     )
     # First step was executed in the existing loop, whose starting signal
     # 17 Nov was L3 and 18 Nov's *next-day* frozen target was CASH.
@@ -451,7 +458,7 @@ if case=="SEQUENCE_BUY_SELL_BUY":
             "modeled_sides_in_receipt":observed_sides_for_keys(newkeys),
             "new_unique_s3_writes":len(newkeys),
         }
-    sequence.append(step_proof("2026-11-18",list(s3.writes),
+    sequence.append(step_proof("2026-11-12",list(s3.writes),
                       bool(output and
                            output[0].get("status")=="STAGED_PAPER_VERIFIED")))
     for day,prev,prior_target,next_target,bootstrap in schedule[1:]:
@@ -612,8 +619,8 @@ def run():
     sequence=next((x for x in report["cases"]
                    if x.get("case")=="SEQUENCE_BUY_SELL_BUY"),{})
     steps=sequence.get("consecutive_session_proofs",[])
-    required_dates=("2026-11-18","2026-11-19","2026-11-20",
-                    "2026-11-23","2026-11-24")
+    required_dates=("2026-11-12","2026-11-13","2026-11-16",
+                    "2026-11-17","2026-11-18")
     report["legacy_private_handler_multisession_sides"]=(
         sequence.get("fake_s3_modeled_sides_observed",[]))
     report["legacy_private_handler_multisession_proven"]=bool(

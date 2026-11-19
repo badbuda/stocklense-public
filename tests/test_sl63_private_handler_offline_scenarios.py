@@ -132,7 +132,7 @@ def test_large_third_party_zip_does_not_hide_project_storage_writers(tmp_path):
 def test_new_scenarios_are_required_for_release_truthfulness():
     assert "SEQUENCE_BUY_SELL_BUY" in m.SAFE_CASES
     assert "CONTINUITY_RETRY_RECOVERY" in m.SAFE_CASES
-    assert '"2026-11-23"' in m.CHILD  # first Monday after Fri Nov20
+    assert '"2026-11-16"' in m.CHILD  # first Monday after Fri Nov13
     assert "first_continuity_write_failed_injected" in m.CHILD
 
 
@@ -174,7 +174,7 @@ def test_toy_multiday_handler_exercises_real_child_loop_and_fake_s3(tmp_path):
 def test_scenario_uses_market_date_scoped_fake_s3_lastmodified_and_redacts_errors():
     """Catch regression: do NOT apply actual CloudShell wall clock to Nov18."""
     assert "self.fake_s3_commit_utc" in m.CHILD
-    assert '"2026-11-18T23:00:00+00:00"' in m.CHILD
+    assert 'DAY+"T23:00:00+00:00"' in m.CHILD
     assert 'day+"T23:00:00+00:00"' in m.CHILD
     assert 'safe_failure_evidence' in m.CHILD
     assert 'raw_error_not_disclosed' in m.CHILD
@@ -190,7 +190,7 @@ def test_toy_handler_valueerror_second_day_is_redacted(tmp_path):
         "import boto3\n"
         "def handler(event,context):\n"
         " day=event['expected_session']\n"
-        " if day=='2026-11-19':\n"
+        " if day=='2026-11-13':\n"
         "  raise ValueError('private-genesis-secret-DO-NOT-LEAK invalid session')\n"
         " s3=boto3.client('s3')\n"
         " import json\n"
@@ -216,3 +216,13 @@ def test_toy_handler_valueerror_second_day_is_redacted(tmp_path):
     assert err['message_sha256']
     assert 'session' in err['known_error_token_presence']
     assert 'private-genesis-secret' not in json.dumps(result)
+
+
+def test_multiday_fixture_has_no_future_us_exchange_session_at_nov19_morning():
+    """The prior harness erroneously tried November 19-24 before close."""
+    assert '("2026-11-12","2026-11-11"' in m.CHILD
+    assert '("2026-11-13","2026-11-12"' in m.CHILD
+    assert '("2026-11-16","2026-11-13"' in m.CHILD
+    assert '("2026-11-18","2026-11-17"' in m.CHILD
+    assert '"2026-11-24"' not in m.CHILD
+    assert 'timestamp.replace("Z","+00:00")' in m.CHILD
