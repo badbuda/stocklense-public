@@ -56,5 +56,26 @@ class PairedTaxAuditTests(unittest.TestCase):
         a,b=fixtures(); a["source_kind"]=b["source_kind"]="proxy"
         self.assertEqual(audit_pair(a,b)["source_kind"],"proxy")
 
+    def test_noncanonical_date_rejected(self):
+        a,b=fixtures()
+        a["sessions"][0]=b["sessions"][0]="20260105"
+        self.assertEqual(audit_pair(a,b)["status"], "BLOCKED")
+    def test_empty_fingerprint_rejected(self):
+        a,b=fixtures()
+        a["rows"][0]["trade_fingerprint"]=b["rows"][0]["trade_fingerprint"]=" "
+        self.assertEqual(audit_pair(a,b)["reason"], "INVALID_TRADE_FINGERPRINT")
+    def test_negative_fee_rejected(self):
+        a,b=fixtures()
+        a["rows"][0]["fees_nis"]=b["rows"][0]["fees_nis"]="-1"
+        self.assertEqual(audit_pair(a,b)["reason"], "NEGATIVE_FEE")
+    def test_nonfinite_fee_rejected(self):
+        a,b=fixtures()
+        a["rows"][0]["fees_nis"]=b["rows"][0]["fees_nis"]="NaN"
+        self.assertEqual(audit_pair(a,b)["status"], "BLOCKED")
+    def test_negative_net_equity_rejected(self):
+        a,b=fixtures()
+        b["rows"][0]["net_equity_nis"]="-10"
+        self.assertEqual(audit_pair(a,b)["reason"], "NEGATIVE_NET_EQUITY")
+
 if __name__=="__main__":
     unittest.main()
