@@ -1,0 +1,46 @@
+name: StockLens Epoch4 ST Preopen Proof (no Paper trades)
+on:
+  pull_request:
+    paths:
+      - 'infra/aws/sl56_future_paper_inception.py'
+      - 'tests/test_sl56_future_paper_inception.py'
+      - '.github/workflows/st-epoch4-preopen-proof.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'infra/aws/sl56_future_paper_inception.py'
+      - '.github/workflows/st-epoch4-preopen-proof.yml'
+permissions:
+  contents: read
+  id-token: write
+jobs:
+  unit-scenarios:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install --quiet pytest exchange_calendars
+      - name: Future-date, S3 immutable, preopen and isolation faults
+        run: python -m pytest -q tests/test_sl56_future_paper_inception.py
+  read-only-aws-inspect:
+    if: github.ref == 'refs/heads/main'
+    needs: [unit-scenarios]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install --quiet boto3 exchange_calendars
+      - name: Assume deployed dedicated ST audit identity with NO write permission
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: eu-central-1
+          role-to-assume: arn:aws:iam::634740393398:role/stocklens-st-paper-audit--GitHubSTPaperAcceptanceRo-CbZTBKwqwUJg
+          role-session-name: stocklens-st-epoch4-readonly
+      - name: Verify Nov18 frozen Signal and Nov19 pre-open eligibility (read only)
+        run: python infra/aws/sl56_future_paper_inception.py --first-session 2026-11-19
