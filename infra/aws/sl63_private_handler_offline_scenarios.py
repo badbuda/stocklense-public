@@ -333,11 +333,20 @@ event={"mode":"STAGING_PAPER_ONLY",
        "expected_session":DAY, "bootstrap":True}
 if case=="UNKNOWN_MODE":event["mode"]="NOT_SUPPORTED_FAKE_SIMULATE_MODE"
 attempts=2 if case=="RETRY_DUPLICATE" else 1
+import types
+fake_context=types.SimpleNamespace(
+    aws_request_id="SL63-OFFLINE-FAKE-INVOCATION",
+    function_name="stocklens-st-paper-candidate",
+    invoked_function_arn=("arn:aws:lambda:eu-central-1:634740393398:"
+                          "function:stocklens-st-paper-candidate"),
+    memory_limit_in_mb="512",
+    get_remaining_time_in_millis=lambda:45000,
+)
 output=[]
 for _ in range(attempts):
     try:
         with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
-            reply=module.handler(event,None)
+            reply=module.handler(event,fake_context)
         if isinstance(reply,dict):
             state=reply.get("status")
             # Only statuses from our known safety vocabulary can be shown.
@@ -359,6 +368,7 @@ print(json.dumps({"case":case,
     "fake_s3_paper_write_counts":counts,
     "fake_s3_reads_count":sum(x in ("GET","HEAD") for x in s3.ops),
     "fake_s3_writes_count":len(s3.writes),
+    "fake_s3_duplicate_key_writes":len(s3.writes)-len(set(s3.writes)),
     "fake_s3_modeled_sides_observed":sides,
     "both_buy_sell_not_proven_by_single_case":True,
 },sort_keys=True))
@@ -443,14 +453,28 @@ def run():
            c.get("fake_s3_paper_write_counts",{}).get("continuity",0)>0
     ]
     report["positive_local_fake_paper_and_continuity_cases"]=len(successes)
+    negative={"MISSING_PRIOR","MISSING_CURRENT","BAD_WEIGHTS","UNKNOWN_MODE"}
+    unsafe=[x["case"] for x in report["cases"]
+            if (x.get("case") in negative and
+                x.get("fake_s3_writes_count",0)>0)
+               or (x.get("case")=="RETRY_DUPLICATE" and
+                   x.get("fake_s3_duplicate_key_writes",0)>0)]
+    # An injected Continuity failure with a committed Paper receipt is
+    # evidence of partial-write/recovery risk, not a test PASS.
+    partial=[x["case"] for x in report["cases"]
+             if x.get("case")=="CONTINUITY_WRITE_ERROR"
+             and x.get("fake_s3_paper_write_counts",{}).get("session",0)>0]
+    report["unsafe_negative_cases"]=unsafe
+    report["partial_write_review_required_cases"]=partial
     report["new_epoch_runtime_deployed"]=False
     report["private_handler_real_aws_s3_write_tested"]=False
     # A technical invocation with no actual Paper/Continuity is a BLOCKER,
     # not a green run: tests cannot pass by simply refusing to execute.
-    report["status"]=("PRIVATE_HANDLER_FAKE_STORAGE_RECEIPTS_OBSERVED_NOT_LIVE_E2E"
-                      if successes else
-                      "PRIVATE_HANDLER_FORCED_BUY_SELL_E2E_NOT_PROVEN_BLOCKED")
-    return report, 0 if successes else 4
+    okay=bool(successes) and not unsafe and not partial
+    report["status"]=(
+        "PRIVATE_HANDLER_FAKE_STORAGE_RECEIPTS_OBSERVED_NOT_LIVE_E2E"
+        if okay else "PRIVATE_HANDLER_FORCED_BUY_SELL_E2E_NOT_PROVEN_BLOCKED")
+    return report, 0 if okay else 4
 
 
 def main():
