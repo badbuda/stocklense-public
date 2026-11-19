@@ -187,19 +187,19 @@ def test_toy_handler_valueerror_second_day_is_redacted(tmp_path):
     root=Path(__file__).resolve().parents[1]
     data=io.BytesIO()
     private=(
-        "import boto3\\n"
-        "def handler(event,context):\\n"
-        " day=event['expected_session']\\n"
-        " if day=='2026-11-19':\\n"
-        "  raise ValueError('private-genesis-secret-DO-NOT-LEAK invalid session')\\n"
-        " s3=boto3.client('s3')\\n"
-        " import json\\n"
+        "import boto3\n"
+        "def handler(event,context):\n"
+        " day=event['expected_session']\n"
+        " if day=='2026-11-19':\n"
+        "  raise ValueError('private-genesis-secret-DO-NOT-LEAK invalid session')\n"
+        " s3=boto3.client('s3')\n"
+        " import json\n"
         " s3.put_object(Bucket='stocklens-st-candidatedata-6jj7i9fxjmfr',"
         "Key='paper/sessions/'+day+'.json',"
-        "Body=json.dumps({'trades':[{'side':'BUY'}]}))\\n"
+        "Body=json.dumps({'trades':[{'side':'BUY'}]}))\n"
         " s3.put_object(Bucket='stocklens-st-candidatedata-6jj7i9fxjmfr',"
-        "Key='paper/continuity/'+day+'.json',Body='{}')\\n"
-        " return {'status':'STAGED_PAPER_VERIFIED'}\\n"
+        "Key='paper/continuity/'+day+'.json',Body='{}')\n"
+        " return {'status':'STAGED_PAPER_VERIFIED'}\n"
     )
     with zipfile.ZipFile(data,'w') as z:
         for name in pins.PINNED_PUBLIC_MODULE_BLOBS:
