@@ -133,7 +133,7 @@ def test_changed_paper_after_crash_must_fail_without_continuity():
     forged=payload()
     forged["state"]["shares"]["TQQQ"]=7
     with pytest.raises(store.ImmutableEpoch4Error,
-                       match="S3_EXISTING_IMMUTABLE_BYTES_DIFFER"):
+                       match="S3_RECEIPT_METADATA_DIGEST_MISMATCH"):
         store.save_paper_and_continuity(
             s3,session="2026-11-19",paper_payload=forged,
             continuation_builder=lambda p:continuation("2026-11-19",p))
@@ -161,7 +161,7 @@ def test_mismatched_existing_receipt_must_never_be_overwritten():
     altered=payload()
     altered["state"]["shares"]["QQQ"]=7
     with pytest.raises(store.ImmutableEpoch4Error,
-                       match="S3_EXISTING_IMMUTABLE_BYTES_DIFFER"):
+                       match="S3_RECEIPT_METADATA_DIGEST_MISMATCH"):
         store.put_once_or_identical(s3,key=k,payload=altered)
     assert s3.objects[k]["raw"]==old
     assert len(s3.writes)==1
@@ -236,4 +236,18 @@ def test_different_length_immutable_bytes_are_rejected_before_replay():
     with pytest.raises(store.ImmutableEpoch4Error,
                        match="S3_BODY_LENGTH_MISMATCH"):
         store.put_once_or_identical(s3,key=key,payload=modified)
+    assert len(s3.writes)==1
+
+
+def test_forged_s3_sha_metadata_cannot_hide_different_underlying_bytes():
+    """Even a hash field fraudulently matching the *requested* body fails GET."""
+    s3=FakeS3()
+    key=store.key_for("sessions","2026-11-19")
+    store.put_once_or_identical(s3,key=key,payload=payload())
+    changed=payload()
+    changed["state"]["shares"]["QQQ"]=7  # same byte length
+    s3.objects[key]["metadata"]["sha256"]=store.digest(store.canonical(changed))
+    with pytest.raises(store.ImmutableEpoch4Error,
+                       match="S3_EXISTING_IMMUTABLE_BYTES_DIFFER"):
+        store.put_once_or_identical(s3,key=key,payload=changed)
     assert len(s3.writes)==1
