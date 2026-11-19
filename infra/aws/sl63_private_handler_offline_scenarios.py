@@ -150,8 +150,22 @@ socket.create_connection=DENY
 socket.socket.connect=DENY
 import urllib.request
 urllib.request.urlopen=DENY
-import boto3
-from botocore.exceptions import ClientError
+# Fast Guard's lean Python environment may not install boto3/botocore.
+# Use an explicit fake module IN THE CHILD only, never real AWS.
+try:
+    import boto3
+except ImportError:
+    import types
+    boto3=types.ModuleType("boto3")
+    boto3.session=types.SimpleNamespace()
+    sys.modules["boto3"]=boto3
+try:
+    from botocore.exceptions import ClientError
+except ImportError:
+    class ClientError(Exception):
+        def __init__(self,response,operation):
+            super().__init__("FAKE_CLIENT_ERROR")
+            self.response=response
 
 def missing(key):
     return ClientError({"Error":{"Code":"NoSuchKey","Message":"fake"}},
