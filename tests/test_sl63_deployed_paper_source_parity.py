@@ -58,7 +58,7 @@ def test_bogus_lambda_code_sha_and_handler_are_rejected():
     for key,value in (("Handler","unsafe.handler"),
                       ("CodeSha256","DIFFERENT_SHA"),
                       ("State","Failed")):
-        faulty=dict(cfg,key=value)
+        faulty={**cfg, key:value}
         with pytest.raises(RuntimeError):
             m.validate_config(faulty)
 

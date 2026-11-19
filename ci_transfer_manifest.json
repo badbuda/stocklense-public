@@ -570,7 +570,7 @@
     ".github/workflows/paper-order-lifecycle-matrix.yml": "953dabcb97c18804ea2be29cdab4e763579008ff",
     "tests/test_signal_to_paper_order_handoff.py": "376812463089ba5e1c25601ce9704e78a9b026e1",
     "infra/aws/sl63_deployed_paper_source_parity.py": "fbc346433e0a8c026a7acb9d378e764501b564ce",
-    "tests/test_sl63_deployed_paper_source_parity.py": "ca31f3dc7d61889a0b83405b1693fdec90f18c81",
+    "tests/test_sl63_deployed_paper_source_parity.py": "b5b943e7bfa05e7184e2b16badd58b1cd4d90bc4",
     ".github/workflows/sl63-deployed-zip-parity.yml": "267bb8fc164e62beb9b7f1a2e6b6fda889ae30c6"
   }
 }
