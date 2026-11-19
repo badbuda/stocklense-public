@@ -577,6 +577,9 @@
     ".github/workflows/sl63-private-handler-topology.yml": "fc50bfbddb621035bb8baf3b443180e6ee74473a",
     "infra/aws/sl63_private_handler_offline_scenarios.py": "c4a8474130aaef29b3ad6ce9386c6b6a21abef3d",
     "tests/test_sl63_private_handler_offline_scenarios.py": "5a18f13cc263529284c93ca87c6a523505f916c8",
-    ".github/workflows/sl63-private-handler-offline.yml": "68566a66fed5981961b9db73a3505bb64c9b7c4b"
+    ".github/workflows/sl63-private-handler-offline.yml": "68566a66fed5981961b9db73a3505bb64c9b7c4b",
+    "infra/aws/sl63_epoch4_immutable_store.py": "e01b5700204e96b1778cd4e5535ad0184e6e1086",
+    "tests/test_sl63_epoch4_immutable_store.py": "f98431ce4174da69687358a5612984c89dc11e8c",
+    ".github/workflows/sl63-epoch4-immutable-store.yml": "65caa437586a54aa12158d323d0f9345fe4b75f8"
   }
 }
