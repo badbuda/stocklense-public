@@ -32,7 +32,8 @@ PRIVATE = "infra/aws/independent_paper.py"
 BOOK = "NEW_AWS_INDEPENDENT_STAGING_BOOK_EPOCH4_20261119"
 SAFE_CASES = ("CASH", "L1", "L2", "L3", "MISSING_PRIOR",
               "MISSING_CURRENT", "BAD_WEIGHTS", "CONTINUITY_WRITE_ERROR",
-              "RETRY_DUPLICATE", "UNKNOWN_MODE")
+              "RETRY_DUPLICATE", "UNKNOWN_MODE",
+              "SEQUENCE_BUY_SELL_BUY", "CONTINUITY_RETRY_RECOVERY")
 WRITE_METHODS = {"put_object","copy_object","delete_object","upload_file",
                  "put_item","update_item","transact_write_items"}
 READ_METHODS = {"get_object","head_object","list_object_versions",
@@ -185,6 +186,7 @@ class FakeS3:
         self.writes=[]
         self.ops=[]
         self.counter=0
+        self.continuity_failed_once=False
     def seed(self,key,body,stamp="2026-11-18T02:00:00+00:00"):
         self.counter+=1
         raw=json.dumps(body,sort_keys=True,separators=(",",":")).encode()
@@ -209,6 +211,10 @@ class FakeS3:
         self._check(Bucket);self.ops.append("PUT")
         if case=="CONTINUITY_WRITE_ERROR" and ("continuity" in Key):
             raise RuntimeError("SYNTHETIC_CONTINUITY_WRITE_FAILED")
+        if (case=="CONTINUITY_RETRY_RECOVERY" and
+                "continuity" in Key and not self.continuity_failed_once):
+            self.continuity_failed_once=True
+            raise RuntimeError("SYNTHETIC_FIRST_CONTINUITY_WRITE_FAILED")
         if IfNoneMatch=="*" and Key in self.items:
             raise ClientError({"Error":{"Code":"PreconditionFailed"}},"PutObject")
         raw=Body if isinstance(Body,bytes) else (
@@ -286,7 +292,7 @@ def selected_target():
         "CASH","L1","L2","L3") else "L3"
 target=selected_target()
 prior=frozen(PRIOR,target)
-current=frozen(DAY,target)
+current=frozen(DAY,"CASH") if case=="SEQUENCE_BUY_SELL_BUY" else frozen(DAY,target)
 if case=="BAD_WEIGHTS":
     prior["latest"]["qqq_weight"]=-0.2
 if case!="MISSING_PRIOR":
@@ -332,7 +338,7 @@ def inspect_new_writes():
 event={"mode":"STAGING_PAPER_ONLY",
        "expected_session":DAY, "bootstrap":True}
 if case=="UNKNOWN_MODE":event["mode"]="NOT_SUPPORTED_FAKE_SIMULATE_MODE"
-attempts=2 if case=="RETRY_DUPLICATE" else 1
+attempts=2 if case in ("RETRY_DUPLICATE","CONTINUITY_RETRY_RECOVERY") else 1
 import types
 fake_context=types.SimpleNamespace(
     aws_request_id="SL63-OFFLINE-FAKE-INVOCATION",
@@ -358,7 +364,94 @@ for _ in range(attempts):
     except Exception as exc:
         output.append({"outcome":"handler_exception",
                        "exception_class":type(exc).__name__})
+def observed_sides_for_keys(keys):
+    def recurse(v):
+        if isinstance(v,dict):
+            if v.get("side") in ("BUY","SELL"):
+                yield v["side"]
+            for child in v.values():
+                yield from recurse(child)
+        elif isinstance(v,list):
+            for child in v:
+                yield from recurse(child)
+    found=[]
+    for key in keys:
+        try:
+            record=json.loads(s3.items[key][0])
+            found.extend(recurse(record))
+        except (KeyError,ValueError,TypeError):
+            pass
+    return sorted(set(found))
+
+# Same FakeS3 and the same private module across multiple completed exchange
+# sessions. This forces SELL on Nov19 after Nov18's L3 BUY; also forces
+# subsequent BUY and target rebalances. No S3 signal is backdated/rewritten.
+sequence=[]
+if case=="SEQUENCE_BUY_SELL_BUY":
+    schedule=(
+        ("2026-11-18","2026-11-17","L3","CASH",True),
+        ("2026-11-19","2026-11-18","CASH","L2",False),
+        ("2026-11-20","2026-11-19","L2","L1",False),
+        ("2026-11-23","2026-11-20","L1","L3",False),
+        ("2026-11-24","2026-11-23","L3","CASH",False),
+    )
+    # First step was executed in the existing loop, whose starting signal
+    # 17 Nov was L3 and 18 Nov's *next-day* frozen target was CASH.
+    def step_proof(day,newkeys,successful):
+        return {
+            "session":day,
+            "private_handler_returned_verified":successful,
+            "paper_receipt_written":("paper/sessions/"+day+".json" in newkeys),
+            "continuity_receipt_written":(
+                "paper/continuity/"+day+".json" in newkeys),
+            "modeled_sides_in_receipt":observed_sides_for_keys(newkeys),
+            "new_unique_s3_writes":len(newkeys),
+        }
+    sequence.append(step_proof("2026-11-18",list(s3.writes),
+                      bool(output and
+                           output[0].get("status")=="STAGED_PAPER_VERIFIED")))
+    for day,prev,prior_target,next_target,bootstrap in schedule[1:]:
+        DAY=day
+        PRIOR=prev
+        # Prior signal was already frozen and is present. Seed ONLY the new
+        # post-session Signal to support the next *following* session.
+        s3.seed("signals/"+day+".json",frozen(day,next_target),
+                stamp=day+"T22:30:00+00:00")
+        if "signals/"+prev+".json" not in s3.items:
+            raise RuntimeError("TEST_HARNESS_LOST_PREVIOUS_SIGNAL")
+        event={"mode":"STAGING_PAPER_ONLY",
+               "expected_session":day, "bootstrap":bootstrap}
+        before=len(s3.writes)
+        result={"outcome":"handler_exception"}
+        try:
+            with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+                ret=module.handler(event,fake_context)
+            observed=ret.get("status") if isinstance(ret,dict) else None
+            result={"outcome":"handler_returned",
+                    "status":(observed if observed=="STAGED_PAPER_VERIFIED"
+                              else "NOT_VERIFIED_STATUS_REDACTED")}
+        except Exception as exc:
+            result={"outcome":"handler_exception",
+                    "exception_class":type(exc).__name__}
+        output.append(result)
+        sequence.append(step_proof(day,s3.writes[before:],
+                          result.get("status")=="STAGED_PAPER_VERIFIED"))
 counts,sides=inspect_new_writes()
+recovery_detail=None
+if case=="CONTINUITY_RETRY_RECOVERY":
+    recovery_detail={
+        "first_continuity_write_failed_injected":s3.continuity_failed_once,
+        "paper_receipt_persisted":(
+            "paper/sessions/2026-11-18.json" in s3.items),
+        "continuity_receipt_persisted":(
+            "paper/continuity/2026-11-18.json" in s3.items),
+        "retry_reported_verified":(
+            len(output)>1 and
+            output[1].get("status")=="STAGED_PAPER_VERIFIED"),
+        "duplicate_written_keys":len(s3.writes)-len(set(s3.writes)),
+        "error_classes":[x.get("exception_class") for x in output
+                         if x.get("outcome")=="handler_exception"],
+    }
 print(json.dumps({"case":case,
     "handler_called_locally":True,
     "true_private_handler_imported_from_deployed_zip":True,
@@ -370,6 +463,8 @@ print(json.dumps({"case":case,
     "fake_s3_writes_count":len(s3.writes),
     "fake_s3_duplicate_key_writes":len(s3.writes)-len(set(s3.writes)),
     "fake_s3_modeled_sides_observed":sides,
+    "consecutive_session_proofs":sequence,
+    "partial_write_recovery_proof":recovery_detail,
     "both_buy_sell_not_proven_by_single_case":True,
 },sort_keys=True))
 '''
@@ -466,14 +561,45 @@ def run():
              and x.get("fake_s3_paper_write_counts",{}).get("session",0)>0]
     report["unsafe_negative_cases"]=unsafe
     report["partial_write_review_required_cases"]=partial
+    sequence=next((x for x in report["cases"]
+                   if x.get("case")=="SEQUENCE_BUY_SELL_BUY"),{})
+    steps=sequence.get("consecutive_session_proofs",[])
+    required_dates=("2026-11-18","2026-11-19","2026-11-20",
+                    "2026-11-23","2026-11-24")
+    report["legacy_private_handler_multisession_sides"]=(
+        sequence.get("fake_s3_modeled_sides_observed",[]))
+    report["legacy_private_handler_multisession_proven"]=bool(
+        sequence.get("child_exit")==0 and len(steps)==len(required_dates)
+        and all(s.get("session")==day
+                and s.get("private_handler_returned_verified")
+                and s.get("paper_receipt_written")
+                and s.get("continuity_receipt_written")
+                for s,day in zip(steps,required_dates))
+        and {"BUY","SELL"}.issubset(set(
+            sequence.get("fake_s3_modeled_sides_observed",[])))
+        and sequence.get("fake_s3_duplicate_key_writes")==0)
+    recovery=next((x for x in report["cases"]
+                   if x.get("case")=="CONTINUITY_RETRY_RECOVERY"),{})
+    proof=recovery.get("partial_write_recovery_proof") or {}
+    report["continuity_failure_then_retry_recovered_proven"]=bool(
+        recovery.get("child_exit")==0 and
+        proof.get("first_continuity_write_failed_injected")
+        and proof.get("paper_receipt_persisted")
+        and proof.get("continuity_receipt_persisted")
+        and proof.get("retry_reported_verified")
+        and proof.get("duplicate_written_keys")==0)
     report["new_epoch_runtime_deployed"]=False
     report["private_handler_real_aws_s3_write_tested"]=False
-    # A technical invocation with no actual Paper/Continuity is a BLOCKER,
-    # not a green run: tests cannot pass by simply refusing to execute.
-    okay=bool(successes) and not unsafe and not partial
+    # Never call single-session BUYs successful E2E. Require multi-session
+    # BUY+SELL and continuous receipts, explicit recovery from a failed
+    # write, and native support for the new approved Epoch4 book.
+    okay=(bool(successes) and not unsafe
+          and report["legacy_private_handler_multisession_proven"]
+          and report["continuity_failure_then_retry_recovered_proven"]
+          and structure["new_epoch_book_literal_found"])
     report["status"]=(
-        "PRIVATE_HANDLER_FAKE_STORAGE_RECEIPTS_OBSERVED_NOT_LIVE_E2E"
-        if okay else "PRIVATE_HANDLER_FORCED_BUY_SELL_E2E_NOT_PROVEN_BLOCKED")
+        "PRIVATE_HANDLER_FAKE_EPOCH4_MULTIDAY_AND_RECOVERY_PROVEN_NOT_REAL_AWS"
+        if okay else "PRIVATE_HANDLER_EPOCH4_MULTIDAY_OR_RECOVERY_NOT_PROVEN_BLOCKED")
     return report, 0 if okay else 4
 
 
