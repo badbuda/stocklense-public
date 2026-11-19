@@ -1,0 +1,46 @@
+name: StockLens ST Epoch4 Approval Readback (READ ONLY)
+on:
+  pull_request:
+    paths:
+      - 'infra/aws/sl56_epoch4_approval_readback.py'
+      - 'tests/test_sl56_epoch4_approval_readback.py'
+      - '.github/workflows/st-epoch4-approval-readback.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'infra/aws/sl56_epoch4_approval_readback.py'
+      - '.github/workflows/st-epoch4-approval-readback.yml'
+permissions:
+  contents: read
+  id-token: write
+jobs:
+  exact-approval-offline-faults:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install --quiet pytest exchange_calendars
+      - name: Verify exact S3 preopen approval, tampering and PROD activation simulated
+        run: python -m pytest -q tests/test_sl56_epoch4_approval_readback.py
+  operator-approval-real-aws-readback:
+    if: github.ref == 'refs/heads/main'
+    needs: [exact-approval-offline-faults]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install --quiet boto3 exchange_calendars
+      - name: Assume existing ST OIDC audit role, without mutation permission
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: eu-central-1
+          role-to-assume: arn:aws:iam::634740393398:role/stocklens-st-paper-audit--GitHubSTPaperAcceptanceRo-CbZTBKwqwUJg
+          role-session-name: stocklens-st-epoch4-approval-readonly
+      - name: Authenticate exact S3 server timestamp, version and content SHA of user approval
+        run: python infra/aws/sl56_epoch4_approval_readback.py

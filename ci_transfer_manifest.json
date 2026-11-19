@@ -562,6 +562,9 @@
     ".github/workflows/console-paper-fault-suite.yml": "e1602afd147f78618fc01dbc22bcbed6f3ee63e5",
     "infra/aws/sl56_future_paper_inception.py": "488d5ed20b56e6bbed40dcb13c137f4524f8eaa6",
     "tests/test_sl56_future_paper_inception.py": "39e476087c4cba2b7d064e650659bd922a079c79",
-    ".github/workflows/st-epoch4-preopen-proof.yml": "dda5b589e1bf1adfadd4d50300a2ef976b417b38"
+    ".github/workflows/st-epoch4-preopen-proof.yml": "dda5b589e1bf1adfadd4d50300a2ef976b417b38",
+    "infra/aws/sl56_epoch4_approval_readback.py": "214a4280790f84da17ad4b2c04bfb62f9ab5ea41",
+    "tests/test_sl56_epoch4_approval_readback.py": "3801986075693635876cc8d4418f437ac29d5d6e",
+    ".github/workflows/st-epoch4-approval-readback.yml": "86d8ef48d858e581ef15564f9f80c78e30ccd54b"
   }
 }
