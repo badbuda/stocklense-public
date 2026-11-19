@@ -566,8 +566,8 @@
     "infra/aws/sl56_epoch4_approval_readback.py": "214a4280790f84da17ad4b2c04bfb62f9ab5ea41",
     "tests/test_sl56_epoch4_approval_readback.py": "3801986075693635876cc8d4418f437ac29d5d6e",
     ".github/workflows/st-epoch4-approval-readback.yml": "ea0d84856d6ef388ebd87a5a7c1a7083a2771839",
-    "tests/test_paper_order_lifecycle_matrix.py": "1f311d21a9d5b9a1a8db53dbcb842f89987f7118",
-    ".github/workflows/paper-order-lifecycle-matrix.yml": "0125cf350a861e8575168b6b57ec5dc7fba1bdae",
+    "tests/test_paper_order_lifecycle_matrix.py": "b3b079bef79f0a81824f0544a10b3d60cc51ad29",
+    ".github/workflows/paper-order-lifecycle-matrix.yml": "953dabcb97c18804ea2be29cdab4e763579008ff",
     "tests/test_signal_to_paper_order_handoff.py": "376812463089ba5e1c25601ce9704e78a9b026e1"
   }
 }
