@@ -21,7 +21,7 @@ def test_full_zip_ast_detects_delegated_write_methods_without_executing():
         b"  return _helper(event)\n"
         b"def _helper(event):\n  return 'STAGING_PAPER_ONLY'\n")
     result=m.topology(data)
-    assert result["aws_storage_method_ast_occurrences_whole_zip"]["put_object"]==0
+    assert result["aws_storage_method_ast_occurrences_project_zip_modules"]["put_object"]==0
     assert result["reviewed_known_mode_and_epoch_literal_presence"]["STAGING_PAPER_ONLY"]
     assert result["new_epoch_book_literal_found"] is False
     assert result["static_call_counts_not_execution_evidence"]
@@ -34,7 +34,7 @@ def test_zip_detects_write_method_hidden_in_helper_module():
         z.writestr("infra/aws/private_storage.py",
                    "def write(s3): return s3.put_object(Bucket='x',Key='y',Body='x')\n")
     info=m.topology(stream.getvalue())
-    assert info["aws_storage_method_ast_occurrences_whole_zip"]["put_object"]==1
+    assert info["aws_storage_method_ast_occurrences_project_zip_modules"]["put_object"]==1
     assert info["aws_storage_method_ast_occurrences_private_handler"]["put_object"]==0
 
 
@@ -112,3 +112,18 @@ def test_real_public_engine_zip_with_toy_handler_is_executed_only_in_fake_aws(tm
     assert result["real_aws_mutations"] is False
     assert result["fake_s3_reads_count"]>0
     assert result["handler_results"][0]["status"]=="STAGED_PAPER_VERIFIED"
+
+def test_large_third_party_zip_does_not_hide_project_storage_writers(tmp_path):
+    """Vendored dependency .py must not consume AST budget or fail on syntax."""
+    buf=io.BytesIO()
+    with zipfile.ZipFile(buf,"w") as z:
+        z.writestr(m.PRIVATE,"def handler(e,c): return None\n")
+        z.writestr("infra/aws/internal_s3_io.py",
+                   "def put(s3): return s3.put_object(Bucket='x',Key='y')\n")
+        z.writestr("pandas/io/python_source_from_another_version.py",
+                   "syntax !! from a third-party package\n")
+    out=m.topology(buf.getvalue())
+    assert out["project_python_member_count"]==2
+    assert out["aws_storage_method_ast_occurrences_project_zip_modules"]["put_object"]==1
+    m.prepare_zip(buf.getvalue(),tmp_path)
+    assert not (tmp_path/"pandas").exists()

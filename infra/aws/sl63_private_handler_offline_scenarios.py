@@ -41,6 +41,12 @@ KNOWN_MARKERS = ("STAGING_PAPER_ONLY","STAGING_PAPER_BOOTSTRAP_PREFLIGHT",
                  "STAGING_PAPER_SCHEDULE_READINESS",
                  "NEW_AWS_INDEPENDENT_STAGING_BOOK_EPOCH4_20261119",
                  "paper/epochs/")
+
+def is_project_python_member(name):
+    """Inspect/extract only StockLens project code, never dependency packages."""
+    return (name.endswith(".py") and
+            (name.startswith(("infra/","stocklens/")) or "/" not in name))
+
 ALLOWED_STATES = {"handler_completed","handler_exception","offline_guard_blocked",
                   "handler_did_not_write","protocol_unverified"}
 
@@ -59,7 +65,7 @@ def topology(raw):
                     and "\\" not in x for x in allnames),"UNSAFE_ZIP_PATH")
         require(PRIVATE in allnames,"DEPLOYED_HANDLER_NOT_FOUND")
         for info in z.infolist():
-            if not info.filename.endswith(".py"):
+            if not is_project_python_member(info.filename):
                 continue
             require(info.file_size<=1_500_000,"OVERSIZE_PYTHON_MODULE")
             if len(members)>2000:raise RuntimeError("EXCESSIVE_ZIP_MODULES")
@@ -80,10 +86,10 @@ def topology(raw):
                  for key in WRITE_METHODS|READ_METHODS}
     all_literals=set().union(*(x[1] for x in members.values()))
     return {
-        "python_member_count":len(members),
+        "project_python_member_count":len(members),
         "handler_sha256":hashlib.sha256(
             next_source(raw,PRIVATE)).hexdigest(),
-        "aws_storage_method_ast_occurrences_whole_zip":dict(sorted(total_calls.items())),
+        "aws_storage_method_ast_occurrences_project_zip_modules":dict(sorted(total_calls.items())),
         "aws_storage_method_ast_occurrences_private_handler":dict(sorted(handler_calls.items())),
         "reviewed_known_mode_and_epoch_literal_presence":{
             m:m in all_literals for m in KNOWN_MARKERS},
@@ -105,7 +111,7 @@ def prepare_zip(raw,base):
         require(len({v.filename for v in infos})==len(infos),"DUPLICATE_ZIP_PATHS")
         bytes_total=0
         for info in infos:
-            if not info.filename.endswith(".py"):continue
+            if not is_project_python_member(info.filename):continue
             name=info.filename
             require(not name.startswith("/") and ".." not in Path(name).parts
                     and "\\" not in name and len(name)<230,"UNSAFE_ZIP_MEMBER_NAME")
