@@ -329,7 +329,7 @@ def release(clients,repo,*,execute):
     for r in (PAPER_RULE,WATCH_RULE):
         require(clients["events"].describe_rule(Name=r)["State"]=="DISABLED",
                 "UNEXPECTED_PREMATURE_ENABLED_SCHEDULE")
-    # Arm by a second CloudFormation update, not an untracked enable_rule.
+    # Arm by a second CloudFormation update, never an untracked EventBridge mutation.
     armed=_new_template(key,old,topic,armed=True)
     armed_name="stocklens-epoch4-arm-"+hashlib.sha256(pkg).hexdigest()[:12]
     _change_set(clients,armed,armed_name,stage=False)
