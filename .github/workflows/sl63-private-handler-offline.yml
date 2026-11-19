@@ -1,0 +1,22 @@
+name: SL-63 Private ST Paper handler offline fake AWS fault harness
+on:
+  pull_request:
+    paths:
+      - 'infra/aws/sl63_private_handler_offline_scenarios.py'
+      - 'tests/test_sl63_private_handler_offline_scenarios.py'
+      - '.github/workflows/sl63-private-handler-offline.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  safe-fake-probe-unit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install --quiet pytest
+      - name: Test all ZIP writer AST scan and temporary offline fake AWS guard
+        run: python -m pytest -q tests/test_sl63_private_handler_offline_scenarios.py
