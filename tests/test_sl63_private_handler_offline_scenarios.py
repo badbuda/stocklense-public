@@ -226,3 +226,53 @@ def test_multiday_fixture_has_no_future_us_exchange_session_at_nov19_morning():
     assert '("2026-11-18","2026-11-17"' in m.CHILD
     assert '"2026-11-24"' not in m.CHILD
     assert 'timestamp.replace("Z","+00:00")' in m.CHILD
+
+
+def test_virtual_clock_case_is_isolated_and_uses_real_market_close_guard():
+    """User need not wait for natural SELL, and we never suppress date guards."""
+    assert "VIRTUAL_CLOCK_BUY_SELL_BUY" in m.SAFE_CASES
+    assert "from freezegun import freeze_time" in m.CHILD
+    assert "with freeze_time(next_morning):" in m.CHILD
+    assert "virtual_clock_isolated_child_only" in m.CHILD
+    assert 'new_epoch_runtime_deployed"]=False' in (
+        __import__("inspect").getsource(m.run))
+    assert "immutable_precondition_conflict_roles" in m.CHILD
+
+
+def test_toy_private_handler_virtual_clock_with_sell_has_no_real_s3(tmp_path):
+    """Toy fixture only; verify clock scope and real child no-network barrier."""
+    from infra.aws import sl63_deployed_paper_source_parity as pins
+    root=Path(__file__).resolve().parents[1]
+    data=io.BytesIO()
+    toy=(
+        "import boto3\n"
+        "def handler(event,context):\n"
+        " from datetime import datetime,timezone\n"
+        " day=event['expected_session']\n"
+        " if datetime.now(timezone.utc).date().isoformat()<=day:\n"
+        "  raise ValueError('UNCOMPLETED_SESSION')\n"
+        " s3=boto3.client('s3')\n"
+        " from exchange_calendars import get_calendar\n"
+        " prev=get_calendar('XNYS').previous_session(day).date().isoformat()\n"
+        " import json\n"
+        " signal=json.loads(s3.get_object(Bucket='stocklens-st-candidatedata-6jj7i9fxjmfr',Key='signals/'+prev+'.json')['Body'].read())\n"
+        " side='SELL' if signal['latest']['defense_active'] else 'BUY'\n"
+        " s3.put_object(Bucket='stocklens-st-candidatedata-6jj7i9fxjmfr',Key='paper/sessions/'+day+'.json',Body=json.dumps({'trades':[{'side':side}]}),IfNoneMatch='*')\n"
+        " s3.put_object(Bucket='stocklens-st-candidatedata-6jj7i9fxjmfr',Key='paper/continuity/'+day+'.json',Body='{}',IfNoneMatch='*')\n"
+        " return {'status':'STAGED_PAPER_VERIFIED'}\n"
+    )
+    with zipfile.ZipFile(data,'w') as z:
+        for name in pins.PINNED_PUBLIC_MODULE_BLOBS:
+            z.writestr(name,(root/name).read_bytes())
+        z.writestr(m.PRIVATE,toy)
+    m.prepare_zip(data.getvalue(),tmp_path)
+    outcome=m.childcase(tmp_path,root,'VIRTUAL_CLOCK_BUY_SELL_BUY')
+    assert outcome["child_exit"]==0,outcome
+    steps=outcome["consecutive_session_proofs"]
+    assert len(steps)==5,outcome
+    assert all(x["private_handler_returned_verified"] for x in steps)
+    assert all(x["continuity_receipt_written"] for x in steps)
+    assert {"BUY","SELL"}.issubset(
+        outcome["fake_s3_modeled_sides_observed"])
+    assert outcome["virtual_clock_isolated_child_only"] is True
+    assert outcome["real_aws_mutations"] is False
