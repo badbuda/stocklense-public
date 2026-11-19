@@ -217,9 +217,10 @@ def build_and_store_pair(s3, *, session, market, observed_at_utc):
     receipt=store.save_paper_and_continuity(
         s3,session=session,paper_payload=paper,
         continuation_builder=continuation)
-    return {"status":"EPOCH4_MODELED_PAIR_WRITTEN_NOT_LIVE_ACCEPTANCE",
+    return {**receipt,
+            "status":"EPOCH4_MODELED_PAIR_WRITTEN_NOT_LIVE_ACCEPTANCE",
             "session":session,"trades":len(trades),
             "sides":sorted(set(t["side"] for t in trades)),
             "all_injected_quotes_not_independently_verified":True,
             "real_aws_lambda_deployed":False,
-            "broker_orders":False,**receipt}
+            "broker_orders":False}
