@@ -131,7 +131,7 @@ def test_changed_paper_after_crash_must_fail_without_continuity():
             s3,session="2026-11-19",paper_payload=payload(),
             continuation_builder=lambda p:continuation("2026-11-19",p))
     forged=payload()
-    forged["state"]["shares"]["TQQQ"]=27
+    forged["state"]["shares"]["TQQQ"]=7
     with pytest.raises(store.ImmutableEpoch4Error,
                        match="S3_EXISTING_IMMUTABLE_BYTES_DIFFER"):
         store.save_paper_and_continuity(
@@ -159,7 +159,7 @@ def test_mismatched_existing_receipt_must_never_be_overwritten():
     store.put_once_or_identical(s3,key=k,payload=payload())
     old=s3.objects[k]["raw"]
     altered=payload()
-    altered["state"]["shares"]["QQQ"]=13
+    altered["state"]["shares"]["QQQ"]=7
     with pytest.raises(store.ImmutableEpoch4Error,
                        match="S3_EXISTING_IMMUTABLE_BYTES_DIFFER"):
         store.put_once_or_identical(s3,key=k,payload=altered)
@@ -225,3 +225,15 @@ def test_no_s3_client_created_inside_module_or_deployed_runtime_changed():
     assert "lambda.invoke" not in src
     assert "update_function_code" not in src
     assert "put_rule" not in src
+
+
+def test_different_length_immutable_bytes_are_rejected_before_replay():
+    s3=FakeS3()
+    key=store.key_for("sessions","2026-11-19")
+    store.put_once_or_identical(s3,key=key,payload=payload())
+    modified=payload()
+    modified["state"]["shares"]["QQQ"]=12345
+    with pytest.raises(store.ImmutableEpoch4Error,
+                       match="S3_BODY_LENGTH_MISMATCH"):
+        store.put_once_or_identical(s3,key=key,payload=modified)
+    assert len(s3.writes)==1
