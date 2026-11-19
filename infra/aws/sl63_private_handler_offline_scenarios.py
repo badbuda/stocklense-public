@@ -207,6 +207,7 @@ class FakeS3:
         self.immutable_conflict_roles=[]
         self.immutable_replay_proofs=[]
         self.immutable_replay_reuses=0
+        self.synthetic_requested_body_drift_injected=False
         # Simulate archived session commit on its OWN market date, not
         # CloudShell current wall clock. Otherwise next day's causal receipt
         # checks can reject an impossible future LastModified timestamp.
@@ -250,6 +251,17 @@ class FakeS3:
         raw=Body if isinstance(Body,bytes) else (
             Body.encode() if isinstance(Body,str) else Body.read())
         if len(raw)>2_000_000:raise RuntimeError("FAKE_S3_OVERSIZED_WRITE")
+        # The private handler may naturally generate IDENTICAL bytes even in a
+        # case named CHANGED_PAYLOAD. Without explicit fault injection this
+        # negative case was a false positive. Simulate a corrupted REQUEST at
+        # the fake SDK transport edge, ONCE after Continuity's first failure.
+        # We NEVER alter stored originals or the deployed private source.
+        if (case=="CONTINUITY_RETRY_CHANGED_PAYLOAD"
+                and self.continuity_failed_once
+                and IfNoneMatch=="*" and Key in self.items
+                and not self.synthetic_requested_body_drift_injected):
+            raw += b"__SL63_SYNTHETIC_REQUEST_BYTE_DRIFT__"
+            self.synthetic_requested_body_drift_injected=True
         if IfNoneMatch=="*" and Key in self.items:
             role=safe_s3_key_role(Key)
             old_bytes,old_version,old_when=self.items[Key]
@@ -560,6 +572,10 @@ if case in (
         "immutable_precondition_conflict_roles":list(s3.immutable_conflict_roles),
         "exact_immutable_replay_proofs":list(s3.immutable_replay_proofs),
         "exact_existing_versions_reused":s3.immutable_replay_reuses,
+        "synthetic_requested_body_drift_injected":
+            s3.synthetic_requested_body_drift_injected,
+        "drift_source":"FAKE_S3_TRANSPORT_ONLY_NOT_PRIVATE_HANDLER_OUTPUT"
+            if s3.synthetic_requested_body_drift_injected else "NONE",
         "paper_receipt_persisted":(
             "paper/sessions/2026-11-18.json" in s3.items),
         "continuity_receipt_persisted":(
@@ -585,6 +601,8 @@ print(json.dumps({"case":case,
     "fake_s3_precondition_conflict_roles":list(s3.immutable_conflict_roles),
     "fake_s3_replay_proofs":list(s3.immutable_replay_proofs),
     "fake_s3_reused_version_count":s3.immutable_replay_reuses,
+    "fake_s3_synthetic_request_drift_injected":
+        s3.synthetic_requested_body_drift_injected,
     "fake_s3_modeled_sides_observed":sides,
     "consecutive_session_proofs":sequence,
     "partial_write_recovery_proof":recovery_detail,
@@ -745,6 +763,22 @@ def run():
         "forbidden_nonidentical_overwrite_occurred":False,
         "fake_s3_only_no_deployed_handler_fix":True,
     }
+    changed_case=next((x for x in report["cases"]
+                       if x.get("case")=="CONTINUITY_RETRY_CHANGED_PAYLOAD"),{})
+    changed=changed_case.get("partial_write_recovery_proof") or {}
+    report["changed_transport_request_rejected_proven"]=bool(
+        changed_case.get("child_exit")==0
+        and changed.get("first_continuity_write_failed_injected")
+        and changed.get("synthetic_requested_body_drift_injected")
+        and changed.get("paper_receipt_persisted")
+        and not changed.get("continuity_receipt_persisted")
+        and not changed.get("retry_reported_verified")
+        and changed.get("duplicate_written_keys")==0
+        and any(not p.get("bytes_identical")
+                and not p.get("reused_exact_existing_version")
+                for p in changed.get("exact_immutable_replay_proofs",[])))
+    report["changed_payload_origin"] = (
+        "EXPLICIT_FAKE_TRANSPORT_INJECTION_NOT_DEPLOYED_HANDLER_SOURCE")
     report["new_epoch_runtime_deployed"]=False
     report["private_handler_real_aws_s3_write_tested"]=False
     # Never call single-session BUYs successful E2E. Require multi-session
@@ -753,6 +787,7 @@ def run():
     okay=(bool(successes) and not unsafe
           and report["legacy_private_handler_multisession_proven"]
           and report["continuity_failure_then_retry_recovered_proven"]
+          and report["changed_transport_request_rejected_proven"]
           and structure["new_epoch_book_literal_found"])
     report["status"]=(
         "PRIVATE_HANDLER_FAKE_EPOCH4_MULTIDAY_AND_RECOVERY_PROVEN_NOT_REAL_AWS"

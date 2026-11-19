@@ -358,3 +358,51 @@ def test_strict_immutable_replay_rejects_different_existing_bytes(tmp_path):
     assert x["bytes_identical"] is False
     assert x["reused_exact_existing_version"] is False
     assert result["real_aws_mutations"] is False
+
+
+def test_changed_payload_case_forces_real_nonidentical_request_and_blocks_fake_replay(tmp_path):
+    """Previously mislabeled: real Handler remained deterministic, no drift.
+
+    This synthetic SDK request corruption MUST be explicitly reported and
+    fail closed. It does not prove the private handler naturally changes output.
+    """
+    from infra.aws import sl63_deployed_paper_source_parity as pins
+    root=Path(__file__).resolve().parents[1]
+    toy=(
+        "import boto3\n"
+        "def handler(event,context):\n"
+        " s3=boto3.client('s3')\n"
+        " b='stocklens-st-candidatedata-6jj7i9fxjmfr'\n"
+        " s3.put_object(Bucket=b,Key='paper/book/TOY/aux.json',"
+        "Body=b'same-across-retries',IfNoneMatch='*')\n"
+        " s3.put_object(Bucket=b,Key='paper/sessions/2026-11-18.json',"
+        "Body=b'paper-original',IfNoneMatch='*')\n"
+        " s3.put_object(Bucket=b,Key='paper/continuity/2026-11-18.json',"
+        "Body=b'continuity-original',IfNoneMatch='*')\n"
+        " return {'status':'STAGED_PAPER_VERIFIED'}\n"
+    )
+    buf=io.BytesIO()
+    with zipfile.ZipFile(buf,"w") as z:
+        for filename in pins.PINNED_PUBLIC_MODULE_BLOBS:
+            z.writestr(filename,(root/filename).read_bytes())
+        z.writestr(m.PRIVATE,toy)
+    m.prepare_zip(buf.getvalue(),tmp_path)
+    result=m.childcase(tmp_path,root,"CONTINUITY_RETRY_CHANGED_PAYLOAD")
+    assert result["child_exit"]==0,result
+    p=result["partial_write_recovery_proof"]
+    assert p["first_continuity_write_failed_injected"]
+    assert p["synthetic_requested_body_drift_injected"] is True
+    assert p["drift_source"]=="FAKE_S3_TRANSPORT_ONLY_NOT_PRIVATE_HANDLER_OUTPUT"
+    assert p["paper_receipt_persisted"] is True
+    assert p["continuity_receipt_persisted"] is False
+    assert p["retry_reported_verified"] is False
+    assert p["duplicate_written_keys"]==0
+    assert p["exact_existing_versions_reused"]==0
+    assert p["immutable_precondition_conflict_roles"]==["book_auxiliary"]
+    assert len(p["exact_immutable_replay_proofs"])==1
+    proof=p["exact_immutable_replay_proofs"][0]
+    assert proof["bytes_identical"] is False
+    assert proof["reused_exact_existing_version"] is False
+    assert result["fake_s3_synthetic_request_drift_injected"] is True
+    assert result["broker_orders"] is False
+    assert result["real_aws_mutations"] is False
