@@ -169,3 +169,50 @@ def test_toy_multiday_handler_exercises_real_child_loop_and_fake_s3(tmp_path):
     assert all(step["continuity_receipt_written"] for step in steps)
     assert {"BUY","SELL"}.issubset(result["fake_s3_modeled_sides_observed"])
     assert result["fake_s3_duplicate_key_writes"]==0
+
+
+def test_scenario_uses_market_date_scoped_fake_s3_lastmodified_and_redacts_errors():
+    """Catch regression: do NOT apply actual CloudShell wall clock to Nov18."""
+    assert "self.fake_s3_commit_utc" in m.CHILD
+    assert '"2026-11-18T23:00:00+00:00"' in m.CHILD
+    assert 'day+"T23:00:00+00:00"' in m.CHILD
+    assert 'safe_failure_evidence' in m.CHILD
+    assert 'raw_error_not_disclosed' in m.CHILD
+    assert 'message_sha256' in m.CHILD
+
+
+def test_toy_handler_valueerror_second_day_is_redacted(tmp_path):
+    """Exercise classified day2 error; do not print exception text or source."""
+    from infra.aws import sl63_deployed_paper_source_parity as pins
+    root=Path(__file__).resolve().parents[1]
+    data=io.BytesIO()
+    private=(
+        "import boto3\\n"
+        "def handler(event,context):\\n"
+        " day=event['expected_session']\\n"
+        " if day=='2026-11-19':\\n"
+        "  raise ValueError('private-genesis-secret-DO-NOT-LEAK invalid session')\\n"
+        " s3=boto3.client('s3')\\n"
+        " import json\\n"
+        " s3.put_object(Bucket='stocklens-st-candidatedata-6jj7i9fxjmfr',"
+        "Key='paper/sessions/'+day+'.json',"
+        "Body=json.dumps({'trades':[{'side':'BUY'}]}))\\n"
+        " s3.put_object(Bucket='stocklens-st-candidatedata-6jj7i9fxjmfr',"
+        "Key='paper/continuity/'+day+'.json',Body='{}')\\n"
+        " return {'status':'STAGED_PAPER_VERIFIED'}\\n"
+    )
+    with zipfile.ZipFile(data,'w') as z:
+        for name in pins.PINNED_PUBLIC_MODULE_BLOBS:
+            z.writestr(name,(root/name).read_bytes())
+        z.writestr(m.PRIVATE,private)
+    m.prepare_zip(data.getvalue(),tmp_path)
+    result=m.childcase(tmp_path,root,'SEQUENCE_BUY_SELL_BUY')
+    assert result['child_exit']==0,result
+    second=result['handler_results'][1]
+    assert second['exception_class']=='ValueError'
+    err=second['safe_failure_evidence']
+    assert err['last_frame_category']=='DEPLOYED_PRIVATE_HANDLER'
+    assert err['raw_error_not_disclosed'] is True
+    assert err['message_sha256']
+    assert 'session' in err['known_error_token_presence']
+    assert 'private-genesis-secret' not in json.dumps(result)

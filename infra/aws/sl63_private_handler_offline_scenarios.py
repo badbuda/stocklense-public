@@ -129,7 +129,7 @@ def prepare_zip(raw,base):
 
 CHILD = r'''
 from __future__ import annotations
-import io, json, os, sys, socket, hashlib, datetime, importlib, contextlib
+import io, json, os, sys, socket, hashlib, datetime, importlib, contextlib, traceback
 from pathlib import Path
 root=Path(os.environ["SL63_FAKE_ROOT"]).resolve()
 case=os.environ["SL63_CASE"]
@@ -187,6 +187,11 @@ class FakeS3:
         self.ops=[]
         self.counter=0
         self.continuity_failed_once=False
+        # Simulate archived session commit on its OWN market date, not
+        # CloudShell current wall clock. Otherwise next day's causal receipt
+        # checks can reject an impossible future LastModified timestamp.
+        self.fake_s3_commit_utc=datetime.datetime.fromisoformat(
+            "2026-11-18T23:00:00+00:00")
     def seed(self,key,body,stamp="2026-11-18T02:00:00+00:00"):
         self.counter+=1
         raw=json.dumps(body,sort_keys=True,separators=(",",":")).encode()
@@ -221,7 +226,7 @@ class FakeS3:
             Body.encode() if isinstance(Body,str) else Body.read())
         if len(raw)>2_000_000:raise RuntimeError("FAKE_S3_OVERSIZED_WRITE")
         self.counter+=1;version="fake-write-"+str(self.counter)
-        now=datetime.datetime.now(datetime.timezone.utc)
+        now=self.fake_s3_commit_utc
         self.items[Key]=(raw,version,now)
         self.writes.append(Key)
         return {"VersionId":version,"ETag":'"'+hashlib.md5(raw).hexdigest()+'"'}
@@ -312,6 +317,44 @@ module=importlib.import_module("infra.aws.independent_paper")
 assert Path(module.__file__).resolve().is_relative_to(root)
 if hasattr(module,"fetch_execution_market"):
     setattr(module,"fetch_execution_market",stub_market)
+# Contract-safe error fingerprints. We DO NOT output private source, private
+# function names, exception text, object keys, traceback lines or credentials.
+ERROR_TAGS=(
+    "date","session","previous","prior","genesis","book","continuity",
+    "signal","market","timestamp","time","latest","expected","version",
+    "invalid","already","duplicate","parse","format","missing","chain",
+    "receipt","before","after","next","future","stale",
+)
+def exception_evidence(exc):
+    msg=str(exc).lower()
+    frames=[]
+    for tb in traceback.walk_tb(exc.__traceback__):
+        frame,_=tb
+        name=frame.f_code.co_filename.replace("\\","/")
+        if "/stocklens/paper.py" in name or "/stocklens/core.py" in name:
+            kind="DEPLOYED_ECONOMIC_MODEL"
+        elif "/infra/aws/independent_paper.py" in name:
+            kind="DEPLOYED_PRIVATE_HANDLER"
+        elif "/infra/aws/" in name:
+            kind="DEPLOYED_INFRA_HELPER"
+        elif "/exchange_calendars/" in name:
+            kind="XNYS_CALENDAR_DEPENDENCY"
+        elif "/botocore/" in name:
+            kind="FAKE_AWS_SDK_EXCEPTION"
+        elif name=="<string>":
+            kind="OFFLINE_HARNESS"
+        else:
+            kind="OTHER_DEPENDENCY"
+        frames.append(kind)
+    return {
+        "class":type(exc).__name__,
+        "last_frame_category":frames[-1] if frames else "UNKNOWN",
+        "frame_categories":list(dict.fromkeys(frames))[-8:],
+        "message_sha256":hashlib.sha256(str(exc).encode()).hexdigest(),
+        "known_error_token_presence":[t for t in ERROR_TAGS if t in msg],
+        "raw_error_not_disclosed":True,
+    }
+
 def inspect_new_writes():
     import collections
     buckets=collections.Counter()
@@ -363,7 +406,8 @@ for _ in range(attempts):
         else:output.append({"outcome":"handler_non_dict_return"})
     except Exception as exc:
         output.append({"outcome":"handler_exception",
-                       "exception_class":type(exc).__name__})
+                       "exception_class":type(exc).__name__,
+                       "safe_failure_evidence":exception_evidence(exc)})
 def observed_sides_for_keys(keys):
     def recurse(v):
         if isinstance(v,dict):
@@ -413,6 +457,8 @@ if case=="SEQUENCE_BUY_SELL_BUY":
     for day,prev,prior_target,next_target,bootstrap in schedule[1:]:
         DAY=day
         PRIOR=prev
+        s3.fake_s3_commit_utc=datetime.datetime.fromisoformat(
+            day+"T23:00:00+00:00")
         # Prior signal was already frozen and is present. Seed ONLY the new
         # post-session Signal to support the next *following* session.
         s3.seed("signals/"+day+".json",frozen(day,next_target),
@@ -432,7 +478,8 @@ if case=="SEQUENCE_BUY_SELL_BUY":
                               else "NOT_VERIFIED_STATUS_REDACTED")}
         except Exception as exc:
             result={"outcome":"handler_exception",
-                    "exception_class":type(exc).__name__}
+                    "exception_class":type(exc).__name__,
+                    "safe_failure_evidence":exception_evidence(exc)}
         output.append(result)
         sequence.append(step_proof(day,s3.writes[before:],
                           result.get("status")=="STAGED_PAPER_VERIFIED"))
@@ -460,6 +507,7 @@ print(json.dumps({"case":case,
     "handler_results":output,
     "fake_s3_paper_write_counts":counts,
     "fake_s3_reads_count":sum(x in ("GET","HEAD") for x in s3.ops),
+    "synthetic_storage_lastmodified_is_session_scoped":True,
     "fake_s3_writes_count":len(s3.writes),
     "fake_s3_duplicate_key_writes":len(s3.writes)-len(set(s3.writes)),
     "fake_s3_modeled_sides_observed":sides,
