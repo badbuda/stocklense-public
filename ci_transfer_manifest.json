@@ -580,6 +580,9 @@
     ".github/workflows/sl63-private-handler-offline.yml": "68566a66fed5981961b9db73a3505bb64c9b7c4b",
     "infra/aws/sl63_epoch4_immutable_store.py": "e01b5700204e96b1778cd4e5535ad0184e6e1086",
     "tests/test_sl63_epoch4_immutable_store.py": "77ffcbdd286b92bc7c7a4766e5fa4638f0c63dd0",
-    ".github/workflows/sl63-epoch4-immutable-store.yml": "65caa437586a54aa12158d323d0f9345fe4b75f8"
+    ".github/workflows/sl63-epoch4-immutable-store.yml": "65caa437586a54aa12158d323d0f9345fe4b75f8",
+    "infra/aws/sl63_epoch4_paper_economic_adapter.py": "a610020afcbe4ba52bc8f49c5a622d81354c79ec",
+    "tests/test_sl63_epoch4_paper_economic_adapter.py": "2b1b97204fa2038752cfb9ff5938bbd0b54dabe0",
+    ".github/workflows/sl63-epoch4-paper-adapter.yml": "8d84e0ed4a1266132b1a3ab57cbd7563beb2119d"
   }
 }
