@@ -26,6 +26,13 @@ FUNCTION="stocklens-st-epoch4-paper-dark"
 STACK="stocklens-st-epoch4-paper-dark"
 HANDLER="infra.aws.sl63_epoch4_lambda.handler"
 ZIP_LIMIT=100_000_000
+# Lambda's hard unzipped code+layer budget is 250 MiB. The existing
+# authenticated deployed ZIP contains legitimate vendored binary wheels
+# larger than our old, arbitrary 30 MB *individual member* cutoff.
+# Reject on bounded AGGREGATE uncompressed size instead; never bypass SHA
+# pinning, ZIP CRC, extraction-path checks, or the compressed ZIP limit.
+UNZIPPED_LIMIT=250*1024*1024
+MAX_ZIP_MEMBERS=100_000
 NEW_MODULES={
   "infra/aws/sl63_epoch4_lambda.py":"bf158c1962d40a81a342d6d1bafe188bc1616474",
   "infra/aws/sl63_epoch4_paper_economic_adapter.py":"b1234f2e033fd7dd1db5214f2342f75da71922e6",
@@ -47,6 +54,20 @@ def git_blob(raw):
     return hashlib.sha1(b"blob "+str(len(raw)).encode()+b"\0"+raw).hexdigest()
 
 
+def assert_uncompressed_budget(infos, extras):
+    sizes=[item.file_size for item in infos
+           if item.filename not in EXCLUDE and not item.is_dir()]
+    require(len(infos)<MAX_ZIP_MEMBERS and
+            all(type(sz) is int and 0<=sz<=UNZIPPED_LIMIT for sz in sizes),
+            "DARK_ZIP_MEMBER_COUNT_OR_SIZE_INVALID")
+    total=sum(sizes)+sum(len(raw) for raw in extras.values())
+    require(total<=UNZIPPED_LIMIT,
+            "DARK_LAMBDA_UNZIPPED_250MIB_LIMIT_EXCEEDED")
+    return {"uncompressed_bytes":total,
+            "largest_existing_member_bytes":max(sizes,default=0),
+            "member_count":len(infos)+len(extras)}
+
+
 def package(baseline_zip,repo):
     new={}
     for name,hash_expected in NEW_MODULES.items():
@@ -65,17 +86,23 @@ def package(baseline_zip,repo):
         require(all(git_blob(orig.read(name))==blob
                     for name,blob in baseline.PINNED_PUBLIC_MODULE_BLOBS.items()),
                 "DEPLOYED_ECONOMIC_CODE_DRIFT")
+        # Guard before extracting any member. Existing source ZIP's exact
+        # CodeSha256 was independently verified against the ST Lambda.
+        assert_uncompressed_budget(orig.infolist(),new)
         stream=io.BytesIO()
         with zipfile.ZipFile(stream,"w",compression=zipfile.ZIP_DEFLATED) as dst:
             for item in orig.infolist():
                 if item.filename in EXCLUDE:continue
-                require(item.file_size<30_000_000,"UNEXPECTED_ZIP_MEMBER_SIZE")
                 dst.writestr(item.filename,orig.read(item.filename))
             for name,data in sorted(new.items()):
                 dst.writestr(name,data)
         output=stream.getvalue()
     require(0<len(output)<ZIP_LIMIT,"DARK_ZIP_OVERSIZED")
     with zipfile.ZipFile(io.BytesIO(output)) as z:
+        require(sum(x.file_size for x in z.infolist()
+                    if not x.is_dir())<=UNZIPPED_LIMIT,
+                "PACKED_ZIP_UNZIPPED_LIMIT_EXCEEDED")
+        require(z.testzip() is None,"PACKED_ZIP_CRC_FAILED")
         require(not any(x in z.namelist() for x in EXCLUDE),
                 "OLD_PRIVATE_ENTRYPOINT_COPIED")
         require(all(z.read(k)==v for k,v in new.items()),

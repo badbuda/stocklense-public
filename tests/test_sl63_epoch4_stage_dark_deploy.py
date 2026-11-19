@@ -62,3 +62,48 @@ def test_tampered_old_economic_code_does_not_package():
             z.writestr(path,raw)
     with pytest.raises(RuntimeError,match="DEPLOYED_ECONOMIC_CODE_DRIFT"):
         d.package(buf.getvalue(),root)
+
+
+
+def test_realistic_deployed_binary_member_larger_than_30mb_is_allowed():
+    """Regression for CloudShell UNEXPECTED_ZIP_MEMBER_SIZE before AWS writes."""
+    root=Path(__file__).resolve().parents[1]
+    buf=BytesIO()
+    with zipfile.ZipFile(buf,"w",compression=zipfile.ZIP_DEFLATED) as z:
+        for name in pins.PINNED_PUBLIC_MODULE_BLOBS:
+            z.writestr(name,(root/name).read_bytes())
+        # Legitimate but compressible vendored binary of 31+ MiB.
+        z.writestr("vendor/large_numeric_module.so",b"\0"*31_000_001)
+    result=d.package(buf.getvalue(),root)
+    with zipfile.ZipFile(BytesIO(result)) as z:
+        member=z.getinfo("vendor/large_numeric_module.so")
+        assert member.file_size==31_000_001
+        assert z.testzip() is None
+        assert "infra/aws/sl63_epoch4_lambda.py" in z.namelist()
+
+
+def test_hard_unzipped_250mib_package_limit_is_never_removed():
+    from types import SimpleNamespace
+    extra={"infra/aws/new.py":b"x"*2}
+    with pytest.raises(RuntimeError,
+                       match="DARK_LAMBDA_UNZIPPED_250MIB_LIMIT_EXCEEDED"):
+        d.assert_uncompressed_budget([
+            SimpleNamespace(filename="vendor/a.so",file_size=200*1024*1024,
+                            is_dir=lambda:False),
+            SimpleNamespace(filename="vendor/b.so",file_size=60*1024*1024,
+                            is_dir=lambda:False),
+        ],extra)
+    with pytest.raises(RuntimeError,match="DARK_ZIP_MEMBER_COUNT_OR_SIZE_INVALID"):
+        d.assert_uncompressed_budget([
+            SimpleNamespace(filename="vendor/a.so",file_size=-1,
+                            is_dir=lambda:False),
+        ],extra)
+
+
+def test_no_false_positive_for_at_most_250mib_total():
+    from types import SimpleNamespace
+    items=[SimpleNamespace(filename="pandas/_lib/large.so",
+                           file_size=40*1024*1024,is_dir=lambda:False)]
+    report=d.assert_uncompressed_budget(items,{"infra/aws/new.py":b"abc"})
+    assert report["uncompressed_bytes"]==40*1024*1024+3
+    assert report["largest_existing_member_bytes"]==40*1024*1024
