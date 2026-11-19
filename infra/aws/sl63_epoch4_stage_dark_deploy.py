@@ -34,9 +34,11 @@ ZIP_LIMIT=100_000_000
 UNZIPPED_LIMIT=250*1024*1024
 MAX_ZIP_MEMBERS=100_000
 NEW_MODULES={
-  "infra/aws/sl63_epoch4_lambda.py":"bf158c1962d40a81a342d6d1bafe188bc1616474",
-  "infra/aws/sl63_epoch4_paper_economic_adapter.py":"b1234f2e033fd7dd1db5214f2342f75da71922e6",
+  "infra/aws/sl63_epoch4_lambda.py":"0590a23f9a225f390a1a97aa559fcd48e632b0bd",
+  "infra/aws/sl63_epoch4_paper_economic_adapter.py":"353edcc7b81cc08a14d119d8eb3e9e8698001e0c",
   "infra/aws/sl63_epoch4_immutable_store.py":"e01b5700204e96b1778cd4e5535ad0184e6e1086",
+  "infra/aws/sl63_epoch4_prospective_runtime.py":"ffe717b4f984d29b7d3ac6ffd087e12fe514c3a8",
+  "infra/aws/sl63_epoch4_watchdog.py":"1d06d242a6559af4e4437f0699affd044c934005",
 }
 EXCLUDE={"infra/aws/independent_paper.py",
          "infra/aws/independent_pipeline.py"}
