@@ -74,3 +74,16 @@ def test_reject_zip_traversal_and_duplicate_paths():
         z.writestr("stocklens/paper.py","two")
     with pytest.raises(RuntimeError,match="DUPLICATE_ZIP_ENTRIES"):
         m.inspect_zip(buf.getvalue(),Path("."))
+
+def test_force_offline_runner_uses_exact_zip_modules_and_public_tax_helper():
+    """Regression for CloudShell Python 3.13: zip package lacks tax_research.
+
+    Force the full suite to import deployed economic files from isolated ZIP,
+    while retaining test-only tax helpers from public checkout. No AWS calls.
+    """
+    root = Path(__file__).resolve().parents[1]
+    payload = public_payload()
+    assert "stocklens/tax_research.py" not in payload
+    assert (root / "stocklens/tax_research.py").is_file()
+    result = m.execute_deployed_economic_module_scenarios(zipped(payload), root)
+    assert result == 0

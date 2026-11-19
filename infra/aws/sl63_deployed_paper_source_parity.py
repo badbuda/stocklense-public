@@ -186,15 +186,31 @@ try:
     boto3.resource = blocked
 except ImportError:
     pass
-from stocklens import paper, core
+# The deployed ZIP intentionally includes only a subset of stocklens.
+# Preserve the deployed __init__/core/paper modules while finding unrelated,
+# test-only helpers (notably stocklens.tax_research) in the verified checkout.
+# Do NOT prepend repository stocklens/ to __path__, which could silently
+# replace the deployed economic modules under test.
+import stocklens
+assert Path(stocklens.__file__).resolve() == (
+    runtime / "stocklens/__init__.py"
+).resolve(), "NOT_USING_DEPLOYED_STOCKLENS_PACKAGE"
+stocklens.__path__.append(str(repo / "stocklens"))
+from stocklens import paper, core, tax_research
 import paper_rebalance_math
-for mod, path in ((paper, "stocklens/paper.py"),
-                  (core, "stocklens/core.py"),
-                  (paper_rebalance_math, "paper_rebalance_math.py")):
-    assert Path(mod.__file__).resolve() == (runtime / path).resolve(), (
-        "TEST_NOT_RUNNING_DEPLOYED_MODULE:" + mod.__name__
-    )
+assert Path(tax_research.__file__).resolve() == (
+    repo / "stocklens/tax_research.py"
+).resolve(), "TEST_ONLY_TAX_HELPER_NOT_FROM_PUBLIC_CHECKOUT"
+def assert_economic_import_provenance():
+    for mod, path in ((paper, "stocklens/paper.py"),
+                      (core, "stocklens/core.py"),
+                      (paper_rebalance_math, "paper_rebalance_math.py")):
+        assert Path(mod.__file__).resolve() == (runtime / path).resolve(), (
+            "TEST_NOT_RUNNING_DEPLOYED_MODULE:" + mod.__name__
+        )
+assert_economic_import_provenance()
 print("IMPORTED_ECONOMIC_MODULES_FROM_DOWNLOADED_LAMBDA_ZIP_CONFIRMED", flush=True)
+print("TEST_ONLY_TAX_RESEARCH_IMPORTED_FROM_PUBLIC_REPO_NOT_DEPLOYED", flush=True)
 import pytest
 tests = (
     "tests/test_paper_order_lifecycle_matrix.py",
@@ -206,8 +222,10 @@ tests = (
     "tests/test_paper_tax_receipts.py",
     "tests/test_paper_portfolio_integrity.py",
 )
-raise SystemExit(pytest.main(["-q", "--disable-warnings"] +
-                             [str(repo / t) for t in tests]))
+exit_code = pytest.main(["-q", "--disable-warnings"] +
+                        [str(repo / t) for t in tests])
+assert_economic_import_provenance()
+raise SystemExit(exit_code)
 '''
 
 

@@ -17,6 +17,6 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - run: python -m pip install --quiet pytest
+      - run: python -m pip install --quiet -r requirements.txt pytest
       - name: Hash synthetic ZIP modules, reject drift, traversal and unverified handler
         run: python -m pytest -q tests/test_sl63_deployed_paper_source_parity.py
