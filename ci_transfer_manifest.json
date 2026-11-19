@@ -565,6 +565,6 @@
     ".github/workflows/st-epoch4-preopen-proof.yml": "dda5b589e1bf1adfadd4d50300a2ef976b417b38",
     "infra/aws/sl56_epoch4_approval_readback.py": "214a4280790f84da17ad4b2c04bfb62f9ab5ea41",
     "tests/test_sl56_epoch4_approval_readback.py": "3801986075693635876cc8d4418f437ac29d5d6e",
-    ".github/workflows/st-epoch4-approval-readback.yml": "86d8ef48d858e581ef15564f9f80c78e30ccd54b"
+    ".github/workflows/st-epoch4-approval-readback.yml": "ea0d84856d6ef388ebd87a5a7c1a7083a2771839"
   }
 }

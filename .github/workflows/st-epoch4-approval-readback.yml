@@ -43,4 +43,4 @@ jobs:
           role-to-assume: arn:aws:iam::634740393398:role/stocklens-st-paper-audit--GitHubSTPaperAcceptanceRo-CbZTBKwqwUJg
           role-session-name: stocklens-st-epoch4-approval-readonly
       - name: Authenticate exact S3 server timestamp, version and content SHA of user approval
-        run: python infra/aws/sl56_epoch4_approval_readback.py
+        run: python -m infra.aws.sl56_epoch4_approval_readback
