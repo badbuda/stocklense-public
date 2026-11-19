@@ -8,11 +8,13 @@ on:
       - 'paper_portfolio_integrity.py'
       - 'paper_rebalance_math.py'
       - 'tests/test_paper_order_lifecycle_matrix.py'
+      - 'tests/test_signal_to_paper_order_handoff.py'
       - '.github/workflows/paper-order-lifecycle-matrix.yml'
   push:
     branches: [main]
     paths:
       - 'tests/test_paper_order_lifecycle_matrix.py'
+      - 'tests/test_signal_to_paper_order_handoff.py'
       - '.github/workflows/paper-order-lifecycle-matrix.yml'
   workflow_dispatch:
 permissions:
@@ -32,6 +34,7 @@ jobs:
         run: |
           python -m pytest -vv --disable-warnings --junitxml="$RUNNER_TEMP/paper-order-scenarios.xml" \
             tests/test_paper_order_lifecycle_matrix.py \
+            tests/test_signal_to_paper_order_handoff.py \
             tests/test_paper_execution_contract.py \
             tests/test_paper_transaction_recovery.py \
             tests/test_paper_eod_completeness.py \
