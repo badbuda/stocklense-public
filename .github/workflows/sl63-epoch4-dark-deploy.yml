@@ -1,0 +1,23 @@
+name: SL-63 NEW ST Epoch4 DARK deploy safety offline
+on:
+  pull_request:
+    paths:
+      - 'infra/aws/sl63_epoch4_lambda.py'
+      - 'infra/aws/sl63_epoch4_stage_dark_deploy.py'
+      - 'tests/test_sl63_epoch4_lambda.py'
+      - 'tests/test_sl63_epoch4_stage_dark_deploy.py'
+      - '.github/workflows/sl63-epoch4-dark-deploy.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  deploy-source-and-iam-safety:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install --quiet -r requirements.txt pytest
+      - run: python -m pytest -q tests/test_sl63_epoch4_lambda.py tests/test_sl63_epoch4_stage_dark_deploy.py
