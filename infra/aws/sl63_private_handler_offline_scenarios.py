@@ -111,10 +111,13 @@ def prepare_zip(raw,base):
         require(len({v.filename for v in infos})==len(infos),"DUPLICATE_ZIP_PATHS")
         bytes_total=0
         for info in infos:
-            if not is_project_python_member(info.filename):continue
+            # Validate *every* archive name first, even if the dependency
+            # member is not going to be extracted. Skipping must never hide
+            # an attempted absolute/traversal path.
             name=info.filename
             require(not name.startswith("/") and ".." not in Path(name).parts
                     and "\\" not in name and len(name)<230,"UNSAFE_ZIP_MEMBER_NAME")
+            if not is_project_python_member(name):continue
             require(info.file_size<=1_500_000,"ZIP_MODULE_OVERSIZE")
             bytes_total+=info.file_size
             require(bytes_total<30_000_000,"EXTRACTED_CODE_TOO_LARGE")
