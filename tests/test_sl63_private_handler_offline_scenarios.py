@@ -127,3 +127,45 @@ def test_large_third_party_zip_does_not_hide_project_storage_writers(tmp_path):
     assert out["aws_storage_method_ast_occurrences_project_zip_modules"]["put_object"]==1
     m.prepare_zip(buf.getvalue(),tmp_path)
     assert not (tmp_path/"pandas").exists()
+
+
+def test_new_scenarios_are_required_for_release_truthfulness():
+    assert "SEQUENCE_BUY_SELL_BUY" in m.SAFE_CASES
+    assert "CONTINUITY_RETRY_RECOVERY" in m.SAFE_CASES
+    assert '"2026-11-23"' in m.CHILD  # first Monday after Fri Nov20
+    assert "first_continuity_write_failed_injected" in m.CHILD
+
+
+def test_toy_multiday_handler_exercises_real_child_loop_and_fake_s3(tmp_path):
+    """A toy handler tests THE HARNESS, not the deployed private handler."""
+    from infra.aws import sl63_deployed_paper_source_parity as pins
+    root=Path(__file__).resolve().parents[1]
+    data=io.BytesIO()
+    toy=(
+        "import boto3,datetime\n"
+        "def handler(event,context):\n"
+        " s3=boto3.client('s3')\n"
+        " session=event['expected_session']\n"
+        " from exchange_calendars import get_calendar\n"
+        " prev=get_calendar('XNYS').previous_session(session).date().isoformat()\n"
+        " import json\n"
+        " prior=json.loads(s3.get_object(Bucket='stocklens-st-candidatedata-6jj7i9fxjmfr',Key='signals/'+prev+'.json')['Body'].read())\n"
+        " key='paper/sessions/'+session+'.json'\n"
+        " side='SELL' if prior['latest']['defense_active'] else 'BUY'\n"
+        " s3.put_object(Bucket='stocklens-st-candidatedata-6jj7i9fxjmfr',Key=key,Body=json.dumps({'trades':[{'side':side}]}),IfNoneMatch='*')\n"
+        " s3.put_object(Bucket='stocklens-st-candidatedata-6jj7i9fxjmfr',Key='paper/continuity/'+session+'.json',Body='{}',IfNoneMatch='*')\n"
+        " return {'status':'STAGED_PAPER_VERIFIED'}\n"
+    )
+    with zipfile.ZipFile(data,"w") as z:
+        for name in pins.PINNED_PUBLIC_MODULE_BLOBS:
+            z.writestr(name,(root/name).read_bytes())
+        z.writestr(m.PRIVATE,toy)
+    m.prepare_zip(data.getvalue(),tmp_path)
+    result=m.childcase(tmp_path,root,"SEQUENCE_BUY_SELL_BUY")
+    assert result["child_exit"]==0,result
+    steps=result["consecutive_session_proofs"]
+    assert len(steps)==5
+    assert all(step["paper_receipt_written"] for step in steps)
+    assert all(step["continuity_receipt_written"] for step in steps)
+    assert {"BUY","SELL"}.issubset(result["fake_s3_modeled_sides_observed"])
+    assert result["fake_s3_duplicate_key_writes"]==0
