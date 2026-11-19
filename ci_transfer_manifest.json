@@ -576,7 +576,7 @@
     "tests/test_sl63_private_handler_topology_readonly.py": "05b43cc3c8cabf67ca6a1fc438bf47ad33a39753",
     ".github/workflows/sl63-private-handler-topology.yml": "fc50bfbddb621035bb8baf3b443180e6ee74473a",
     "infra/aws/sl63_private_handler_offline_scenarios.py": "965dd3c6a9666218f5ddb705f7e62954eb977a45",
-    "tests/test_sl63_private_handler_offline_scenarios.py": "89411b8c1a24ea3345e61f573f9e4cb5e6da45e2",
+    "tests/test_sl63_private_handler_offline_scenarios.py": "a24ee44599c25b17e3a69d205a493567098d3d51",
     ".github/workflows/sl63-private-handler-offline.yml": "68566a66fed5981961b9db73a3505bb64c9b7c4b"
   }
 }

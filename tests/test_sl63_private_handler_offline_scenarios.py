@@ -224,7 +224,8 @@ def test_multiday_fixture_has_no_future_us_exchange_session_at_nov19_morning():
     assert '("2026-11-13","2026-11-12"' in m.CHILD
     assert '("2026-11-16","2026-11-13"' in m.CHILD
     assert '("2026-11-18","2026-11-17"' in m.CHILD
-    assert '"2026-11-24"' not in m.CHILD
+    assert "VIRTUAL_CLOCK_BUY_SELL_BUY" in m.CHILD
+    assert 'if case=="VIRTUAL_CLOCK_BUY_SELL_BUY" else (' in m.CHILD
     assert 'timestamp.replace("Z","+00:00")' in m.CHILD
 
 
