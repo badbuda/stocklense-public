@@ -2,24 +2,24 @@
   "schema_version": 2,
   "publication_identity": {
     "schema_version": 2,
-    "git_sha": "35e8bb2389b15e8880802f96bb4fef71ccae19c0",
+    "git_sha": "2fd4fd5f659bcdf84eb92a1d0c75e43e80194088",
     "signal_asof": null,
     "replay_dataset_sha256": "db0889da31af43b1b75e005c1f4ab2cad421dfb55a6c55a77a223e0623950d95",
-    "replay_rows_sha256": "4f9c93596e45e03b9317bd528d99d57544299d3d1b3cfc64b75f91a39a6668b7",
+    "replay_rows_sha256": "551b94d0285c02cfd53b84302ad18b2aa593ce9a5d5d35ba20f1a790988a3475",
     "simulator_contract_sha256": "80745a3640c6fe667a3c500571fb15abee1d532a5b720fb6efc8b52f291dfc68",
-    "generation_id": "1a1bf3493cb6e1c709091bd78974187f54de0d732a4f43b7d46993470799c2a3"
+    "generation_id": "112d8f2be9d3b9baab7a6238def26a25d932bc5895b570af853d647c5cb6c0f8"
   },
   "status": "PASS",
   "full_path": {
-    "compounded_gross_return": 0.020769476345633642,
-    "max_drawdown": -0.40276981432666104,
+    "compounded_gross_return": 0.01151451547849125,
+    "max_drawdown": -0.4081848079058532,
     "max_drawdown_peak_date": "2026-10-06",
-    "max_drawdown_trough_date": "2026-11-16"
+    "max_drawdown_trough_date": "2026-11-17"
   },
   "rolling_windows": [
     {
       "sessions": 21,
-      "window_count": 230,
+      "window_count": 231,
       "worst_return_window": {
         "compounded_gross_return": -0.39522673047036194,
         "max_drawdown": -0.39522673047036194,
@@ -39,7 +39,7 @@
     },
     {
       "sessions": 63,
-      "window_count": 188,
+      "window_count": 189,
       "worst_return_window": {
         "compounded_gross_return": -0.3083112184982558,
         "max_drawdown": -0.399836192684893,
@@ -49,17 +49,17 @@
         "end": "2026-11-05"
       },
       "worst_drawdown_window": {
-        "compounded_gross_return": -0.29461075010220095,
-        "max_drawdown": -0.4027698143266609,
+        "compounded_gross_return": -0.2968019281792441,
+        "max_drawdown": -0.4081848079058533,
         "max_drawdown_peak_date": "2026-10-06",
-        "max_drawdown_trough_date": "2026-11-16",
-        "start": "2026-08-19",
-        "end": "2026-11-16"
+        "max_drawdown_trough_date": "2026-11-17",
+        "start": "2026-08-20",
+        "end": "2026-11-17"
       }
     },
     {
       "sessions": 126,
-      "window_count": 125,
+      "window_count": 126,
       "worst_return_window": {
         "compounded_gross_return": -0.2938788821114602,
         "max_drawdown": -0.399836192684893,
@@ -69,12 +69,12 @@
         "end": "2026-11-06"
       },
       "worst_drawdown_window": {
-        "compounded_gross_return": -0.29253078590256987,
-        "max_drawdown": -0.4027698143266609,
+        "compounded_gross_return": -0.2857405808749729,
+        "max_drawdown": -0.4081848079058533,
         "max_drawdown_peak_date": "2026-10-06",
-        "max_drawdown_trough_date": "2026-11-16",
-        "start": "2026-05-19",
-        "end": "2026-11-16"
+        "max_drawdown_trough_date": "2026-11-17",
+        "start": "2026-05-20",
+        "end": "2026-11-17"
       }
     }
   ],
