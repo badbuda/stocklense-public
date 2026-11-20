@@ -593,6 +593,17 @@
     "infra/aws/sl63_epoch4_watchdog.py": "1d06d242a6559af4e4437f0699affd044c934005",
     "tests/test_sl63_epoch4_prospective_runtime.py": "98e13ce1e4a0449e211a237daecf97fc4b55cfc9",
     "tests/test_sl63_epoch4_watchdog.py": "786bb751fc29abaf5dd481e5df44abb5b4c893a8",
-    ".github/workflows/sl63-epoch4-prospective.yml": "e1b21dfcbeb82f98991b2398da84fb0df47b848d"
+    ".github/workflows/sl63-epoch4-prospective.yml": "e1b21dfcbeb82f98991b2398da84fb0df47b848d",
+    "infra/aws/sl64_epoch5_immutable_store.py": "71f9006dff93af4540bd9d9a9d716fa2ae296597",
+    "infra/aws/sl64_epoch5_paper_economic_adapter.py": "8e2e9ed19b28ea44582f37c694496661560e889c",
+    "infra/aws/sl64_epoch5_prospective_runtime.py": "f7a14e539464a50e64061d004000eb41dd0908ff",
+    "infra/aws/sl64_epoch5_watchdog.py": "02469c24c05ab962466c7b427b1553a0c991b00b",
+    "infra/aws/sl64_epoch5_lambda.py": "34884bab9ec78437d4180d71775f3d3d98089005",
+    "infra/aws/sl64_epoch5_preopen.py": "38ad5e143c494a8470c543c9823d320fcf78f037",
+    "infra/aws/sl64_epoch5_stage_dark_deploy.py": "0b0b072c2fccde86c485fd8ee92a9402a1f6a7d9",
+    "infra/aws/sl64_epoch5_automated_release.py": "ee9737eea61b7a7a1220e40a629a53379658d544",
+    "tests/test_sl64_epoch5_preopen.py": "9a9ede81ab24763e4c78b3e2d62f7f3efc3b30ba",
+    "tests/test_sl64_epoch5_guarded_release.py": "b5da37e5c502ebcd0afcc467c011c93672c91d56",
+    ".github/workflows/sl64-epoch5-auto-release.yml": "d79aa099a305c556404d7566ad6dc54e09b867eb"
   }
 }

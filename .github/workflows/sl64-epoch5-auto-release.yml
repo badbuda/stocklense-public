@@ -1,0 +1,21 @@
+name: SL-64 fresh Nov20 prospective ST Epoch5 modeled Paper (offline)
+on:
+  pull_request:
+    paths:
+      - 'infra/aws/sl64_epoch5_*'
+      - 'tests/test_sl64_epoch5_*'
+      - '.github/workflows/sl64-epoch5-auto-release.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  fresh-epoch-no-backfill:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install --quiet -r requirements.txt pytest boto3
+      - run: python -m pytest -q tests/test_sl64_epoch5_preopen.py tests/test_sl64_epoch5_guarded_release.py
