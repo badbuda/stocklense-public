@@ -1,0 +1,316 @@
+#!/usr/bin/env python3
+"""Deploy one NEW DARK ST Epoch5 Lambda; never touch old Paper or enable schedules.
+
+Only --stage-dark mutates AWS: upload immutable ST code artifact, create new
+CFN stack (scoped IAM role, log group, Lambda) and invoke new READ-ONLY
+preflight. No Genesis, Paper, Continuity, EventBridge, PROD or broker writes.
+"""
+from __future__ import annotations
+import argparse
+import base64
+import hashlib
+import io
+import json
+from pathlib import Path
+import sys
+import zipfile
+
+from infra.aws import sl56_epoch4_approval_readback as legacy_approval
+from infra.aws import sl64_epoch5_preopen as approval
+from infra.aws import sl64_epoch5_paper_economic_adapter as adapter
+from datetime import datetime,timezone
+from infra.aws import sl63_deployed_paper_source_parity as baseline
+from infra.aws import sl64_epoch5_immutable_store as store
+
+REGION="eu-central-1"
+ACCOUNT="634740393398"
+BUCKET=store.ST_BUCKET
+FUNCTION="stocklens-st-epoch5-paper-dark"
+STACK="stocklens-st-epoch5-paper-dark"
+HANDLER="infra.aws.sl64_epoch5_lambda.handler"
+ZIP_LIMIT=100_000_000
+# Lambda's hard unzipped code+layer budget is 250 MiB. The existing
+# authenticated deployed ZIP contains legitimate vendored binary wheels
+# larger than our old, arbitrary 30 MB *individual member* cutoff.
+# Reject on bounded AGGREGATE uncompressed size instead; never bypass SHA
+# pinning, ZIP CRC, extraction-path checks, or the compressed ZIP limit.
+UNZIPPED_LIMIT=250*1024*1024
+MAX_ZIP_MEMBERS=100_000
+NEW_MODULES={
+  "infra/aws/sl64_epoch5_lambda.py":"34884bab9ec78437d4180d71775f3d3d98089005",
+  "infra/aws/sl64_epoch5_paper_economic_adapter.py":"8e2e9ed19b28ea44582f37c694496661560e889c",
+  "infra/aws/sl64_epoch5_immutable_store.py":"71f9006dff93af4540bd9d9a9d716fa2ae296597",
+  "infra/aws/sl64_epoch5_prospective_runtime.py":"f7a14e539464a50e64061d004000eb41dd0908ff",
+  "infra/aws/sl64_epoch5_watchdog.py":"02469c24c05ab962466c7b427b1553a0c991b00b",
+}
+EXCLUDE={"infra/aws/independent_paper.py",
+         "infra/aws/independent_pipeline.py"}
+
+
+def require(ok,reason):
+    if not ok:raise RuntimeError(reason)
+
+
+def sha(raw):
+    return hashlib.sha256(raw).hexdigest()
+
+
+def git_blob(raw):
+    return hashlib.sha1(b"blob "+str(len(raw)).encode()+b"\0"+raw).hexdigest()
+
+
+def assert_uncompressed_budget(infos, extras):
+    sizes=[item.file_size for item in infos
+           if item.filename not in EXCLUDE and not item.is_dir()]
+    require(len(infos)<MAX_ZIP_MEMBERS and
+            all(type(sz) is int and 0<=sz<=UNZIPPED_LIMIT for sz in sizes),
+            "DARK_ZIP_MEMBER_COUNT_OR_SIZE_INVALID")
+    total=sum(sizes)+sum(len(raw) for raw in extras.values())
+    require(total<=UNZIPPED_LIMIT,
+            "DARK_LAMBDA_UNZIPPED_250MIB_LIMIT_EXCEEDED")
+    return {"uncompressed_bytes":total,
+            "largest_existing_member_bytes":max(sizes,default=0),
+            "member_count":len(infos)+len(extras)}
+
+
+def package(baseline_zip,repo):
+    new={}
+    for name,hash_expected in NEW_MODULES.items():
+        raw=(repo/name).read_bytes()
+        require(git_blob(raw)==hash_expected,"NEW_GIT_BLOB_CHANGED:"+name)
+        new[name]=raw
+    with zipfile.ZipFile(io.BytesIO(baseline_zip)) as orig:
+        names=orig.namelist()
+        require(len(names)==len(set(names)) and
+                orig.testzip() is None,"OLD_ZIP_NOT_VERIFIED")
+        require(not any(name in names for name in new),
+                "NEW_ENTRY_CONFLICTS_EXISTING_ZIP")
+        require(all(not n.startswith("/") and
+                    ".." not in Path(n).parts and "\\" not in n for n in names),
+                "UNSAFE_ZIP_PATH")
+        require(all(git_blob(orig.read(name))==blob
+                    for name,blob in baseline.PINNED_PUBLIC_MODULE_BLOBS.items()),
+                "DEPLOYED_ECONOMIC_CODE_DRIFT")
+        # Guard before extracting any member. Existing source ZIP's exact
+        # CodeSha256 was independently verified against the ST Lambda.
+        assert_uncompressed_budget(orig.infolist(),new)
+        stream=io.BytesIO()
+        with zipfile.ZipFile(stream,"w",compression=zipfile.ZIP_DEFLATED) as dst:
+            for item in orig.infolist():
+                if item.filename in EXCLUDE:continue
+                dst.writestr(item.filename,orig.read(item.filename))
+            for name,data in sorted(new.items()):
+                dst.writestr(name,data)
+        output=stream.getvalue()
+    require(0<len(output)<ZIP_LIMIT,"DARK_ZIP_OVERSIZED")
+    with zipfile.ZipFile(io.BytesIO(output)) as z:
+        require(sum(x.file_size for x in z.infolist()
+                    if not x.is_dir())<=UNZIPPED_LIMIT,
+                "PACKED_ZIP_UNZIPPED_LIMIT_EXCEEDED")
+        require(z.testzip() is None,"PACKED_ZIP_CRC_FAILED")
+        require(not any(x in z.namelist() for x in EXCLUDE),
+                "OLD_PRIVATE_ENTRYPOINT_COPIED")
+        require(all(z.read(k)==v for k,v in new.items()),
+                "NEW_CODE_ZIP_VERIFICATION_FAILED")
+    return output
+
+
+def template(key,original):
+    runtime=original.get("Runtime")
+    require(runtime in ("python3.12","python3.13"),"UNEXPECTED_ST_RUNTIME")
+    arch=original.get("Architectures",["x86_64"])
+    require(arch in (["x86_64"],["arm64"]),"UNEXPECTED_ST_ARCH")
+    prefix="arn:aws:s3:::"+BUCKET+"/"
+    epoch=prefix+store.PREFIX
+    writer=[epoch+"genesis.json",epoch+"sessions/*",epoch+"continuity/*"]
+    reader=writer+[prefix+"signals/*",
+                   epoch+"preopen-inception-approval.json"]
+    perms={"Version":"2012-10-17","Statement":[
+      {"Effect":"Allow","Action":["s3:GetObject","s3:GetObjectVersion"],
+       "Resource":reader},
+      {"Effect":"Allow","Action":["s3:PutObject"],"Resource":writer},
+      {"Effect":"Allow","Action":["logs:CreateLogStream","logs:PutLogEvents"],
+       "Resource":["arn:aws:logs:"+REGION+":"+ACCOUNT+
+                   ":log-group:/aws/lambda/"+FUNCTION+":*"]},
+    ]}
+    props={"FunctionName":FUNCTION,
+       "Description":"DARK ST Epoch5 Paper; NO EventBridge; no broker",
+       "Runtime":runtime,"Handler":HANDLER,
+       "Role":{"Fn::GetAtt":["DarkRole","Arn"]},
+       "Code":{"S3Bucket":BUCKET,"S3Key":key},
+       "Timeout":120,"MemorySize":max(1024,original.get("MemorySize",512)),
+       "Architectures":arch,
+       "Environment":{"Variables":{
+           "STOCKLENS_DATA_BUCKET":BUCKET,
+           "STOCKLENS_EPOCH5_WRITE_ENABLED":"false"}},
+    }
+    layers=[x["Arn"] for x in original.get("Layers",[])]
+    if layers:props["Layers"]=layers
+    return {"AWSTemplateFormatVersion":"2010-09-09",
+       "Description":"ST Epoch5 DARK; writes disabled; no schedules; separate IAM",
+       "Resources":{
+         "DarkRole":{"Type":"AWS::IAM::Role","Properties":{
+           "AssumeRolePolicyDocument":{"Version":"2012-10-17",
+             "Statement":[{"Effect":"Allow",
+                "Principal":{"Service":"lambda.amazonaws.com"},
+                "Action":"sts:AssumeRole"}]},
+           "Policies":[{"PolicyName":"only-epoch5-s3-and-logs",
+                        "PolicyDocument":perms}]}},
+         "DarkLogGroup":{"Type":"AWS::Logs::LogGroup",
+           "Properties":{"LogGroupName":"/aws/lambda/"+FUNCTION,
+                         "RetentionInDays":14}},
+         "DarkLambda":{"Type":"AWS::Lambda::Function",
+           "DependsOn":["DarkRole","DarkLogGroup"],"Properties":props},
+       },
+       "Outputs":{"Function":{"Value":FUNCTION},
+                  "PaperWriteEnabled":{"Value":"false"},
+                  "ScheduleEnabled":{"Value":"false"}},
+    }
+
+
+def _artifact(s3,pkg):
+    key="deployment/epoch5/dark/"+sha(pkg)+".zip"
+    try:
+        s3.put_object(Bucket=BUCKET,Key=key,Body=pkg,IfNoneMatch="*",
+                      ContentType="application/zip",
+                      Metadata={"sha256":sha(pkg)})
+    except Exception as ex:
+        code=(getattr(ex,"response",{}) or {}).get("Error",{}).get("Code")
+        if code not in ("PreconditionFailed","412"):raise
+    head=s3.head_object(Bucket=BUCKET,Key=key)
+    version=head.get("VersionId")
+    require(version not in (None,"","null") and
+            head.get("ContentLength")==len(pkg) and
+            (head.get("Metadata") or {}).get("sha256")==sha(pkg),
+            "ARTIFACT_VERSION_OR_SHA_FAILED")
+    obj=s3.get_object(Bucket=BUCKET,Key=key,VersionId=version)
+    require(obj["Body"].read(ZIP_LIMIT+1)==pkg,
+            "ARTIFACT_PINNED_BYTES_DIFFER")
+    return key
+
+
+def _existing(cfn):
+    try:
+        r=cfn.describe_stacks(StackName=STACK).get("Stacks",[])
+    except Exception as ex:
+        if (getattr(ex,"response",{}) or {}).get("Error",{}).get(
+             "Code")=="ValidationError" and "does not exist" in str(ex):
+            return None
+        raise
+    return r[0] if len(r)==1 else None
+
+
+def execute(clients,repo,stage):
+    legacy_approval.inspect(clients)
+    eligibility=approval.preflight(
+        clients["sts"],clients["s3"],
+        now=datetime.now(timezone.utc))
+    proposed=store.canonical(eligibility["document"])
+    approved_sha=sha(proposed)
+    opening=adapter._market_clock(
+        "2026-11-20","2026-11-21T23:00:00Z")[2]
+    recorded=adapter._approval(clients["s3"],"2026-11-20",opening)
+    require(recorded["sha256"]==approved_sha,
+            "NEW_EPOCH5_APPROVAL_NOT_IDENTICAL_TO_VERIFIED_SOURCE")
+    prior,close,_,_=adapter._market_clock(
+        "2026-11-20","2026-11-21T23:00:00Z")
+    pinned=adapter._source_signal(
+        clients["s3"],"2026-11-20",prior,close,opening,recorded)
+    require(pinned["sha256"]==eligibility["source_sha256"],
+            "EPOCH5_SOURCE_DRIFT")
+    original,cfg=baseline.authenticated_download(
+        clients["sts"],clients["lambda"])
+    pkg=package(original,repo)
+    expected=base64.b64encode(hashlib.sha256(pkg).digest()).decode()
+    report={"status":"ST_EPOCH5_DARK_PREDEPLOY_CHECKS_PASS",
+            "expected_lambda_code_sha256_b64":expected,
+            "old_st_paper_schedule_disabled":True,
+            "new_preopen_approval_sha256":approved_sha,
+            "new_epoch_paper_or_continuity_written":False,
+            "broker_orders":False}
+    if not stage:
+        return {**report,"aws_mutations":False,
+                "new_lambda_created":False},0
+    stack=_existing(clients["cloudformation"])
+    if stack is None:
+        key=_artifact(clients["s3"],pkg)
+        cft=template(key,cfg)
+        require({x["Type"] for x in cft["Resources"].values()}==
+                {"AWS::IAM::Role","AWS::Logs::LogGroup",
+                 "AWS::Lambda::Function"},
+                "UNEXPECTED_ST_STACK_RESOURCE")
+        clients["cloudformation"].create_stack(
+            StackName=STACK,TemplateBody=json.dumps(cft),
+            Capabilities=["CAPABILITY_IAM"])
+        try:
+            clients["cloudformation"].get_waiter(
+                "stack_create_complete").wait(
+                    StackName=STACK,WaiterConfig={
+                        "Delay":10,"MaxAttempts":48})
+        except Exception:
+            return {**report,
+                    "status":"ST_DARK_CFN_CREATED_CHECK_STACK_EVENTS",
+                    "aws_mutations":True,
+                    "paper_write_enabled":False},4
+        stack=_existing(clients["cloudformation"])
+    require(stack and stack.get("StackStatus")=="CREATE_COMPLETE",
+            "DARK_STACK_UNSTABLE_OR_NOT_CREATED")
+    fn=clients["lambda"].get_function_configuration(FunctionName=FUNCTION)
+    require(fn.get("CodeSha256")==expected and
+            fn.get("Handler")==HANDLER and
+            fn.get("State")=="Active" and
+            fn.get("LastUpdateStatus")=="Successful" and
+            fn.get("Environment",{}).get("Variables",{}).get(
+                "STOCKLENS_EPOCH5_WRITE_ENABLED")=="false",
+            "DARK_LAMBDA_NOT_PINNED_OR_NOT_DISABLED")
+    invoked=clients["lambda"].invoke(
+        FunctionName=FUNCTION,InvocationType="RequestResponse",
+        Payload=json.dumps(
+            {"mode":"STAGING_EPOCH5_DARK_READINESS"}).encode())
+    raw=invoked["Payload"].read(15000)
+    require(invoked.get("StatusCode")==200 and
+            not invoked.get("FunctionError"),
+            "DARK_READONLY_LAMBDA_PREFLIGHT_INVOKE_FAILED")
+    result=json.loads(raw)
+    require(result.get("status")==
+            "EPOCH5_DARK_LAMBDA_READINESS_S3_READ_ONLY"
+            and result.get("approval_sha256")==approved_sha
+            and result.get("new_epoch_paper_or_continuity_written") is False
+            and result.get("broker_orders") is False,
+            "DARK_READONLY_PREFLIGHT_NOT_VERIFIED")
+    legacy_approval.inspect(clients)  # old ST and PROD unchanged.
+    return {**report,
+        "status":"ST_EPOCH5_DARK_LAMBDA_DEPLOYED_READINESS_GREEN",
+        "aws_mutations":True,"new_lambda_created":True,
+        "eventbridge_schedule_enabled":False,
+        "paper_write_enabled":False,
+        "old_st_paper_lambda_untouched":True,
+        "prod_untouched":True},0
+
+
+def main():
+    parser=argparse.ArgumentParser()
+    parser.add_argument("--stage-dark",action="store_true")
+    args=parser.parse_args()
+    import boto3
+    session=boto3.session.Session(region_name=REGION)
+    clients={k:session.client(k) for k in
+             ("sts","s3","lambda","cloudformation","events")}
+    try:
+        report,rc=execute(
+            clients,Path(__file__).resolve().parents[2],
+            stage=args.stage_dark)
+    except Exception as ex:
+        report={"status":"ST_EPOCH5_DARK_DEPLOYMENT_BLOCKED",
+                "error_type":type(ex).__name__,
+                "reason":str(ex)[:260],
+                "broker_orders":False,
+                "paper_or_continuity_written":False,
+                "prod_untouched":True}
+        rc=4
+    print(json.dumps(report,indent=2,sort_keys=True))
+    return rc
+
+
+if __name__=="__main__":
+    sys.exit(main())
