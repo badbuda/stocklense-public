@@ -271,7 +271,11 @@ def test_toy_private_handler_virtual_clock_with_sell_has_no_real_s3(tmp_path):
     assert outcome["child_exit"]==0,outcome
     steps=outcome["consecutive_session_proofs"]
     assert len(steps)==5,outcome
-    assert all(x["private_handler_returned_verified"] for x in steps)
+    assert all(x["private_handler_returned_verified"] for x in steps), {
+        "steps":steps,
+        "results":outcome.get("handler_results"),
+        "fake_s3_write_conflicts":outcome.get("fake_s3_precondition_conflict_roles"),
+    }
     assert all(x["continuity_receipt_written"] for x in steps)
     assert {"BUY","SELL"}.issubset(
         outcome["fake_s3_modeled_sides_observed"])
@@ -406,3 +410,10 @@ def test_changed_payload_case_forces_real_nonidentical_request_and_blocks_fake_r
     assert result["fake_s3_synthetic_request_drift_injected"] is True
     assert result["broker_orders"] is False
     assert result["real_aws_mutations"] is False
+
+
+def test_full_nightly_shadow_workflow_installs_virtual_clock_dependency():
+    """Regression: standalone handler CI was green, full overnight Shadow was not."""
+    root=Path(__file__).resolve().parents[1]
+    workflow=(root/".github/workflows/shadow.yml").read_text()
+    assert "pip install pytest freezegun" in workflow

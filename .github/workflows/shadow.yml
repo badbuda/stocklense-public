@@ -44,7 +44,9 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-          pip install pytest
+          # Virtual-clock handler fault tests run inside the FULL nightly Shadow suite.
+          # Without freezegun they fail only overnight, despite green dedicated CI.
+          pip install pytest freezegun
 
       - name: Guard branch base before validation
         if: github.event_name == 'pull_request'
