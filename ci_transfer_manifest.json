@@ -600,7 +600,7 @@
     "infra/aws/sl64_epoch5_watchdog.py": "02469c24c05ab962466c7b427b1553a0c991b00b",
     "infra/aws/sl64_epoch5_lambda.py": "34884bab9ec78437d4180d71775f3d3d98089005",
     "infra/aws/sl64_epoch5_preopen.py": "38ad5e143c494a8470c543c9823d320fcf78f037",
-    "infra/aws/sl64_epoch5_stage_dark_deploy.py": "0b0b072c2fccde86c485fd8ee92a9402a1f6a7d9",
+    "infra/aws/sl64_epoch5_stage_dark_deploy.py": "9206757118c1aa3547ac2efc1cca8e01c642c368",
     "infra/aws/sl64_epoch5_automated_release.py": "ee9737eea61b7a7a1220e40a629a53379658d544",
     "tests/test_sl64_epoch5_preopen.py": "9a9ede81ab24763e4c78b3e2d62f7f3efc3b30ba",
     "tests/test_sl64_epoch5_guarded_release.py": "b5da37e5c502ebcd0afcc467c011c93672c91d56",

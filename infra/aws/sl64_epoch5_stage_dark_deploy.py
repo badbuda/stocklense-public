@@ -15,7 +15,10 @@ from pathlib import Path
 import sys
 import zipfile
 
-from infra.aws import sl56_epoch5_approval_readback as approval
+from infra.aws import sl56_epoch4_approval_readback as legacy_approval
+from infra.aws import sl64_epoch5_preopen as approval
+from infra.aws import sl64_epoch5_paper_economic_adapter as adapter
+from datetime import datetime,timezone
 from infra.aws import sl63_deployed_paper_source_parity as baseline
 from infra.aws import sl64_epoch5_immutable_store as store
 
