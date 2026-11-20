@@ -410,3 +410,10 @@ def test_changed_payload_case_forces_real_nonidentical_request_and_blocks_fake_r
     assert result["fake_s3_synthetic_request_drift_injected"] is True
     assert result["broker_orders"] is False
     assert result["real_aws_mutations"] is False
+
+
+def test_full_nightly_shadow_workflow_installs_virtual_clock_dependency():
+    """Regression: standalone handler CI was green, full overnight Shadow was not."""
+    root=Path(__file__).resolve().parents[1]
+    workflow=(root/".github/workflows/shadow.yml").read_text()
+    assert "pip install pytest freezegun" in workflow
