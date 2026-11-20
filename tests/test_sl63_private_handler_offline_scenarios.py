@@ -271,7 +271,11 @@ def test_toy_private_handler_virtual_clock_with_sell_has_no_real_s3(tmp_path):
     assert outcome["child_exit"]==0,outcome
     steps=outcome["consecutive_session_proofs"]
     assert len(steps)==5,outcome
-    assert all(x["private_handler_returned_verified"] for x in steps)
+    assert all(x["private_handler_returned_verified"] for x in steps), {
+        "steps":steps,
+        "results":outcome.get("handler_results"),
+        "fake_s3_write_conflicts":outcome.get("fake_s3_precondition_conflict_roles"),
+    }
     assert all(x["continuity_receipt_written"] for x in steps)
     assert {"BUY","SELL"}.issubset(
         outcome["fake_s3_modeled_sides_observed"])

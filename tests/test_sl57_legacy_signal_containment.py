@@ -110,7 +110,7 @@ def test_pause_requires_explicit_approval_and_disables_only_old_signal():
 def test_failure_blocks_mutation(kwargs, reason):
     c, changes, _ = fake(**kwargs)
     with pytest.raises(RuntimeError, match=reason):
-        m.run(c, "pause", approved=True)
+        m.run(c, "pause", approved=True, now=NOW)
     assert changes == []
 
 
@@ -120,7 +120,7 @@ def test_wrong_account_denied_before_any_stack_read():
     c["cloudformation"] = SimpleNamespace(
         describe_stacks=lambda **kwargs: pytest.fail("stack access on wrong account"))
     with pytest.raises(RuntimeError, match="WRONG_ACCOUNT"):
-        m.run(c, "inspect")
+        m.run(c, "inspect", now=NOW)
     assert changes == []
 
 
@@ -129,4 +129,12 @@ def test_stale_2026_evidence_expires_without_aws_mutation():
     with pytest.raises(RuntimeError, match="LEGACY_CONTAINMENT_EVIDENCE_EXPIRED"):
         m.run(c, "pause", approved=True,
               now=datetime(2026, 11, 19, 14, 31, tzinfo=timezone.utc))
+    assert changes == []
+
+
+def test_expired_evidence_always_blocks_real_clock_even_if_other_data_valid():
+    c, changes, _ = fake()
+    with pytest.raises(RuntimeError, match="LEGACY_CONTAINMENT_EVIDENCE_EXPIRED"):
+        m.run(c, "pause", approved=True,
+              now=datetime(2026, 11, 20, 6, 0, tzinfo=timezone.utc))
     assert changes == []
