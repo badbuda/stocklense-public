@@ -14,6 +14,8 @@ on:
       - 'tests/test_pit_breadth_tax_lot_20261115.py'
       - 'research/pit_breadth_paired_tax_audit_20261117.py'
       - 'tests/test_pit_breadth_paired_tax_audit_20261117.py'
+      - 'research/pit_breadth_receipt_gate_20261121.py'
+      - 'tests/test_pit_breadth_receipt_gate_20261121.py'
       - '.github/workflows/pit-breadth-gate.yml'
   workflow_dispatch:
 jobs:
@@ -34,3 +36,4 @@ jobs:
           python -m unittest discover -s tests -p 'test_pit_breadth_temporal_replay_20261114.py' -v
           python -m unittest discover -s tests -p 'test_pit_breadth_tax_lot_20261115.py' -v
           python -m unittest discover -s tests -p 'test_pit_breadth_paired_tax_audit_20261117.py' -v
+          python -m unittest discover -s tests -p 'test_pit_breadth_receipt_gate_20261121.py' -v
