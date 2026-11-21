@@ -16,7 +16,7 @@
       "status": "STATIC_RESEARCH_ONLY_NOT_OPERATIONAL_GREEN"
     },
     "frozen_shadow": {
-      "observed_signal_asof": "2026-11-06",
+      "observed_signal_asof": "2026-11-18",
       "status": "SOURCE_PRESENT_NOT_AWS_EXECUTION"
     },
     "historical_combination_research": {
@@ -30,8 +30,8 @@
     },
     "legacy_paper": {
       "accounting": "HISTORICAL_MODELLED_ONLY",
-      "calendar_days_behind_signal": 28,
-      "explicit_missed_execution_sessions": 20,
+      "calendar_days_behind_signal": 40,
+      "explicit_missed_execution_sessions": 28,
       "independent_broker_fills": false,
       "last_recorded_session": "2026-10-09",
       "status": "STALE",
@@ -65,16 +65,16 @@
       "total": 18
     }
   },
-  "generated_at_utc": "2026-11-07T21:29:52.721232+00:00",
+  "generated_at_utc": "2026-11-21T09:04:13.971710+00:00",
   "kind": "STOCKLENS_EVIDENCE_CLOSEOUT",
   "overall": "BLOCKED_OPERATIONAL_NOT_RESEARCH",
   "schema_version": 1,
   "source_sha256": {
     "combinations": "1987828f586d120e65e17eee0794ee2baf72741cb81fff7cb713e8edbcf45726",
-    "forward": "a393be2ab0e2607a4714d0f9c2ee63678b276b8b75bc70489ae39301b94a8e11",
+    "forward": "c377c0db2843b755cbb50b36fc137f139369561884e732a461d7a59cdf21fa5e",
     "paper": "c68a48a04bad35df80918f8de1a93ae442442c0141acfe446b7a0da0120bbd36",
-    "readiness": "2600c978d32a43135a96b6be452f3d89b6d7d3200bdadcb6b55b63e0f51346b7",
-    "signals": "cf884517770135bf4aba534e10d69a3d5e3990144e05608a9496607bfa067e5f"
+    "readiness": "340dddb28b3c89915a4bf63c7baa922fe6261bdc4ed6150785a56be44a33692e",
+    "signals": "2de42f8c78f2a0b6e80947ee7c76cad04a6f4c19d59d94d3733afd636f46c0e5"
   },
   "work_items": [
     {
