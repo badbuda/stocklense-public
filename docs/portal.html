@@ -35,6 +35,17 @@
 <div id="load-error" class="alert error" hidden role="alert"></div>
 <div id="feed-status" class="notice" role="status" aria-live="polite" hidden></div>
 <section class="page visible" data-view="overview">
+  <div class="panel" aria-labelledby="activity-heading">
+    <h2 id="activity-heading">פעילות אחרונה</h2>
+    <h3>ריצות Shadow</h3>
+    <p id="activity-status" role="status">טוען את היסטוריית הריצות מ־GitHub…</p>
+    <ul id="activity-runs"></ul>
+    <a href="https://github.com/badbuda/stocklense-public/actions/workflows/shadow.yml">כל הריצות והלוגים ↗</a>
+    <h3>עסקאות מתועדות בארכיון Paper הציבורי</h3>
+    <p id="activity-paper" role="status">טוען את יומן המסחר המדומה…</p>
+    <ul id="activity-trades"></ul>
+    <button class="underlink" data-goto="paper">פתיחת יומן העסקאות ←</button>
+  </div>
   <div class="page-heading"><div><div class="eyebrow">THE BIG PICTURE</div><h1>מה קורה עם הכסף שלנו?</h1><p>תמונה אחת, בלי קיצורים מבלבלים. הנתונים מופרדים בין תוצאות מדומות לתוצאות היסטוריות.</p></div><div class="head-links"><a href="#evidence" data-goto="evidence" class="text-link">איך קוראים את הנתונים? ↗</a></div></div>
   <div class="notice"><span class="notice-icon">ⓘ</span><span><b>חשוב:</b> המערכת פועלת במצב <b>Paper Trading</b>. אין ביצוע עסקאות בחשבון אמיתי. מחירי Yahoo אינם ציטוטי מסחר בזמן אמת, וסימולציות אינן הוכחת תשואה עתידית.</span></div>
   <div class="readiness-clarity" id="readiness-clarity" role="status">
@@ -204,6 +215,56 @@
 <footer class="footer"><span>StockLens 8.0 · Research & Paper Only</span><span>מחירי Yahoo מותאמים · ביצוע היסטורי משוער · אין מסחר בברוקר</span></footer>
 </main>
 </div></div>
+<script type="module">
+const repo = "badbuda/stocklense-public";
+async function readActivity(url) {
+  const response = await fetch(url, {cache: "no-store", signal: AbortSignal.timeout(12000)});
+  if (!response.ok) throw new Error(String(response.status));
+  return response.json();
+}
+async function showRuns() {
+  const status = document.querySelector("#activity-status");
+  try {
+    const data = await readActivity("https://api.github.com/repos/" + repo + "/actions/workflows/shadow.yml/runs?branch=main&event=schedule&per_page=5");
+    const labels = {success:"הושלמה בהצלחה",failure:"נכשלה",cancelled:"בוטלה",in_progress:"בביצוע",queued:"בתור"};
+    for (const run of data.workflow_runs) {
+      const row = document.createElement("li");
+      const link = document.createElement("a");
+      link.href = "https://github.com/" + repo + "/actions/runs/" + Number(run.id);
+      const state = run.conclusion || run.status;
+      const when = new Date(run.created_at).toLocaleString("he-IL", {timeZone:"Asia/Jerusalem"});
+      link.textContent = when + " · " + (labels[state] || state) + " · פרטי הריצה";
+      row.append(link);
+      document.querySelector("#activity-runs").append(row);
+    }
+    status.textContent = data.workflow_runs.length ? "ריצות מתוזמנות לפי שעון ישראל" : "לא נמצאו ריצות מתוזמנות.";
+  } catch {
+    status.textContent = "היסטוריית הריצות אינה זמינה כרגע. אפשר לפתוח את הלוגים בקישור.";
+  }
+}
+async function showTrades() {
+  const status = document.querySelector("#activity-paper");
+  try {
+    const {paper} = await readActivity("./data.json");
+    const trades = [...paper.recent_trades].sort((a,b) =>
+      (b.execution_session + b.time_et).localeCompare(a.execution_session + a.time_et));
+    for (const trade of trades.slice(0,5)) {
+      const row = document.createElement("li");
+      const side = {BUY:"קנייה", SELL:"מכירה"}[trade.side] || trade.side;
+      row.textContent = trade.execution_session + " · " + trade.time_et + " שעון ניו יורק · " +
+        side + " · " + Number(trade.qty).toLocaleString("he-IL") + " " + trade.symbol +
+        " · מחיר מדומה $" + Number(trade.modeled_fill_price).toFixed(2);
+      document.querySelector("#activity-trades").append(row);
+    }
+    status.textContent = "תאריך היומן הציבורי האחרון: " + (paper.latest?.session_date || "לא ידוע") +
+      (trades.length ? "." : ". אין עסקאות מתועדות ברשימה.") + " הפעילות הפרטית ב־ST דורשת אימות נפרד.";
+  } catch {
+    status.textContent = "לא ניתן לקרוא את יומן העסקאות הציבורי.";
+  }
+}
+showRuns();
+showTrades();
+</script>
 <script type="module" src="./portal.js"></script>
 <script type="module" src="./ndx1986-sim.mjs"></script>
 </body></html>
