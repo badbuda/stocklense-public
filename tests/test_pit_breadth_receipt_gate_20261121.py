@@ -13,6 +13,14 @@ class TestReceipt(unittest.TestCase):
         self.r["source_kind"]="proxy";self.assertEqual(qualify(self.r)["status"],"BLOCKED")
     def test_future(self):
         self.r["vendors"][0]["published_at"]="2020-01-04T00:00:00+00:00";self.assertEqual(qualify(self.r)["status"],"BLOCKED")
+    def test_retrospective_retrieval(self):
+        self.r["vendors"][0]["retrieved_at"]="2020-01-04T10:00:00+00:00"
+        x=qualify(self.r)
+        self.assertEqual(x["status"],"BLOCKED")
+        self.assertEqual(x["reason"],"RETROSPECTIVE_RETRIEVAL_NOT_LIVE_PIT")
+    def test_retrieval_exactly_at_decision(self):
+        self.r["vendors"][0]["retrieved_at"]=self.r["decision_at"]
+        self.assertEqual(qualify(self.r)["status"],"STRUCTURAL_ONLY")
     def test_disagreement(self):
         self.r["vendors"][1]["members"]=["AAA","CCC"];self.assertEqual(qualify(self.r)["status"],"BLOCKED")
     def test_duplicate_vendor(self):
