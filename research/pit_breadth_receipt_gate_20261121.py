@@ -11,10 +11,13 @@ def qualify(r):
         cutoff=ts(r["decision_at"])
         vs=r["vendors"]
         if len(vs)!=2 or vs[0]["vendor_id"]==vs[1]["vendor_id"]: raise ValueError("TWO_DISTINCT_VENDORS_REQUIRED")
+        if vs[0]["source_reference"]==vs[1]["source_reference"]: raise ValueError("SHARED_SOURCE_REFERENCE_NOT_INDEPENDENT")
+        if vs[0]["snapshot_sha256"]==vs[1]["snapshot_sha256"]: raise ValueError("IDENTICAL_SNAPSHOT_NOT_INDEPENDENT")
         for v in vs:
             if not v["vendor_id"] or not v["source_reference"]: raise ValueError("MISSING_PROVENANCE")
             if not re.fullmatch("[0-9a-f]{64}",v["snapshot_sha256"]): raise ValueError("INVALID_HASH")
             if ts(v["published_at"])>cutoff or ts(v["retrieved_at"])<ts(v["published_at"]): raise ValueError("FUTURE_OR_INCONSISTENT_PROVENANCE")
+            if ts(v["retrieved_at"])>cutoff: raise ValueError("RETROSPECTIVE_RETRIEVAL_NOT_LIVE_PIT")
             members=v["members"]
             if not members or len(set(members))!=len(members) or any(not isinstance(m,str) or not m.strip() for m in members): raise ValueError("INVALID_MEMBERS")
         if set(vs[0]["members"])!=set(vs[1]["members"]): raise ValueError("VENDOR_DISAGREEMENT")
