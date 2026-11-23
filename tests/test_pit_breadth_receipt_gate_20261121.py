@@ -6,7 +6,7 @@ class TestReceipt(unittest.TestCase):
     def setUp(self):
         self.r={"source_kind":"observed_pit","index":"NDX","decision_at":"2020-01-03T21:00:00+00:00","expected_security_count":2,"vendors":[]}
         for n in ("A","B"):
-            self.r["vendors"].append({"vendor_id":n,"source_reference":"fixture","snapshot_sha256":"a"*64,"published_at":"2020-01-03T20:00:00+00:00","retrieved_at":"2020-01-03T20:30:00+00:00","members":["AAA","BBB"]})
+            self.r["vendors"].append({"vendor_id":n,"source_reference":"fixture-"+n,"snapshot_sha256":n.lower()*64,"published_at":"2020-01-03T20:00:00+00:00","retrieved_at":"2020-01-03T20:30:00+00:00","members":["AAA","BBB"]})
     def test_structural_only(self):
         x=qualify(self.r);self.assertEqual(x["status"],"STRUCTURAL_ONLY");self.assertFalse(x["historical_truth_verified"])
     def test_proxy(self):
@@ -25,6 +25,12 @@ class TestReceipt(unittest.TestCase):
         self.r["vendors"][1]["members"]=["AAA","CCC"];self.assertEqual(qualify(self.r)["status"],"BLOCKED")
     def test_duplicate_vendor(self):
         self.r["vendors"][1]["vendor_id"]="A";self.assertEqual(qualify(self.r)["status"],"BLOCKED")
+    def test_shared_source_reference(self):
+        self.r["vendors"][1]["source_reference"]=self.r["vendors"][0]["source_reference"]
+        self.assertEqual(qualify(self.r)["reason"],"SHARED_SOURCE_REFERENCE_NOT_INDEPENDENT")
+    def test_identical_snapshot(self):
+        self.r["vendors"][1]["snapshot_sha256"]=self.r["vendors"][0]["snapshot_sha256"]
+        self.assertEqual(qualify(self.r)["reason"],"IDENTICAL_SNAPSHOT_NOT_INDEPENDENT")
     def test_naive_time(self):
         self.r["decision_at"]="2020-01-03T21:00:00";self.assertEqual(qualify(self.r)["status"],"BLOCKED")
     def test_count(self):
