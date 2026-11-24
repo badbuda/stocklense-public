@@ -76,10 +76,11 @@ def chosen_existing_alert_topic(cw):
     return next(iter(topics))
 
 
-def _real_dark_state(clients, expected_dark_sha, staged_template):
+def _real_dark_state(clients, expected_dark_sha, dark_template, staged_template):
     legacy_approval.inspect(clients)
     stack=previous._existing(clients["cloudformation"])
-    require(stack is not None and stack["StackStatus"] in ("CREATE_COMPLETE","UPDATE_COMPLETE"),
+    require(stack is not None and stack["StackStatus"] in (
+            "CREATE_COMPLETE","UPDATE_COMPLETE","UPDATE_ROLLBACK_COMPLETE"),
             "EXPECTED_DARK_ST_STACK_NOT_STABLE")
     fn=clients["lambda"].get_function_configuration(
         FunctionName=FUNCTION)
@@ -95,9 +96,7 @@ def _real_dark_state(clients, expected_dark_sha, staged_template):
     if isinstance(current,str):current=json.loads(current)
     if current == staged_template:
         return fn, True
-    require(set(current.get("Resources",{}))==
-            {"DarkRole","DarkLogGroup","DarkLambda"},
-            "PREEXISTING_CFN_NOT_ISOLATED_DARK_STACK")
+    require(current == dark_template, "PREEXISTING_CFN_NOT_ISOLATED_DARK_STACK")
     require(current["Resources"]["DarkLambda"]["Properties"]["FunctionName"]
             ==FUNCTION, "DARK_TEMPLATE_DIFFERENT_LAMBDA")
     return fn, False
@@ -119,7 +118,7 @@ def _new_template(artifact_key,old,topic,*,armed,approval_sha):
     res=t["Resources"]
     paper=res["DarkLambda"]["Properties"]
     paper["Timeout"]=300
-    paper["ReservedConcurrentExecutions"]=1
+    # Shared concurrency; session writes use immutable, conditional S3 puts.
     paper["Description"]="ST Epoch5 REAL SINGLE-VENDOR modeled Paper (NO BROKER)"
     paper["Environment"]["Variables"]={
         "STOCKLENS_DATA_BUCKET":BUCKET,
@@ -278,9 +277,25 @@ def _change_set(clients,body,name,*,stage):
                     "CFN_REPLACEMENT_POSSIBLE_BLOCKED:"+logical)
         else:
             raise RuntimeError("CFN_DELETE_OR_IMPORT_BLOCKED:"+logical)
-    cfn.execute_change_set(ChangeSetName=change_id,StackName=STACK)
-    cfn.get_waiter("stack_update_complete").wait(
-        StackName=STACK,WaiterConfig={"Delay":10,"MaxAttempts":60})
+    token = "epoch5-" + uuid4().hex
+    cfn.execute_change_set(ChangeSetName=change_id, StackName=STACK, ClientRequestToken=token)
+    try:
+        cfn.get_waiter("stack_update_complete").wait(
+            StackName=STACK, WaiterConfig={"Delay":10,"MaxAttempts":60})
+    except Exception as exc:
+        failures = []
+        try:
+            pages = cfn.get_paginator("describe_stack_events").paginate(StackName=STACK)
+            for page in pages:
+                for event in page["StackEvents"]:
+                    if event.get("ClientRequestToken") == token and event["ResourceStatus"].endswith("_FAILED"):
+                        failures.append(f'{event["LogicalResourceId"]}: {event.get("ResourceStatusReason", "")}')
+                if any(e.get("ClientRequestToken") == token and e["ResourceType"] == "AWS::CloudFormation::Stack"
+                       and e["ResourceStatus"] == "UPDATE_IN_PROGRESS" for e in page["StackEvents"]):
+                    break
+        except Exception as read_error:
+            failures.append(f"Stack events unavailable: {read_error}")
+        raise RuntimeError(f"ST stack update {token}: {exc}; {' | '.join(failures)}") from exc
 
 
 def _invoke(clients,fn,event,status):
@@ -317,7 +332,7 @@ def release(clients,repo,*,execute):
     topic=chosen_existing_alert_topic(clients["cloudwatch"])
     key = "deployment/epoch5/dark/" + previous.sha(pkg) + ".zip"
     stage = _new_template(key, old, topic, armed=False, approval_sha=approval_sha)
-    dark, already_staged = _real_dark_state(clients, sha_b64, stage)
+    dark, already_staged = _real_dark_state(clients, sha_b64, previous.template(key, old), stage)
     # If first session has already closed, a new prospective Epoch and
     # operator approval are required. NO replay of 09:31 hypothetical fills.
     _,_,_,firstclose=adapter.session_times(store.FIRST)

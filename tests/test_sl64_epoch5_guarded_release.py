@@ -260,8 +260,12 @@ assert all("20261124/" in key for key in s3.writes)
     subprocess.run([sys.executable, "-c", script], env=env, check=True)
 
 
-@pytest.mark.parametrize("execute,staged", [(False, False), (True, False), (True, True)])
-def test_release_from_deployed_dark_stack(monkeypatch, tmp_path, execute, staged):
+@pytest.mark.parametrize("execute,staged,stack_status", [
+    (False, False, "CREATE_COMPLETE"), (True, False, "CREATE_COMPLETE"),
+    (True, True, "UPDATE_COMPLETE"), (True, False, "UPDATE_ROLLBACK_COMPLETE"),
+    (True, True, "UPDATE_ROLLBACK_COMPLETE"),
+])
+def test_release_from_deployed_dark_stack(monkeypatch, tmp_path, execute, staged, stack_status):
     import base64
     import hashlib
     from unittest.mock import Mock
@@ -278,7 +282,7 @@ def test_release_from_deployed_dark_stack(monkeypatch, tmp_path, execute, staged
     clients = {name: Mock() for name in ("cloudformation", "events", "lambda", "cloudwatch")}
     clients.update(sts=sts, s3=s3)
     cfn = clients["cloudformation"]
-    cfn.describe_stacks.return_value = {"Stacks": [{"StackStatus": "UPDATE_COMPLETE" if staged else "CREATE_COMPLETE"}]}
+    cfn.describe_stacks.return_value = {"Stacks": [{"StackStatus": stack_status}]}
     cfn.get_template.return_value = {"TemplateBody": current}
     monkeypatch.setattr(release.legacy_approval, "inspect", lambda clients: None)
     monkeypatch.setattr(release, "_package", lambda clients, repo: (pkg, cfg))
@@ -339,4 +343,34 @@ def test_change_set_retry_uses_new_name_and_reports_provider_reason():
         {"ResourceChange": {"Action": "Add", "LogicalResourceId": "PaperRule"}}]}
     release._change_set({"cloudformation": cfn}, {}, "stage", stage=True)
     assert len({c.kwargs["ChangeSetName"] for c in cfn.create_change_set.call_args_list}) == 2
-    cfn.execute_change_set.assert_called_once_with(ChangeSetName="retry-id", StackName=release.STACK)
+    params = cfn.execute_change_set.call_args.kwargs
+    assert params["ChangeSetName"] == "retry-id" and params["ClientRequestToken"].startswith("epoch5-")
+
+@pytest.mark.parametrize("drift", [False, True])
+def test_overlapping_attempts_preserve_one_versioned_paper_session(drift):
+    s3, _, _ = setup()
+    now = "2026-11-20T23:40:00Z"
+    day = "2026-11-20"
+
+    def fetch_after_other_writer(prior, session):
+        runtime.run_current_session(s3, now=now, market_fetch=lambda *_: market(day))
+        quote = market(session)
+        if drift:
+            quote.closes["QQQ"] += 1
+        return quote
+
+    if drift:
+        with pytest.raises(store.ImmutableEpoch5Error):
+            runtime.run_current_session(s3, now=now, market_fetch=fetch_after_other_writer)
+    else:
+        repeat = runtime.run_current_session(s3, now=now, market_fetch=fetch_after_other_writer)
+        assert not repeat["paper_created_now"] and not repeat["continuity_created_now"]
+    assert len(s3.writes) == len(set(s3.writes)) == 4
+    assert watchdog.check(s3, now)["session"] == day
+
+
+@pytest.mark.parametrize("armed", [False, True])
+def test_paper_lambda_uses_shared_concurrency(armed):
+    tpl = release._new_template("test.zip", {"Runtime": "python3.13"}, "topic",
+                                armed=armed, approval_sha="a"*64)
+    assert "ReservedConcurrentExecutions" not in tpl["Resources"]["DarkLambda"]["Properties"]
