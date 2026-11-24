@@ -1,6 +1,6 @@
 # StockLens — evidence-based closeout
 
-Research-only / operationally BLOCKED. Generated 2026-11-24T05:23:29.933776+00:00.
+Research-only / operationally BLOCKED. Generated 2026-11-24T17:37:08.293759+00:00.
 Never imply broker execution or live AWS proof from GitHub CI.
 
 | Component | Current status | Evidence |
