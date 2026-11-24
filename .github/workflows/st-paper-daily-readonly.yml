@@ -82,6 +82,29 @@ jobs:
                         ", ".join(d.get("blockers",[]))+"\n\n")
           print("ST_OPERATIONAL_BLOCKERS",d["status"],d.get("blockers"))
           PY
+      - name: Check next prospective ST opening source without writing an approval
+        run: |
+          python - <<'PYTHON'
+          from datetime import datetime, timezone
+          import os
+          import boto3
+          from botocore.exceptions import ClientError
+          from infra.aws.sl64_epoch5_start import next_open_session
+
+          now = datetime.now(timezone.utc)
+          first = next_open_session(now)
+          os.environ["STOCKLENS_ST_FIRST_SESSION"] = first
+          from infra.aws import sl64_epoch5_preopen as approval
+          aws = boto3.Session(region_name=approval.REGION)
+          try:
+              check = approval.preflight(aws.client("sts"), aws.client("s3"), now=now)
+              status = "VERIFIED_PREOPEN_SOURCE" if check["preopen_approval_new_write_eligible"] else "OUTSIDE_PREOPEN_WINDOW"
+          except ClientError as exc:
+              status = "SOURCE_UNVERIFIED_" + exc.response["Error"]["Code"]
+          except (RuntimeError, ValueError) as exc:
+              status = "SOURCE_NOT_QUALIFIED_" + type(exc).__name__
+          print("NEXT_ST_START", first, approval.SOURCE, status)
+          PYTHON
       - name: Inspect separate Epoch5 rules and version inventory
         run: |
           python - <<'PYTHON'
