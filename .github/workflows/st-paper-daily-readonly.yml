@@ -82,6 +82,29 @@ jobs:
                         ", ".join(d.get("blockers",[]))+"\n\n")
           print("ST_OPERATIONAL_BLOCKERS",d["status"],d.get("blockers"))
           PY
+      - name: Check next prospective ST opening source without writing an approval
+        run: |
+          python - <<'PYTHON'
+          from datetime import datetime, timezone
+          import os
+          import boto3
+          from botocore.exceptions import ClientError
+          from infra.aws.sl64_epoch5_start import next_open_session
+
+          now = datetime.now(timezone.utc)
+          first = next_open_session(now)
+          os.environ["STOCKLENS_ST_FIRST_SESSION"] = first
+          from infra.aws import sl64_epoch5_preopen as approval
+          aws = boto3.Session(region_name=approval.REGION)
+          try:
+              check = approval.preflight(aws.client("sts"), aws.client("s3"), now=now)
+              status = "VERIFIED_PREOPEN_SOURCE" if check["preopen_approval_new_write_eligible"] else "OUTSIDE_PREOPEN_WINDOW"
+          except ClientError as exc:
+              status = "SOURCE_UNVERIFIED_" + exc.response["Error"]["Code"]
+          except (RuntimeError, ValueError) as exc:
+              status = "SOURCE_NOT_QUALIFIED_" + type(exc).__name__
+          print("NEXT_ST_START", first, approval.SOURCE, status)
+          PYTHON
       - name: Inspect separate Epoch5 rules and version inventory
         run: |
           python - <<'PYTHON'
@@ -89,7 +112,6 @@ jobs:
           from pathlib import Path
           import boto3
           from botocore.exceptions import ClientError
-          from infra.aws.sl64_epoch5_immutable_store import PREFIX, key_for
           from infra.aws.st_paper_operational_blockers_readonly import paper_object_inventory
 
           session = os.environ["ST_SESSION"]
@@ -98,13 +120,21 @@ jobs:
           rows = [f"### Epoch5 inventory for {session} (metadata only)"]
           for rule in ("stocklens-st-epoch5-paper-eod", "stocklens-st-epoch5-watchdog-eod"):
               try:
-                  state = events.describe_rule(Name=rule)["State"]
+                  actual = events.describe_rule(Name=rule)
+                  state = actual["State"]
+                  if rule == "stocklens-st-epoch5-paper-eod":
+                      description = actual.get("Description", "")
+                      if description.startswith("After-close modeled Paper; first_session="):
+                          os.environ["STOCKLENS_ST_FIRST_SESSION"] = description.rsplit("=", 1)[1]
               except ClientError as exc:
                   state = exc.response["Error"]["Code"]
               rows.append(f"- {rule}: {state}")
+          from infra.aws.sl64_epoch5_immutable_store import FIRST, PREFIX, key_for
+          rows.append(f"- book inception: {FIRST}")
           keys = {"preopen approval": PREFIX + "preopen-inception-approval.json", "genesis": key_for("genesis")}
           for kind in ("sessions", "continuity"):
-              keys[kind] = key_for(kind, session)
+              if session >= FIRST:
+                  keys[kind] = key_for(kind, session)
           for label, key in keys.items():
               try:
                   state = paper_object_inventory(s3, key)["status"]

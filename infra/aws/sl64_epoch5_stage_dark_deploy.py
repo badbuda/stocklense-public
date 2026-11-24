@@ -37,10 +37,10 @@ ZIP_LIMIT=100_000_000
 UNZIPPED_LIMIT=250*1024*1024
 MAX_ZIP_MEMBERS=100_000
 NEW_MODULES={
-  "infra/aws/sl64_epoch5_lambda.py":"34884bab9ec78437d4180d71775f3d3d98089005",
-  "infra/aws/sl64_epoch5_paper_economic_adapter.py":"8e2e9ed19b28ea44582f37c694496661560e889c",
-  "infra/aws/sl64_epoch5_immutable_store.py":"71f9006dff93af4540bd9d9a9d716fa2ae296597",
-  "infra/aws/sl64_epoch5_prospective_runtime.py":"f7a14e539464a50e64061d004000eb41dd0908ff",
+  "infra/aws/sl64_epoch5_lambda.py":"2aba840483edfc34a29b4bb17aeb8d5a1b8f7ea1",
+  "infra/aws/sl64_epoch5_paper_economic_adapter.py":"405e6f9bed3941cb993c36e1c55cf6ec03bbcb28",
+  "infra/aws/sl64_epoch5_immutable_store.py":"e4805fc5e11306087fa7fcb5784aeaef07b825d3",
+  "infra/aws/sl64_epoch5_prospective_runtime.py":"12508ceb9e5188c1da3cc6cdf94b6588bd1d7b60",
   "infra/aws/sl64_epoch5_watchdog.py":"02469c24c05ab962466c7b427b1553a0c991b00b",
 }
 EXCLUDE={"infra/aws/independent_paper.py",
@@ -98,9 +98,9 @@ def package(baseline_zip,repo):
         with zipfile.ZipFile(stream,"w",compression=zipfile.ZIP_DEFLATED) as dst:
             for item in orig.infolist():
                 if item.filename in EXCLUDE:continue
-                dst.writestr(item.filename,orig.read(item.filename))
+                dst.writestr(item,orig.read(item.filename))
             for name,data in sorted(new.items()):
-                dst.writestr(name,data)
+                dst.writestr(zipfile.ZipInfo(name),data,compress_type=zipfile.ZIP_DEFLATED)
         output=stream.getvalue()
     require(0<len(output)<ZIP_LIMIT,"DARK_ZIP_OVERSIZED")
     with zipfile.ZipFile(io.BytesIO(output)) as z:
@@ -128,6 +128,9 @@ def template(key,original):
     perms={"Version":"2012-10-17","Statement":[
       {"Effect":"Allow","Action":["s3:GetObject","s3:GetObjectVersion"],
        "Resource":reader},
+      {"Effect":"Allow","Action":["s3:ListBucketVersions"],
+       "Resource":"arn:aws:s3:::"+BUCKET,
+       "Condition":{"StringLike":{"s3:prefix":store.PREFIX+"sessions/*"}}},
       {"Effect":"Allow","Action":["s3:PutObject"],"Resource":writer},
       {"Effect":"Allow","Action":["logs:CreateLogStream","logs:PutLogEvents"],
        "Resource":["arn:aws:logs:"+REGION+":"+ACCOUNT+
@@ -142,7 +145,8 @@ def template(key,original):
        "Architectures":arch,
        "Environment":{"Variables":{
            "STOCKLENS_DATA_BUCKET":BUCKET,
-           "STOCKLENS_EPOCH5_WRITE_ENABLED":"false"}},
+           "STOCKLENS_EPOCH5_WRITE_ENABLED":"false",
+           "STOCKLENS_ST_FIRST_SESSION":store.FIRST}},
     }
     layers=[x["Arn"] for x in original.get("Layers",[])]
     if layers:props["Layers"]=layers
@@ -207,15 +211,13 @@ def execute(clients,repo,stage):
         now=datetime.now(timezone.utc))
     proposed=store.canonical(eligibility["document"])
     approved_sha=sha(proposed)
-    opening=adapter._market_clock(
-        "2026-11-20","2026-11-21T23:00:00Z")[2]
-    recorded=adapter._approval(clients["s3"],"2026-11-20",opening)
+    opening=adapter.session_times(store.FIRST)[2]
+    recorded=adapter._approval(clients["s3"],store.FIRST,opening)
     require(recorded["sha256"]==approved_sha,
             "NEW_EPOCH5_APPROVAL_NOT_IDENTICAL_TO_VERIFIED_SOURCE")
-    prior,close,_,_=adapter._market_clock(
-        "2026-11-20","2026-11-21T23:00:00Z")
+    prior,close,_,_=adapter.session_times(store.FIRST)
     pinned=adapter._source_signal(
-        clients["s3"],"2026-11-20",prior,close,opening,recorded)
+        clients["s3"],store.FIRST,prior,close,opening,recorded)
     require(pinned["sha256"]==eligibility["source_sha256"],
             "EPOCH5_SOURCE_DRIFT")
     original,cfg=baseline.authenticated_download(

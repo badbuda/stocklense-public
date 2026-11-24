@@ -16,11 +16,16 @@ from dataclasses import dataclass
 from datetime import date
 import hashlib
 import json
+import os
 import re
 
-EPOCH = "NEW_AWS_INDEPENDENT_STAGING_BOOK_EPOCH5_20261120"
+# Set once by the operator and pinned in both Lambda configurations.
+FIRST = os.getenv("STOCKLENS_ST_FIRST_SESSION", "2026-11-20")
+MIN_SESSION = date.fromisoformat(FIRST)
+if MIN_SESSION.isoformat() != FIRST or FIRST < "2026-11-20":
+    raise ValueError("INVALID_ST_INCEPTION_DATE")
+EPOCH = "NEW_AWS_INDEPENDENT_STAGING_BOOK_EPOCH5_" + FIRST.replace("-", "")
 PREFIX = "paper/epochs/" + EPOCH + "/"
-MIN_SESSION = date(2026, 11, 20)
 ST_BUCKET = "stocklens-st-candidatedata-6jj7i9fxjmfr"
 MAX_BYTES = 2_000_000
 SCHEMA = "stocklens-epoch5-immutable-paper-v1"

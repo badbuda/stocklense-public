@@ -13,7 +13,7 @@ from infra.aws import sl64_epoch5_prospective_runtime as prospective
 from infra.aws import sl64_epoch5_immutable_store as store
 
 REGION="eu-central-1"
-FIRST="2026-11-20"
+FIRST=store.FIRST
 READINESS="STAGING_EPOCH5_DARK_READINESS"
 PREFLIGHT="STAGING_EPOCH5_READ_ONLY_PREFLIGHT"
 VENDOR_PREFLIGHT="STAGING_EPOCH5_VENDOR_CONNECTIVITY_READONLY"
@@ -47,27 +47,25 @@ def handler(event,context):
         else:
             _require(os.getenv("STOCKLENS_EPOCH5_WRITE_ENABLED") in (
                 "false","true"),"UNCONFIGURED_EPOCH5_WRITE_GATE")
-        _,priorclose,opening,_=adapter._market_clock(
-            FIRST,"2026-11-20T23:00:00Z")
+        _,priorclose,opening,_=adapter.session_times(store.FIRST)
         approval=adapter._approval(s3,FIRST,opening)
-        prior,close,_,_=adapter._market_clock(
-            FIRST,"2026-11-20T23:00:00Z")
+        prior,close,_,_=adapter.session_times(store.FIRST)
         signal=adapter._source_signal(
             s3,FIRST,prior,close,opening,approval)
         if os.getenv("STOCKLENS_EPOCH5_WRITE_ENABLED")=="true":
             _require(os.getenv("STOCKLENS_EPOCH5_APPROVAL_SHA256")==
                      approval["sha256"],"EPOCH5_APPROVAL_SHA_DRIFT")
         if mode==VENDOR_PREFLIGHT:
-            # Read-only Nov19 completed 1-minute vendor connectivity proof
-            # before approved first session Nov20; no modeled Paper write.
+            # Probe the same completed session as the pinned signal.
             from stocklens import paper as model
-            quote=model.fetch_execution_market("2026-11-18","2026-11-19")
+            before_prior = adapter.session_times(prior)[0]
+            quote=model.fetch_execution_market(before_prior,prior)
             quality=prospective._quote_payload(quote)
-            _require(quote.session_date=="2026-11-19",
+            _require(quote.session_date==prior,
                      "VENDOR_PREFLIGHT_HISTORIC_SESSION_MISMATCH")
             return {
                 "status":"EPOCH5_HISTORIC_YFINANCE_1M_READ_ONLY_PREFLIGHT",
-                "historical_session":"2026-11-19",
+                "historical_session":prior,
                 "source":quality["single_vendor"],
                 "quote_sha256":quality["quotes_and_actions_sha256"],
                 "independent_second_vendor_verified":False,
@@ -99,7 +97,7 @@ def handler(event,context):
     approval_pin=os.getenv("STOCKLENS_EPOCH5_APPROVAL_SHA256","")
     _require(re.fullmatch(r"[0-9a-f]{64}",approval_pin) is not None,
              "EPOCH5_APPROVAL_SHA_INVALID")
-    opening=adapter._market_clock(FIRST,"2026-11-21T23:00:00Z")[2]
+    opening=adapter.session_times(store.FIRST)[2]
     approval=adapter._approval(s3,FIRST,opening)
     _require(approval["sha256"]==approval_pin,"EPOCH5_APPROVAL_SHA_DRIFT")
     return prospective.run_current_session(
