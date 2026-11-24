@@ -16,7 +16,7 @@
     ".github/workflows/shadow.yml": "e6b54a726a4de255b3fb5bc7a38f08e69b9c3909",
     ".github/workflows/st-3x-amplify-acceptance.yml": "8f1f5e33aeef673c373996e0ba9c1d64ce61a356",
     ".github/workflows/st-combo-amplify-acceptance.yml": "e40a54512ab00b52d8d4f56beb0a7b4d8349368c",
-    ".github/workflows/st-paper-daily-readonly.yml": "1d9ed530ef0245ac710656c81680ef61d07ca439",
+    ".github/workflows/st-paper-daily-readonly.yml": "f81146a4aba402d94a31a078d9eec5bb7098541b",
     ".github/workflows/st-real-3x-research.yml": "e41cccc8bcb99922a1c9371fcd9f30a1bd18a6bd",
     ".github/workflows/st-real-etf-combinations.yml": "cafb10db543f024314353b5a07e8b456b27e23df",
     ".github/workflows/st-video-tqqq-sqqq-overlays.yml": "63d3fb59183209755f2b3a697791f5cea098e54f",
