@@ -4,5 +4,5 @@
   "cognito_domain": "https://stocklens-portal-634740393398.auth.eu-central-1.amazoncognito.com",
   "client_id": "3p6tvbs5ljtgb8a6edh9ekkhp",
   "redirect_uri": "https://main.d20nvlvzjafg5m.amplifyapp.com/portal.html",
-  "note": "Only public OAuth client metadata. Cognito JWT required on all AWS read routes. No credentials or brokerage actions."
+  "note": "Only public OAuth client metadata. Cognito JWT required on private AWS read routes; public-model exposes only fixed ST simulated model summaries. No credentials or brokerage actions."
 }

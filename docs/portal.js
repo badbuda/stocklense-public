@@ -17,7 +17,7 @@ const setHtml=(id,value)=>{const e=byId(id);if(e)e.innerHTML=value};
 const dateText=s=>s?new Intl.DateTimeFormat('he-IL',{year:'numeric',month:'short',day:'numeric',timeZone:'UTC'}).format(new Date(s+'T12:00:00Z')):'—';
 const signed=v=>v>0?'positive':v<0?'negative':'';
 const PAGE_NAMES={overview:'תמונת מצב',paper:'העסקאות והתיק',performance:'ביצועים וסיכון',simulator:'סימולטור',research:'מעבדת מחקר',evidence:'נתונים ואמינות'};
-const state={data:null,series:null,history:null,risk:null,workbench:null,quality:null,exposure:null,lastSimulation:null,lastTaxSimulation:null,stagingRows:null,epoch5:{status:'LOGIN_REQUIRED',rows:[]},tax:null,privateTax:null};
+const state={data:null,series:null,history:null,risk:null,workbench:null,quality:null,exposure:null,lastSimulation:null,lastTaxSimulation:null,stagingRows:null,epoch5:{status:'LOADING',rows:[]},tax:null,privateTax:null};
 const DATA_ENDPOINTS={data:'data.json',series:'timeseries.json',history:'portal-history.json',risk:'observed_tqqq_risk_audit.json',workbench:'workbench.json',quality:'site_health.json',exposure:'lean-exposure-evidence.json',tax:'tax-status.json'};
 function navigate(page){
   if(!PAGE_NAMES[page])page='overview';
@@ -152,14 +152,14 @@ function renderEpoch5Cards(){
  const entries=rows.filter(x=>x.paper_status==='SHA_BOUND_SINGLE_VENDOR_MODELED'&&x.paper);
  const entry=entries.at(-1), p=entry?.paper;
  const signal=rows.filter(x=>x.signal).at(-1);
- put('paper-nav-label',p?'שווי Paper אחרון מתועד · Epoch 5 · '+entry.session_date:'Epoch 5 · '+(status==='LOGIN_REQUIRED'?'נדרשת התחברות':status==='LOADING'?'טוען נתונים':status==='READY'?'אין רשומת Paper מאומתת':'קריאת AWS נכשלה'));
+ put('paper-nav-label',p?'שווי Paper אחרון מתועד · Epoch 5 · '+entry.session_date:'Epoch 5 · '+(status==='LOGIN_REQUIRED'?'נתוני המודל אינם זמינים':status==='LOADING'?'טוען נתונים':status==='READY'?'אין רשומת Paper מאומתת':'קריאת AWS נכשלה'));
  for(const [id,v] of Object.entries({'paper-nav':p?.equity,'paper-cash':p?.cash,'paper-fees':p?.cumulative_fees,'paper-slip':p?.cumulative_slippage_cost}))put(id,money(v));
  put('paper-shares',number(p?.tqqq_shares,0));
  put('paper-qqq-shares',number(p?.qqq_shares,0));
- if(status==='LOGIN_REQUIRED'&&!state.stagingRows)return;
+
  put('kpi-nav',money(p?.equity));
  put('kpi-nav-source',p?'Epoch 5 · '+entry.session_date+' · Paper מדומה ממקור יחיד':'Epoch 5 · אין שווי תיק מתועד');
- put('kpi-paper-change','לא אומתה שרשרת מלאה');
+ put('kpi-paper-change',p?'תשואה משווי התחלתי מדומה: '+percentage(p.equity/100000-1,2)+' · לא אומתה שרשרת מלאה':'אין תשואה מתועדת');
  if(byId('kpi-paper-change'))byId('kpi-paper-change').className='metric-delta muted';
  put('kpi-days',number(entries.length,0));
  put('prospective-count',number(entries.length,0));
@@ -167,7 +167,7 @@ function renderEpoch5Cards(){
  put('staging-overview-status',p?'Epoch 5 · רשומה אחרונה '+entry.session_date+' · לא אימות רציפות מלאה': 'Epoch 5 · '+(status==='READY'?'אין רשומת Paper תקינה':'נתוני Paper אינם זמינים'));
  if(signal){
    put('hero-level','Epoch 5 · רמה '+number(signal.signal.level)+' · '+number(signal.signal.target_leverage)+'×');
-   put('hero-state','Signal פרטי מ-AWS · ללא הוראת ברוקר');
+   put('hero-state','Signal מודל מ-AWS · ללא הוראת ברוקר');
    put('hero-date','Signal '+dateText(signal.session_date)+' · גרסת S3');
    put('asof-badge','AWS Signal '+signal.session_date);
    put('side-status','Epoch 5 Signal '+signal.session_date);
