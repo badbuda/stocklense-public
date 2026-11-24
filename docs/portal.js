@@ -17,7 +17,7 @@ const setHtml=(id,value)=>{const e=byId(id);if(e)e.innerHTML=value};
 const dateText=s=>s?new Intl.DateTimeFormat('he-IL',{year:'numeric',month:'short',day:'numeric',timeZone:'UTC'}).format(new Date(s+'T12:00:00Z')):'—';
 const signed=v=>v>0?'positive':v<0?'negative':'';
 const PAGE_NAMES={overview:'תמונת מצב',paper:'העסקאות והתיק',performance:'ביצועים וסיכון',simulator:'סימולטור',research:'מעבדת מחקר',evidence:'נתונים ואמינות'};
-const state={data:null,series:null,history:null,risk:null,workbench:null,quality:null,exposure:null,lastSimulation:null,lastTaxSimulation:null,stagingRows:null,tax:null,privateTax:null};
+const state={data:null,series:null,history:null,risk:null,workbench:null,quality:null,exposure:null,lastSimulation:null,lastTaxSimulation:null,stagingRows:null,epoch5:{status:'LOGIN_REQUIRED',rows:[]},tax:null,privateTax:null};
 const DATA_ENDPOINTS={data:'data.json',series:'timeseries.json',history:'portal-history.json',risk:'observed_tqqq_risk_audit.json',workbench:'workbench.json',quality:'site_health.json',exposure:'lean-exposure-evidence.json',tax:'tax-status.json'};
 function navigate(page){
   if(!PAGE_NAMES[page])page='overview';
@@ -75,9 +75,7 @@ function render(){
   put('kpi-trades',number(paper.trades||0,0)+' עסקאות מדומות');
   put('kpi-days-note',days<20?'מוקדם מדי לקבוע אם המערכת מצליחה. נדרשים שבועות וחודשים של תצפית.':'נתונים מדומים קדימה בלבד; עדיין לא ממלאים פערי ברוקר.');
   put('history-cagr',percentage(perf.stocklens_cagr,1));put('history-dd',percentage(perf.stocklens_max_drawdown,1));
-  put('paper-nav-label','שווי Paper — פרסום GitHub '+(latest.session_date||'תאריך לא ידוע'));
-  put('paper-nav',money(latest.equity));put('paper-cash',money(latest.cash));put('paper-shares',number(latest.tqqq_shares,0));
-  put('paper-fees',money(latest.cumulative_fees));put('paper-slip',money(latest.cumulative_slippage_cost));
+  // The primary Paper cards belong exclusively to the active ST epoch.
   put('perf-cagr',percentage(perf.stocklens_cagr));put('perf-qqq',percentage(perf.qqq_cagr));put('perf-dd',percentage(perf.stocklens_max_drawdown));
   put('perf-period',period.start&&period.end?period.start.slice(0,4)+'–'+period.end.slice(0,4):'—');
   const why=d.why||{}, feat=sig.features||{};
@@ -100,6 +98,7 @@ function render(){
   setupSimulation();
   paintPerformance();
   renderAuthenticatedStaging();
+  renderEpoch5Cards();
   renderTaxPanels();
 }
 // The authenticated staging S3 view is the only source permitted to update
@@ -115,7 +114,12 @@ function renderTaxPanels(){
    sourceLabel=current.paper?'S3 Staging מאומת לפי גרסה · לא ברוקר':'אין תיק Paper רציף מאומת';
   }catch(_){currentSession=null;sourceEquity=null;sourceLabel='ראיות Staging לא תקינות';}
  }
- const t=taxFeedView(feed,currentSession,sourceEquity);
+ if(state.epoch5.status!=='LOGIN_REQUIRED'||state.stagingRows){
+   const entry=state.epoch5.rows.filter(x=>x.paper_status==='SHA_BOUND_SINGLE_VENDOR_MODELED'&&x.paper).at(-1);
+   currentSession=entry?.session_date??null;sourceEquity=entry?.paper.equity??null;
+   sourceLabel='Epoch 5 · מס טרם אומת';
+ }
+ const t=taxFeedView(state.epoch5.status!=='LOGIN_REQUIRED'||state.stagingRows?null:feed,currentSession,sourceEquity);
  put('tax-global-signal',t.ready?'מס: הערכה מחקרית':'מס: חישוב חסום — נתונים חסרים');
  put('tax-overview-gross',money(sourceEquity));
  put('tax-overview-net',t.ready?money(t.afterTax):'—');
@@ -141,6 +145,40 @@ function renderTaxPanels(){
  put('tax-bridge-exit-cost',bridge?negative(bridge.terminalExitCosts):'—');
  put('tax-bridge-exit-tax',bridge?negative(bridge.terminalTax):'—');
  put('tax-bridge-net',bridge?money(bridge.afterTaxExitValue):'—');
+}
+function renderEpoch5Cards(){
+ const {status,rows}=state.epoch5;
+ const entries=rows.filter(x=>x.paper_status==='SHA_BOUND_SINGLE_VENDOR_MODELED'&&x.paper);
+ const entry=entries.at(-1), p=entry?.paper;
+ const signal=rows.filter(x=>x.signal).at(-1);
+ put('paper-nav-label',p?'שווי Paper אחרון מתועד · Epoch 5 · '+entry.session_date:'Epoch 5 · '+(status==='LOGIN_REQUIRED'?'נדרשת התחברות':status==='LOADING'?'טוען נתונים':status==='READY'?'אין רשומת Paper מאומתת':'קריאת AWS נכשלה'));
+ for(const [id,v] of Object.entries({'paper-nav':p?.equity,'paper-cash':p?.cash,'paper-fees':p?.cumulative_fees,'paper-slip':p?.cumulative_slippage_cost}))put(id,money(v));
+ put('paper-shares',number(p?.tqqq_shares,0));
+ put('paper-qqq-shares',number(p?.qqq_shares,0));
+ if(status==='LOGIN_REQUIRED'&&!state.stagingRows)return;
+ put('kpi-nav',money(p?.equity));
+ put('kpi-nav-source',p?'Epoch 5 · '+entry.session_date+' · Paper מדומה ממקור יחיד':'Epoch 5 · אין שווי תיק מתועד');
+ put('kpi-paper-change','לא אומתה שרשרת מלאה');
+ if(byId('kpi-paper-change'))byId('kpi-paper-change').className='metric-delta muted';
+ put('kpi-days',number(entries.length,0));
+ put('prospective-count',number(entries.length,0));
+ put('kpi-trades',number(entries.reduce((n,x)=>n+x.paper.trade_count,0),0)+' עסקאות Paper בחלון Epoch 5');
+ put('staging-overview-status',p?'Epoch 5 · רשומה אחרונה '+entry.session_date+' · לא אימות רציפות מלאה': 'Epoch 5 · '+(status==='READY'?'אין רשומת Paper תקינה':'נתוני Paper אינם זמינים'));
+ if(signal){
+   put('hero-level','Epoch 5 · רמה '+number(signal.signal.level)+' · '+number(signal.signal.target_leverage)+'×');
+   put('hero-state','Signal פרטי מ-AWS · ללא הוראת ברוקר');
+   put('hero-date','Signal '+dateText(signal.session_date)+' · גרסת S3');
+   put('asof-badge','AWS Signal '+signal.session_date);
+   put('side-status','Epoch 5 Signal '+signal.session_date);
+   put('hero-tqqq','—');put('hero-qqq','—');put('hero-cash','—');
+   put('hero-explain','החלטת יעד מתועדת בנפרד מביצוע Paper מדומה.');
+ }
+ const points=entries.map(x=>({date:x.session_date,s:x.paper.equity}));
+ // A dated table remains useful even if continuity has gaps; do not join those points into a chart.
+ byId('paper-chart')?.replaceChildren();
+ if(byId('paper-chart-empty'))byId('paper-chart-empty').hidden=false;
+ put('paper-chart-empty',points.length?'שווי יומי זמין בטבלת Epoch 5. גרף רציף דורש אימות רציפות נפרד.':'אין נקודות שווי מתועדות ב-Epoch 5.');
+ put('paper-chart-caption','Epoch 5 · אין ערבוב עם היסטוריית הספר הישן');
 }
 function renderAuthenticatedStaging(){
  if(!state.data||!state.stagingRows)return;
@@ -462,8 +500,10 @@ initCloudJournal({
  onStagingChange:rows=>{
    state.stagingRows=rows;
    renderAuthenticatedStaging();
+   renderEpoch5Cards();
    renderTaxPanels();
  },
+ onEpoch5Change:view=>{state.epoch5=view;renderEpoch5Cards();renderTaxPanels();},
  onTaxChange:report=>{state.privateTax=report;renderTaxPanels();}
 });
 navigate(location.hash.slice(1)||'overview');refresh();

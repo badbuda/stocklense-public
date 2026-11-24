@@ -147,8 +147,10 @@ def test_private_aws_api_only_uses_https_public_client_and_exact_approved_origin
 def test_archived_paper_kpi_never_implicitly_claims_current_broker_nav():
     html = Path("docs/portal.html").read_text(encoding="utf-8")
     js = Path("docs/portal.js").read_text(encoding="utf-8")
-    assert '<small id="paper-nav-label">שווי Paper — פרסום GitHub</small>' in html
-    assert "put('paper-nav-label','שווי Paper — פרסום GitHub '" in js
+    assert '<small id="paper-nav-label">Epoch 5 · נדרשת התחברות</small>' in html
+    assert "renderEpoch5Cards()" in js
+    assert "put('paper-nav',money(latest.equity))" not in js
+    assert "onEpoch5Change:view=>" in js
     assert "latest.session_date||'תאריך לא ידוע'" in js
     assert '<small>שווי נוכחי</small>' not in html
 
