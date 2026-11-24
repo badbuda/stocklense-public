@@ -37,6 +37,8 @@
 <section class="page visible" data-view="overview">
   <div class="panel" aria-labelledby="activity-heading">
     <h2 id="activity-heading">פעילות אחרונה</h2>
+    <h3>האות שחושב בריצה האחרונה</h3>
+    <p id="activity-signal" role="status">בודק את תוצאת הריצה…</p>
     <h3>ריצות Shadow</h3>
     <p id="activity-status" role="status">טוען את היסטוריית הריצות מ־GitHub…</p>
     <ul id="activity-runs"></ul>
@@ -237,9 +239,29 @@ async function showRuns() {
       row.append(link);
       document.querySelector("#activity-runs").append(row);
     }
+    if (data.workflow_runs.length) {
+      showSignal(data.workflow_runs[0].id);
+    } else {
+      document.querySelector("#activity-signal").textContent = "אין ריצה מתוזמנת להצגה.";
+    }
     status.textContent = data.workflow_runs.length ? "ריצות מתוזמנות לפי שעון ישראל" : "לא נמצאו ריצות מתוזמנות.";
   } catch {
+    document.querySelector("#activity-signal").textContent = "לא ניתן לאמת את האות מהריצה האחרונה.";
     status.textContent = "היסטוריית הריצות אינה זמינה כרגע. אפשר לפתוח את הלוגים בקישור.";
+  }
+}
+async function showSignal(runId) {
+  const status = document.querySelector("#activity-signal");
+  try {
+    const data = await readActivity("https://api.github.com/repos/" + repo + "/actions/runs/" + Number(runId) + "/artifacts?per_page=100");
+    const actions = {NO_CHANGE:"ללא שינוי", REBALANCE_NEXT_SESSION:"איזון ביום המסחר הבא", ENTER_CASH_NEXT_SESSION:"מעבר למזומן ביום המסחר הבא", EXIT_CASH_NEXT_SESSION:"יציאה ממזומן ביום המסחר הבא"};
+    const signals = data.artifacts.filter(item => !item.expired && item.name.startsWith("signal_"));
+    const match = signals.length === 1 && /^signal_(\d{4}-\d{2}-\d{2})_(\d+(?:\.\d+)?)_([A-Z_]+)$/.exec(signals[0].name);
+    status.textContent = match && Object.hasOwn(actions, match[3])
+      ? match[1] + " · " + actions[match[3]] + " · חשיפת יעד " + match[2] + "× (אות Shadow)"
+      : "טרם פורסם אות מאומת לריצה זו.";
+  } catch {
+    status.textContent = "לא ניתן לקרוא את האות מהריצה האחרונה.";
   }
 }
 async function showTrades() {

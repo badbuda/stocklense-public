@@ -270,6 +270,14 @@ jobs:
           PYTHONPATH: ${{ github.workspace }}
         run: python persist_signal.py
 
+      - name: Publish dated signal evidence independently of Paper readiness
+        uses: actions/upload-artifact@v7
+        with:
+          name: signal_${{ steps.persist.outputs.asof_date }}_${{ steps.persist.outputs.target_leverage }}_${{ steps.persist.outputs.action }}
+          path: shadow_history/${{ steps.persist.outputs.asof_date }}.json
+          if-no-files-found: error
+          retention-days: 30
+
       # Rebuild the decision register AFTER the new immutable Shadow session
       # is persisted. Running this before persist left public decisions 1 day
       # behind data.json despite a green Shadow workflow.
