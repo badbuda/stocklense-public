@@ -103,7 +103,8 @@ function render(){
 // The authenticated staging S3 view is the only source permitted to update
 // current-model NAV or the recent Paper chart; old GitHub JSON remains an archive.
 function renderTaxPanels(){
- const d=state.data||{},a=d.paper?.latest||{},feed=state.privateTax||state.tax;
+ const d=state.data||{},a=d.paper?.latest||{};
+ let feed=state.privateTax||state.tax;
  let currentSession=a.session_date||null,sourceEquity=a.equity,sourceLabel='ארכיון GitHub · לא נתון חי';
  if(state.stagingRows){
   try{
@@ -117,8 +118,9 @@ function renderTaxPanels(){
    const entry=state.epoch5.rows.filter(x=>x.paper_status==='SHA_BOUND_SINGLE_VENDOR_MODELED'&&x.paper).at(-1);
    currentSession=entry?.session_date??null;sourceEquity=entry?.paper.equity??null;
    sourceLabel='Epoch 5 · מס טרם אומת';
+   feed=null;
  }
- const t=taxFeedView(state.epoch5.status!=='LOGIN_REQUIRED'||state.stagingRows?null:feed,currentSession,sourceEquity);
+ const t=taxFeedView(feed,currentSession,sourceEquity);
  put('tax-global-signal',t.ready?'מס: הערכה מחקרית':'מס: חישוב חסום — נתונים חסרים');
  put('tax-overview-gross',money(sourceEquity));
  put('tax-overview-net',t.ready?money(t.afterTax):'—');
