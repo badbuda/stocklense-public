@@ -144,6 +144,8 @@ function renderTaxPanels(){
 }
 function renderAuthenticatedStaging(){
  if(!state.data||!state.stagingRows)return;
+ put('paper-nav-label','ST · טרם התקבל שווי תיק מאומת');
+ for(const id of ['paper-nav','paper-cash','paper-shares','paper-fees','paper-slip'])put(id,'—');
  let current;
  try{current=stagingSnapshot(state.stagingRows)}catch(error){
    put('staging-overview-status','ראיות AWS נפסלו: '+error.message);
@@ -181,7 +183,7 @@ function renderAuthenticatedStaging(){
  put('paper-nav',money(equity));
  // The staging read endpoint returns equity and counts, but not cash,
  // holdings, fees, or trades. Old production balances cannot be reused.
- for(const id of ['paper-cash','paper-shares','paper-fees','paper-slip'])put(id,'—');
+
  put('kpi-days',number(days.length,0));put('prospective-count',number(days.length,0));
  put('kpi-trades',number(days.reduce((a,x)=>a+x.tradeCount,0),0)+' אירועי Paper נצפים ב־Staging');
  put('staging-overview-status','Paper Staging S3 — '+book.session_date+
