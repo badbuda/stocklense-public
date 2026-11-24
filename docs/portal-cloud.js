@@ -72,7 +72,7 @@ export async function refreshCloudJournal(){
  status('טוען רשומות DynamoDB מאומתות ל־'+days.length+' ימי מסחר...');
  const url=config.api_base_url.replace(/\/$/,'')+'/v1/sessions?dates='+encodeURIComponent(days.join(','));
  const r=await fetch(url,{headers:{'Authorization':'Bearer '+accessToken},cache:'no-store'});
- if(r.status===401||r.status===403){accessToken=null;void refreshEpoch5();status('פג תוקף האימות או שאין הרשאות לחשבון הזה.');byId('cloud-load').disabled=true;return}
+ if(r.status===401||r.status===403){status('נתיב ארכיון DynamoDB אינו מורשה.');byId('cloud-load').disabled=true;return}
  if(!r.ok)throw Error('AWS_JOURNAL_HTTP_'+r.status);
  const d=await r.json();
  if(d.kind!=='STOCKLENS_AUTHENTICATED_READ_ONLY_AWS_JOURNAL'||!Array.isArray(d.sessions)||
@@ -151,7 +151,7 @@ async function refreshStagingJournal(){
  const url=config.api_base_url.replace(/\/$/,'')+'/v1/staging?dates='+encodeURIComponent(stagingWeekdays().join(','));
  const r=await fetch(url,{headers:{Authorization:'Bearer '+accessToken},cache:'no-store'});
  if(r.status===404){stagingUpdated([]);taxUpdated(null);notice.textContent='נתיב Staging המאובטח טרם הותקן';return}
- if(r.status===401||r.status===403){accessToken=null;void refreshEpoch5();byId('cloud-staging-load').disabled=true;stagingUpdated([]);taxUpdated(null);notice.textContent='תוקף ההתחברות פג';return}
+ if(r.status===401||r.status===403){stagingUpdated([]);taxUpdated(null);notice.textContent='נתיב ארכיון Staging אינו מורשה';return}
  if(!r.ok)throw Error('STAGING_READ_HTTP_'+r.status);
  const response=await r.json();
  if(response.kind!=='STOCKLENS_AUTHENTICATED_STAGING_S3_READ_ONLY'||

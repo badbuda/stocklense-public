@@ -230,13 +230,16 @@ try{
      production_cutover_authorized:false,
      sessions:[fakePaper(isoDay(1),100050,1),fakePaper(isoDay(0),100100,2)]})
  }));
+ let epoch5HasPaper=true;
  await authed.route('**/v1/staging-epoch5?*',route=>{
    const dates=new URL(route.request().url()).searchParams.get('dates').split(',');
    const day=dates.at(-1),prior=dates.at(-2);
    const rows=dates.map(d=>({session_date:d,signal:null,paper:null,paper_status:'NO_RECEIPT'}));
    rows.at(-1).signal={...meta,session_date:day,level:1.25,target_leverage:1.25};
+   if(epoch5HasPaper){
    rows.at(-1).paper_status='SHA_BOUND_SINGLE_VENDOR_MODELED';
    rows.at(-1).paper={...meta,equity:101234,cash:456,tqqq_shares:17,qqq_shares:88,cumulative_fees:12,cumulative_slippage_cost:34,trade_count:2,continuity_status:'MODELLED_RECEIPT_NOT_INDEPENDENTLY_QUALIFIED',execution_signal:{...meta,session_date:prior}};
+   }
    return route.fulfill({status:200,contentType:'application/json',headers:mockCors,
      body:JSON.stringify({kind:'STOCKLENS_EPOCH5_READ_ONLY_V1',book:'NEW_AWS_INDEPENDENT_STAGING_BOOK_EPOCH5_20261124',broker_orders_authorized:false,broker_fills_observed:false,independent_second_vendor_verified:false,full_chain_verified:false,sessions:rows})});
  });
@@ -262,6 +265,11 @@ try{
  assert.match(await authed.locator('#paper-cash').textContent(),/456/);
  assert.equal(await authed.locator('#paper-shares').textContent(),'17');
  assert.equal(await authed.locator('#paper-qqq-shares').textContent(),'88');
+ epoch5HasPaper=false;
+ await authed.locator('#epoch5-refresh').evaluate(el=>el.click());
+ await authed.waitForFunction(()=>document.querySelector('#paper-nav-label')?.textContent.includes('אין רשומת Paper מאומתת'));
+ assert.equal(await authed.locator('#paper-nav').textContent(),'—');
+ assert.equal(await authed.locator('#paper-shares').textContent(),'—');
  assert.equal((await authed.locator('#cloud-staging-results tr').count())>=3,true);
  assert.deepEqual(failures,[],'Portal JavaScript/runtime errors found');
  console.log('PORTAL_E2E_PASS: desktop/mobile, historic charts, paper ledger, Yahoo real-TQQQ simulator, cost and input recalculation');

@@ -97,7 +97,6 @@ function render(){
   renderTrades();showGapReport(paper,state.history);renderResearch();renderRisk();renderHealth();renderGovernance(d);
   setupSimulation();
   paintPerformance();
-  renderAuthenticatedStaging();
   renderEpoch5Cards();
   renderTaxPanels();
 }
@@ -499,7 +498,6 @@ initCloudJournal({
  showGaps:()=>showGapReport(state.data?.paper||{},state.history),
  onStagingChange:rows=>{
    state.stagingRows=rows;
-   renderAuthenticatedStaging();
    renderEpoch5Cards();
    renderTaxPanels();
  },
