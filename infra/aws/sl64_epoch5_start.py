@@ -7,7 +7,6 @@ import json
 import os
 from pathlib import Path
 
-import boto3
 import exchange_calendars as xcals
 
 
@@ -20,6 +19,8 @@ def next_open_session(now):
 
 
 def main():
+    import boto3
+
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--activate-st", action="store_true")
     args = parser.parse_args()

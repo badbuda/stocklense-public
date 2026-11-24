@@ -605,7 +605,7 @@
     "tests/test_sl64_epoch5_preopen.py": "1389c456288b842798d44ad0752d4fb24cc109cb",
     "tests/test_sl64_epoch5_guarded_release.py": "893c973c6de1a0d203af8ffafe72c5c08c762caf",
     ".github/workflows/sl64-epoch5-auto-release.yml": "e629dce52828ae3cd71f306213100bad9accb03d",
-    "infra/aws/sl64_epoch5_start.py": "1c4e76aee081faf57ef19cb409434f7c39042757",
+    "infra/aws/sl64_epoch5_start.py": "4dd8a83781823b4d13bbaa3f46a09b7bb343ef14",
     "infra/aws/start_st_paper.sh": "555df3af53c4c80067404cbff59a9d909d4ad738"
   }
 }
