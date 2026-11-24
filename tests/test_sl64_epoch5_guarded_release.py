@@ -374,3 +374,43 @@ def test_paper_lambda_uses_shared_concurrency(armed):
     tpl = release._new_template("test.zip", {"Runtime": "python3.13"}, "topic",
                                 armed=armed, approval_sha="a"*64)
     assert "ReservedConcurrentExecutions" not in tpl["Resources"]["DarkLambda"]["Properties"]
+
+
+@pytest.mark.parametrize("fault", [None, "principal", "source", "cause", "replace", "extra_resource"])
+def test_arm_change_set_accepts_only_identical_scoped_permissions(fault):
+    from unittest.mock import Mock
+
+    cfg = {"Runtime": "python3.13"}
+    inputs = ("test.zip", cfg, "st-topic")
+    current = release._new_template(*inputs, armed=False, approval_sha="a"*64)
+    armed = release._new_template(*inputs, armed=True, approval_sha="a"*64)
+    changes = []
+    for logical, reference in (("PaperRulePermission", "PaperRule"), ("WatchRulePermission", "WatchRule")):
+        changes.append({"ResourceChange": {"Action": "Modify", "LogicalResourceId": logical,
+            "ResourceType": "AWS::Lambda::Permission", "Replacement": "Conditional",
+            "Details": [{"Target": {"Attribute": "Properties", "Name": "SourceArn", "RequiresRecreation": "Always"},
+                         "Evaluation": "Dynamic", "ChangeSource": "ResourceAttribute", "CausingEntity": reference+".Arn"}]}})
+    for logical in ("DarkLambda", "PaperRule", "WatchRule"):
+        changes.append({"ResourceChange": {"Action": "Modify", "LogicalResourceId": logical, "Replacement": "False"}})
+    props = armed["Resources"]["PaperRulePermission"]["Properties"]
+    if fault == "principal":
+        props["Principal"] = "*"
+    if fault == "source":
+        props["SourceArn"] = {"Fn::GetAtt": ["WatchRule", "Arn"]}
+    if fault == "cause":
+        changes[0]["ResourceChange"]["Details"][0]["CausingEntity"] = "OtherRule.Arn"
+    if fault == "replace":
+        changes[0]["ResourceChange"]["Replacement"] = "True"
+    if fault == "extra_resource":
+        changes.append({"ResourceChange": {"Action": "Modify", "LogicalResourceId": "WatchdogRole", "Replacement": "False"}})
+    cfn = Mock()
+    cfn.get_template.return_value = {"TemplateBody": current}
+    cfn.create_change_set.return_value = {"Id": "checked-id"}
+    cfn.describe_change_set.return_value = {"Status": "CREATE_COMPLETE", "Changes": changes}
+    if fault:
+        with pytest.raises(RuntimeError):
+            release._change_set({"cloudformation": cfn}, armed, "arm", stage=False)
+        cfn.execute_change_set.assert_not_called()
+    else:
+        release._change_set({"cloudformation": cfn}, armed, "arm", stage=False)
+        assert cfn.execute_change_set.call_args.kwargs["ChangeSetName"] == "checked-id"
