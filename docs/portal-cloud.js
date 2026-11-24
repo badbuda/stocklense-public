@@ -1,6 +1,6 @@
 /* Optional Cognito PKCE: access token kept in memory only, never in URL/storage. */
 import {stagingSnapshot} from './portal-live.mjs';
-let config=null, accessToken=null, expiresAt=0, getHistory=()=>null, stagingUpdated=()=>{},taxUpdated=()=>{};
+let config=null, accessToken=null, expiresAt=0, getHistory=()=>null, stagingUpdated=()=>{},taxUpdated=()=>{},epoch5Updated=()=>{};
 const byId=id=>document.getElementById(id);
 const status=s=>{const n=byId('cloud-status');if(n)n.textContent=s};
 const html=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c]));
@@ -72,7 +72,7 @@ export async function refreshCloudJournal(){
  status('טוען רשומות DynamoDB מאומתות ל־'+days.length+' ימי מסחר...');
  const url=config.api_base_url.replace(/\/$/,'')+'/v1/sessions?dates='+encodeURIComponent(days.join(','));
  const r=await fetch(url,{headers:{'Authorization':'Bearer '+accessToken},cache:'no-store'});
- if(r.status===401||r.status===403){accessToken=null;status('פג תוקף האימות או שאין הרשאות לחשבון הזה.');byId('cloud-load').disabled=true;return}
+ if(r.status===401||r.status===403){status('נתיב ארכיון DynamoDB אינו מורשה.');byId('cloud-load').disabled=true;return}
  if(!r.ok)throw Error('AWS_JOURNAL_HTTP_'+r.status);
  const d=await r.json();
  if(d.kind!=='STOCKLENS_AUTHENTICATED_READ_ONLY_AWS_JOURNAL'||!Array.isArray(d.sessions)||
@@ -119,21 +119,29 @@ async function refreshEpoch5(){
  const gen=++epoch5Generation, notice=byId('epoch5-status'), box=byId('epoch5-results');
  if(!notice||!box)return;
  box.replaceChildren();
- if(!config||!accessToken||Date.now()>=expiresAt){notice.textContent='נדרשת התחברות Cognito לנתוני Epoch 5';return}
+ if(!config||!accessToken||Date.now()>=expiresAt){epoch5Updated({status:'LOGIN_REQUIRED',rows:[]});notice.textContent='נדרשת התחברות Cognito לנתוני Epoch 5';return}
+ epoch5Updated({status:'LOADING',rows:[]});
  notice.textContent='טוען את ספר ST החדש…';
  const token=accessToken;
  try{
   const response=await fetch(config.api_base_url.replace(/\/$/,'')+'/v1/staging-epoch5?dates='+encodeURIComponent(stagingWeekdays().join(',')),{headers:{Authorization:'Bearer '+token},cache:'no-store'});
   if(gen!==epoch5Generation||token!==accessToken||Date.now()>=expiresAt)return;
-  if(!response.ok){notice.textContent='נתיב Epoch 5 אינו זמין ('+response.status+'). אין הצגת יתרות ישנות במקומו.';return}
+  if(!response.ok){epoch5Updated({status:'ERROR',rows:[]});notice.textContent='נתיב Epoch 5 אינו זמין ('+response.status+'). אין הצגת יתרות ישנות במקומו.';return}
   const d=await response.json();
   if(gen!==epoch5Generation||token!==accessToken||Date.now()>=expiresAt)return;
   if(d.kind!=='STOCKLENS_EPOCH5_READ_ONLY_V1'||d.book!=='NEW_AWS_INDEPENDENT_STAGING_BOOK_EPOCH5_20261124'||d.broker_orders_authorized!==false||d.broker_fills_observed!==false||d.independent_second_vendor_verified!==false||d.full_chain_verified!==false||!Array.isArray(d.sessions)||d.sessions.length>14)throw Error('UNTRUSTED_EPOCH5');
   const rows=d.sessions;
+  const dates=stagingWeekdays(), validMeta=m=>m&&/^[a-f0-9]{64}$/.test(m.sha256)&&typeof m.version_id==='string'&&m.version_id!==''&&m.version_id!=='null';
+  const validNum=v=>typeof v==='number'&&Number.isFinite(v)&&v>=0;
+  if(rows.length!==dates.length||rows.some((x,i)=>!x||x.session_date!==dates[i]||
+   !['NOT_STARTED','NO_RECEIPT','INVALID_OR_PARTIAL_EVIDENCE','SHA_BOUND_SINGLE_VENDOR_MODELED'].includes(x.paper_status)||
+   (x.signal&&(!validMeta(x.signal)||x.signal.session_date!==x.session_date||![0,1,1.25,2,3].includes(x.signal.level)||!validNum(x.signal.target_leverage)||x.signal.target_leverage>3))||
+   (x.paper_status==='SHA_BOUND_SINGLE_VENDOR_MODELED'?(!validMeta(x.paper)||x.paper.continuity_status!=='MODELLED_RECEIPT_NOT_INDEPENDENTLY_QUALIFIED'||!validMeta(x.paper.execution_signal)||!['equity','cash','qqq_shares','tqqq_shares','cumulative_fees','cumulative_slippage_cost','trade_count'].every(k=>validNum(x.paper[k]))||x.paper.equity<=0):x.paper!=null)))throw Error('INVALID_EPOCH5_ROWS');
+  epoch5Updated({status:'READY',rows});
   const latest=rows.filter(x=>x.paper_status==='SHA_BOUND_SINGLE_VENDOR_MODELED'&&x.paper).at(-1);
   notice.textContent=latest?'שווי מדומה אחרון מתועד: '+money(latest.paper.equity)+' · '+latest.session_date+' · לא אימות שרשרת מלאה.':'אין עדיין זוג רשומות Paper ו־Continuity תקין בספר החדש.';
   box.innerHTML='<table><thead><tr><th>יום</th><th>סיגנל של היום</th><th>מצב Paper</th><th>סיגנל ששימש לביצוע</th><th>פעולה</th><th>שווי מדומה</th><th>מזומן</th><th>QQQ</th><th>TQQQ</th><th>עסקאות</th></tr></thead><tbody>'+rows.slice().reverse().map(x=>{const p=x.paper_status==='SHA_BOUND_SINGLE_VENDOR_MODELED'?x.paper:null;return '<tr><td>'+html(x.session_date)+'</td><td>'+html(x.signal_error?'שגיאת אימות':x.signal?.target_leverage??'—')+'</td><td>'+html(x.paper_status)+'</td><td>'+html(p?.execution_signal?.session_date??'—')+'</td><td>'+html(p?.paper_action??'—')+'</td><td>'+money(p?.equity)+'</td><td>'+money(p?.cash)+'</td><td>'+html(p?.qqq_shares??'—')+'</td><td>'+html(p?.tqqq_shares??'—')+'</td><td>'+html(p?.trade_count??'—')+'</td></tr>'}).join('')+'</tbody></table>';
- }catch{if(gen===epoch5Generation){notice.textContent='לא ניתן לאמת נתוני Epoch 5';box.replaceChildren()}}
+ }catch{if(gen===epoch5Generation){epoch5Updated({status:'ERROR',rows:[]});notice.textContent='לא ניתן לאמת נתוני Epoch 5';box.replaceChildren()}}
 }
 async function refreshStagingJournal(){
  void refreshEpoch5();
@@ -143,7 +151,7 @@ async function refreshStagingJournal(){
  const url=config.api_base_url.replace(/\/$/,'')+'/v1/staging?dates='+encodeURIComponent(stagingWeekdays().join(','));
  const r=await fetch(url,{headers:{Authorization:'Bearer '+accessToken},cache:'no-store'});
  if(r.status===404){stagingUpdated([]);taxUpdated(null);notice.textContent='נתיב Staging המאובטח טרם הותקן';return}
- if(r.status===401||r.status===403){accessToken=null;void refreshEpoch5();byId('cloud-staging-load').disabled=true;stagingUpdated([]);taxUpdated(null);notice.textContent='תוקף ההתחברות פג';return}
+ if(r.status===401||r.status===403){stagingUpdated([]);taxUpdated(null);notice.textContent='נתיב ארכיון Staging אינו מורשה';return}
  if(!r.ok)throw Error('STAGING_READ_HTTP_'+r.status);
  const response=await r.json();
  if(response.kind!=='STOCKLENS_AUTHENTICATED_STAGING_S3_READ_ONLY'||
@@ -172,12 +180,15 @@ async function refreshStagingJournal(){
  html(x.signal?.level??'—')+'</td><td>'+html(x.signal?.target_leverage??'—')+'</td><td>'+
  money(x.paper?.equity)+'</td><td>'+html(x.signal?.saved_at_utc||'—')+'</td></tr>').join('')+'</tbody></table>';
 }
-export function initCloudJournal({getHistory:historyProvider,onStagingChange,onTaxChange}){
+export function initCloudJournal({getHistory:historyProvider,onStagingChange,onTaxChange,onEpoch5Change}){
+ if(typeof onEpoch5Change==='function')epoch5Updated=onEpoch5Change;
  getHistory=historyProvider;
  if(typeof onStagingChange==='function')stagingUpdated=onStagingChange;
  if(typeof onTaxChange==='function')taxUpdated=onTaxChange;
  const loginBtn=byId('cloud-login'),loadBtn=byId('cloud-load');
  loginBtn?.addEventListener('click',()=>login().catch(err=>status('שגיאה בהתחברות: '+err.message)));
+ byId('epoch5-login')?.addEventListener('click',()=>login().catch(err=>status('שגיאה בהתחברות: '+err.message)));
+ byId('epoch5-refresh')?.addEventListener('click',()=>refreshEpoch5());
  loadBtn?.addEventListener('click',()=>refreshCloudJournal().catch(err=>status('שגיאת קריאה מ־AWS: '+err.message)));
  byId('cloud-staging-load')?.addEventListener('click',()=>refreshStagingJournal().catch(err=>{byId('cloud-staging-status').textContent='שגיאת S3: '+err.message}));
  // Authenticated, read-only refresh while the tab is open. Never retain JWT in storage.
@@ -188,9 +199,9 @@ export function initCloudJournal({getHistory:historyProvider,onStagingChange,onT
  },300000);
  fetch('./cloud-config.json',{cache:'no-store'}).then(r=>r.ok?r.json():null).then(async cfg=>{
    if(!validateConfig(cfg)){status('חיבור DynamoDB אישי טרם הופעל. כדי להפעיל דרוש API מאובטח ותצורת Cognito, לא הרשאות AWS בדפדפן.');return}
-   config=cfg;loginBtn.disabled=false;
+   config=cfg;loginBtn.disabled=false;if(byId('epoch5-login'))byId('epoch5-login').disabled=false;
    status('אפשר להתחבר לחשבון Cognito פרטי כדי לקרוא רשומות DynamoDB בזמן אמת.');
    const authenticated=await completeLogin();
-   if(authenticated&&accessToken){await refreshCloudJournal();await refreshStagingJournal().catch(err=>{byId('cloud-staging-status').textContent='שגיאת S3: '+err.message})}
+   if(authenticated&&accessToken){void refreshStagingJournal().catch(err=>{byId('cloud-staging-status').textContent='שגיאת S3: '+err.message});await refreshCloudJournal()}
  }).catch(err=>status('חיבור AWS פרטי אינו זמין: '+err.message));
 }
