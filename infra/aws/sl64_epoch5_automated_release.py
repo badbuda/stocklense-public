@@ -25,6 +25,7 @@ import io
 import json
 from pathlib import Path
 import sys
+from uuid import uuid4
 
 from infra.aws import sl64_epoch5_stage_dark_deploy as previous
 from infra.aws import sl56_epoch4_approval_readback as legacy_approval
@@ -201,7 +202,7 @@ def _new_template(artifact_key,old,topic,*,armed,approval_sha):
         ("WatchdogErrorsAlarm",ALARM2,WATCHDOG)):
         res[logical]={"Type":"AWS::CloudWatch::Alarm","Properties":{
             "AlarmName":actual,
-            "Description":"StockLens ST Epoch5 error. No broker.",
+            "AlarmDescription":"StockLens ST Epoch5 error. No broker.",
             "Namespace":"AWS/Lambda","MetricName":"Errors",
             "Dimensions":[{"Name":"FunctionName","Value":fn}],
             "Statistic":"Sum","Period":300,"EvaluationPeriods":1,
@@ -227,14 +228,33 @@ def _new_template(artifact_key,old,topic,*,armed,approval_sha):
 
 def _change_set(clients,body,name,*,stage):
     cfn=clients["cloudformation"]
-    cfn.create_change_set(StackName=STACK,ChangeSetName=name,
-        ChangeSetType="UPDATE",TemplateBody=json.dumps(body),
+    # A failed change set can still occupy its name. Inspect and execute only
+    # the immutable ID returned for this attempt.
+    created = cfn.create_change_set(StackName=STACK, ChangeSetName=f"{name}-{uuid4().hex[:12]}",
+        ChangeSetType="UPDATE", TemplateBody=json.dumps(body),
         Capabilities=["CAPABILITY_IAM"])
-    cfn.get_waiter("change_set_create_complete").wait(
-        ChangeSetName=name,StackName=STACK,
-        WaiterConfig={"Delay":5,"MaxAttempts":42})
-    details=cfn.describe_change_set(ChangeSetName=name,StackName=STACK)
-    require(details["Status"]=="CREATE_COMPLETE","CFN_CHANGESET_UNCREATED")
+    change_id = created["Id"]
+    try:
+        cfn.get_waiter("change_set_create_complete").wait(
+            ChangeSetName=change_id, StackName=STACK,
+            WaiterConfig={"Delay":5,"MaxAttempts":42})
+    except Exception as exc:
+        last = getattr(exc, "last_response", {})
+        reason = last.get("StatusReason") or str(exc)
+        if hasattr(cfn, "describe_events"):
+            try:
+                events = cfn.describe_events(ChangeSetName=change_id)["OperationEvents"]
+            except Exception:
+                events = []
+            for event in events:
+                detail = event.get("ValidationStatusReason") or event.get("ResourceStatusReason")
+                if detail:
+                    resource = event.get("ValidationPath") or event.get("LogicalResourceId", "")
+                    reason += f" | {resource} {detail}"
+        raise RuntimeError(f"ST change set {change_id}: {reason}") from exc
+    details=cfn.describe_change_set(ChangeSetName=change_id,StackName=STACK)
+    require(details["Status"]=="CREATE_COMPLETE" and not details.get("NextToken"),
+            "CFN_CHANGESET_INCOMPLETE")
     allowable_add={
         "WatchdogRole","WatchdogLog","WatchdogLambda",
         "PaperRule","WatchRule","PaperRulePermission","WatchRulePermission",
@@ -258,7 +278,7 @@ def _change_set(clients,body,name,*,stage):
                     "CFN_REPLACEMENT_POSSIBLE_BLOCKED:"+logical)
         else:
             raise RuntimeError("CFN_DELETE_OR_IMPORT_BLOCKED:"+logical)
-    cfn.execute_change_set(ChangeSetName=name,StackName=STACK)
+    cfn.execute_change_set(ChangeSetName=change_id,StackName=STACK)
     cfn.get_waiter("stack_update_complete").wait(
         StackName=STACK,WaiterConfig={"Delay":10,"MaxAttempts":60})
 

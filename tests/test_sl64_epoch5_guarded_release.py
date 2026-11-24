@@ -319,3 +319,24 @@ def test_release_from_deployed_dark_stack(monkeypatch, tmp_path, execute, staged
     assert artifact.call_count == int(execute)
     assert invoke.call_count == (3 if execute else 0)
     assert result["paper_schedules_enabled"] is execute
+
+
+def test_change_set_retry_uses_new_name_and_reports_provider_reason():
+    from unittest.mock import Mock
+
+    cfn = Mock()
+    cfn.create_change_set.side_effect = [{"Id": "failed-id"}, {"Id": "retry-id"}]
+    waiter_error = RuntimeError("terminal waiter")
+    waiter_error.last_response = {"Status": "FAILED", "StatusReason": "Property validation failed"}
+    waiter = cfn.get_waiter.return_value
+    waiter.wait.side_effect = [waiter_error, None, None]
+    cfn.describe_events.return_value = {"OperationEvents": [{
+        "LogicalResourceId": "PaperErrorsAlarm", "ValidationStatusReason": "Unknown property Description"}]}
+    with pytest.raises(RuntimeError, match="failed-id.*Property validation failed.*PaperErrorsAlarm.*Unknown property"):
+        release._change_set({"cloudformation": cfn}, {}, "stage", stage=True)
+    cfn.execute_change_set.assert_not_called()
+    cfn.describe_change_set.return_value = {"Status": "CREATE_COMPLETE", "Changes": [
+        {"ResourceChange": {"Action": "Add", "LogicalResourceId": "PaperRule"}}]}
+    release._change_set({"cloudformation": cfn}, {}, "stage", stage=True)
+    assert len({c.kwargs["ChangeSetName"] for c in cfn.create_change_set.call_args_list}) == 2
+    cfn.execute_change_set.assert_called_once_with(ChangeSetName="retry-id", StackName=release.STACK)
