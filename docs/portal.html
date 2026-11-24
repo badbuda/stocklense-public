@@ -86,15 +86,15 @@
   </div></div>
 </section>
 <section class="page" data-view="paper">
-  <div class="panel"><div class="section-title"><div><h2>החלטות Shadow לעומת יומן Paper</h2><p>כל קבלת Shadow שנשמרה במועד, לצד 4,204 ימי מודל היסטורי מסומנים בנפרד. ללא המצאת עסקאות חסרות.</p></div><a href="./decisions.html" class="secondary-btn">פתיחת יומן החלטות וייצוא CSV ↗</a></div></div>
-  <div class="page-heading"><div><div class="eyebrow">PAPER JOURNAL</div><h1>מה המערכת קנתה ומכרה?</h1><p>כל פעולה מדומה, מתי חושבה, כמה מניות ובאיזה מחיר מודל.</p></div><button id="export-trades" class="secondary-btn">↓ הורדת עסקאות CSV</button></div>
+  <div class="panel"><div class="section-title"><div><h2>מצב האלגוריתם לפי ריצת Shadow האחרונה</h2><p id="paper-shadow-signal" role="status">בודק את האות ואת תאריך המסחר…</p><p>חשיפת היעד היא החלטת מודל. ביצוע מדומה דורש רשומת Paper נפרדת.</p><p>כל קבלת Shadow שנשמרה במועד, לצד 4,204 ימי מודל היסטורי מסומנים בנפרד. ללא המצאת עסקאות חסרות.</p></div><a href="./decisions.html" class="secondary-btn">פתיחת יומן החלטות וייצוא CSV ↗</a></div></div>
+  <div class="page-heading"><div><div class="eyebrow">PAPER JOURNAL</div><h1>מה המערכת קנתה ומכרה?</h1><p>מקור היתרות ותאריך השווי מופיעים בכרטיס שווי Paper. פרסום GitHub הוא צילום ארכיוני.</p></div><button id="export-trades" class="secondary-btn">↓ עסקאות הארכיון הציבורי CSV</button></div>
   <div class="notice"><span class="notice-icon">ⓘ</span><span>עסקאות Paper מבוססות על מחירי פתיחה של דקת מסחר מ־Yahoo ועל הנחות עלות. <b>אלו לא עסקאות שהברוקר ביצע</b>.</span></div>
   <div class="metrics-strip"><div><small id="paper-nav-label">שווי Paper — פרסום GitHub</small><strong id="paper-nav">—</strong></div><div><small>מזומן</small><strong id="paper-cash">—</strong></div><div><small>מניות TQQQ</small><strong id="paper-shares">—</strong></div><div><small>עמלות מצטברות</small><strong id="paper-fees">—</strong></div><div><small>עלות החלקה משוערת</small><strong id="paper-slip">—</strong></div></div>
   <div class="panel tax-panel" id="tax-paper-panel"><div class="section-title"><div><h2>מס ועמלות על עסקאות Paper</h2><p>הערכת מס על רווחים ממומשים, בנפרד מעמלות המודל שכבר נוכו משווי Paper.</p></div><span class="subtle-tag">PAPER TAX</span></div>
     <div class="tax-metrics"><div><small>מס רווחי הון מחושב (₪)</small><strong id="tax-paper-assessed">—</strong></div><div><small>שווי לאחר מימוש רעיוני ($)</small><strong id="tax-paper-after">—</strong></div><div><small>איכות הנתונים</small><strong id="tax-paper-status">ממתין</strong></div></div>
     <p class="chart-caption">הכרטיס לא משמש הוראת מכירה, אינו מציג חיוב ברוקר בפועל, ולא יכפיל ניכוי מס שכבר שולם.</p>
   </div>
-  <div class="panel"><div class="section-title"><div><h2>יומן עסקאות</h2><p>מידע כפי שנשמר ביומן, כולל מקור המחיר והזמן</p></div><span class="subtle-tag" id="trades-count">—</span></div><div class="table-scroll"><table><thead><tr><th>יום ביצוע</th><th>פעולה</th><th>נייר</th><th>מניות</th><th>זמן ניו־יורק</th><th>מחיר בסיס</th><th>מחיר מדומה</th><th>עמלה</th><th>סיגנל קודם</th><th>איתות מס</th></tr></thead><tbody id="trades-body"><tr><td colspan="10">טוען…</td></tr></tbody></table></div>
+  <div class="panel"><div class="section-title"><div><h2>יומן עסקאות מארכיון GitHub</h2><p>מידע כפי שנשמר ביומן, כולל מקור המחיר והזמן</p></div><span class="subtle-tag" id="trades-count">—</span></div><div class="table-scroll"><table><thead><tr><th>יום ביצוע</th><th>פעולה</th><th>נייר</th><th>מניות</th><th>זמן ניו־יורק</th><th>מחיר בסיס</th><th>מחיר מדומה</th><th>עמלה</th><th>סיגנל קודם</th><th>איתות מס</th></tr></thead><tbody id="trades-body"><tr><td colspan="10">טוען…</td></tr></tbody></table></div>
     <p class="chart-caption">לחצי על עסקה ביומן כדי לראות את ההסבר, מקור המחיר, העלויות וההשפעה על התיק.</p>
     <div id="paper-trade-detail" class="trade-detail" role="region" aria-live="polite" aria-label="פירוט עסקה">בחרי עסקה להצגת פירוט מלא.</div>
   </div>
@@ -224,11 +224,19 @@ async function readActivity(url) {
   if (!response.ok) throw new Error(String(response.status));
   return response.json();
 }
+function displaySignal(message) {
+  document.querySelector("#activity-signal").textContent = message;
+  document.querySelector("#paper-shadow-signal").textContent = message;
+}
+let loadingRuns = false;
 async function showRuns() {
+  if (loadingRuns) return;
+  loadingRuns = true;
   const status = document.querySelector("#activity-status");
   try {
     const data = await readActivity("https://api.github.com/repos/" + repo + "/actions/workflows/shadow.yml/runs?branch=main&per_page=5");
     const labels = {success:"הושלמה בהצלחה",failure:"נכשלה",cancelled:"בוטלה",in_progress:"בביצוע",queued:"בתור"};
+    document.querySelector("#activity-runs").replaceChildren();
     for (const run of data.workflow_runs) {
       const row = document.createElement("li");
       const link = document.createElement("a");
@@ -240,28 +248,32 @@ async function showRuns() {
       document.querySelector("#activity-runs").append(row);
     }
     if (data.workflow_runs.length) {
-      showSignal(data.workflow_runs[0].id);
+      const latest = data.workflow_runs[0];
+      await showSignal(latest.id, labels[latest.conclusion || latest.status] || latest.status);
     } else {
-      document.querySelector("#activity-signal").textContent = "אין ריצת Shadow להצגה.";
+      displaySignal("אין ריצת Shadow להצגה.");
     }
     status.textContent = data.workflow_runs.length ? "ריצות Shadow לפי שעון ישראל" : "לא נמצאו ריצות Shadow.";
   } catch {
-    document.querySelector("#activity-signal").textContent = "לא ניתן לאמת את האות מהריצה האחרונה.";
+    displaySignal("לא ניתן לאמת את האות מהריצה האחרונה.");
+    document.querySelector("#activity-runs").replaceChildren();
     status.textContent = "היסטוריית הריצות אינה זמינה כרגע. אפשר לפתוח את הלוגים בקישור.";
+  } finally {
+    loadingRuns = false;
   }
 }
-async function showSignal(runId) {
-  const status = document.querySelector("#activity-signal");
+async function showSignal(runId, runState) {
   try {
     const data = await readActivity("https://api.github.com/repos/" + repo + "/actions/runs/" + Number(runId) + "/artifacts?per_page=100");
     const actions = {NO_CHANGE:"ללא שינוי", REBALANCE_NEXT_SESSION:"איזון ביום המסחר הבא", ENTER_CASH_NEXT_SESSION:"מעבר למזומן ביום המסחר הבא", EXIT_CASH_NEXT_SESSION:"יציאה ממזומן ביום המסחר הבא"};
     const signals = data.artifacts.filter(item => !item.expired && item.name.startsWith("signal_"));
     const match = signals.length === 1 && /^signal_(\d{4}-\d{2}-\d{2})_(\d+(?:\.\d+)?)_([A-Z_]+)$/.exec(signals[0].name);
-    status.textContent = match && Object.hasOwn(actions, match[3])
+    const signal = match && Object.hasOwn(actions, match[3])
       ? match[1] + " · " + actions[match[3]] + " · חשיפת יעד " + match[2] + "× (אות Shadow)"
       : "טרם פורסם אות מאומת לריצה זו.";
+    displaySignal(signal + " · הריצה " + runState);
   } catch {
-    status.textContent = "לא ניתן לקרוא את האות מהריצה האחרונה.";
+    displaySignal("לא ניתן לקרוא את האות מהריצה האחרונה. מצב הריצה: " + runState);
   }
 }
 async function showTrades() {
@@ -284,6 +296,7 @@ async function showTrades() {
     status.textContent = "לא ניתן לקרוא את יומן העסקאות הציבורי.";
   }
 }
+document.querySelector("#refresh").addEventListener("click", showRuns);
 showRuns();
 showTrades();
 </script>
