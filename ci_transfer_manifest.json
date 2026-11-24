@@ -601,9 +601,9 @@
     "infra/aws/sl64_epoch5_lambda.py": "2aba840483edfc34a29b4bb17aeb8d5a1b8f7ea1",
     "infra/aws/sl64_epoch5_preopen.py": "1751263ffd1a1c1e668ae4d2b6fb8818f65b951f",
     "infra/aws/sl64_epoch5_stage_dark_deploy.py": "df036665545219cfa5ced8099aafd66233f9cde0",
-    "infra/aws/sl64_epoch5_automated_release.py": "28bd1549acec64fc95304a73dbb3dd3afe87fb44",
+    "infra/aws/sl64_epoch5_automated_release.py": "5d2acbfa95a3f0c364f832b4f27d7fc467166db5",
     "tests/test_sl64_epoch5_preopen.py": "1389c456288b842798d44ad0752d4fb24cc109cb",
-    "tests/test_sl64_epoch5_guarded_release.py": "893c973c6de1a0d203af8ffafe72c5c08c762caf",
+    "tests/test_sl64_epoch5_guarded_release.py": "6aad12c2835371e7b776df67d7d18925d32e089e",
     ".github/workflows/sl64-epoch5-auto-release.yml": "e629dce52828ae3cd71f306213100bad9accb03d",
     "infra/aws/sl64_epoch5_start.py": "4dd8a83781823b4d13bbaa3f46a09b7bb343ef14",
     "infra/aws/start_st_paper.sh": "555df3af53c4c80067404cbff59a9d909d4ad738"

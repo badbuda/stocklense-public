@@ -295,6 +295,9 @@ def release(clients,repo,*,execute):
     pkg,old=_package(clients,repo)
     sha_b64=base64.b64encode(hashlib.sha256(pkg).digest()).decode()
     topic=chosen_existing_alert_topic(clients["cloudwatch"])
+    key = "deployment/epoch5/dark/" + previous.sha(pkg) + ".zip"
+    stage = _new_template(key, old, topic, armed=False, approval_sha=approval_sha)
+    dark, already_staged = _real_dark_state(clients, sha_b64, stage)
     # If first session has already closed, a new prospective Epoch and
     # operator approval are required. NO replay of 09:31 hypothetical fills.
     _,_,_,firstclose=adapter.session_times(store.FIRST)
@@ -318,7 +321,6 @@ def release(clients,repo,*,execute):
     stage_name="stocklens-epoch5-stage-"+hashlib.sha256(pkg).hexdigest()[:12]
     if not already_staged:
         _change_set(clients,stage,stage_name,stage=True)
-    cfn=clients["cloudformation"]
     updated=clients["lambda"].get_function_configuration(
         FunctionName=FUNCTION)
     require(updated.get("CodeSha256")==sha_b64 and

@@ -258,3 +258,64 @@ assert all("20261124/" in key for key in s3.writes)
 """
     env = dict(os.environ, STOCKLENS_ST_FIRST_SESSION="2026-11-24", PYTHONPATH=".:tests")
     subprocess.run([sys.executable, "-c", script], env=env, check=True)
+
+
+@pytest.mark.parametrize("execute,staged", [(False, False), (True, False), (True, True)])
+def test_release_from_deployed_dark_stack(monkeypatch, tmp_path, execute, staged):
+    import base64
+    import hashlib
+    from unittest.mock import Mock
+
+    s3, sts, approval_result = setup()
+    cfg = {"Runtime": "python3.13"}
+    pkg = b"deployed-lambda"
+    code_sha = base64.b64encode(hashlib.sha256(pkg).digest()).decode()
+    key = "deployment/epoch5/dark/" + hashlib.sha256(pkg).hexdigest() + ".zip"
+    topic = "arn:aws:sns:eu-central-1:634740393398:st-topic"
+    pin = approval_result["approval_sha256"]
+    current = (release._new_template(key, cfg, topic, armed=False, approval_sha=pin)
+               if staged else stage.template(key, cfg))
+    clients = {name: Mock() for name in ("cloudformation", "events", "lambda", "cloudwatch")}
+    clients.update(sts=sts, s3=s3)
+    cfn = clients["cloudformation"]
+    cfn.describe_stacks.return_value = {"Stacks": [{"StackStatus": "UPDATE_COMPLETE" if staged else "CREATE_COMPLETE"}]}
+    cfn.get_template.return_value = {"TemplateBody": current}
+    monkeypatch.setattr(release.legacy_approval, "inspect", lambda clients: None)
+    monkeypatch.setattr(release, "_package", lambda clients, repo: (pkg, cfg))
+    clients["cloudwatch"].describe_alarms.return_value = {"MetricAlarms": [{"AlarmActions": [topic]}]}
+    now = datetime(2026, 11, 20, 15, tzinfo=timezone.utc)
+    monkeypatch.setattr(release, "datetime", SimpleNamespace(now=lambda tz: now))
+    artifact = Mock(return_value=key)
+    monkeypatch.setattr(stage, "_artifact", artifact)
+    changes = []
+
+    def change_set(clients, body, name, *, stage):
+        changes.append(stage)
+        cfn.get_template.return_value = {"TemplateBody": body}
+
+    monkeypatch.setattr(release, "_change_set", change_set)
+
+    def configuration(FunctionName):
+        name = "DarkLambda" if FunctionName == release.FUNCTION else "WatchdogLambda"
+        props = cfn.get_template.return_value["TemplateBody"]["Resources"][name]["Properties"]
+        return dict(props, CodeSha256=code_sha, State="Active", LastUpdateStatus="Successful")
+
+    clients["lambda"].get_function_configuration.side_effect = configuration
+
+    def rule(Name):
+        name = "PaperRule" if Name == release.PAPER_RULE else "WatchRule"
+        return cfn.get_template.return_value["TemplateBody"]["Resources"][name]["Properties"]
+
+    clients["events"].describe_rule.side_effect = rule
+    clients["events"].list_targets_by_rule.side_effect = lambda Rule: {"Targets": [
+        {"Arn": "arn:aws:lambda:eu-central-1:634740393398:function:" +
+         (release.FUNCTION if Rule == release.PAPER_RULE else release.WATCHDOG)}]}
+    invoke = Mock(return_value={"historical_session": "2026-11-19", "source": "YFINANCE_1M_RAW",
+                                "independent_second_vendor_verified": False, "quote_sha256": "a"*64})
+    monkeypatch.setattr(release, "_invoke", invoke)
+    result, rc = release.release(clients, tmp_path, execute=execute)
+    assert rc == 0 and result["old_dark_zip_sha256_b64"] == code_sha
+    assert changes == (([False] if staged else [True, False]) if execute else [])
+    assert artifact.call_count == int(execute)
+    assert invoke.call_count == (3 if execute else 0)
+    assert result["paper_schedules_enabled"] is execute
