@@ -13,6 +13,21 @@ try{
  page.on('console',m=>{if(m.type()==='error')console.error('BROWSER_CONSOLE_ERROR:',m.text())});
  page.on('requestfailed',q=>console.error('BROWSER_REQUEST_FAILED:',q.url(),q.failure()?.errorText));
  page.on('response',r=>{if(r.status()>=400)console.error('BROWSER_HTTP_ERROR:',r.status(),r.url())});
+ let publicPaper=false;
+ await page.route('**/v1/public-model',route=>{
+   assert.equal(route.request().headers().authorization,undefined);
+   const dates=[],d=new Date();
+   while(dates.length<14){if(d.getUTCDay()!==0&&d.getUTCDay()!==6)dates.push(d.toISOString().slice(0,10));d.setUTCDate(d.getUTCDate()-1)}
+   const rows=dates.reverse().map(day=>({session_date:day,signal:null,paper:null,paper_status:'NO_RECEIPT'}));
+   if(publicPaper){
+     const row=rows.at(-1);
+     row.signal={session_date:row.session_date,level:1,target_leverage:1.25};
+     row.paper_status='SHA_BOUND_SINGLE_VENDOR_MODELED';
+     row.paper={equity:102345,cash:500,qqq_shares:88,tqqq_shares:17,cumulative_fees:12,cumulative_slippage_cost:34,trade_count:0,continuity_status:'MODELLED_RECEIPT_NOT_INDEPENDENTLY_QUALIFIED',execution_signal:{session_date:rows.at(-2).session_date},trades:[]};
+   }
+   return route.fulfill({status:200,contentType:'application/json',headers:{'access-control-allow-origin':'*'},
+     body:JSON.stringify({kind:'STOCKLENS_PUBLIC_MODELED_EPOCH5_V1',book:'NEW_AWS_INDEPENDENT_STAGING_BOOK_EPOCH5_20261124',starting_demo_usd:100000,generated_at_utc:new Date().toISOString(),broker_orders_authorized:false,broker_fills_observed:false,independent_second_vendor_verified:false,full_chain_verified:false,sessions:rows})});
+ });
  await page.goto(base+'/',{waitUntil:'networkidle',timeout:60000});
  await page.waitForURL(/portal\.html/,{timeout:12000});
  assert.match(await page.title(),/StockLens/);
@@ -26,7 +41,7 @@ try{
  const currentSignal=await page.locator('#asof-badge').textContent();
  assert.match(currentSignal,/20\d\d-\d\d-\d\d/);
  assert.equal((await page.locator('.page.visible').getAttribute('data-view')),'overview');
- assert.match(await page.locator('#kpi-nav').textContent(),/^\$/);
+ assert.equal(await page.locator('#kpi-nav').textContent(),'—');
  assert.match(await page.locator('#readiness-clarity').textContent(),/אין אישור למסחר אמיתי/);
  // Match the real portal's versioned readOptional() requests: a CDN can
  // have an old unversioned JSON edge object even when the main-source bytes
@@ -66,8 +81,8 @@ try{
  assert.equal(governance.riskSession,governance.signalSession,'Risk cohort is stale');
  assert.match(await page.locator('#health-list').textContent(),/תאריך נתוני האתר/);
  assert.equal(await page.locator('#feed-status').isVisible(),true,'Static publication must disclose source freshness');
- assert.match(await page.locator('#kpi-nav-source').textContent(),/ארכיון GitHub/);
- assert.match(await page.locator('#staging-overview-status').textContent(),/Staging/);
+ assert.match(await page.locator('#kpi-nav-source').textContent(),/Epoch 5/);
+ assert.match(await page.locator('#staging-overview-status').textContent(),/Epoch 5/);
  const feedBanner=await page.locator('#feed-status').textContent();
  assert.match(feedBanner,/GitHub|מיושנים|פער תאריכים|חסרים/);
  if(paperArchiveStale){
@@ -98,8 +113,17 @@ try{
  assert.match(await page.locator('#tax-global-signal').textContent(),/מס: חישוב חסום/);
  assert.match(await page.locator('#tax-overview-status').textContent(),/לא חושב/);
  assert.match(await page.locator('#tax-hero-signal').textContent(),/איתות מס/);
- if(await page.locator('#paper-chart-empty').isVisible()) assert.match(await page.locator('#paper-chart-empty').textContent(),/יום מדומה אחד|אין ימי Paper/);
+ if(await page.locator('#paper-chart-empty').isVisible()) assert.match(await page.locator('#paper-chart-empty').textContent(),/יום מדומה אחד|אין ימי Paper|אין נקודות שווי/);
  await page.locator('button[data-page=paper]').click();
+ publicPaper=true;
+ await page.locator('#epoch5-refresh').click();
+ await page.waitForFunction(()=>document.querySelector('#paper-nav')?.textContent.includes('102,345'));
+ assert.match(await page.locator('#kpi-nav').textContent(),/102,345/);
+ assert.equal(await page.locator('#paper-shares').textContent(),'17');
+ publicPaper=false;
+ await page.locator('#epoch5-refresh').click();
+ await page.waitForFunction(()=>document.querySelector('#paper-nav-label')?.textContent.includes('אין רשומת Paper מאומתת'));
+ assert.equal(await page.locator('#paper-nav').textContent(),'—');
  assert.match(await page.locator('#trades-body').textContent(),/TQQQ/);
  assert.match(await page.locator('#trades-body').textContent(),/BUY|קנייה/);
  await page.locator('#trades-body tr[data-trade-index]').first().click();
