@@ -68,6 +68,10 @@ try{
    history:governance.historySession,risk:governance.riskSession
  }));
  assert.ok(governance.signalSession,'No published signal session');
+ assert.match(await page.locator('#gap-replay-status').textContent(),/שחזור היסטורי בלבד/);
+ assert.match(await page.locator('#gap-replay-equity').textContent(),/^\$/);
+ assert.ok(await page.locator('#gap-replay-body tr').count()>0);
+ assert.equal(await page.locator('#gap-replay-chart polyline').count(),2);
  const paperArchiveStale=governance.paperSession!==governance.signalSession;
  // A stale *archival* Paper is an expected, explicitly degraded data state.
  // E2E must prove the UI displays its ERROR banner instead of failing the
