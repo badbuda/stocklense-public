@@ -225,6 +225,46 @@ def _new_template(artifact_key,old,topic,*,armed,approval_sha):
     return t
 
 
+def _verify_arm_transition(cfn, armed):
+    """Only the Paper write switch, rule states and matching outputs may change."""
+    current = cfn.get_template(StackName=STACK, TemplateStage="Original")["TemplateBody"]
+    if isinstance(current, str):
+        current = json.loads(current)
+    expected = deepcopy(current)
+    resources = expected["Resources"]
+    variables = resources["DarkLambda"]["Properties"]["Environment"]["Variables"]
+    require(variables["STOCKLENS_EPOCH5_WRITE_ENABLED"] == "false", "PAPER_ALREADY_WRITABLE")
+    variables["STOCKLENS_EPOCH5_WRITE_ENABLED"] = "true"
+    for rule in ("PaperRule", "WatchRule"):
+        props = resources[rule]["Properties"]
+        require(props["State"] == "DISABLED", "RULE_ALREADY_ENABLED:" + rule)
+        props["State"] = "ENABLED"
+    for output in ("PaperWriteEnabled", "SchedulesEnabled"):
+        expected["Outputs"][output]["Value"] = "true"
+    require(expected == armed, "ARM_TEMPLATE_DIFF_OUTSIDE_ACTIVATION_SWITCHES")
+
+
+def _verify_permission_reference(change, resources, rule, function):
+    logical = change["LogicalResourceId"]
+    expected = {"Action": "lambda:InvokeFunction", "Principal": "events.amazonaws.com",
+                "SourceArn": {"Fn::GetAtt": [rule, "Arn"]},
+                "FunctionName": {"Fn::GetAtt": [function, "Arn"]}}
+    require(resources[logical] == {"Type": "AWS::Lambda::Permission", "Properties": expected}
+            and change["ResourceType"] == "AWS::Lambda::Permission"
+            and change.get("Replacement") in ("False", "Conditional"),
+            "CFN_PERMISSION_GRANT_OR_REPLACEMENT_CHANGED:" + logical)
+    refs = {"SourceArn": rule + ".Arn", "FunctionName": function + ".Arn"}
+    details = change.get("Details") or []
+    require(bool(details), "CFN_PERMISSION_CHANGE_DETAILS_MISSING:" + logical)
+    for detail in details:
+        target = detail.get("Target", {})
+        name = target.get("Name")
+        require(target.get("Attribute") == "Properties" and name in refs
+                and detail.get("ChangeSource") == "ResourceAttribute"
+                and detail.get("CausingEntity") == refs[name],
+                "CFN_UNEXPECTED_PERMISSION_CHANGE_DETAIL:" + logical + ":" + str(detail))
+
+
 def _change_set(clients,body,name,*,stage):
     cfn=clients["cloudformation"]
     # A failed change set can still occupy its name. Inspect and execute only
@@ -260,6 +300,7 @@ def _change_set(clients,body,name,*,stage):
         "PaperErrorsAlarm","WatchdogErrorsAlarm"}
     allowed_mod={"DarkLambda"}
     if not stage:
+        _verify_arm_transition(cfn, body)
         allowed_mod|={"PaperRule","WatchRule"}
     changes=details.get("Changes",[])
     require(bool(changes),"CFN_EMPTY_CHANGESET")
@@ -270,6 +311,10 @@ def _change_set(clients,body,name,*,stage):
         if action=="Add":
             require(stage and logical in allowable_add,
                     "CFN_UNEXPECTED_ADDED_RESOURCE:"+logical)
+        elif action == "Modify" and not stage and logical in ("PaperRulePermission", "WatchRulePermission"):
+            rule, function = (("PaperRule", "DarkLambda") if logical == "PaperRulePermission"
+                              else ("WatchRule", "WatchdogLambda"))
+            _verify_permission_reference(ch, body["Resources"], rule, function)
         elif action=="Modify":
             require(logical in allowed_mod,
                     "CFN_UNEXPECTED_MODIFIED_RESOURCE:"+logical)
