@@ -97,6 +97,7 @@ function render(){
   renderTrades();showGapReport(paper,state.history);renderResearch();renderRisk();renderHealth();renderGovernance(d);
   setupSimulation();
   paintPerformance();
+  renderGapReplay();
   renderEpoch5Cards();
   renderTaxPanels();
 }
@@ -146,6 +147,23 @@ function renderTaxPanels(){
  put('tax-bridge-exit-cost',bridge?negative(bridge.terminalExitCosts):'—');
  put('tax-bridge-exit-tax',bridge?negative(bridge.terminalTax):'—');
  put('tax-bridge-net',bridge?money(bridge.afterTaxExitValue):'—');
+}
+function renderGapReplay(){
+ const history=state.history, start='2026-10-09';
+ const valid=history?.evidence==='REAL_QQQ_TQQQ_ADJUSTED_DAILY_OPEN_EXECUTION_PROXY'&&history.observed_ohlc_available===true&&history.live_trading_authorized===false&&history.full_lean_broker_parity===false&&Array.isArray(history.daily);
+ const rows=valid?history.daily.filter(r=>r.date>=start&&r.date<'2026-11-24'):[];
+ if(rows.length<2||rows[0].date!==start||rows.some((r,i)=>!/^20\d\d-\d\d-\d\d$/.test(r.date)||!Number.isFinite(r.s)||r.s<=0||!Number.isFinite(r.q)||r.q<=0||(i&&r.date<=rows[i-1].date))){
+   put('gap-replay-status','מקור שחזור לא זמין או לא תקין.');put('gap-replay-paper-status','אין נתוני שחזור תקינים.');return;
+ }
+ const first=rows[0],last=rows.at(-1);
+ const label='שחזור היסטורי בלבד · '+first.date+' עד '+last.date+' · '+(rows.length-1)+' ימי מסחר לאחר יום הבסיס. לא רשומות Paper.';
+ put('gap-replay-status',label);put('gap-replay-paper-status',label);
+ put('gap-replay-equity',money(100000*last.s/first.s));
+ put('gap-replay-return',percentage(last.s/first.s-1,2));
+ put('gap-replay-qqq',percentage(last.q/first.q-1,2));
+ put('gap-replay-moves',number(rows.slice(1).filter(r=>r.rebalance===true).length,0));
+ setHtml('gap-replay-body',rows.slice(1).reverse().map((r)=>'<tr><td>'+clean(r.date)+'</td><td>'+clean(r.signal||'—')+'</td><td>'+number(r.l)+'×</td><td>'+ (r.rebalance===true?'איזון יעד במודל':'ללא איזון')+'</td><td>'+money(100000*r.s/first.s)+'</td><td>'+percentage(r.s/first.s-1,2)+'</td></tr>').join(''));
+ drawChart('gap-replay-chart',rows,['s','q'],true);
 }
 function renderEpoch5Cards(){
  const {status,rows}=state.epoch5;
