@@ -132,7 +132,7 @@ async function refreshEpoch5(){
   const rows=d.sessions;
   const latest=rows.filter(x=>x.paper_status==='SHA_BOUND_SINGLE_VENDOR_MODELED'&&x.paper).at(-1);
   notice.textContent=latest?'שווי מדומה אחרון מתועד: '+money(latest.paper.equity)+' · '+latest.session_date+' · לא אימות שרשרת מלאה.':'אין עדיין זוג רשומות Paper ו־Continuity תקין בספר החדש.';
-  box.innerHTML='<table><thead><tr><th>יום</th><th>סיגנל של היום</th><th>מצב Paper</th><th>סיגנל ששימש לביצוע</th><th>פעולה</th><th>שווי מדומה</th><th>מזומן</th><th>QQQ</th><th>TQQQ</th><th>עסקאות</th></tr></thead><tbody>'+rows.slice().reverse().map(x=>{const p=x.paper_status==='SHA_BOUND_SINGLE_VENDOR_MODELED'?x.paper:null;return '<tr><td>'+html(x.session_date)+'</td><td>'+html(x.signal?.target_leverage??'—')+'</td><td>'+html(x.paper_status)+'</td><td>'+html(p?.execution_signal?.session_date??'—')+'</td><td>'+html(p?.paper_action??'—')+'</td><td>'+money(p?.equity)+'</td><td>'+money(p?.cash)+'</td><td>'+html(p?.qqq_shares??'—')+'</td><td>'+html(p?.tqqq_shares??'—')+'</td><td>'+html(p?.trade_count??'—')+'</td></tr>'}).join('')+'</tbody></table>';
+  box.innerHTML='<table><thead><tr><th>יום</th><th>סיגנל של היום</th><th>מצב Paper</th><th>סיגנל ששימש לביצוע</th><th>פעולה</th><th>שווי מדומה</th><th>מזומן</th><th>QQQ</th><th>TQQQ</th><th>עסקאות</th></tr></thead><tbody>'+rows.slice().reverse().map(x=>{const p=x.paper_status==='SHA_BOUND_SINGLE_VENDOR_MODELED'?x.paper:null;return '<tr><td>'+html(x.session_date)+'</td><td>'+html(x.signal_error?'שגיאת אימות':x.signal?.target_leverage??'—')+'</td><td>'+html(x.paper_status)+'</td><td>'+html(p?.execution_signal?.session_date??'—')+'</td><td>'+html(p?.paper_action??'—')+'</td><td>'+money(p?.equity)+'</td><td>'+money(p?.cash)+'</td><td>'+html(p?.qqq_shares??'—')+'</td><td>'+html(p?.tqqq_shares??'—')+'</td><td>'+html(p?.trade_count??'—')+'</td></tr>'}).join('')+'</tbody></table>';
  }catch{if(gen===epoch5Generation){notice.textContent='לא ניתן לאמת נתוני Epoch 5';box.replaceChildren()}}
 }
 async function refreshStagingJournal(){
@@ -143,7 +143,7 @@ async function refreshStagingJournal(){
  const url=config.api_base_url.replace(/\/$/,'')+'/v1/staging?dates='+encodeURIComponent(stagingWeekdays().join(','));
  const r=await fetch(url,{headers:{Authorization:'Bearer '+accessToken},cache:'no-store'});
  if(r.status===404){stagingUpdated([]);taxUpdated(null);notice.textContent='נתיב Staging המאובטח טרם הותקן';return}
- if(r.status===401||r.status===403){accessToken=null;byId('cloud-staging-load').disabled=true;stagingUpdated([]);taxUpdated(null);notice.textContent='תוקף ההתחברות פג';return}
+ if(r.status===401||r.status===403){accessToken=null;void refreshEpoch5();byId('cloud-staging-load').disabled=true;stagingUpdated([]);taxUpdated(null);notice.textContent='תוקף ההתחברות פג';return}
  if(!r.ok)throw Error('STAGING_READ_HTTP_'+r.status);
  const response=await r.json();
  if(response.kind!=='STOCKLENS_AUTHENTICATED_STAGING_S3_READ_ONLY'||

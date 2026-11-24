@@ -14,7 +14,7 @@ STACK = "stocklens-st-epoch5-portal-read"
 ROUTE = "GET /v1/staging-epoch5"
 
 
-def template(api, authorizer, code):
+def template(api, authorizer, code, scopes=()):
     ref = lambda n: {"Ref": n}
     arn = lambda n: {"Fn::GetAtt": [n, "Arn"]}
     bucket = "arn:aws:s3:::" + BUCKET
@@ -37,6 +37,7 @@ def template(api, authorizer, code):
             "PayloadFormatVersion": "2.0", "TimeoutInMillis": 29000}},
         "Route": {"Type": "AWS::ApiGatewayV2::Route", "Properties": {
             "ApiId": api, "RouteKey": ROUTE, "AuthorizationType": "JWT", "AuthorizerId": authorizer,
+            **({"AuthorizationScopes": list(scopes)} if scopes else {}),
             "Target": {"Fn::Join": ["/", ["integrations", ref("Integration")]]}}},
         "Permission": {"Type": "AWS::Lambda::Permission", "Properties": {
             "Action": "lambda:InvokeFunction", "FunctionName": ref("Reader"), "Principal": "apigateway.amazonaws.com",
@@ -62,6 +63,7 @@ def main():
     if len(existing) != 1 or existing[0].get("AuthorizationType") != "JWT" or not existing[0].get("AuthorizerId"):
         raise RuntimeError("LEGACY_JWT_ROUTE_REQUIRED")
     authorizer = existing[0]["AuthorizerId"]
+    scopes = existing[0].get("AuthorizationScopes", [])
     stages = gw.get_stages(ApiId=api)["Items"]
     if not stages or not all(s.get("AutoDeploy") for s in stages):
         raise RuntimeError("NON_AUTODEPLOY_STAGE_REVIEW_REQUIRED")
@@ -69,10 +71,10 @@ def main():
         resources = sdk.client("cloudformation").describe_stack_resources(StackName=STACK)["StackResources"]
         owned = [r["PhysicalResourceId"] for r in resources if r["LogicalResourceId"] == "Route"]
         current = next(r for r in routes if r["RouteKey"] == ROUTE)
-        if owned != [current["RouteId"]] or current.get("AuthorizationType") != "JWT" or current.get("AuthorizerId") != authorizer:
+        if owned != [current["RouteId"]] or current.get("AuthorizationType") != "JWT" or current.get("AuthorizerId") != authorizer or current.get("AuthorizationScopes", []) != scopes:
             raise RuntimeError("EXISTING_ROUTE_OWNERSHIP_OR_AUTH_DRIFT")
     code = pathlib.Path(__file__).with_name("epoch5_portal_reader.py").read_text()
-    body = template(api, authorizer, code)
+    body = template(api, authorizer, code, scopes)
     print(json.dumps({"stack": STACK, "route": ROUTE, "jwt": True, "bucket": BUCKET,
                       "prefix": PREFIX, "mutations": args.deploy}, indent=2), flush=True)
     if not args.deploy:
@@ -85,7 +87,7 @@ def main():
                         "--capabilities", "CAPABILITY_IAM", "--no-fail-on-empty-changeset"], check=True)
     routes = [r for page in gw.get_paginator("get_routes").paginate(ApiId=api) for r in page["Items"]]
     r = next(r for r in routes if r["RouteKey"] == ROUTE)
-    if r.get("AuthorizationType") != "JWT" or r.get("AuthorizerId") != authorizer:
+    if r.get("AuthorizationType") != "JWT" or r.get("AuthorizerId") != authorizer or r.get("AuthorizationScopes", []) != scopes:
         raise RuntimeError("DEPLOYED_ROUTE_AUTH_MISMATCH")
     print("EPOCH5_JWT_READ_ROUTE_DEPLOYED_NOT_PAPER_RUNTIME_PROOF")
 
