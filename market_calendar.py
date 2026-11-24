@@ -59,3 +59,14 @@ def latest_provider_eligible_contract(now_utc=None):
   "calendar":CALENDAR,
   "source":"exchange_calendars+stocklens_daily_bar_safety_contract",
  }
+
+
+def latest_st_paper_due_session(now_utc=None):
+    """Session covered by the most recent Tue–Sat 13:00 UTC ST Paper slot."""
+    now = require_aware(now_utc or datetime.now(timezone.utc))
+    slot = now.replace(hour=13, minute=0, second=0, microsecond=0)
+    if slot > now:
+        slot -= timedelta(days=1)
+    while slot.weekday() not in range(1, 6):
+        slot -= timedelta(days=1)
+    return latest_completed_contract(slot)["session"]

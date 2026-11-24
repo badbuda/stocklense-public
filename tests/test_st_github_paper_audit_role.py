@@ -73,3 +73,17 @@ def test_st_v2_and_prod_legacy_schedules_stay_distinct():
     for forbidden in ("put_object(", "put_rule(", "update_function_code(",
                       "delete_object(", "send_order(", "place_order("):
         assert forbidden not in source
+
+
+def test_audits_use_same_due_session_even_when_dashboard_stalls():
+    from datetime import datetime
+    from market_calendar import latest_st_paper_due_session
+    assert "docs/data.json" not in WORKFLOW.read_text()
+    assert WORKFLOW.read_text().count('--session "$ST_SESSION"') == 2
+    for when, expected in [
+        ("2026-11-21T20:29:00+00:00", "2026-11-20"),
+        ("2026-11-24T06:00:00+00:00", "2026-11-20"),
+        ("2026-11-24T22:00:00+00:00", "2026-11-23"),
+        ("2026-11-27T14:15:00+00:00", "2026-11-25"),
+    ]:
+        assert latest_st_paper_due_session(datetime.fromisoformat(when)) == expected

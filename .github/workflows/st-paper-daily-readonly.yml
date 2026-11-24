@@ -54,18 +54,15 @@ jobs:
           aws-region: eu-central-1
           role-to-assume: ${{ vars.AWS_STOCKLENS_ST_AUDIT_ROLE_ARN || 'arn:aws:iam::634740393398:role/stocklens-st-paper-audit--GitHubSTPaperAcceptanceRo-CbZTBKwqwUJg' }}
           role-session-name: stocklens-st-daily-readonly
+      - name: Select the completed exchange session due for ST Paper
+        run: |
+          python -m pip install --disable-pip-version-check --quiet boto3 -r requirements.txt
+          python -c "from market_calendar import latest_st_paper_due_session; print('ST_SESSION=' + latest_st_paper_due_session())" >> "$GITHUB_ENV"
       - name: Snapshot all Paper scheduler, alarm and S3 blockers (read only)
         shell: bash
         run: |
           set -euo pipefail
-          python -m pip install --disable-pip-version-check --quiet boto3
-          session="$(python - <<'PY'
-          import json
-          from pathlib import Path
-          print(json.loads(Path('docs/data.json').read_text())['signal']['asof_date'])
-          PY
-          )"
-          python infra/aws/st_paper_operational_blockers_readonly.py --session "$session" > "$RUNNER_TEMP/st-blockers.json"
+          python infra/aws/st_paper_operational_blockers_readonly.py --session "$ST_SESSION" > "$RUNNER_TEMP/st-blockers.json"
           python - "$RUNNER_TEMP/st-blockers.json" "$GITHUB_STEP_SUMMARY" <<'PY'
           import json,sys
           from pathlib import Path
@@ -85,19 +82,46 @@ jobs:
                         ", ".join(d.get("blockers",[]))+"\n\n")
           print("ST_OPERATIONAL_BLOCKERS",d["status"],d.get("blockers"))
           PY
-      - name: Check actual latest completed Shadow date against live ST Paper
+      - name: Inspect separate Epoch5 rules and version inventory
+        run: |
+          python - <<'PYTHON'
+          import os
+          from pathlib import Path
+          import boto3
+          from botocore.exceptions import ClientError
+          from infra.aws.sl64_epoch5_immutable_store import PREFIX, key_for
+          from infra.aws.st_paper_operational_blockers_readonly import paper_object_inventory
+
+          session = os.environ["ST_SESSION"]
+          aws = boto3.Session(region_name="eu-central-1")
+          events, s3 = aws.client("events"), aws.client("s3")
+          rows = [f"### Epoch5 inventory for {session} (metadata only)"]
+          for rule in ("stocklens-st-epoch5-paper-eod", "stocklens-st-epoch5-watchdog-eod"):
+              try:
+                  state = events.describe_rule(Name=rule)["State"]
+              except ClientError as exc:
+                  state = exc.response["Error"]["Code"]
+              rows.append(f"- {rule}: {state}")
+          keys = {"preopen approval": PREFIX + "preopen-inception-approval.json", "genesis": key_for("genesis")}
+          for kind in ("sessions", "continuity"):
+              keys[kind] = key_for(kind, session)
+          for label, key in keys.items():
+              try:
+                  state = paper_object_inventory(s3, key)["status"]
+              except ClientError as exc:
+                  state = exc.response["Error"]["Code"]
+              rows.append(f"- {label}: {state}")
+          report = "\n".join(rows) + "\n"
+          print(report)
+          with Path(os.environ["GITHUB_STEP_SUMMARY"]).open("a") as summary:
+              summary.write(report)
+          PYTHON
+      - name: Check live ST Paper for the due exchange session
         shell: bash
         run: |
           set -euo pipefail
-          python -m pip install --disable-pip-version-check --quiet boto3
-          session="$(python - <<'PY'
-          import json
-          from pathlib import Path
-          print(json.loads(Path('docs/data.json').read_text())['signal']['asof_date'])
-          PY
-          )"
           set +e
-          python infra/aws/st_paper_closeout_readonly.py --session "$session" > "$RUNNER_TEMP/st-readonly.json"
+          python infra/aws/st_paper_closeout_readonly.py --session "$ST_SESSION" > "$RUNNER_TEMP/st-readonly.json"
           result="$?"
           set -e
           python - "$RUNNER_TEMP/st-readonly.json" "$GITHUB_STEP_SUMMARY" <<'PY'
