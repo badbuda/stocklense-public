@@ -1,12 +1,5 @@
 #!/usr/bin/env python3
-"""Forward-only preopen inception approval for NEW Epoch5 Nov20 ST book.
-
-The original Nov19 Epoch4 book was only deployed DARK and never produced real
-Paper. It is NEVER backfilled. A brand-new empty $100k SHADOW book may open on
-Nov20 only with the Nov19 frozen signal stored in real versioned ST S3 *after*
-Nov19 close and *before* Nov20 opening. The operator explicitly runs
---approve-new-epoch5. No broker, no Genesis/Paper/Continuity or schedule writes.
-"""
+"""Pin the prior exchange session’s versioned ST signal before the first opening."""
 from __future__ import annotations
 import argparse
 from datetime import datetime,timezone
@@ -21,8 +14,8 @@ from infra.aws import sl64_epoch5_immutable_store as store
 REGION="eu-central-1"
 ACCOUNT="634740393398"
 BUCKET=store.ST_BUCKET
-FIRST="2026-11-20"
-SOURCE="signals/2026-11-19.json"
+FIRST=store.FIRST
+SOURCE="signals/" + adapter.session_times(FIRST)[0] + ".json"
 KEY=store.PREFIX+"preopen-inception-approval.json"
 APPROVAL_SCHEMA="stocklens-epoch5-preopen-inception-intent-v1"
 
@@ -41,19 +34,17 @@ def preflight(sts,s3,*,now):
             "WRONG_AWS_ACCOUNT")
     require(s3.get_bucket_versioning(Bucket=BUCKET).get("Status")=="Enabled",
             "ST_S3_VERSIONING_REQUIRED")
-    prior,prior_close,opening,_=adapter._market_clock(
-        FIRST,"2026-11-21T23:00:00Z")
-    require(prior=="2026-11-19","EXPECTED_PREVIOUS_NYSE_SESSION_CHANGED")
+    prior,prior_close,opening,_=adapter.session_times(store.FIRST)
     signal=adapter._verified(s3,SOURCE)
     p=signal["payload"]
     require(p.get("mode")=="SHADOW_ONLY_NO_BROKER_ACTIONS"
             and p.get("execution_plan",{}).get("broker_actions_enabled") is False
             and p.get("latest",{}).get("asof_date")==prior,
-            "NO_QUALIFIED_NOV19_LAG1_SIGNAL")
+            "NO_QUALIFIED_PRIOR_LAG1_SIGNAL")
     generated=adapter._time(p.get("generated_at_utc"))
     require(prior_close<=generated<opening
             and prior_close<=signal["saved_utc"]<opening,
-            "NOV19_SIGNAL_NOT_FROZEN_AFTER_CLOSE_BEFORE_OPEN")
+            "PRIOR_SIGNAL_NOT_FROZEN_AFTER_CLOSE_BEFORE_OPEN")
     latest=p.get("latest") or {}
     require(latest.get("defense_active") in (True,False)
             and latest.get("target_leverage") is not None,

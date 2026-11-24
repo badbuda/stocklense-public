@@ -24,7 +24,7 @@ from infra.aws import sl64_epoch5_immutable_store as store
 from stocklens import paper as model
 
 NY=ZoneInfo("America/New_York")
-FIRST="2026-11-20"
+FIRST=store.FIRST
 VENDOR="YFINANCE_1M_RAW"
 SOURCE_SCHEMA="sl63-yahoo-single-vendor-1m-quote-evidence-v1"
 
@@ -97,15 +97,20 @@ def _read_or_absent(s3,key):
     try:
         return adapter._verified(s3,key)
     except Exception as exc:
-        if _s3_missing(exc):
-            return None
+        code = str(getattr(exc, "response", {}).get("Error", {}).get("Code", ""))
+        if code in ("403", "AccessDenied") or _s3_missing(exc):
+            if not hasattr(s3, "list_object_versions"):
+                raise
+            listing = s3.list_object_versions(Bucket=store.ST_BUCKET, Prefix=key, MaxKeys=10)
+            if (listing.get("IsTruncated") is False
+                    and not listing.get("Versions") and not listing.get("DeleteMarkers")):
+                return None
         raise
 
 
 def _check_prior(s3,session,now):
     prior,priorclose,opening,closing=adapter._market_clock(session,now)
-    _,_,firstopening,_=adapter._market_clock(
-        FIRST,"2026-11-20T23:00:00Z")
+    _,_,firstopening,_=adapter.session_times(store.FIRST)
     approval=adapter._approval(s3,FIRST,firstopening)
     signal=adapter._source_signal(
         s3,session,prior,priorclose,opening,approval)

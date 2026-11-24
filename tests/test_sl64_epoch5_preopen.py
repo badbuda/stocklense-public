@@ -61,7 +61,7 @@ def test_reject_source_after_open_and_absent_signal_without_writes():
     s3.items[m.SOURCE]=(info[0],info[1],
        datetime(2026,11,20,15,tzinfo=timezone.utc),info[3])
     with pytest.raises(m.PreopenNotEligible,
-                       match="NOV19_SIGNAL_NOT_FROZEN"):
+                       match="PRIOR_SIGNAL_NOT_FROZEN"):
         m.approve(sts,s3,now="2026-11-20T06:00:00Z",enabled=True)
     assert s3.writes==[]
 

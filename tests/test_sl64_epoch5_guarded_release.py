@@ -20,6 +20,10 @@ from test_sl63_epoch4_paper_economic_adapter import FakeS3,signal
 
 
 class S3(FakeS3):
+    def list_object_versions(self, *, Bucket, Prefix, MaxKeys):
+        return {"IsTruncated": False, "Versions": [
+            {"Key": k} for k in self.items if k.startswith(Prefix)]}
+
     def get_bucket_versioning(self,**kwargs):
         assert kwargs["Bucket"]==store.ST_BUCKET
         return {"Status":"Enabled"}
@@ -182,3 +186,75 @@ def test_new_armed_template_event_only_current_session_no_broker():
         "Policies"][0]["PolicyDocument"]["Statement"]
     assert all("s3:PutObject" not in x["Action"] for x in policy)
     assert t["Outputs"]["BrokerOrdersEnabled"]["Value"]=="false"
+
+
+def test_retry_on_access_denied_requires_empty_verified_version_inventory():
+    error = RuntimeError("denied")
+    error.response = {"Error": {"Code": "AccessDenied"}}
+    def deny(**kwargs):
+        raise error
+    s3 = SimpleNamespace(head_object=deny, list_object_versions=lambda **kwargs:
+                         {"IsTruncated": False, "Versions": [], "DeleteMarkers": []})
+    key = store.key_for("sessions", "2026-11-20")
+    assert runtime._read_or_absent(s3, key) is None
+    for listing in ({"IsTruncated": True}, {"IsTruncated": False, "DeleteMarkers": [{"Key":key}]},
+                    {"IsTruncated": False, "Versions": [{"Key":key}]}):
+        s3.list_object_versions = lambda **kwargs: listing
+        with pytest.raises(RuntimeError, match="denied"):
+            runtime._read_or_absent(s3, key)
+
+
+def test_fixed_daily_slots_fit_regular_and_early_closes():
+    from datetime import timedelta
+    for day in ["2026-11-24", "2026-11-27", "2026-07-10", "2025-07-03"]:
+        close = adapter.session_times(day)[3]
+        assert close + timedelta(minutes=15) <= datetime.fromisoformat(day+"T21:30:00+00:00")
+        assert datetime.fromisoformat(day+"T21:59:00+00:00") <= close + timedelta(hours=5)
+
+
+def test_operator_selects_next_unopened_exchange_session():
+    from infra.aws.sl64_epoch5_start import next_open_session
+    for now, first in [("2026-11-24T05:00:00", "2026-11-24"),
+                       ("2026-11-24T14:30:00", "2026-11-25"),
+                       ("2026-11-26T05:00:00", "2026-11-27"),
+                       ("2026-11-28T19:00:00", "2026-11-30")]:
+        assert next_open_session(datetime.fromisoformat(now).replace(tzinfo=timezone.utc)) == first
+
+
+def test_future_book_uses_pinned_date_in_runtime_permissions_and_receipts():
+    import os
+    import subprocess
+    import sys
+    # New interpreter matches deployment: Lambda and operator both import once.
+    script = """
+from datetime import datetime, timezone
+from test_sl64_epoch5_guarded_release import S3, signal, market, SimpleNamespace
+from infra.aws import sl64_epoch5_preopen as approval, sl64_epoch5_immutable_store as store
+from infra.aws import sl64_epoch5_prospective_runtime as runtime, sl64_epoch5_watchdog as watchdog
+from infra.aws import sl64_epoch5_automated_release as release
+from infra.aws import sl64_epoch5_stage_dark_deploy as stage
+
+class ForwardS3(S3):
+    def put_object(self, **kwargs):
+        result = super().put_object(**kwargs)
+        key = kwargs['Key']
+        raw, version, _, meta = self.items[key]
+        hour = 6 if 'approval' in key else 22
+        self.items[key] = raw,version,datetime(2026,11,24,hour,tzinfo=timezone.utc),meta
+        return result
+
+s3=ForwardS3()
+assert approval.SOURCE == "signals/2026-11-23.json"
+s3.seed(approval.SOURCE, signal("2026-11-23","L3"), datetime(2026,11,24,5,tzinfo=timezone.utc))
+sts = SimpleNamespace(get_caller_identity=lambda:{"Account":stage.ACCOUNT})
+approval.approve(sts,s3,now="2026-11-24T06:00:00Z",enabled=True)
+t=release._new_template("deployment/test.zip",{"Runtime":"python3.13"},"topic",armed=True,approval_sha="a"*64)
+for fn in ("DarkLambda","WatchdogLambda"):
+    assert t["Resources"][fn]["Properties"]["Environment"]["Variables"]["STOCKLENS_ST_FIRST_SESSION"] == store.FIRST
+now = datetime(2026,11,24,21,40,tzinfo=timezone.utc)
+runtime.run_current_session(s3,now=now,market_fetch=lambda *args:market("2026-11-24"))
+assert watchdog.check(s3,now)["session"] == "2026-11-24"
+assert all("20261124/" in key for key in s3.writes)
+"""
+    env = dict(os.environ, STOCKLENS_ST_FIRST_SESSION="2026-11-24", PYTHONPATH=".:tests")
+    subprocess.run([sys.executable, "-c", script], env=env, check=True)

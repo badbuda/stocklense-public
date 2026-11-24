@@ -1,4 +1,4 @@
-name: SL-64 fresh Nov20 prospective ST Epoch5 modeled Paper (offline)
+name: SL-64 prospective ST Paper startup and receipt verification
 on:
   pull_request:
     paths:

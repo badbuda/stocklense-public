@@ -65,13 +65,18 @@ def _verified(s3, key):
             "saved_utc":_time(h["LastModified"])}
 
 
-def _market_clock(session, now):
+def session_times(session):
     cal=xcals.get_calendar("XNYS")
     require(cal.is_session(session),"NON_NYSE_EPOCH5_SESSION")
     prior=cal.previous_session(session).date().isoformat()
     opening=_time(cal.session_open(session).to_pydatetime())
     closing=_time(cal.session_close(session).to_pydatetime())
     prior_close=_time(cal.session_close(prior).to_pydatetime())
+    return prior,prior_close,opening,closing
+
+
+def _market_clock(session, now):
+    prior, prior_close, opening, closing = session_times(session)
     require(_time(now)>closing,"UNCOMPLETED_MARKET_SESSION")
     return prior,prior_close,opening,closing
 
@@ -81,7 +86,7 @@ def _approval(s3, session, opening):
     p=approval["payload"]
     require(p.get("schema")=="stocklens-epoch5-preopen-inception-intent-v1"
             and p.get("book")==store.EPOCH
-            and p.get("first_session")=="2026-11-20"
+            and p.get("first_session")==store.FIRST
             and p.get("starting_cash_usd")==100000.0
             and p.get("starting_shares")=={"QQQ":0,"TQQQ":0}
             and p.get("old_nav_transferred") is False
@@ -130,7 +135,7 @@ def _source_signal(s3, session, prior, prior_close, opening, approval):
     require(prior_close<=generated<opening and
             prior_close<=signal["saved_utc"]<opening,
             "LAG1_SIGNAL_NOT_FROZEN_BEFORE_OPEN")
-    if session=="2026-11-20":
+    if session==store.FIRST:
         approved=approval["payload"]
         require(approved.get("prior_signal_key")==signal["key"]
                 and approved.get("prior_signal_version_id")==signal["version_id"]
@@ -143,7 +148,7 @@ def build_and_store_pair(s3, *, session, market, observed_at_utc,
                          market_evidence=None):
     """Offline injectable S3 integration, NOT a deployable AWS handler.
 
-    No raw historical sessions before approved 2026-11-20 are accepted.
+    No raw historical sessions before the approved first session are accepted.
     Missed prior exchanges are rejected: no backfill or synthetic continuity.
     The caller MUST supply point-in-time source-attested market data later;
     the current adapter cannot qualify its market bars by itself.
@@ -169,11 +174,10 @@ def build_and_store_pair(s3, *, session, market, observed_at_utc,
                     is str
                 and len(market_evidence["quotes_and_actions_sha256"])==64,
                 "LIVE_MARKET_EVIDENCE_INVALID_OR_UNATTESTED")
-    approval=_approval(s3,"2026-11-20",
-                       _market_clock("2026-11-20",
-                                     "2026-11-20T23:00:00Z")[2])
+    approval=_approval(s3,store.FIRST,
+                       session_times(store.FIRST)[2])
     state,prev_paper,prev_continuity,bootstrap=_previous_state(
-        s3,session,"2026-11-20")
+        s3,session,store.FIRST)
     signal=_source_signal(s3,session,prior,prior_close,opening,approval)
 
     # Only the first approved simulated book may create its Genesis.
@@ -181,7 +185,7 @@ def build_and_store_pair(s3, *, session, market, observed_at_utc,
     # transfer or heal the old interrupted book.
     if bootstrap:
         g={
-            "book":store.EPOCH,"first_session":"2026-11-20",
+            "book":store.EPOCH,"first_session":store.FIRST,
             "starting_cash_usd":100000.0,"starting_shares":{"QQQ":0,"TQQQ":0},
             "mode":"SHADOW_ONLY_NO_BROKER_ACTIONS",
             "broker_orders_authorized":False,

@@ -5,7 +5,7 @@ No broker. No PROD. No legacy Paper mutation. NO backfills.
 
 Two CloudFormation changesets:
 1) Stage upgraded code + isolated read-only watchdog + DISABLED rules/alarms.
-   Invoke REAL Lambda preopen approval check and REAL Yahoo Nov19 1m historic
+   Invoke REAL Lambda preopen approval check and REAL Yahoo prior-session 1m historical
    connectivity preflight, both READ ONLY. If vendor or IAM fails: STOP DARK.
 2) Only if both succeed, arm ST-only Paper with a pinned operator approval and
    enable EventBridge after-close retries plus independent receipt Watchdog.
@@ -43,7 +43,7 @@ PAPER_RULE="stocklens-st-epoch5-paper-eod"
 WATCH_RULE="stocklens-st-epoch5-watchdog-eod"
 ALARM1="stocklens-st-epoch5-paper-errors"
 ALARM2="stocklens-st-epoch5-continuity-missing"
-FIRST="2026-11-20"
+FIRST=store.FIRST
 
 ZIP_LIMIT=previous.ZIP_LIMIT
 
@@ -75,10 +75,10 @@ def chosen_existing_alert_topic(cw):
     return next(iter(topics))
 
 
-def _real_dark_state(clients, expected_dark_sha):
+def _real_dark_state(clients, expected_dark_sha, staged_template):
     legacy_approval.inspect(clients)
     stack=previous._existing(clients["cloudformation"])
-    require(stack is not None and stack["StackStatus"]=="CREATE_COMPLETE",
+    require(stack is not None and stack["StackStatus"] in ("CREATE_COMPLETE","UPDATE_COMPLETE"),
             "EXPECTED_DARK_ST_STACK_NOT_STABLE")
     fn=clients["lambda"].get_function_configuration(
         FunctionName=FUNCTION)
@@ -92,12 +92,14 @@ def _real_dark_state(clients, expected_dark_sha):
     current=clients["cloudformation"].get_template(
         StackName=STACK,TemplateStage="Original")["TemplateBody"]
     if isinstance(current,str):current=json.loads(current)
+    if current == staged_template:
+        return fn, True
     require(set(current.get("Resources",{}))==
             {"DarkRole","DarkLogGroup","DarkLambda"},
             "PREEXISTING_CFN_NOT_ISOLATED_DARK_STACK")
     require(current["Resources"]["DarkLambda"]["Properties"]["FunctionName"]
             ==FUNCTION, "DARK_TEMPLATE_DIFFERENT_LAMBDA")
-    return fn
+    return fn, False
 
 
 def _package(clients,repo):
@@ -122,6 +124,7 @@ def _new_template(artifact_key,old,topic,*,armed,approval_sha):
         "STOCKLENS_DATA_BUCKET":BUCKET,
         "STOCKLENS_EPOCH5_WRITE_ENABLED":"true" if armed else "false",
         "STOCKLENS_EPOCH5_APPROVAL_SHA256":approval_sha,
+        "STOCKLENS_ST_FIRST_SESSION":FIRST,
     }
     prefix="arn:aws:s3:::"+BUCKET+"/"
     new_epoch=prefix+store.PREFIX
@@ -158,7 +161,7 @@ def _new_template(artifact_key,old,topic,*,armed,approval_sha):
            "Code":{"S3Bucket":BUCKET,"S3Key":artifact_key},
            "Timeout":60,"MemorySize":512,
            "Architectures":old.get("Architectures",["x86_64"]),
-           "Environment":{"Variables":{"STOCKLENS_DATA_BUCKET":BUCKET}},
+           "Environment":{"Variables":{"STOCKLENS_DATA_BUCKET":BUCKET,"STOCKLENS_ST_FIRST_SESSION":FIRST}},
         }}
     if old.get("Layers"):
         res["WatchdogLambda"]["Properties"]["Layers"]=[
@@ -167,9 +170,9 @@ def _new_template(artifact_key,old,topic,*,armed,approval_sha):
     enabled="ENABLED" if armed else "DISABLED"
     res["PaperRule"]={"Type":"AWS::Events::Rule","Properties":{
         "Name":PAPER_RULE,"State":enabled,
-        "Description":"After-close EOD modeled Paper retry, never broker",
-        # 23:30/23:42/23:52 UTC is after US cash market closes year-round.
-        "ScheduleExpression":"cron(30,42,52 23 ? * MON-FRI *)",
+        "Description":"After-close modeled Paper; first_session=" + FIRST,
+        # 21:30–21:59 UTC fits the 15-minute to 5-hour window on normal and half days.
+        "ScheduleExpression":"cron(30,42,52 21 ? * MON-FRI *)",
         "Targets":[{"Id":"NewEpoch5PaperOnly",
                     "Arn":{"Fn::GetAtt":["DarkLambda","Arn"]},
                     "Input":json.dumps({"mode":"STAGING_EPOCH5_MODELED_PAPER"}),
@@ -178,7 +181,7 @@ def _new_template(artifact_key,old,topic,*,armed,approval_sha):
     res["WatchRule"]={"Type":"AWS::Events::Rule","Properties":{
         "Name":WATCH_RULE,"State":enabled,
         "Description":"Daily independent immutable Paper+Continuity watchdog",
-        "ScheduleExpression":"cron(59 23 ? * MON-FRI *)",
+        "ScheduleExpression":"cron(59 21 ? * MON-FRI *)",
         "Targets":[{"Id":"Epoch5ReadOnlyContinuityWatchdog",
                     "Arn":{"Fn::GetAtt":["WatchdogLambda","Arn"]},
                     "Input":json.dumps(
@@ -280,26 +283,21 @@ def release(clients,repo,*,execute):
     proposed=newapproval.preflight(
         clients["sts"],clients["s3"],now=datetime.now(timezone.utc))
     approval_sha=hashlib.sha256(store.canonical(proposed["document"])).hexdigest()
-    first_open=adapter._market_clock(
-        FIRST,"2026-11-21T23:00:00Z")[2]
+    first_open=adapter.session_times(store.FIRST)[2]
     approved=adapter._approval(clients["s3"],FIRST,first_open)
     require(approved["sha256"]==approval_sha,
             "EPOCH5_NEW_BOOK_PREOPEN_APPROVAL_NOT_PINNED")
-    prior,prior_close,opening,_=adapter._market_clock(
-        FIRST,"2026-11-21T23:00:00Z")
+    prior,prior_close,opening,_=adapter.session_times(store.FIRST)
     source=adapter._source_signal(
         clients["s3"],FIRST,prior,prior_close,opening,approved)
     require(source["sha256"]==proposed["source_sha256"],
             "EPOCH5_PREOPEN_SIGNAL_VERSION_DRIFT")
     pkg,old=_package(clients,repo)
     sha_b64=base64.b64encode(hashlib.sha256(pkg).digest()).decode()
-    dark=_real_dark_state(clients,sha_b64)
     topic=chosen_existing_alert_topic(clients["cloudwatch"])
     # If first session has already closed, a new prospective Epoch and
     # operator approval are required. NO replay of 09:31 hypothetical fills.
-    from infra.aws import sl64_epoch5_paper_economic_adapter as adapter
-    _,_,_,firstclose=adapter._market_clock(
-        FIRST,"2026-11-20T23:00:00Z")
+    _,_,_,firstclose=adapter.session_times(store.FIRST)
     require(datetime.now(timezone.utc)<firstclose,
             "FIRST_SESSION_ALREADY_CLOSED_DO_NOT_BACKFILL")
     report={
@@ -316,10 +314,10 @@ def release(clients,repo,*,execute):
         return {**report,"aws_mutations":False,
                 "paper_schedules_enabled":False},0
 
-    key=previous._artifact(clients["s3"],pkg)
-    stage=_new_template(key,old,topic,armed=False,approval_sha=approval_sha)
+    require(previous._artifact(clients["s3"],pkg) == key, "DEPLOYMENT_ARTIFACT_KEY_CHANGED")
     stage_name="stocklens-epoch5-stage-"+hashlib.sha256(pkg).hexdigest()[:12]
-    _change_set(clients,stage,stage_name,stage=True)
+    if not already_staged:
+        _change_set(clients,stage,stage_name,stage=True)
     cfn=clients["cloudformation"]
     updated=clients["lambda"].get_function_configuration(
         FunctionName=FUNCTION)
@@ -334,7 +332,7 @@ def release(clients,repo,*,execute):
     vendor=_invoke(
         clients,FUNCTION,"STAGING_EPOCH5_VENDOR_CONNECTIVITY_READONLY",
         "EPOCH5_HISTORIC_YFINANCE_1M_READ_ONLY_PREFLIGHT")
-    require(vendor["historical_session"]=="2026-11-19"
+    require(vendor["historical_session"]==prior
             and vendor.get("source")=="YFINANCE_1M_RAW"
             and vendor.get("independent_second_vendor_verified") is False
             and len(vendor.get("quote_sha256",""))==64,
