@@ -609,6 +609,8 @@
     "infra/aws/start_st_paper.sh": "555df3af53c4c80067404cbff59a9d909d4ad738",
     "infra/aws/epoch5_portal_reader.py": "e3f0cb0ee9b049492566b273bd54361fb4969585",
     "infra/aws/epoch5_portal_deploy.py": "76ca85a0e615e4150ad37bb4f1758e94e1ac6aab",
-    "tests/test_epoch5_portal_reader.py": "db768d624bea8e92e2755747655a0758c95f7f0d"
+    "tests/test_epoch5_portal_reader.py": "4e3cbc6f7aa93fe1c6d5bcdefd844d9ecbf368f7",
+    "infra/aws/epoch5_public_model.py": "f53ee3074a70c03df056b44d484a8314c61d365d",
+    "infra/aws/epoch5_public_deploy.py": "7071be5337b7d67323f7b6d81198ac784350277f"
   }
 }

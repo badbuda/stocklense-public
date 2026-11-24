@@ -82,3 +82,22 @@ def test_partial_or_bad_binding_never_exposes_equity():
 
 def test_direct_event_without_jwt_rejected():
     assert r.handler({"routeKey": "GET /v1/staging-epoch5"}, None)["statusCode"] == 403
+
+
+def test_public_allowlist_fixed_demo_only():
+    from infra.aws import epoch5_public_model as pub
+    s, _ = fixture()
+    g = r.PREFIX + "genesis.json"
+    obj = json.loads(s.objects[g])
+    obj.update(starting_cash_usd=100000, starting_shares={"QQQ": 0, "TQQQ": 0})
+    s.add(g, obj)
+    d = pub.project(s, ["2026-11-23", r.FIRST])
+    assert d["sessions"][-1]["paper"]["equity"] == 100000
+    assert d["sessions"][-1]["paper"]["trades"] == []
+    raw = json.dumps(d)
+    for prohibited in ("version_id", "sha256", "saved_at_utc", "signals/", "paper/epochs/"):
+        assert prohibited not in raw
+    obj["starting_cash_usd"] = 100001
+    s.add(g, obj)
+    assert pub.project(s, [r.FIRST])["sessions"][0]["paper"] is None
+    assert pub.public_handler({"routeKey": "GET /v1/staging-epoch5"}, None)["statusCode"] == 404
