@@ -100,12 +100,12 @@
     "docs/legacy.html": "a5ac3af869c6e2838a1831822ec91ea07edb5c2b",
     "docs/manifest.webmanifest": "65d340292a0a77ca2901e83473a3f4141e3bb36b",
     "docs/ndx1986-sim.mjs": "285d208aebe77d7b763ccd2273153b3f5d226532",
-    "docs/portal-cloud.js": "b709a6eb220bcce2aff23d49c2ff937eb01b9567",
+    "docs/portal-cloud.js": "280b61ce9c91ba95ba1b4eacb87ddbefac39828f",
     "docs/portal-freshness.mjs": "a18a2da3087f8671afd0320197f137b416b7417b",
     "docs/portal-insights.js": "2c562628be661ccce699907db4f58e957e318440",
     "docs/portal-live.mjs": "affa3d38b63b3e8c964177b0f8195efec3ec372d",
     "docs/portal.css": "096a18c960ce4db76c2dbde08ebbc5a21334b4b2",
-    "docs/portal.html": "3f51f0dac1b26c63459bc2264ff13ce203f533c4",
+    "docs/portal.html": "b79b2efe9ebe1e514bb35197927a1f84b23accb8",
     "docs/portal.js": "0971bab5978b5a6450100ab4a720ecb05944c5b4",
     "docs/research-engine.js": "64fcf30d3195cef12e2e4d01740627cb66192f02",
     "docs/research.html": "3529db60d204fc3cc4dbb652c43a659534ca26a9",
@@ -606,6 +606,9 @@
     "tests/test_sl64_epoch5_guarded_release.py": "cf475bb4ff7cd7b3ad99f0e35ca4dd0bba3d9c59",
     ".github/workflows/sl64-epoch5-auto-release.yml": "3aabee3cadb54e4b105e712f27f345adf6a5da22",
     "infra/aws/sl64_epoch5_start.py": "4dd8a83781823b4d13bbaa3f46a09b7bb343ef14",
-    "infra/aws/start_st_paper.sh": "555df3af53c4c80067404cbff59a9d909d4ad738"
+    "infra/aws/start_st_paper.sh": "555df3af53c4c80067404cbff59a9d909d4ad738",
+    "infra/aws/epoch5_portal_reader.py": "e3f0cb0ee9b049492566b273bd54361fb4969585",
+    "infra/aws/epoch5_portal_deploy.py": "76ca85a0e615e4150ad37bb4f1758e94e1ac6aab",
+    "tests/test_epoch5_portal_reader.py": "db768d624bea8e92e2755747655a0758c95f7f0d"
   }
 }
