@@ -2,7 +2,7 @@
 
 ## Frozen signal
 
-- As of: **2026-11-18**
+- As of: **2026-11-24**
 - Action: **NO_CHANGE**
 - Level: **1**
 - Defense: **OFF**
@@ -12,19 +12,19 @@
 
 ## Features
 
-- QQQ adjusted close: **659.5100**
-- SMA50: **714.2551**
-- SMA200: **681.8007**
-- VOL20: **35.75%**
-- MOM12: **9.77%**
+- QQQ adjusted close: **638.1000**
+- SMA50: **708.4208**
+- SMA200: **682.4213**
+- VOL20: **47.88%**
+- MOM12: **8.65%**
 
 ## Historical replay context — NOT prospective evidence
 
 - Sessions: **252**
-- Window: **2025-11-18 → 2026-11-18**
+- Window: **2025-11-24 → 2026-11-24**
 - State transitions: **7**
 - Defense sessions: **0**
-- Level counts: **{'1': 19, '2': 18, '3': 215}**
+- Level counts: **{'1': 23, '2': 18, '3': 211}**
 
 ## Prospective paper portfolio
 
@@ -37,7 +37,7 @@
 - Cash: **$1,404.62**
 - Cumulative fees: **$19.72**
 - Cumulative modeled slippage: **$98.48**
-- Prospective signal rows: **20**
+- Prospective signal rows: **21**
 - Exposure-changing signal rows: **3**
 - Paper sessions: **2**
 

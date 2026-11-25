@@ -78,68 +78,68 @@
   "data_availability": {
     "^VIX": {
       "first": "2010-02-11",
-      "last": "2026-11-18",
-      "observations": 4221
+      "last": "2026-11-24",
+      "observations": 4225
     },
     "^VIX3M": {
       "first": "2010-02-11",
-      "last": "2026-11-18",
-      "observations": 4219
+      "last": "2026-11-24",
+      "observations": 4223
     },
     "^VVIX": {
       "first": "2010-02-11",
-      "last": "2026-11-18",
-      "observations": 4210
+      "last": "2026-11-24",
+      "observations": 4214
     },
     "^SKEW": {
       "first": "2010-02-11",
-      "last": "2026-11-18",
-      "observations": 4157
+      "last": "2026-11-24",
+      "observations": 4161
     },
     "HYG": {
       "first": "2010-02-11",
-      "last": "2026-11-18",
-      "observations": 4219
+      "last": "2026-11-24",
+      "observations": 4223
     },
     "LQD": {
       "first": "2010-02-11",
-      "last": "2026-11-18",
-      "observations": 4219
+      "last": "2026-11-24",
+      "observations": 4223
     },
     "TLT": {
       "first": "2010-02-11",
-      "last": "2026-11-18",
-      "observations": 4219
+      "last": "2026-11-24",
+      "observations": 4223
     },
     "UUP": {
       "first": "2010-02-11",
-      "last": "2026-11-18",
-      "observations": 4219
+      "last": "2026-11-24",
+      "observations": 4223
     },
     "GLD": {
       "first": "2010-02-11",
-      "last": "2026-11-18",
-      "observations": 4219
+      "last": "2026-11-24",
+      "observations": 4223
     },
     "QQQ": {
       "first": "2010-02-11",
-      "last": "2026-11-18",
-      "observations": 4219
+      "last": "2026-11-24",
+      "observations": 4223
     },
     "QQQE": {
       "first": "2012-03-21",
-      "last": "2026-11-18",
-      "observations": 3688
+      "last": "2026-11-24",
+      "observations": 3692
     },
     "SPY": {
       "first": "2010-02-11",
-      "last": "2026-11-18",
-      "observations": 4219
+      "last": "2026-11-24",
+      "observations": 4223
     },
     "RSP": {
       "first": "2010-02-11",
-      "last": "2026-11-18",
-      "observations": 4219
+      "last": "2026-11-24",
+      "observations": 4223
     }
   },
   "breadth_contract": {
@@ -154,12 +154,12 @@
       "name": "baseline",
       "signal": null,
       "cap": 3.0,
-      "end_equity": 19696129.50511801,
-      "cagr": 0.37037539209358394,
-      "max_drawdown": -0.49743718330364783,
+      "end_equity": 18877854.45504131,
+      "cagr": 0.36649361509891865,
+      "max_drawdown": -0.49743714080271983,
       "intervention_sessions": 0,
-      "estimated_turnover_cost": 161123.56908716273,
-      "sessions": 4218,
+      "estimated_turnover_cost": 161123.8128059063,
+      "sessions": 4222,
       "vs_baseline": {
         "cagr_delta": 0.0,
         "maxdd_improvement": 0.0,
@@ -170,15 +170,15 @@
       "name": "vix_stress",
       "signal": "vix",
       "cap": 2.0,
-      "end_equity": 15112221.771863164,
-      "cagr": 0.34889356173498487,
-      "max_drawdown": -0.49206618166905614,
+      "end_equity": 14484389.847101785,
+      "cagr": 0.34509346336845037,
+      "max_drawdown": -0.4962908953939499,
       "intervention_sessions": 147,
-      "estimated_turnover_cost": 370917.6917056296,
-      "sessions": 4218,
+      "estimated_turnover_cost": 370918.48846117506,
+      "sessions": 4222,
       "vs_baseline": {
-        "cagr_delta": -0.021481830358599074,
-        "maxdd_improvement": 0.005371001634591699,
+        "cagr_delta": -0.021400151730468275,
+        "maxdd_improvement": 0.0011462454087699525,
         "pareto_improves_both": false
       }
     },
@@ -186,15 +186,15 @@
       "name": "vix_term_backwardation",
       "signal": "term",
       "cap": 2.0,
-      "end_equity": 17118463.56060575,
-      "cagr": 0.3589592798938044,
-      "max_drawdown": -0.4794083691328067,
+      "end_equity": 16407272.862513179,
+      "cagr": 0.3551209133676232,
+      "max_drawdown": -0.4794083646146716,
       "intervention_sessions": 105,
-      "estimated_turnover_cost": 374007.27299857105,
-      "sessions": 4218,
+      "estimated_turnover_cost": 374007.74853544455,
+      "sessions": 4222,
       "vs_baseline": {
-        "cagr_delta": -0.01141611219977956,
-        "maxdd_improvement": 0.018028814170841123,
+        "cagr_delta": -0.011372701731295454,
+        "maxdd_improvement": 0.018028776188048212,
         "pareto_improves_both": false
       }
     },
@@ -202,15 +202,15 @@
       "name": "credit_stress",
       "signal": "credit",
       "cap": 2.0,
-      "end_equity": 14412947.088225536,
-      "cagr": 0.3450874896362519,
-      "max_drawdown": -0.5194297094161091,
+      "end_equity": 13814113.09342375,
+      "cagr": 0.3413015156237955,
+      "max_drawdown": -0.5194296792237494,
       "intervention_sessions": 213,
-      "estimated_turnover_cost": 211525.30881586796,
-      "sessions": 4218,
+      "estimated_turnover_cost": 211524.888487115,
+      "sessions": 4222,
       "vs_baseline": {
-        "cagr_delta": -0.025287902457332034,
-        "maxdd_improvement": -0.021992526112461275,
+        "cagr_delta": -0.02519209947512313,
+        "maxdd_improvement": -0.02199253842102955,
         "pareto_improves_both": false
       }
     },
@@ -218,14 +218,14 @@
       "name": "participation_deterioration",
       "signal": "participation",
       "cap": 2.0,
-      "end_equity": 18471906.53508004,
-      "cagr": 0.3651406586805366,
-      "max_drawdown": -0.49743718330364783,
+      "end_equity": 17704497.241130225,
+      "cagr": 0.3612788342163562,
+      "max_drawdown": -0.49743714080271983,
       "intervention_sessions": 169,
-      "estimated_turnover_cost": 421969.75024847424,
-      "sessions": 4218,
+      "estimated_turnover_cost": 421970.48182642064,
+      "sessions": 4222,
       "vs_baseline": {
-        "cagr_delta": -0.0052347334130473655,
+        "cagr_delta": -0.005214780882562442,
         "maxdd_improvement": 0.0,
         "pareto_improves_both": false
       }
@@ -234,14 +234,14 @@
       "name": "options_tail_stress",
       "signal": "options",
       "cap": 2.0,
-      "end_equity": 16703209.06605665,
-      "cagr": 0.3569704132943068,
-      "max_drawdown": -0.49743718330364783,
+      "end_equity": 16009253.178219033,
+      "cagr": 0.35313951826747547,
+      "max_drawdown": -0.49743714080271983,
       "intervention_sessions": 55,
-      "estimated_turnover_cost": 566080.4338111117,
-      "sessions": 4218,
+      "estimated_turnover_cost": 566080.7472472484,
+      "sessions": 4222,
       "vs_baseline": {
-        "cagr_delta": -0.013404978799277156,
+        "cagr_delta": -0.013354096831443174,
         "maxdd_improvement": 0.0,
         "pareto_improves_both": false
       }
@@ -250,31 +250,31 @@
       "name": "cross_asset_stress",
       "signal": "cross_asset",
       "cap": 2.0,
-      "end_equity": 19715844.83524771,
-      "cagr": 0.3704571640761576,
-      "max_drawdown": -0.49743718330364795,
+      "end_equity": 18896772.72478742,
+      "cagr": 0.3665751704867599,
+      "max_drawdown": -0.49743714080271983,
       "intervention_sessions": 53,
-      "estimated_turnover_cost": 265014.3849851234,
-      "sessions": 4218,
+      "estimated_turnover_cost": 265015.0680813929,
+      "sessions": 4222,
       "vs_baseline": {
-        "cagr_delta": 8.177198257364182e-05,
-        "maxdd_improvement": -1.1102230246251565e-16,
-        "pareto_improves_both": false
+        "cagr_delta": 8.155538784127003e-05,
+        "maxdd_improvement": 0.0,
+        "pareto_improves_both": true
       }
     },
     {
       "name": "vol_of_vol_stress",
       "signal": "vol_of_vol",
       "cap": 2.0,
-      "end_equity": 15741107.614081701,
-      "cagr": 0.3521776277589803,
-      "max_drawdown": -0.49743718330364795,
+      "end_equity": 15087130.974281685,
+      "cagr": 0.3483649730912408,
+      "max_drawdown": -0.49743714080271983,
       "intervention_sessions": 62,
-      "estimated_turnover_cost": 257650.3084872331,
-      "sessions": 4218,
+      "estimated_turnover_cost": 257650.47284141852,
+      "sessions": 4222,
       "vs_baseline": {
-        "cagr_delta": -0.018197764334603628,
-        "maxdd_improvement": -1.1102230246251565e-16,
+        "cagr_delta": -0.01812864200767783,
+        "maxdd_improvement": 0.0,
         "pareto_improves_both": false
       }
     },
@@ -282,12 +282,12 @@
       "name": "momentum_deterioration",
       "signal": "momentum",
       "cap": 2.0,
-      "end_equity": 19696129.50511801,
-      "cagr": 0.37037539209358394,
-      "max_drawdown": -0.49743718330364783,
+      "end_equity": 18877854.45504131,
+      "cagr": 0.36649361509891865,
+      "max_drawdown": -0.49743714080271983,
       "intervention_sessions": 0,
-      "estimated_turnover_cost": 161123.56908716273,
-      "sessions": 4218,
+      "estimated_turnover_cost": 161123.8128059063,
+      "sessions": 4222,
       "vs_baseline": {
         "cagr_delta": 0.0,
         "maxdd_improvement": 0.0,
@@ -298,15 +298,15 @@
       "name": "ensemble_2of8_cap2",
       "signal": "ensemble2",
       "cap": 2.0,
-      "end_equity": 15035546.990787875,
-      "cagr": 0.3484844082702623,
-      "max_drawdown": -0.4931459416209891,
+      "end_equity": 14410893.848668043,
+      "cagr": 0.3446858249180691,
+      "max_drawdown": -0.49314628415695794,
       "intervention_sessions": 128,
-      "estimated_turnover_cost": 424710.4661794121,
-      "sessions": 4218,
+      "estimated_turnover_cost": 424711.1647850885,
+      "sessions": 4222,
       "vs_baseline": {
-        "cagr_delta": -0.021890983823321664,
-        "maxdd_improvement": 0.0042912416826587085,
+        "cagr_delta": -0.02180779018084955,
+        "maxdd_improvement": 0.004290856645761898,
         "pareto_improves_both": false
       }
     },
@@ -314,15 +314,15 @@
       "name": "ensemble_3of8_cap125",
       "signal": "ensemble3",
       "cap": 1.25,
-      "end_equity": 17438544.07324578,
-      "cagr": 0.3604615846111996,
-      "max_drawdown": -0.5056231177235184,
+      "end_equity": 16714037.51191101,
+      "cagr": 0.3566174204905812,
+      "max_drawdown": -0.5056231539860092,
       "intervention_sessions": 62,
-      "estimated_turnover_cost": 347079.2725573986,
-      "sessions": 4218,
+      "estimated_turnover_cost": 347079.45179588377,
+      "sessions": 4222,
       "vs_baseline": {
-        "cagr_delta": -0.009913807482384351,
-        "maxdd_improvement": -0.008185934419870589,
+        "cagr_delta": -0.00987619460833744,
+        "maxdd_improvement": -0.008186013183289376,
         "pareto_improves_both": false
       }
     }
@@ -347,11 +347,11 @@
         "name": "baseline",
         "signal": null,
         "cap": 3.0,
-        "end_equity": 1076283.3591398078,
-        "cagr": 0.48709295565039623,
-        "max_drawdown": -0.40776395405857613,
+        "end_equity": 1076284.2659889846,
+        "cagr": 0.4870931649068808,
+        "max_drawdown": -0.4077635900453327,
         "intervention_sessions": 0,
-        "estimated_turnover_cost": 3790.8650155875234,
+        "estimated_turnover_cost": 3790.8666711778437,
         "sessions": 1508,
         "vs_baseline": {
           "cagr_delta": 0.0,
@@ -363,15 +363,15 @@
         "name": "vix_stress",
         "signal": "vix",
         "cap": 2.0,
-        "end_equity": 1024458.4584391704,
-        "cagr": 0.47488715903575796,
-        "max_drawdown": -0.3978644671629443,
+        "end_equity": 1024458.7738251667,
+        "cagr": 0.47488723486545426,
+        "max_drawdown": -0.3978641855132524,
         "intervention_sessions": 36,
-        "estimated_turnover_cost": 10967.690124516088,
+        "estimated_turnover_cost": 10967.690198860406,
         "sessions": 1508,
         "vs_baseline": {
-          "cagr_delta": -0.012205796614638276,
-          "maxdd_improvement": 0.009899486895631804,
+          "cagr_delta": -0.01220593004142656,
+          "maxdd_improvement": 0.00989940453208027,
           "pareto_improves_both": false
         }
       },
@@ -379,15 +379,15 @@
         "name": "vix_term_backwardation",
         "signal": "term",
         "cap": 2.0,
-        "end_equity": 1024323.6833591963,
-        "cagr": 0.4748547526676019,
-        "max_drawdown": -0.42089853273101285,
+        "end_equity": 1024323.9149597763,
+        "cagr": 0.4748548083584925,
+        "max_drawdown": -0.4208986105028224,
         "intervention_sessions": 17,
-        "estimated_turnover_cost": 7342.336034441206,
+        "estimated_turnover_cost": 7342.339238393787,
         "sessions": 1508,
         "vs_baseline": {
-          "cagr_delta": -0.012238202982794322,
-          "maxdd_improvement": -0.013134578672436725,
+          "cagr_delta": -0.01223835654838834,
+          "maxdd_improvement": -0.01313502045748971,
           "pareto_improves_both": false
         }
       },
@@ -395,15 +395,15 @@
         "name": "credit_stress",
         "signal": "credit",
         "cap": 2.0,
-        "end_equity": 997190.4951892756,
-        "cagr": 0.46825711163033823,
-        "max_drawdown": -0.39547182290649097,
+        "end_equity": 997187.6468654815,
+        "cagr": 0.46825641122994544,
+        "max_drawdown": -0.39547234729309444,
         "intervention_sessions": 105,
-        "estimated_turnover_cost": 14150.355939710213,
+        "estimated_turnover_cost": 14150.326180480297,
         "sessions": 1508,
         "vs_baseline": {
-          "cagr_delta": -0.018835844020058,
-          "maxdd_improvement": 0.012292131152085162,
+          "cagr_delta": -0.01883675367693538,
+          "maxdd_improvement": 0.012291242752238252,
           "pareto_improves_both": false
         }
       },
@@ -411,11 +411,11 @@
         "name": "participation_deterioration",
         "signal": "participation",
         "cap": 2.0,
-        "end_equity": 1076283.3591398078,
-        "cagr": 0.48709295565039623,
-        "max_drawdown": -0.40776395405857613,
+        "end_equity": 1076284.2659889846,
+        "cagr": 0.4870931649068808,
+        "max_drawdown": -0.4077635900453327,
         "intervention_sessions": 0,
-        "estimated_turnover_cost": 3790.8650155875234,
+        "estimated_turnover_cost": 3790.8666711778437,
         "sessions": 1508,
         "vs_baseline": {
           "cagr_delta": 0.0,
@@ -427,11 +427,11 @@
         "name": "options_tail_stress",
         "signal": "options",
         "cap": 2.0,
-        "end_equity": 1076283.3591398078,
-        "cagr": 0.48709295565039623,
-        "max_drawdown": -0.40776395405857613,
+        "end_equity": 1076284.2659889846,
+        "cagr": 0.4870931649068808,
+        "max_drawdown": -0.4077635900453327,
         "intervention_sessions": 0,
-        "estimated_turnover_cost": 3790.8650155875234,
+        "estimated_turnover_cost": 3790.8666711778437,
         "sessions": 1508,
         "vs_baseline": {
           "cagr_delta": 0.0,
@@ -443,15 +443,15 @@
         "name": "cross_asset_stress",
         "signal": "cross_asset",
         "cap": 2.0,
-        "end_equity": 1023876.4558514445,
-        "cagr": 0.4747471923544231,
-        "max_drawdown": -0.407763954058576,
+        "end_equity": 1023877.954478174,
+        "cagr": 0.4747475528465257,
+        "max_drawdown": -0.4077635900453338,
         "intervention_sessions": 23,
-        "estimated_turnover_cost": 5214.862178090461,
+        "estimated_turnover_cost": 5214.86681692849,
         "sessions": 1508,
         "vs_baseline": {
-          "cagr_delta": -0.012345763295973144,
-          "maxdd_improvement": 1.1102230246251565e-16,
+          "cagr_delta": -0.012345612060355116,
+          "maxdd_improvement": -1.1102230246251565e-15,
           "pareto_improves_both": false
         }
       },
@@ -459,15 +459,15 @@
         "name": "vol_of_vol_stress",
         "signal": "vol_of_vol",
         "cap": 2.0,
-        "end_equity": 1068193.8226950415,
-        "cagr": 0.48522041468385924,
-        "max_drawdown": -0.4125792666987851,
+        "end_equity": 1068194.291508606,
+        "cagr": 0.48522052354514544,
+        "max_drawdown": -0.4125791352802537,
         "intervention_sessions": 5,
-        "estimated_turnover_cost": 5507.42164929214,
+        "estimated_turnover_cost": 5507.422730167552,
         "sessions": 1508,
         "vs_baseline": {
-          "cagr_delta": -0.0018725409665369952,
-          "maxdd_improvement": -0.0048153126402089574,
+          "cagr_delta": -0.001872641361735372,
+          "maxdd_improvement": -0.004815545234921004,
           "pareto_improves_both": false
         }
       },
@@ -475,11 +475,11 @@
         "name": "momentum_deterioration",
         "signal": "momentum",
         "cap": 2.0,
-        "end_equity": 1076283.3591398078,
-        "cagr": 0.48709295565039623,
-        "max_drawdown": -0.40776395405857613,
+        "end_equity": 1076284.2659889846,
+        "cagr": 0.4870931649068808,
+        "max_drawdown": -0.4077635900453327,
         "intervention_sessions": 0,
-        "estimated_turnover_cost": 3790.8650155875234,
+        "estimated_turnover_cost": 3790.8666711778437,
         "sessions": 1508,
         "vs_baseline": {
           "cagr_delta": 0.0,
@@ -491,15 +491,15 @@
         "name": "ensemble_2of8_cap2",
         "signal": "ensemble2",
         "cap": 2.0,
-        "end_equity": 1054126.240261385,
-        "cagr": 0.4819357752394813,
-        "max_drawdown": -0.4156782240753084,
+        "end_equity": 1054127.178078025,
+        "cagr": 0.48193599542413934,
+        "max_drawdown": -0.4156778749657083,
         "intervention_sessions": 19,
-        "estimated_turnover_cost": 6669.659975959333,
+        "estimated_turnover_cost": 6669.664190451589,
         "sessions": 1508,
         "vs_baseline": {
-          "cagr_delta": -0.005157180410914952,
-          "maxdd_improvement": -0.007914270016732283,
+          "cagr_delta": -0.005157169482741475,
+          "maxdd_improvement": -0.007914284920375603,
           "pareto_improves_both": false
         }
       },
@@ -507,15 +507,15 @@
         "name": "ensemble_3of8_cap125",
         "signal": "ensemble3",
         "cap": 1.25,
-        "end_equity": 1098593.6414333424,
-        "cagr": 0.49219718873219787,
-        "max_drawdown": -0.41618508963644074,
+        "end_equity": 1098594.5524463928,
+        "cagr": 0.4921973953872889,
+        "max_drawdown": -0.4161851323635003,
         "intervention_sessions": 7,
-        "estimated_turnover_cost": 7613.7391611241,
+        "estimated_turnover_cost": 7613.744370537535,
         "sessions": 1508,
         "vs_baseline": {
-          "cagr_delta": 0.005104233081801635,
-          "maxdd_improvement": -0.008421135577864614,
+          "cagr_delta": 0.00510423048040809,
+          "maxdd_improvement": -0.008421542318167607,
           "pareto_improves_both": false
         }
       }
@@ -525,11 +525,11 @@
         "name": "baseline",
         "signal": null,
         "cap": 3.0,
-        "end_equity": 320831.74264545855,
-        "cagr": 0.2630888428962097,
-        "max_drawdown": -0.49743718330364783,
+        "end_equity": 320831.60884241865,
+        "cagr": 0.26308873735616833,
+        "max_drawdown": -0.4974371408027197,
         "intervention_sessions": 0,
-        "estimated_turnover_cost": 2766.0381967502863,
+        "estimated_turnover_cost": 2766.037595140802,
         "sessions": 1258,
         "vs_baseline": {
           "cagr_delta": 0.0,
@@ -541,15 +541,15 @@
         "name": "vix_stress",
         "signal": "vix",
         "cap": 2.0,
-        "end_equity": 311932.2207628602,
-        "cagr": 0.2559899794620215,
-        "max_drawdown": -0.49206618166905547,
+        "end_equity": 311932.36046685453,
+        "cagr": 0.25599009216342417,
+        "max_drawdown": -0.4920665085758228,
         "intervention_sessions": 64,
-        "estimated_turnover_cost": 6692.930330789372,
+        "estimated_turnover_cost": 6692.932943800435,
         "sessions": 1258,
         "vs_baseline": {
-          "cagr_delta": -0.007098863434188196,
-          "maxdd_improvement": 0.005371001634592365,
+          "cagr_delta": -0.0070986451927441685,
+          "maxdd_improvement": 0.005370632226896932,
           "pareto_improves_both": false
         }
       },
@@ -557,15 +557,15 @@
         "name": "vix_term_backwardation",
         "signal": "term",
         "cap": 2.0,
-        "end_equity": 292502.75781392877,
-        "cagr": 0.23991032462274386,
-        "max_drawdown": -0.4794083691328066,
+        "end_equity": 292502.7113565597,
+        "cagr": 0.23991028516705892,
+        "max_drawdown": -0.47940836461467173,
         "intervention_sessions": 46,
-        "estimated_turnover_cost": 4848.748359458099,
+        "estimated_turnover_cost": 4848.74863654959,
         "sessions": 1258,
         "vs_baseline": {
-          "cagr_delta": -0.023178518273465842,
-          "maxdd_improvement": 0.018028814170841234,
+          "cagr_delta": -0.02317845218910941,
+          "maxdd_improvement": 0.01802877618804799,
           "pareto_improves_both": false
         }
       },
@@ -573,15 +573,15 @@
         "name": "credit_stress",
         "signal": "credit",
         "cap": 2.0,
-        "end_equity": 250426.09504652754,
-        "cagr": 0.2019223950990654,
-        "max_drawdown": -0.5194297094161094,
+        "end_equity": 250426.17274108247,
+        "cagr": 0.20192246980962913,
+        "max_drawdown": -0.5194296792237492,
         "intervention_sessions": 48,
-        "estimated_turnover_cost": 3685.228746416193,
+        "estimated_turnover_cost": 3685.229164932135,
         "sessions": 1258,
         "vs_baseline": {
-          "cagr_delta": -0.06116644779714431,
-          "maxdd_improvement": -0.021992526112461608,
+          "cagr_delta": -0.0611662675465392,
+          "maxdd_improvement": -0.02199253842102944,
           "pareto_improves_both": false
         }
       },
@@ -589,14 +589,14 @@
         "name": "participation_deterioration",
         "signal": "participation",
         "cap": 2.0,
-        "end_equity": 327818.4856754834,
-        "cagr": 0.26855242056003004,
-        "max_drawdown": -0.49743718330364783,
+        "end_equity": 327818.4312238422,
+        "cagr": 0.26855237834368584,
+        "max_drawdown": -0.4974371408027197,
         "intervention_sessions": 16,
-        "estimated_turnover_cost": 2812.8086695482752,
+        "estimated_turnover_cost": 2812.8084715495534,
         "sessions": 1258,
         "vs_baseline": {
-          "cagr_delta": 0.005463577663820329,
+          "cagr_delta": 0.005463640987517504,
           "maxdd_improvement": 0.0,
           "pareto_improves_both": true
         }
@@ -605,15 +605,15 @@
         "name": "options_tail_stress",
         "signal": "options",
         "cap": 2.0,
-        "end_equity": 304595.6489812827,
-        "cagr": 0.250014996068578,
-        "max_drawdown": -0.49743718330364795,
+        "end_equity": 304595.3964266115,
+        "cagr": 0.2500147884139019,
+        "max_drawdown": -0.4974371408027197,
         "intervention_sessions": 13,
-        "estimated_turnover_cost": 5967.1610275664325,
+        "estimated_turnover_cost": 5967.159744616755,
         "sessions": 1258,
         "vs_baseline": {
-          "cagr_delta": -0.013073846827631685,
-          "maxdd_improvement": -1.1102230246251565e-16,
+          "cagr_delta": -0.013073948942266433,
+          "maxdd_improvement": 0.0,
           "pareto_improves_both": false
         }
       },
@@ -621,11 +621,11 @@
         "name": "cross_asset_stress",
         "signal": "cross_asset",
         "cap": 2.0,
-        "end_equity": 320831.74264545855,
-        "cagr": 0.2630888428962097,
-        "max_drawdown": -0.49743718330364783,
+        "end_equity": 320831.60884241865,
+        "cagr": 0.26308873735616833,
+        "max_drawdown": -0.4974371408027197,
         "intervention_sessions": 0,
-        "estimated_turnover_cost": 2766.0381967502863,
+        "estimated_turnover_cost": 2766.037595140802,
         "sessions": 1258,
         "vs_baseline": {
           "cagr_delta": 0.0,
@@ -637,15 +637,15 @@
         "name": "vol_of_vol_stress",
         "signal": "vol_of_vol",
         "cap": 2.0,
-        "end_equity": 279092.63801064144,
-        "cagr": 0.2283065737800556,
-        "max_drawdown": -0.4974371833036477,
+        "end_equity": 279092.49395328213,
+        "cagr": 0.22830644675524003,
+        "max_drawdown": -0.4974371408027197,
         "intervention_sessions": 46,
-        "estimated_turnover_cost": 6372.366837160179,
+        "estimated_turnover_cost": 6372.363729887726,
         "sessions": 1258,
         "vs_baseline": {
-          "cagr_delta": -0.03478226911615412,
-          "maxdd_improvement": 1.1102230246251565e-16,
+          "cagr_delta": -0.0347822906009283,
+          "maxdd_improvement": 0.0,
           "pareto_improves_both": false
         }
       },
@@ -653,11 +653,11 @@
         "name": "momentum_deterioration",
         "signal": "momentum",
         "cap": 2.0,
-        "end_equity": 320831.74264545855,
-        "cagr": 0.2630888428962097,
-        "max_drawdown": -0.49743718330364783,
+        "end_equity": 320831.60884241865,
+        "cagr": 0.26308873735616833,
+        "max_drawdown": -0.4974371408027197,
         "intervention_sessions": 0,
-        "estimated_turnover_cost": 2766.0381967502863,
+        "estimated_turnover_cost": 2766.037595140802,
         "sessions": 1258,
         "vs_baseline": {
           "cagr_delta": 0.0,
@@ -669,15 +669,15 @@
         "name": "ensemble_2of8_cap2",
         "signal": "ensemble2",
         "cap": 2.0,
-        "end_equity": 260606.8707445051,
-        "cagr": 0.21155680921588438,
-        "max_drawdown": -0.4931459416209888,
+        "end_equity": 260606.90801693941,
+        "cagr": 0.21155684393273266,
+        "max_drawdown": -0.49314628415695805,
         "intervention_sessions": 62,
-        "estimated_turnover_cost": 5837.851134709228,
+        "estimated_turnover_cost": 5837.851891101018,
         "sessions": 1258,
         "vs_baseline": {
-          "cagr_delta": -0.05153203368032533,
-          "maxdd_improvement": 0.004291241682659042,
+          "cagr_delta": -0.05153189342343567,
+          "maxdd_improvement": 0.004290856645761676,
           "pareto_improves_both": false
         }
       },
@@ -685,15 +685,15 @@
         "name": "ensemble_3of8_cap125",
         "signal": "ensemble3",
         "cap": 1.25,
-        "end_equity": 306872.09188925585,
-        "cagr": 0.25188115684176626,
-        "max_drawdown": -0.5056231177235184,
+        "end_equity": 306871.7571417194,
+        "cagr": 0.25188088324061164,
+        "max_drawdown": -0.5056231539860092,
         "intervention_sessions": 32,
-        "estimated_turnover_cost": 6987.5987106610655,
+        "estimated_turnover_cost": 6987.595376911499,
         "sessions": 1258,
         "vs_baseline": {
-          "cagr_delta": -0.011207686054443444,
-          "maxdd_improvement": -0.008185934419870589,
+          "cagr_delta": -0.011207854115556692,
+          "maxdd_improvement": -0.008186013183289487,
           "pareto_improves_both": false
         }
       }
@@ -703,12 +703,12 @@
         "name": "baseline",
         "signal": null,
         "cap": 3.0,
-        "end_equity": 453908.2037844895,
-        "cagr": 0.4776713125408889,
-        "max_drawdown": -0.4475650467089338,
+        "end_equity": 435050.0115828791,
+        "cagr": 0.4592342558586122,
+        "max_drawdown": -0.4733897999645452,
         "intervention_sessions": 0,
-        "estimated_turnover_cost": 2721.582934247355,
-        "sessions": 973,
+        "estimated_turnover_cost": 2721.583351226555,
+        "sessions": 977,
         "vs_baseline": {
           "cagr_delta": 0.0,
           "maxdd_improvement": 0.0,
@@ -719,15 +719,15 @@
         "name": "vix_stress",
         "signal": "vix",
         "cap": 2.0,
-        "end_equity": 393923.95628114016,
-        "cagr": 0.42458702004885596,
-        "max_drawdown": -0.450026335805766,
+        "end_equity": 377557.5493886216,
+        "cagr": 0.4070293171529824,
+        "max_drawdown": -0.4962908953939501,
         "intervention_sessions": 19,
-        "estimated_turnover_cost": 7145.0474900996405,
-        "sessions": 973,
+        "estimated_turnover_cost": 7145.043740431925,
+        "sessions": 977,
         "vs_baseline": {
-          "cagr_delta": -0.05308429249203295,
-          "maxdd_improvement": -0.0024612890968321866,
+          "cagr_delta": -0.05220493870562981,
+          "maxdd_improvement": -0.022901095429404883,
           "pareto_improves_both": false
         }
       },
@@ -735,15 +735,15 @@
         "name": "vix_term_backwardation",
         "signal": "term",
         "cap": 2.0,
-        "end_equity": 432022.1922709075,
-        "cagr": 0.4589420301304634,
-        "max_drawdown": -0.4217995636788745,
+        "end_equity": 414073.256823105,
+        "cagr": 0.44081623841193474,
+        "max_drawdown": -0.47338979996454544,
         "intervention_sessions": 22,
-        "estimated_turnover_cost": 7498.646646591157,
-        "sessions": 973,
+        "estimated_turnover_cost": 7498.64750949239,
+        "sessions": 977,
         "vs_baseline": {
-          "cagr_delta": -0.018729282410425485,
-          "maxdd_improvement": 0.025765483030059322,
+          "cagr_delta": -0.01841801744667748,
+          "maxdd_improvement": -2.220446049250313e-16,
           "pareto_improves_both": false
         }
       },
@@ -751,15 +751,15 @@
         "name": "credit_stress",
         "signal": "credit",
         "cap": 2.0,
-        "end_equity": 415661.6346622218,
-        "cagr": 0.44447601275017257,
-        "max_drawdown": -0.44756504670893404,
+        "end_equity": 398392.3869288219,
+        "cagr": 0.4265899384335159,
+        "max_drawdown": -0.47342606842040325,
         "intervention_sessions": 32,
-        "estimated_turnover_cost": 4033.12307651612,
-        "sessions": 973,
+        "estimated_turnover_cost": 4033.123044788105,
+        "sessions": 977,
         "vs_baseline": {
-          "cagr_delta": -0.03319529979071634,
-          "maxdd_improvement": -2.220446049250313e-16,
+          "cagr_delta": -0.032644317425096325,
+          "maxdd_improvement": -3.626845585802396e-05,
           "pareto_improves_both": false
         }
       },
@@ -767,15 +767,15 @@
         "name": "participation_deterioration",
         "signal": "participation",
         "cap": 2.0,
-        "end_equity": 416622.5318737551,
-        "cagr": 0.4453372050155038,
-        "max_drawdown": -0.4322699109493665,
+        "end_equity": 399313.44300399895,
+        "cagr": 0.4274369488956622,
+        "max_drawdown": -0.459559812605556,
         "intervention_sessions": 153,
-        "estimated_turnover_cost": 8532.536849249054,
-        "sessions": 973,
+        "estimated_turnover_cost": 8532.538000153343,
+        "sessions": 977,
         "vs_baseline": {
-          "cagr_delta": -0.032334107525385125,
-          "maxdd_improvement": 0.015295135759567313,
+          "cagr_delta": -0.03179730696295002,
+          "maxdd_improvement": 0.013829987358989215,
           "pareto_improves_both": false
         }
       },
@@ -783,15 +783,15 @@
         "name": "options_tail_stress",
         "signal": "options",
         "cap": 2.0,
-        "end_equity": 405453.1630857669,
-        "cagr": 0.435234322608119,
-        "max_drawdown": -0.4517282058693547,
+        "end_equity": 388607.73240073456,
+        "cagr": 0.41750080923780697,
+        "max_drawdown": -0.494736857198688,
         "intervention_sessions": 42,
-        "estimated_turnover_cost": 11645.621787812795,
-        "sessions": 973,
+        "estimated_turnover_cost": 11645.615153447634,
+        "sessions": 977,
         "vs_baseline": {
-          "cagr_delta": -0.0424369899327699,
-          "maxdd_improvement": -0.004163159160420871,
+          "cagr_delta": -0.04173344662080525,
+          "maxdd_improvement": -0.021347057234142763,
           "pareto_improves_both": false
         }
       },
@@ -799,31 +799,31 @@
         "name": "cross_asset_stress",
         "signal": "cross_asset",
         "cap": 2.0,
-        "end_equity": 470014.06379999587,
-        "cagr": 0.4910305293935524,
-        "max_drawdown": -0.4322699109493664,
+        "end_equity": 450486.9183630908,
+        "cagr": 0.4723709900844666,
+        "max_drawdown": -0.47338979996454533,
         "intervention_sessions": 29,
-        "estimated_turnover_cost": 5274.817896947025,
-        "sessions": 973,
+        "estimated_turnover_cost": 5274.820736528456,
+        "sessions": 977,
         "vs_baseline": {
-          "cagr_delta": 0.013359216852663502,
-          "maxdd_improvement": 0.015295135759567424,
-          "pareto_improves_both": true
+          "cagr_delta": 0.013136734225854374,
+          "maxdd_improvement": -1.1102230246251565e-16,
+          "pareto_improves_both": false
         }
       },
       {
         "name": "vol_of_vol_stress",
         "signal": "vol_of_vol",
         "cap": 2.0,
-        "end_equity": 438902.6961859982,
-        "cagr": 0.4649045167964605,
-        "max_drawdown": -0.452671855978413,
+        "end_equity": 420667.8874029939,
+        "cagr": 0.4466797218731118,
+        "max_drawdown": -0.4733897999645452,
         "intervention_sessions": 10,
-        "estimated_turnover_cost": 4692.45362609315,
-        "sessions": 973,
+        "estimated_turnover_cost": 4692.453775386822,
+        "sessions": 977,
         "vs_baseline": {
-          "cagr_delta": -0.012766795744428405,
-          "maxdd_improvement": -0.005106809269479151,
+          "cagr_delta": -0.012554533985500438,
+          "maxdd_improvement": 0.0,
           "pareto_improves_both": false
         }
       },
@@ -831,12 +831,12 @@
         "name": "momentum_deterioration",
         "signal": "momentum",
         "cap": 2.0,
-        "end_equity": 453908.2037844895,
-        "cagr": 0.4776713125408889,
-        "max_drawdown": -0.4475650467089338,
+        "end_equity": 435050.0115828791,
+        "cagr": 0.4592342558586122,
+        "max_drawdown": -0.4733897999645452,
         "intervention_sessions": 0,
-        "estimated_turnover_cost": 2721.582934247355,
-        "sessions": 973,
+        "estimated_turnover_cost": 2721.583351226555,
+        "sessions": 977,
         "vs_baseline": {
           "cagr_delta": 0.0,
           "maxdd_improvement": 0.0,
@@ -847,15 +847,15 @@
         "name": "ensemble_2of8_cap2",
         "signal": "ensemble2",
         "cap": 2.0,
-        "end_equity": 415508.4549055739,
-        "cagr": 0.44433859083041116,
-        "max_drawdown": -0.44534170151042884,
+        "end_equity": 398245.3178339145,
+        "cagr": 0.4264545578628376,
+        "max_drawdown": -0.48101215883026294,
         "intervention_sessions": 28,
-        "estimated_turnover_cost": 9215.807507390196,
-        "sessions": 973,
+        "estimated_turnover_cost": 9215.803385447074,
+        "sessions": 977,
         "vs_baseline": {
-          "cagr_delta": -0.03333272171047774,
-          "maxdd_improvement": 0.002223345198504978,
+          "cagr_delta": -0.032779697995774626,
+          "maxdd_improvement": -0.0076223588657177155,
           "pareto_improves_both": false
         }
       },
@@ -863,15 +863,15 @@
         "name": "ensemble_3of8_cap125",
         "signal": "ensemble3",
         "cap": 1.25,
-        "end_equity": 426806.04007566953,
-        "cagr": 0.45437470953156756,
-        "max_drawdown": -0.45189857226023344,
+        "end_equity": 409073.6129827765,
+        "cagr": 0.4363244937674915,
+        "max_drawdown": -0.47338979996454544,
         "intervention_sessions": 9,
-        "estimated_turnover_cost": 5954.103708205351,
-        "sessions": 973,
+        "estimated_turnover_cost": 5954.101796050409,
+        "sessions": 977,
         "vs_baseline": {
-          "cagr_delta": -0.02329660300932135,
-          "maxdd_improvement": -0.004333525551299622,
+          "cagr_delta": -0.022909762091120722,
+          "maxdd_improvement": -2.220446049250313e-16,
           "pareto_improves_both": false
         }
       }

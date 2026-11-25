@@ -2,195 +2,195 @@
   "schema_version": 1,
   "items": [
     {
-      "short_sha": "2fd4fd5",
-      "date": "2026-11-18T22:21:31+02:00",
-      "title": "test(SL-56): one-shot ST console fault suite and live AWS readback (#189)",
+      "short_sha": "6ced2e1",
+      "date": "2026-11-24T19:46:56Z",
+      "title": "ops: publish source-hashed blocked-or-ready evidence closeout",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "fb35451",
-      "date": "2026-11-18T21:08:17+02:00",
-      "title": "audit(SL-56): AWS Lambda & S3 version truth via OIDC (#188)",
+      "short_sha": "14518d3",
+      "date": "2026-11-24T21:46:41+02:00",
+      "title": "Merge pull request #225 from badbuda/fix/public-gap-replay-panel",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "85c1b74",
-      "date": "2026-11-18T21:04:00+02:00",
-      "title": "test(SL-56): prove current real QQQ/TQQQ 1m coverage without AWS mutations (#187)",
+      "short_sha": "874ee5f",
+      "date": "2026-11-24T21:16:27+02:00",
+      "title": "Show separately labeled normalized historical gap replay on main dashboard",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "d82190e",
-      "date": "2026-11-18T20:54:29+02:00",
-      "title": "diagnose(ST): enumerate Paper scheduler, alarms, receipt gaps before acceptance (#186)",
+      "short_sha": "324cbaa",
+      "date": "2026-11-24T19:15:59Z",
+      "title": "ops: publish source-hashed blocked-or-ready evidence closeout",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "9126117",
-      "date": "2026-11-18T20:42:14+02:00",
-      "title": "fix(SL-57): fail-closed legacy staging Signal containment tool (#185)",
+      "short_sha": "b89dd45",
+      "date": "2026-11-24T21:15:28+02:00",
+      "title": "Merge pull request #224 from badbuda/fix/public-epoch5-dashboard",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "e95bcbc",
-      "date": "2026-11-18T19:33:36+02:00",
-      "title": "fix(ST): use verified CloudFormation OIDC role fallback for post-Paper readback (#184)",
+      "short_sha": "87a61b4",
+      "date": "2026-11-24T20:57:42+02:00",
+      "title": "Respect generated cloud configuration exclusion in transfer manifest",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "cff40c8",
-      "date": "2026-11-18T19:21:19+02:00",
-      "title": "fix(ST): dedicated least-privilege audit role and post-Paper acceptance schedule (#177)",
+      "short_sha": "d80e8c3",
+      "date": "2026-11-24T20:54:50+02:00",
+      "title": "Load public demo on main dashboard automatically; prove no-login display",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "4100fa0",
-      "date": "2026-11-18T04:38:31Z",
-      "title": "shadow: record prospective evidence 2026-11-17",
+      "short_sha": "a118157",
+      "date": "2026-11-24T20:54:04+02:00",
+      "title": "Add allowlisted public ST demo reader and isolated deployment",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "35e8bb2",
-      "date": "2026-11-17T05:17:53Z",
-      "title": "shadow: record prospective evidence 2026-11-16",
+      "short_sha": "640dfa2",
+      "date": "2026-11-24T18:52:18Z",
+      "title": "ops: publish source-hashed blocked-or-ready evidence closeout",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "03c0e01",
-      "date": "2026-11-14T03:33:23Z",
-      "title": "shadow: record prospective evidence 2026-11-13",
+      "short_sha": "2f2c032",
+      "date": "2026-11-24T20:52:06+02:00",
+      "title": "Merge pull request #223 from badbuda/fix/epoch5-primary-paper-cards",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "fc659e0",
-      "date": "2026-11-13T03:36:42Z",
-      "title": "shadow: record prospective evidence 2026-11-12",
+      "short_sha": "bdb5f3b",
+      "date": "2026-11-24T20:32:52+02:00",
+      "title": "Keep tax view contract while clearing mismatched epoch tax feed",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "bf19a85",
-      "date": "2026-11-12T04:04:02Z",
-      "title": "shadow: record prospective evidence 2026-11-11",
+      "short_sha": "d1b9cd8",
+      "date": "2026-11-24T20:29:00+02:00",
+      "title": "Isolate archive auth errors and verify missing receipt clears primary cards",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     }
   ],
   "high_signal_items": [
     {
-      "short_sha": "2fd4fd5",
-      "date": "2026-11-18T22:21:31+02:00",
-      "title": "test(SL-56): one-shot ST console fault suite and live AWS readback (#189)",
+      "short_sha": "6ced2e1",
+      "date": "2026-11-24T19:46:56Z",
+      "title": "ops: publish source-hashed blocked-or-ready evidence closeout",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "fb35451",
-      "date": "2026-11-18T21:08:17+02:00",
-      "title": "audit(SL-56): AWS Lambda & S3 version truth via OIDC (#188)",
+      "short_sha": "14518d3",
+      "date": "2026-11-24T21:46:41+02:00",
+      "title": "Merge pull request #225 from badbuda/fix/public-gap-replay-panel",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "85c1b74",
-      "date": "2026-11-18T21:04:00+02:00",
-      "title": "test(SL-56): prove current real QQQ/TQQQ 1m coverage without AWS mutations (#187)",
+      "short_sha": "874ee5f",
+      "date": "2026-11-24T21:16:27+02:00",
+      "title": "Show separately labeled normalized historical gap replay on main dashboard",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "d82190e",
-      "date": "2026-11-18T20:54:29+02:00",
-      "title": "diagnose(ST): enumerate Paper scheduler, alarms, receipt gaps before acceptance (#186)",
+      "short_sha": "324cbaa",
+      "date": "2026-11-24T19:15:59Z",
+      "title": "ops: publish source-hashed blocked-or-ready evidence closeout",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "9126117",
-      "date": "2026-11-18T20:42:14+02:00",
-      "title": "fix(SL-57): fail-closed legacy staging Signal containment tool (#185)",
+      "short_sha": "b89dd45",
+      "date": "2026-11-24T21:15:28+02:00",
+      "title": "Merge pull request #224 from badbuda/fix/public-epoch5-dashboard",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "e95bcbc",
-      "date": "2026-11-18T19:33:36+02:00",
-      "title": "fix(ST): use verified CloudFormation OIDC role fallback for post-Paper readback (#184)",
+      "short_sha": "87a61b4",
+      "date": "2026-11-24T20:57:42+02:00",
+      "title": "Respect generated cloud configuration exclusion in transfer manifest",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "cff40c8",
-      "date": "2026-11-18T19:21:19+02:00",
-      "title": "fix(ST): dedicated least-privilege audit role and post-Paper acceptance schedule (#177)",
+      "short_sha": "d80e8c3",
+      "date": "2026-11-24T20:54:50+02:00",
+      "title": "Load public demo on main dashboard automatically; prove no-login display",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "4100fa0",
-      "date": "2026-11-18T04:38:31Z",
-      "title": "shadow: record prospective evidence 2026-11-17",
+      "short_sha": "a118157",
+      "date": "2026-11-24T20:54:04+02:00",
+      "title": "Add allowlisted public ST demo reader and isolated deployment",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "35e8bb2",
-      "date": "2026-11-17T05:17:53Z",
-      "title": "shadow: record prospective evidence 2026-11-16",
+      "short_sha": "640dfa2",
+      "date": "2026-11-24T18:52:18Z",
+      "title": "ops: publish source-hashed blocked-or-ready evidence closeout",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "03c0e01",
-      "date": "2026-11-14T03:33:23Z",
-      "title": "shadow: record prospective evidence 2026-11-13",
+      "short_sha": "2f2c032",
+      "date": "2026-11-24T20:52:06+02:00",
+      "title": "Merge pull request #223 from badbuda/fix/epoch5-primary-paper-cards",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "fc659e0",
-      "date": "2026-11-13T03:36:42Z",
-      "title": "shadow: record prospective evidence 2026-11-12",
+      "short_sha": "bdb5f3b",
+      "date": "2026-11-24T20:32:52+02:00",
+      "title": "Keep tax view contract while clearing mismatched epoch tax feed",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "bf19a85",
-      "date": "2026-11-12T04:04:02Z",
-      "title": "shadow: record prospective evidence 2026-11-11",
+      "short_sha": "d1b9cd8",
+      "date": "2026-11-24T20:29:00+02:00",
+      "title": "Isolate archive auth errors and verify missing receipt clears primary cards",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     }
   ],
   "recent_summary": [
     {
-      "short_sha": "2fd4fd5",
-      "date": "2026-11-18T22:21:31+02:00",
-      "title": "test(SL-56): one-shot ST console fault suite and live AWS readback (#189)",
+      "short_sha": "6ced2e1",
+      "date": "2026-11-24T19:46:56Z",
+      "title": "ops: publish source-hashed blocked-or-ready evidence closeout",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "fb35451",
-      "date": "2026-11-18T21:08:17+02:00",
-      "title": "audit(SL-56): AWS Lambda & S3 version truth via OIDC (#188)",
+      "short_sha": "14518d3",
+      "date": "2026-11-24T21:46:41+02:00",
+      "title": "Merge pull request #225 from badbuda/fix/public-gap-replay-panel",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     },
     {
-      "short_sha": "85c1b74",
-      "date": "2026-11-18T21:04:00+02:00",
-      "title": "test(SL-56): prove current real QQQ/TQQQ 1m coverage without AWS mutations (#187)",
+      "short_sha": "874ee5f",
+      "date": "2026-11-24T21:16:27+02:00",
+      "title": "Show separately labeled normalized historical gap replay on main dashboard",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     }
