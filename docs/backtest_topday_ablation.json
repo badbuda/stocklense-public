@@ -1,39 +1,39 @@
 {
   "schema_version": 1,
   "status": "PASS",
-  "full_compounded_gross_return": 0.05497697547186231,
+  "full_compounded_gross_return": -0.028983006950104917,
   "cases": [
     {
       "removed_top_positive_sessions": 1,
-      "remaining_compounded_gross_return": -0.042587076711192995,
-      "delta_vs_full": -0.0975640521830553,
+      "remaining_compounded_gross_return": -0.1187824573487063,
+      "delta_vs_full": -0.08979945039860138,
       "removed_dates": [
         "2026-08-04"
       ]
     },
     {
       "removed_top_positive_sessions": 5,
-      "remaining_compounded_gross_return": -0.33459173743173243,
-      "delta_vs_full": -0.38956871290359474,
+      "remaining_compounded_gross_return": -0.38811954230673607,
+      "delta_vs_full": -0.35913653535663115,
       "removed_dates": [
         "2026-08-04",
         "2026-06-11",
         "2026-07-30",
         "2026-06-15",
-        "2026-09-21"
+        "2026-11-23"
       ]
     },
     {
       "removed_top_positive_sessions": 10,
-      "remaining_compounded_gross_return": -0.5246384082696716,
-      "delta_vs_full": -0.5796153837415339,
+      "remaining_compounded_gross_return": -0.5667976144866582,
+      "delta_vs_full": -0.5378146075365533,
       "removed_dates": [
         "2026-08-04",
         "2026-06-11",
         "2026-07-30",
         "2026-06-15",
+        "2026-11-23",
         "2026-09-21",
-        "2025-11-24",
         "2026-06-18",
         "2026-05-08",
         "2026-02-06",
@@ -42,15 +42,15 @@
     },
     {
       "removed_top_positive_sessions": 20,
-      "remaining_compounded_gross_return": -0.7141506682771228,
-      "delta_vs_full": -0.7691276437489851,
+      "remaining_compounded_gross_return": -0.739502276679531,
+      "delta_vs_full": -0.710519269729426,
       "removed_dates": [
         "2026-08-04",
         "2026-06-11",
         "2026-07-30",
         "2026-06-15",
+        "2026-11-23",
         "2026-09-21",
-        "2025-11-24",
         "2026-06-18",
         "2026-05-08",
         "2026-02-06",

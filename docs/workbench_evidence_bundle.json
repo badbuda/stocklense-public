@@ -1,14 +1,14 @@
 {
   "schema_version": 1,
   "kind": "STOCKLENS_WORKBENCH_CANONICAL_EVIDENCE_BUNDLE",
-  "generated_at_utc": "2026-11-25T05:42:16.912172+00:00",
+  "generated_at_utc": "2026-11-26T05:19:00.763684+00:00",
   "model": "StockLens 8.0 FROZEN",
   "self_check": {
     "status": "PASS",
     "errors": [],
     "replay_sessions": 252,
     "transition_count": 67,
-    "manifest_sha256": "3f048f0f2f0b005c6bbe4d834bdadcf48a7bb8252b4d8e7be05cd01d3211f868",
+    "manifest_sha256": "dd811ca026be85c35f84d98ab8417f63befe565b802b645766e32b04d8b4c036",
     "automatic_model_change": false
   },
   "evidence_manifest": {
@@ -18,7 +18,7 @@
     "automatic_model_change": false,
     "automatic_promotion": false,
     "artifacts": {
-      "historical_replay/daily_states.csv": "745743fc2f907d7d369152ca8a0962d85e52d4aa5b82bb51f4db03f031db5b4d",
+      "historical_replay/daily_states.csv": "b750b6b36d6268ff8d4e1ac14e94318b91e76cc5054e6f6eb5756b226efbb46d",
       "governance/qc_724_leverage_transitions.json": "e2d5851aed6688ae27cb6590a9adfac3ece449818d7ca923d7d011147b3a553e",
       "governance/qc_724_order_golden_master.json": "153edd0a5c8ebeed408b5d3b7d6a79af508c6f3f5ee8ed1868a3a65fc0fe17fb",
       "governance/qc_724_daily_state_manifest.json": "4a7e0757834866b90ccc14c53bf42123da2e530b01cca8d827f2144d5c5b6256",
@@ -31,17 +31,17 @@
       "lean_daily_state": "VERIFIED_FINGERPRINT_RAW_ROWS_MISSING",
       "prospective": "IMMATURE_FUTURE_ONLY"
     },
-    "manifest_sha256": "3f048f0f2f0b005c6bbe4d834bdadcf48a7bb8252b4d8e7be05cd01d3211f868"
+    "manifest_sha256": "dd811ca026be85c35f84d98ab8417f63befe565b802b645766e32b04d8b4c036"
   },
   "live": {
-    "asof_date": "2026-11-18",
+    "asof_date": "2026-11-24",
     "action": "NO_CHANGE",
     "level": 1,
     "target_leverage": 1.25
   },
   "replay": {
-    "start": "2025-11-18",
-    "end": "2026-11-18",
+    "start": "2025-11-24",
+    "end": "2026-11-24",
     "sessions": 252,
     "dataset_sha256": "db0889da31af43b1b75e005c1f4ab2cad421dfb55a6c55a77a223e0623950d95"
   },

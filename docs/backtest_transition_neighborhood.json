@@ -338,6 +338,12 @@
           "date": "2026-11-18",
           "qqq_return": 0.0038967920100851927,
           "applied_exposure": 1.25
+        },
+        {
+          "offset": 3,
+          "date": "2026-11-19",
+          "qqq_return": -0.021940579405949512,
+          "applied_exposure": 1.25
         }
       ]
     }

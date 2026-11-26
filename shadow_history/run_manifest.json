@@ -1,29 +1,29 @@
 {
   "schema_version": 2,
-  "generated_at_utc": "2026-11-25T05:42:18.201042+00:00",
-  "github_run_id": "45553654282",
-  "github_run_number": "210",
-  "git_sha": "6ced2e1c4d308c5fbddf7934a08fb5721c0e5af0",
-  "publication_generation": "737e56ac9cb60094a6605ca33aa092d4baa28f05fe7ef8619f904b7ff4964359",
+  "generated_at_utc": "2026-11-26T05:19:01.856953+00:00",
+  "github_run_id": "45759396453",
+  "github_run_number": "211",
+  "git_sha": "dcb14171409c398861a6160596ce70310c01bd1d",
+  "publication_generation": "81d6dd036f5271210a84aba843095f41ddf14e5ca2311e1776e866163b2a80f9",
   "files": [
     {
       "path": "output/latest_signal.json",
-      "sha256": "3ca80fc83c2a523492bac5185f42243d5a9f1c067972eadeaeb4353097e12f24",
-      "bytes": 1922
+      "sha256": "4afbbc6292fddc23fd52bef64d40bfe0a423d3182fd7527557b5af9d6d6902d9",
+      "bytes": 1923
     },
     {
       "path": "output/research_provenance.json",
-      "sha256": "1a7ac15ed8b85387562499a8b06bb3105dda7896b921d76d707d1bbc88878605",
+      "sha256": "87e9b0858546d682786810fc23f2a41260054777a6a0254cab2ba3206732fe52",
       "bytes": 889
     },
     {
       "path": "shadow_history/health.json",
-      "sha256": "4cf26bd827715582186d0ef3d14a4c7b5bda9d32a33809575db74e0766499e1d",
+      "sha256": "6a22c4cb74dfa1c2bc0d654981412da6df0e6b3e23f75853c3b3c3cdd46ea8bd",
       "bytes": 186
     },
     {
       "path": "shadow_history/readiness.json",
-      "sha256": "1cd2fb12015ba4cc49284d96a616d7065c06b0207cc86b6757251c3ae6f8bd5f",
+      "sha256": "9bbef185ea832b0ab100b73a903aed9c4408bde7e4aae96519959d3649708a3c",
       "bytes": 779
     },
     {
@@ -38,12 +38,12 @@
     },
     {
       "path": "shadow_history/anomalies.json",
-      "sha256": "ba90c5e50cb2ad82f4879bf5d431eaeae76821518e47b369a4ca6e6625b2bf92",
-      "bytes": 1313
+      "sha256": "67385ebad959740667c014ac7d6205b14d9f28c5f89d68539f17cd914883a20e",
+      "bytes": 1318
     },
     {
       "path": "shadow_history/data_provenance.json",
-      "sha256": "14b86ca1d66c039a3d9b373d460ec4a177956ad5655eb7e535370fb6997b5c4e",
+      "sha256": "805088547b43e466e1a00187b1602f85869e359c378237d8b004c4f57085c9a8",
       "bytes": 330
     },
     {
@@ -73,27 +73,27 @@
     },
     {
       "path": "shadow_history/execution_readiness.json",
-      "sha256": "97c9d947a8be255f3171f8c45dc321654207192c3281145c85e1a48b4cb5ade4",
+      "sha256": "64d29ec41f72aeba2f8faa95dc1541931a108bb58412028e6eb807da73290326",
       "bytes": 380
     },
     {
       "path": "research/prospective/registry.json",
-      "sha256": "47b09e2fe2480917d866399fc580764b8ed7b475db52afb32bad1d2ffcb5361f",
+      "sha256": "a177cd0062e8e3b29349c2dbdd87e752d6debe092b02dc4b4b965d16c057de07",
       "bytes": 1655
     },
     {
       "path": "docs/prospective_maturity.json",
-      "sha256": "6862671ad0ff50ebb74ece27d5dfe85e3bcef582d9dacf2409a935b6b601214e",
+      "sha256": "a0d3ef27ee481546bd0ccc06c7f92467d2d7f89807afdce8b642d980499ee309",
       "bytes": 1885
     },
     {
       "path": "docs/capital_readiness.json",
-      "sha256": "24e680ea98d8215457c08d3ce57aff59031aca143e11b400eb7ac871a8f25085",
+      "sha256": "29359e6c12ef1b213da30a6f84459e8ad1f78a4c78d37f3976fca6e82b8b93f7",
       "bytes": 3893
     },
     {
       "path": "shadow_history/incident_state.json",
-      "sha256": "1305ded9b25a9a824fc2833f30b9d9bf237d27fbf9c4a192d0ead1ba4bc835b6",
+      "sha256": "76708ff43f1d599b04c49f03319ca0c448a21e0de662eb984284af46725ed58b",
       "bytes": 274
     },
     {
@@ -103,8 +103,8 @@
     },
     {
       "path": "shadow_history/artifact_catalog.json",
-      "sha256": "59285002ce1bcfc1574b9946cce5fde40282d7de03b81fd6355e6dd2974eb7f2",
-      "bytes": 27342
+      "sha256": "eacd446e90a0fc43d6c19333dd0d9eb1ba436744d673e50f4f63fc7b06179ed1",
+      "bytes": 27748
     }
   ]
 }
