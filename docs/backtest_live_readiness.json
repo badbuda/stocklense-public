@@ -4,15 +4,15 @@
   "status": "BLOCKED_FOR_LIVE_TRADING",
   "model": "StockLens 8.0 FROZEN",
   "evidence_class": "OBSERVED_ETF_DAILY_OPEN_PROXY_NOT_BROKER_LIVE",
-  "generated_at_utc": "2026-11-26T05:19:03.509747+00:00",
+  "generated_at_utc": "2026-11-27T05:24:00.247241+00:00",
   "backtest_window": {
     "start": "2010-02-11",
     "end": "2026-11-25",
     "sessions": 4224
   },
-  "historical_observed_etf_cagr": 0.3556421243387762,
-  "historical_qqq_cagr": 0.18381918345731707,
-  "historical_max_drawdown": -0.49075701731337595,
+  "historical_observed_etf_cagr": 0.35564225595766863,
+  "historical_qqq_cagr": 0.18381918638792505,
+  "historical_max_drawdown": -0.49075633601987123,
   "statistical_significance_not_proven": true,
   "observed_daily_open_not_true_fills": true,
   "prospective_challenger_sessions": 43,
@@ -32,7 +32,7 @@
           "sessions": 4224
         },
         "source": "YFINANCE_AUTO_ADJUSTED_DAILY_OPEN_AND_CLOSE",
-        "data_sha256": "c75ac9e8bf150ed11ba9eca46383a978e928faf001668e170382c1bc37695f14"
+        "data_sha256": "9ce5072fc202ad7f87957a877fc3983946d3e519ac69ef4d61dd2abc009dd615"
       },
       "severity": "REQUIRED"
     },
@@ -42,8 +42,8 @@
       "status": "PASS",
       "description": "Both strategies require identical market dates and external cashflows.",
       "evidence": {
-        "stocklens": 16527271.154174,
-        "qqq": 1698932.721607,
+        "stocklens": 16527298.089651,
+        "qqq": 1698932.792206,
         "contribution_matched": true
       },
       "severity": "REQUIRED"
@@ -209,7 +209,7 @@
     {
       "id": "DECISION_MONITORING_AND_STALE_DATA",
       "category": "Operations",
-      "status": "BLOCKED",
+      "status": "PASS",
       "description": "Same-day exchange-calendar and source freshness, signal/replay alignment and fail-closed monitoring.",
       "evidence": {
         "health": "HEALTHY",
@@ -223,7 +223,7 @@
       "status": "BLOCKED",
       "description": "Human-approved loss budget, position sizing, concentration, volatility gap limits, kill switch and response playbook must be validated.",
       "evidence": {
-        "historical_max_drawdown": -0.49075701731337595,
+        "historical_max_drawdown": -0.49075633601987123,
         "stress_loss_guarantee": false,
         "policy": "NOT_YET_APPROVED"
       },
@@ -241,8 +241,8 @@
       "severity": "REQUIRED"
     }
   ],
-  "passed_count": 5,
-  "blocked_count": 13,
+  "passed_count": 6,
+  "blocked_count": 12,
   "blockers": [
     "PROSPECTIVE_OBSERVED_MINUTE_QUOTE_JOURNAL",
     "LIVE_EXECUTION_TIME_PARITY",
@@ -254,7 +254,6 @@
     "PAPER_REPLAY_PAIRED_ATTRIBUTION",
     "PROSPECTIVE_QQQ_BENCHMARK",
     "BROKER_SANDBOX_DRY_RUN",
-    "DECISION_MONITORING_AND_STALE_DATA",
     "RISK_LIMITS_AND_GAP_CONTROLS",
     "HUMAN_CAPITAL_AND_COMPLIANCE_APPROVAL"
   ],

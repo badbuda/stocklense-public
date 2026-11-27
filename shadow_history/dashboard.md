@@ -43,8 +43,8 @@
 
 ## Data-integrity audit
 
-- Nonmaterial same-session input revisions observed: **5**
-- Latest input-drift audit: **2026-10-07** (ORIGINAL_PRESERVED_NONMATERIAL_INPUT_DRIFT)
+- Nonmaterial same-session input revisions observed: **6**
+- Latest input-drift audit: **2026-11-25** (ORIGINAL_PRESERVED_NONMATERIAL_INPUT_DRIFT)
 
 ## Governance
 

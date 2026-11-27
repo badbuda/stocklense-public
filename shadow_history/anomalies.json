@@ -19,8 +19,8 @@
     "sma200": {
       "relative_change": 0.00017976771217868828,
       "absolute_limit": 0.02,
-      "rolling_median_change": 0.0007871365933717493,
-      "rolling_mad": 0.00015637049733471185,
+      "rolling_median_change": 0.0007871368263455563,
+      "rolling_mad": 0.00015637049689484403,
       "effective_limit": 0.02
     },
     "vol20": {
@@ -31,10 +31,10 @@
       "effective_limit": 0.75
     },
     "mom12": {
-      "relative_change": 0.3933368786395039,
+      "relative_change": 0.3933376707298762,
       "absolute_limit": 0.75,
-      "rolling_median_change": 0.047013544625364986,
-      "rolling_mad": 0.031178397421516107,
+      "rolling_median_change": 0.04701350075412049,
+      "rolling_mad": 0.03117870614649972,
       "effective_limit": 0.75
     }
   },

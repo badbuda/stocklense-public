@@ -2,7 +2,7 @@
   "schema_version": 1,
   "status": "MISSED_EXECUTION_REVIEW",
   "current_signal_date": "2026-11-25",
-  "persisted_signal_date": "2026-11-24",
+  "persisted_signal_date": "2026-11-25",
   "paper_sessions": 2,
   "explicit_missed_sessions": 33,
   "errors": [],

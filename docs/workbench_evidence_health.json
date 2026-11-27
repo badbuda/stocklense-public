@@ -1,20 +1,20 @@
 {
   "schema_version": 1,
-  "generated_at_utc": "2026-11-26T05:19:01.233537+00:00",
+  "generated_at_utc": "2026-11-27T05:23:57.276176+00:00",
   "freshness": {
     "max_age_minutes": 180,
     "semantics": "PUBLICATION_AGE_ONLY_NOT_MARKET_DATA_AGE"
   },
   "market_session": {
     "signal_asof": "2026-11-25",
-    "replay_end": "2026-11-24",
+    "replay_end": "2026-11-25",
     "latest_completed_xnys_session": "2026-11-25",
     "latest_completed_close_utc": "2026-11-25T21:00:00+00:00",
     "provider_eligible_xnys_session": "2026-11-25",
     "provider_phase": "PROVIDER_DAILY_BAR_ELIGIBLE",
     "daily_bar_safe_after_ny_time": "18:00",
     "status": "LATEST_COMPLETED_SESSION",
-    "signal_replay_aligned": false,
+    "signal_replay_aligned": true,
     "replay_role": "FROZEN_HISTORICAL_CONTEXT_NOT_LIVE_FRESHNESS_CLOCK",
     "valid_xnys_session": true,
     "future_session": false,
@@ -33,7 +33,7 @@
   "market_session_freshness": "CURRENT",
   "self_check": "PASS",
   "bundle_manifest_match": true,
-  "manifest_sha256": "dd811ca026be85c35f84d98ab8417f63befe565b802b645766e32b04d8b4c036",
+  "manifest_sha256": "25e42257b206ff27fc76dd76fa2c3972320287af4ffcb6f9e7420973d820489e",
   "replay_sessions": 252,
   "transition_count": 67,
   "evidence_classes": {

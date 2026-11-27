@@ -1,9 +1,9 @@
 {
   "schema_version": 6,
-  "producer_git_sha": "dcb14171409c398861a6160596ce70310c01bd1d",
-  "current_git_sha": "dcb14171409c398861a6160596ce70310c01bd1d",
+  "producer_git_sha": "9008df7646abe333c3d35dd23371e3feea522aed",
+  "current_git_sha": "9008df7646abe333c3d35dd23371e3feea522aed",
   "producer_current": true,
-  "registry_updated_at_utc": "2026-11-26T05:18:57.696783+00:00",
+  "registry_updated_at_utc": "2026-11-27T05:23:52.241896+00:00",
   "status": "ATTENTION",
   "experiments": [
     {

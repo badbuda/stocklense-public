@@ -2,12 +2,12 @@
   "schema_version": 2,
   "publication_identity": {
     "schema_version": 2,
-    "git_sha": "dcb14171409c398861a6160596ce70310c01bd1d",
+    "git_sha": "9008df7646abe333c3d35dd23371e3feea522aed",
     "signal_asof": null,
     "replay_dataset_sha256": "db0889da31af43b1b75e005c1f4ab2cad421dfb55a6c55a77a223e0623950d95",
-    "replay_rows_sha256": "1b2c7e3af8b4fd945d7e4a34e0a6e833e42da0eb090242b47bba7ccf03683688",
+    "replay_rows_sha256": "19c1ce40d9eed676f9b7be8f776800ca3b2e472fba67f085e5d8266a74e83bd8",
     "simulator_contract_sha256": "80745a3640c6fe667a3c500571fb15abee1d532a5b720fb6efc8b52f291dfc68",
-    "generation_id": "81d6dd036f5271210a84aba843095f41ddf14e5ca2311e1776e866163b2a80f9"
+    "generation_id": "0ddb7f4e682067f5683e2a20a325cd017f6468edff52fad91e1dc67263de7f5f"
   },
   "stage": "SHADOW_ONLY",
   "prospective_completed_sessions": 43,
@@ -23,8 +23,8 @@
     "source_status": "AVAILABLE",
     "returns_csv": "research/data/SL9-007-UPSHIFT-CONFIRMATION.csv",
     "producer_current": true,
-    "producer_git_sha": "dcb14171409c398861a6160596ce70310c01bd1d",
-    "registry_updated_at_utc": "2026-11-26T05:18:57.696783+00:00",
+    "producer_git_sha": "9008df7646abe333c3d35dd23371e3feea522aed",
+    "registry_updated_at_utc": "2026-11-27T05:23:52.241896+00:00",
     "maturity_status": "ATTENTION",
     "experiment_id": "SL9-007-UPSHIFT-CONFIRMATION",
     "accepted_completed_xnys_rows": 43,
@@ -41,7 +41,7 @@
   "checks": {
     "evidence_health_healthy": true,
     "market_session_current": true,
-    "signal_replay_aligned": false,
+    "signal_replay_aligned": true,
     "paper_execution_ready": true,
     "simulator_accounting_pass": true,
     "simulator_provenance_present": true,
@@ -72,7 +72,6 @@
   "observational_only": true,
   "semantics": "Evidence-readiness classification only. LIMITED_EXECUTION_OBSERVATION_ELIGIBLE means the system has enough prospective sessions to begin observing tiny/manual execution behavior if a human independently chooses to do so; it is not an investment recommendation, allocation decision, broker authorization, or evidence that scaled capital is ready.",
   "next_blockers": [
-    "signal_replay_aligned",
     "prospective_maturity_pass",
     "prospective_evidence_fingerprint_current",
     "prospective_original_proxy_not_qualified_forward"

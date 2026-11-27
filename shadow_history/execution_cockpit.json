@@ -96,7 +96,7 @@
   "execution_windows": {
     "sell": {
       "status": "UPCOMING",
-      "seconds_to_window": 119519,
+      "seconds_to_window": 32824,
       "session": "2026-11-27",
       "side": "SELL",
       "time_et": "2026-11-27T09:31:00-05:00",
@@ -106,7 +106,7 @@
     },
     "buy": {
       "status": "UPCOMING",
-      "seconds_to_window": 119579,
+      "seconds_to_window": 32884,
       "session": "2026-11-27",
       "side": "BUY",
       "time_et": "2026-11-27T09:32:00-05:00",
@@ -120,7 +120,7 @@
     "windows": {
       "sell": {
         "status": "UPCOMING",
-        "seconds_to_window": 119519,
+        "seconds_to_window": 32824,
         "session": "2026-11-27",
         "side": "SELL",
         "time_et": "2026-11-27T09:31:00-05:00",
@@ -130,7 +130,7 @@
       },
       "buy": {
         "status": "UPCOMING",
-        "seconds_to_window": 119579,
+        "seconds_to_window": 32884,
         "session": "2026-11-27",
         "side": "BUY",
         "time_et": "2026-11-27T09:32:00-05:00",
