@@ -1,7 +1,6 @@
 name: StockLens Published Paper Operational Readiness
 
-# Independent RED gate while the static Paper archive is stale.
-# Browser smoke may PASS if it visibly warns that old Paper is stale.
+# Check the current public demo book against the due exchange session.
 on:
   workflow_dispatch:
   workflow_run:
@@ -35,7 +34,11 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python3 portal_publication_readiness.py --summary "$RUNNER_TEMP/stocklens-paper-health.md"
+          python3 -m pip install --quiet exchange-calendars==4.13.2
+          curl --fail --silent --show-error --retry 2 --max-time 30 \
+            https://c2r39dbwkg.execute-api.eu-central-1.amazonaws.com/v1/public-model \
+            -o "$RUNNER_TEMP/public-model.json"
+          python3 portal_publication_readiness.py --active-model "$RUNNER_TEMP/public-model.json" --summary "$RUNNER_TEMP/stocklens-paper-health.md"
       - name: Preserve blocker in job summary on failure
         if: always()
         shell: bash
