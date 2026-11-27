@@ -71,3 +71,24 @@ def test_immutable_market_sources_and_portal_code_are_not_modified():
     for danger in (".put_object(", "boto3.client(", ".enable_rule(", ".invoke(",
                    "requests.", "yfinance.", ".execute_change_set("):
         assert danger not in source
+
+
+def test_active_book_checks_two_exchange_sessions_over_thanksgiving():
+    from infra.aws.epoch5_portal_reader import BOOK, CONT, FIRST
+    from infra.aws.epoch5_public_model import KIND
+    now = datetime(2026, 11, 27, 7, tzinfo=timezone.utc)
+    due = "2026-11-25"
+    data = fixture(paper="2026-10-09", signal=due, history=due, risk=due)
+    rows = [
+        {"session_date": day, "signal": {"session_date": day},
+         "paper_status": "SHA_BOUND_SINGLE_VENDOR_MODELED",
+         "paper": {"continuity_status": CONT, "execution_signal": {"session_date": prior}}}
+        for prior, day in [("2026-11-23", FIRST), (FIRST, due)]
+    ]
+    model = {"book": BOOK, "kind": KIND, "first_session": FIRST,
+             "broker_orders_authorized": False, "broker_fills_observed": False, "sessions": rows}
+    assert p.assess_active(*data, model, now)["ready"]
+    rows[1]["paper"]["execution_signal"]["session_date"] = due
+    assert not p.assess_active(*data, model, now)["ready"]
+    rows.pop()
+    assert "ACTIVE_RECEIPT_MISSING_OR_INVALID:" + due in p.assess_active(*data, model, now)["issues"]

@@ -1,10 +1,5 @@
 #!/usr/bin/env python3
-"""Fail-closed published GitHub Paper freshness gate, NOT an AWS ST audit.
-
-Browser passing means UI renders correctly, never that historical Paper is
-current. This job separately gates paper-vs-signal, market history and risk.
-No network, AWS changes, synthetic backfills, or broker authorizations.
-"""
+"""Check dashboard publication freshness using archive or active modeled Paper evidence."""
 from __future__ import annotations
 
 import argparse
@@ -87,23 +82,78 @@ def assess(data, history, risk, now=None):
     }
 
 
+ACTIVE_SCOPE = "PUBLIC_EPOCH5_MODELED_PAPER"
+ACTIVE_KIND = "STOCKLENS_ACTIVE_PUBLICATION_READINESS_V1"
+
+
+def assess_active(data, history, risk, model, now=None):
+    from market_calendar import calendar, latest_provider_eligible_contract
+    from infra.aws.epoch5_portal_reader import BOOK, FIRST, CONT
+    from infra.aws.epoch5_public_model import KIND as MODEL_KIND
+
+    now = now or datetime.now(timezone.utc)
+    due = latest_provider_eligible_contract(now)["session"]
+    cal = calendar()
+    previous = cal.previous_session(due).date().isoformat()
+    if (model.get("kind") != MODEL_KIND or model.get("book") != BOOK
+            or model.get("first_session") != FIRST
+            or model.get("broker_orders_authorized") is not False
+            or model.get("broker_fills_observed") is not False):
+        raise ValueError("UNEXPECTED_PUBLIC_MODEL")
+    rows = {}
+    for row in model["sessions"]:
+        day = row["session_date"]
+        if day in rows:
+            raise ValueError("DUPLICATE_PUBLIC_SESSION")
+        rows[day] = row
+
+    receipts = []
+    issues = []
+    for day in (previous, due):
+        row = rows.get(day, {})
+        paper = row.get("paper") or {}
+        prior = cal.previous_session(day).date().isoformat()
+        if (row.get("paper_status") == "SHA_BOUND_SINGLE_VENDOR_MODELED"
+                and paper.get("continuity_status") == CONT
+                and (paper.get("execution_signal") or {}).get("session_date") == prior):
+            receipts.append(day)
+        else:
+            issues.append("ACTIVE_RECEIPT_MISSING_OR_INVALID:" + day)
+    if (rows.get(due, {}).get("signal") or {}).get("session_date") != due:
+        issues.append("ACTIVE_SIGNAL_MISSING:" + due)
+    if data.get("signal", {}).get("asof_date") != due:
+        issues.append("PUBLISHED_SIGNAL_NOT_DUE_SESSION:" + due)
+
+    # Reuse the common signal, history, risk and Paper publication checks.
+    current = {"sessions": len(receipts), "latest": {"session_date": max(receipts, default=None)}}
+    report = assess({**data, "paper": current}, history, risk, now)
+    report["issues"].extend(issues)
+    report.update(kind=ACTIVE_KIND, scope=ACTIVE_SCOPE, ready=not report["issues"],
+                  expected_session=due, checked_receipt_sessions=receipts,
+                  archived_paper_session=data.get("paper", {}).get("latest", {}).get("session_date"))
+    return report
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--data", type=Path, default=Path("docs/data.json"))
     parser.add_argument("--history", type=Path, default=Path("docs/portal-history.json"))
     parser.add_argument("--risk", type=Path, default=Path("docs/observed_tqqq_risk_audit.json"))
     parser.add_argument("--summary", type=Path, help="Write an Actions job summary file")
+    parser.add_argument("--active-model", type=Path, help="Public dashboard model response to verify")
     args = parser.parse_args()
     try:
-        report = assess(
+        inputs = (
             json.loads(args.data.read_text(encoding="utf-8")),
             json.loads(args.history.read_text(encoding="utf-8")),
             json.loads(args.risk.read_text(encoding="utf-8")),
         )
-    except (ValueError, OSError, TypeError) as exc:
+        report = (assess_active(*inputs, json.loads(args.active_model.read_text(encoding="utf-8")))
+                  if args.active_model else assess(*inputs))
+    except (ValueError, OSError, TypeError, KeyError, AttributeError) as exc:
         report = {
-            "kind": KIND,
-            "scope": "PUBLIC_GITHUB_ARCHIVE_ONLY_NOT_AUTHENTICATED_AWS_ST",
+            "kind": ACTIVE_KIND if args.active_model else KIND,
+            "scope": ACTIVE_SCOPE if args.active_model else "PUBLIC_GITHUB_ARCHIVE_ONLY_NOT_AUTHENTICATED_AWS_ST",
             "ready": False,
             "issues": ["READINESS_INPUT_INVALID:" + type(exc).__name__],
             "broker_orders_authorized": False,
@@ -116,7 +166,7 @@ def main():
         body = [
             "### Published GitHub Paper operational readiness",
             "",
-            "**" + ("PASS" if report["ready"] else "BLOCKED") + "** — public static publication only;",
+            "**" + ("PASS" if report["ready"] else "BLOCKED") + "** — " + report["scope"] + ";",
             "not AWS ST Signal/Paper evidence or brokerage execution.",
             "",
         ]
