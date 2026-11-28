@@ -613,6 +613,9 @@
     "infra/aws/epoch5_public_model.py": "f53ee3074a70c03df056b44d484a8314c61d365d",
     "infra/aws/epoch5_public_deploy.py": "7071be5337b7d67323f7b6d81198ac784350277f",
     "governance/SL-21-review-and-capital-controls.md": "f40ac04706fb80f7b48bf7cd4ec42736ecbf1948",
-    "research/no_change_cost_audit.py": "e08fcad8fa885636d2a1b3c6cfbc39f473db6131"
+    "research/no_change_cost_audit.py": "e08fcad8fa885636d2a1b3c6cfbc39f473db6131",
+    ".github/workflows/epoch5-daily-audit.yml": "95a90b93694bf1ef2083d1b2cb0fbff03f7a7db6",
+    "infra/aws/epoch5_daily_audit.py": "662974d8d7521a9a186712cb5899828ce3a7d5b2",
+    "tests/test_epoch5_daily_accounting.py": "3a0ce5329a6252b6c2aa3f980bea14ba8d49034b"
   }
 }
