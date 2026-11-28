@@ -1,17 +1,17 @@
 {
   "schema_version": 6,
-  "producer_git_sha": "9008df7646abe333c3d35dd23371e3feea522aed",
-  "current_git_sha": "9008df7646abe333c3d35dd23371e3feea522aed",
+  "producer_git_sha": "e5aba839f507bbb3f9cfa6506e48967b013b6f36",
+  "current_git_sha": "e5aba839f507bbb3f9cfa6506e48967b013b6f36",
   "producer_current": true,
-  "registry_updated_at_utc": "2026-11-27T05:23:52.241896+00:00",
+  "registry_updated_at_utc": "2026-11-28T04:57:28.631867+00:00",
   "status": "ATTENTION",
   "experiments": [
     {
       "experiment_id": "SL9-007-UPSHIFT-CONFIRMATION",
       "status": "ACTIVE_RESEARCH_ONLY",
       "inception_date": "2026-09-26",
-      "accepted_completed_xnys_sessions": 43,
-      "persisted_prospective_sessions": 43,
+      "accepted_completed_xnys_sessions": 44,
+      "persisted_prospective_sessions": 44,
       "definition_current": true,
       "registered_definition_fingerprint": "b6c7a09db9bfb74ed323f36f8cfe1fbcc34d0962cea7fade1fdcfffbf7779fb7",
       "current_definition_fingerprint": "b6c7a09db9bfb74ed323f36f8cfe1fbcc34d0962cea7fade1fdcfffbf7779fb7",

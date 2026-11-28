@@ -3,41 +3,41 @@
   "alerts": [],
   "diagnostics": {
     "close": {
-      "relative_change": 0.006534999325657627,
+      "relative_change": 0.026911485109869154,
       "absolute_limit": 0.15,
-      "rolling_median_change": 0.008782998497851862,
-      "rolling_mad": 0.005287045269773482,
+      "rolling_median_change": 0.008548021277667787,
+      "rolling_mad": 0.005292049941694667,
       "effective_limit": 0.15
     },
     "sma50": {
-      "relative_change": 0.0019778187759713125,
+      "relative_change": 0.0018439010903464669,
       "absolute_limit": 0.05,
       "rolling_median_change": 0.0007098364733203725,
-      "rolling_mad": 0.0004981829599285514,
+      "rolling_mad": 0.0005066534055895793,
       "effective_limit": 0.05
     },
     "sma200": {
-      "relative_change": 0.00017976771217868828,
+      "relative_change": 0.0002927357250300448,
       "absolute_limit": 0.02,
-      "rolling_median_change": 0.0007871368263455563,
-      "rolling_mad": 0.00015637049689484403,
+      "rolling_median_change": 0.0007871368194612752,
+      "rolling_mad": 0.00016120192062821594,
       "effective_limit": 0.02
     },
     "vol20": {
-      "relative_change": 0.004187889171077393,
+      "relative_change": 0.027539528195548106,
       "absolute_limit": 0.75,
-      "rolling_median_change": 0.021835319412322494,
-      "rolling_mad": 0.01578973532882596,
+      "rolling_median_change": 0.020715575974283022,
+      "rolling_mad": 0.014669991890786487,
       "effective_limit": 0.75
     },
     "mom12": {
-      "relative_change": 0.3933376707298762,
+      "relative_change": 0.4136696326002366,
       "absolute_limit": 0.75,
-      "rolling_median_change": 0.04701350075412049,
-      "rolling_mad": 0.03117870614649972,
+      "rolling_median_change": 0.047810619890579054,
+      "rolling_mad": 0.03117807228076255,
       "effective_limit": 0.75
     }
   },
-  "sessions_available": 252,
+  "sessions_available": 251,
   "policy": "absolute safety limits plus robust rolling baseline; never changes frozen model"
 }

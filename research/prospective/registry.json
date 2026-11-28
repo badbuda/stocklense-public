@@ -10,7 +10,7 @@
       "definition_fingerprint": "b6c7a09db9bfb74ed323f36f8cfe1fbcc34d0962cea7fade1fdcfffbf7779fb7"
     }
   ],
-  "updated_at_utc": "2026-11-27T05:23:52.241896+00:00",
+  "updated_at_utc": "2026-11-28T04:57:28.631867+00:00",
   "last_ingestion_audit": [
     {
       "experiment_id": "SL9-007-UPSHIFT-CONFIRMATION",
@@ -22,16 +22,16 @@
       "current_definition_fingerprint": "b6c7a09db9bfb74ed323f36f8cfe1fbcc34d0962cea7fade1fdcfffbf7779fb7",
       "definition_matches_registration": true,
       "returns_csv": "research/data/SL9-007-UPSHIFT-CONFIRMATION.csv",
-      "source_rows": 4335,
-      "after_inception_rows": 43,
-      "accepted_completed_xnys_rows": 43,
+      "source_rows": 4336,
+      "after_inception_rows": 44,
+      "accepted_completed_xnys_rows": 44,
       "rejected_pre_or_at_inception": 4292,
       "rejected_not_completed_xnys": 0,
       "gate": "STRICTLY_AFTER_INCEPTION_AND_COMPLETED_XNYS",
-      "persisted_prospective_rows": 43
+      "persisted_prospective_rows": 44
     }
   ],
-  "producer_git_sha": "9008df7646abe333c3d35dd23371e3feea522aed",
+  "producer_git_sha": "e5aba839f507bbb3f9cfa6506e48967b013b6f36",
   "ingestion_gate": "STRICTLY_AFTER_INCEPTION_AND_COMPLETED_XNYS",
   "candidate_count": 1,
   "audit_count": 1

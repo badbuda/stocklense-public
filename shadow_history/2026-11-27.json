@@ -1,0 +1,62 @@
+{
+  "version": "8.0.2-shadow-completed-session-guard",
+  "generated_at_utc": "2026-11-28T04:57:21.514047+00:00",
+  "mode": "SHADOW_ONLY_NO_BROKER_ACTIONS",
+  "signal_source": "QQQ_ADJUSTED_DAILY_CLOSE",
+  "state_replay": "EXACT_FROM_2009_09_01_WITH_PRESTART_WARMUP",
+  "latest": {
+    "asof_date": "2026-11-27",
+    "level": 1,
+    "defense_active": false,
+    "target_leverage": 1.25,
+    "qqq_weight": 0.861875,
+    "tqqq_weight": 0.123125,
+    "invested_fraction": 0.985,
+    "features": {
+      "close": 650.989990234375,
+      "sma50": 705.7159826660156,
+      "sma200": 682.7437365722657,
+      "vol20": 0.48995787060272106,
+      "mom12": 0.07416550102065567
+    }
+  },
+  "previous": {
+    "asof_date": "2026-11-25",
+    "level": 1,
+    "defense_active": false,
+    "target_leverage": 1.25,
+    "qqq_weight": 0.861875,
+    "tqqq_weight": 0.123125,
+    "invested_fraction": 0.985,
+    "features": {
+      "close": 633.9299926757812,
+      "sma50": 707.0196569824219,
+      "sma200": 682.5439315795899,
+      "vol20": 0.47682629928907083,
+      "mom12": 0.05246310687472233
+    }
+  },
+  "action": "NO_CHANGE",
+  "execution_plan": {
+    "signal_basis": "LATEST_COMPLETED_QQQ_DAILY_CLOSE",
+    "reductions": "NEXT_SESSION_OPEN_PLUS_1_MIN",
+    "additions": "NEXT_SESSION_OPEN_PLUS_2_MIN",
+    "broker_actions_enabled": false
+  },
+  "data_audit": {
+    "rows": 4757,
+    "first_date": "2008-01-02",
+    "last_date": "2026-11-27",
+    "last_close": 650.989990234375,
+    "source": "YFINANCE_QQQ_AUTO_ADJUSTED",
+    "raw_rows": 4757,
+    "completed_rows": 4757,
+    "feature_window_sessions": 253,
+    "feature_window_sha256": "c35d8da535b1f61f504e1117298f18f64f356b8195d673073fe0c794eb008e9c",
+    "raw_last_date": "2026-11-27",
+    "last_completed_date": "2026-11-27",
+    "dropped_incomplete_current_session": false,
+    "ny_time_at_validation": "2026-11-27T23:57:21.255131-05:00",
+    "safe_after_ny_time": "18:00"
+  }
+}

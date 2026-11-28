@@ -2,33 +2,33 @@
   "schema_version": 1,
   "publication_identity": {
     "schema_version": 2,
-    "git_sha": "9008df7646abe333c3d35dd23371e3feea522aed",
+    "git_sha": "e5aba839f507bbb3f9cfa6506e48967b013b6f36",
     "signal_asof": null,
     "replay_dataset_sha256": "db0889da31af43b1b75e005c1f4ab2cad421dfb55a6c55a77a223e0623950d95",
-    "replay_rows_sha256": "19c1ce40d9eed676f9b7be8f776800ca3b2e472fba67f085e5d8266a74e83bd8",
+    "replay_rows_sha256": "9b2106ba7ccb7013b97dc5139715ca5ca19f99904326f0d94b3a295cba4278fb",
     "simulator_contract_sha256": "80745a3640c6fe667a3c500571fb15abee1d532a5b720fb6efc8b52f291dfc68",
-    "generation_id": "0ddb7f4e682067f5683e2a20a325cd017f6468edff52fad91e1dc67263de7f5f"
+    "generation_id": "8e98c0a134c9fe3cc80e5356e969e21d908766d64707015c7a72b4b47d9b44f0"
   },
   "status": "PASS",
   "episode_count": 14,
   "deepest_episode": {
     "peak_date": "2026-10-06",
     "trough_date": "2026-11-20",
-    "max_drawdown": -0.4626235018392253,
+    "max_drawdown": -0.4626235018392254,
     "recovery_date": null,
     "underwater_sessions": 36
   },
   "longest_episode": {
     "peak_date": "2026-06-02",
     "trough_date": "2026-07-29",
-    "max_drawdown": -0.3260799960774513,
+    "max_drawdown": -0.326079996077451,
     "recovery_date": "2026-10-06",
     "underwater_sessions": 87
   },
   "open_underwater_episode": {
     "peak_date": "2026-10-06",
     "trough_date": "2026-11-20",
-    "max_drawdown": -0.4626235018392253,
+    "max_drawdown": -0.4626235018392254,
     "recovery_date": null,
     "underwater_sessions": 36
   },
@@ -36,42 +36,42 @@
     {
       "peak_date": "2025-11-28",
       "trough_date": "2025-12-01",
-      "max_drawdown": -0.010076898739347806,
+      "max_drawdown": -0.01007660265881205,
       "recovery_date": "2025-12-02",
       "underwater_sessions": 2
     },
     {
       "peak_date": "2025-12-03",
       "trough_date": "2025-12-04",
-      "max_drawdown": -0.0027905255883252655,
+      "max_drawdown": -0.0027911151272048684,
       "recovery_date": "2025-12-05",
       "underwater_sessions": 2
     },
     {
       "peak_date": "2025-12-05",
       "trough_date": "2025-12-08",
-      "max_drawdown": -0.0057559162112719164,
+      "max_drawdown": -0.005755034417362692,
       "recovery_date": "2025-12-10",
       "underwater_sessions": 3
     },
     {
       "peak_date": "2025-12-10",
       "trough_date": "2025-12-17",
-      "max_drawdown": -0.1265270072334621,
+      "max_drawdown": -0.12652729332551893,
       "recovery_date": "2026-01-27",
       "underwater_sessions": 31
     },
     {
       "peak_date": "2026-01-28",
       "trough_date": "2026-03-30",
-      "max_drawdown": -0.271798288324303,
+      "max_drawdown": -0.27179828832430286,
       "recovery_date": "2026-04-22",
       "underwater_sessions": 58
     },
     {
       "peak_date": "2026-04-22",
       "trough_date": "2026-04-23",
-      "max_drawdown": -0.016898279986330866,
+      "max_drawdown": -0.016898279986330977,
       "recovery_date": "2026-04-24",
       "underwater_sessions": 2
     },
@@ -92,14 +92,14 @@
     {
       "peak_date": "2026-05-06",
       "trough_date": "2026-05-07",
-      "max_drawdown": -0.0035788605122634154,
+      "max_drawdown": -0.0035788605122631933,
       "recovery_date": "2026-05-08",
       "underwater_sessions": 2
     },
     {
       "peak_date": "2026-05-11",
       "trough_date": "2026-05-12",
-      "max_drawdown": -0.025445390591757877,
+      "max_drawdown": -0.025445390591757655,
       "recovery_date": "2026-05-13",
       "underwater_sessions": 2
     },
@@ -120,14 +120,14 @@
     {
       "peak_date": "2026-06-02",
       "trough_date": "2026-07-29",
-      "max_drawdown": -0.3260799960774513,
+      "max_drawdown": -0.326079996077451,
       "recovery_date": "2026-10-06",
       "underwater_sessions": 87
     },
     {
       "peak_date": "2026-10-06",
       "trough_date": "2026-11-20",
-      "max_drawdown": -0.4626235018392253,
+      "max_drawdown": -0.4626235018392254,
       "recovery_date": null,
       "underwater_sessions": 36
     }

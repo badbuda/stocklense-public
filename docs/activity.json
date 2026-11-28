@@ -2,6 +2,27 @@
   "schema_version": 1,
   "items": [
     {
+      "short_sha": "e5aba83",
+      "date": "2026-11-27T10:52:04+02:00",
+      "title": "Refresh the three reviewed Paper readiness source hashes (#227)",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "9d42717",
+      "date": "2026-11-27T09:17:15+02:00",
+      "title": "Check active public Paper receipts against completed exchange sessions (#226)",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "b31a771",
+      "date": "2026-11-27T05:24:03Z",
+      "title": "shadow: record prospective evidence 2026-11-25",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
       "short_sha": "9008df7",
       "date": "2026-11-26T05:19:06Z",
       "title": "shadow: record prospective evidence 2026-11-25",
@@ -61,33 +82,33 @@
       "short_sha": "d80e8c3",
       "date": "2026-11-24T20:54:50+02:00",
       "title": "Load public demo on main dashboard automatically; prove no-login display",
-      "kind": "PROJECT",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "a118157",
-      "date": "2026-11-24T20:54:04+02:00",
-      "title": "Add allowlisted public ST demo reader and isolated deployment",
-      "kind": "PROJECT",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "640dfa2",
-      "date": "2026-11-24T18:52:18Z",
-      "title": "ops: publish source-hashed blocked-or-ready evidence closeout",
-      "kind": "PROJECT",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "2f2c032",
-      "date": "2026-11-24T20:52:06+02:00",
-      "title": "Merge pull request #223 from badbuda/fix/epoch5-primary-paper-cards",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     }
   ],
   "high_signal_items": [
     {
+      "short_sha": "e5aba83",
+      "date": "2026-11-27T10:52:04+02:00",
+      "title": "Refresh the three reviewed Paper readiness source hashes (#227)",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "9d42717",
+      "date": "2026-11-27T09:17:15+02:00",
+      "title": "Check active public Paper receipts against completed exchange sessions (#226)",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "b31a771",
+      "date": "2026-11-27T05:24:03Z",
+      "title": "shadow: record prospective evidence 2026-11-25",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
       "short_sha": "9008df7",
       "date": "2026-11-26T05:19:06Z",
       "title": "shadow: record prospective evidence 2026-11-25",
@@ -149,48 +170,27 @@
       "title": "Load public demo on main dashboard automatically; prove no-login display",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "a118157",
-      "date": "2026-11-24T20:54:04+02:00",
-      "title": "Add allowlisted public ST demo reader and isolated deployment",
-      "kind": "PROJECT",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "640dfa2",
-      "date": "2026-11-24T18:52:18Z",
-      "title": "ops: publish source-hashed blocked-or-ready evidence closeout",
-      "kind": "PROJECT",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "2f2c032",
-      "date": "2026-11-24T20:52:06+02:00",
-      "title": "Merge pull request #223 from badbuda/fix/epoch5-primary-paper-cards",
-      "kind": "PROJECT",
-      "impact": "Repository change; CI validation is separate."
     }
   ],
   "recent_summary": [
     {
-      "short_sha": "9008df7",
-      "date": "2026-11-26T05:19:06Z",
+      "short_sha": "e5aba83",
+      "date": "2026-11-27T10:52:04+02:00",
+      "title": "Refresh the three reviewed Paper readiness source hashes (#227)",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "9d42717",
+      "date": "2026-11-27T09:17:15+02:00",
+      "title": "Check active public Paper receipts against completed exchange sessions (#226)",
+      "kind": "PROJECT",
+      "impact": "Repository change; CI validation is separate."
+    },
+    {
+      "short_sha": "b31a771",
+      "date": "2026-11-27T05:24:03Z",
       "title": "shadow: record prospective evidence 2026-11-25",
-      "kind": "PROJECT",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "dcb1417",
-      "date": "2026-11-25T05:42:23Z",
-      "title": "shadow: record prospective evidence 2026-11-24",
-      "kind": "PROJECT",
-      "impact": "Repository change; CI validation is separate."
-    },
-    {
-      "short_sha": "6ced2e1",
-      "date": "2026-11-24T19:46:56Z",
-      "title": "ops: publish source-hashed blocked-or-ready evidence closeout",
       "kind": "PROJECT",
       "impact": "Repository change; CI validation is separate."
     }
